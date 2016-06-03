@@ -36,6 +36,8 @@ import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * TODO comment!
  *
@@ -161,7 +163,7 @@ public final class Store
         Resource ret = null;
         try {
             Store.LOG.debug("Getting resource for: {} with properties: {}", this.resource, this.resourceProperties);
-            ret = (Resource) (Class.forName(this.resource).newInstance());
+            ret = (Resource) Class.forName(this.resource).newInstance();
             ret.initialize(_instance, this);
         } catch (final InstantiationException e) {
             throw new EFapsException(Store.class, "getResource.InstantiationException", e, this.resource);
@@ -255,6 +257,7 @@ public final class Store
     /**
      * @param _store Store to be cached
      */
+    @SuppressFBWarnings("RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED")
     private static void cacheStore(final Store _store)
     {
         final Cache<UUID, Store> cache4UUID = InfinispanCache.get().<UUID, Store>getIgnReCache(Store.UUIDCACHE);
@@ -302,7 +305,7 @@ public final class Store
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof Store) {
             ret = ((Store) _obj).getId() == getId();
         } else {

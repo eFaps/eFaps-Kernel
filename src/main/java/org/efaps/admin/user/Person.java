@@ -57,6 +57,8 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Class represents the instance of a person/user in eFaps.
  *
@@ -104,7 +106,7 @@ public final class Person
          *
          * @param _sqlColumn name of the column in the table
          */
-        private AttrName(final String _sqlColumn)
+        AttrName(final String _sqlColumn)
         {
             this(_sqlColumn, false);
         }
@@ -115,8 +117,8 @@ public final class Person
          * @param _sqlColumn name of the column in the table
          * @param _integer is the column a integer column
          */
-        private AttrName(final String _sqlColumn,
-                         final boolean _integer)
+        AttrName(final String _sqlColumn,
+                 final boolean _integer)
         {
             this.sqlColumn = _sqlColumn;
             this.integer = _integer;
@@ -1447,7 +1449,7 @@ public final class Person
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof Person) {
             ret = ((Person) _obj).getId() == getId();
         } else {
@@ -1549,6 +1551,7 @@ public final class Person
      * @param _person Person to be cached
      * @throws EFapsException on error
      */
+    @SuppressFBWarnings("RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED")
     private static void cachePerson(final Person _person)
         throws EFapsException
     {
@@ -1571,6 +1574,7 @@ public final class Person
      * @return true if successful
      * @throws EFapsException on error
      */
+    @SuppressFBWarnings("SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING")
     private static Person getPersonFromDB(final String _sql,
                                           final Object _criteria)
         throws EFapsException

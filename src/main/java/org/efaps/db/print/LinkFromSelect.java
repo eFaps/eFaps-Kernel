@@ -145,6 +145,7 @@ public class LinkFromSelect
 
         if (attr == null) {
             LOG.error("Could not find Attribute '{}' in Type '{}'", this.attrName, this.type.getName());
+            throw new EFapsException(LinkFromSelect.class, "NoAttribute");
         }
 
         final SQLSelect select = new SQLSelect()

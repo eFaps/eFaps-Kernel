@@ -52,6 +52,8 @@ import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * This is the class for the attribute description. The type description holds
  * information about creation of a new instance of a attribute with default
@@ -287,8 +289,8 @@ public class Attribute
         this.sqlTable = _sqlTable;
         this.parent = _parentId;
         this.attributeType = _attributeType;
-        this.defaultValue = (_defaultValue != null) ? _defaultValue.trim() : null;
-        this.dimensionUUID = (_dimensionUUID != null) ? _dimensionUUID.trim() : null;
+        this.defaultValue = _defaultValue != null ? _defaultValue.trim() : null;
+        this.dimensionUUID = _dimensionUUID != null ? _dimensionUUID.trim() : null;
         // add SQL columns and evaluate if attribute is required
         boolean req = false;
         int sizeTemp = 0;
@@ -345,7 +347,7 @@ public class Attribute
         this.parent = _parentId;
         this.sqlTable = _sqlTable;
         this.attributeType = _attributeType;
-        this.defaultValue = (_defaultValue != null) ? _defaultValue.trim() : null;
+        this.defaultValue = _defaultValue != null ? _defaultValue.trim() : null;
         this.required = _required;
         this.size = _size;
         this.scale = _scale;
@@ -769,6 +771,7 @@ public class Attribute
      * @throws CacheReloadException on error
      * @see #getCache
      */
+    @SuppressFBWarnings("RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORE")
     public static Attribute get(final String _name)
         throws CacheReloadException
     {
@@ -867,7 +870,7 @@ public class Attribute
         } catch (final EFapsException e) {
             throw new CacheReloadException("Cannot read a type for an attribute.", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
@@ -962,7 +965,7 @@ public class Attribute
                     } else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_ENUM.getUuid())
                                     || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_BITENUM.getUuid())
                                     || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_JAXB.getUuid())) {
-                        if (className == null || (className != null && className.isEmpty())) {
+                        if (className == null || className != null && className.isEmpty()) {
                             Attribute.LOG.error("An Attribute of Type Enum, BitEnum, Jaxb must have a className: {}",
                                             attr);
                         }
@@ -995,7 +998,7 @@ public class Attribute
         } catch (final SQLException e) {
             throw new CacheReloadException("Cannot read attributes.", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 con.abort();
             }
         }

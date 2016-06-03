@@ -33,8 +33,6 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: KnowledgeBuilderFactoryServiceImpl.java 11598 2014-01-07
- *          00:02:12Z jan@moxter.net $
  */
 public class KnowledgeBuilderFactoryServiceImpl
     extends org.drools.compiler.builder.impl.KnowledgeBuilderFactoryServiceImpl

@@ -40,6 +40,8 @@ import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * The class handles the caching for JAAS systems.
  *
@@ -384,7 +386,7 @@ public final class JAASSystem
     {
         Method ret = null;
 
-        if ((_method != null) && (_method.trim().length() > 0)) {
+        if (_method != null && _method.trim().length() > 0) {
             try {
                 ret = _class.getMethod(_method.trim(), new Class[] {});
             } catch (final NoSuchMethodException e) {
@@ -398,7 +400,7 @@ public final class JAASSystem
                 JAASSystem.LOG.error("could not get a " + _type
                     + " method returning java.lang.String for JAAS System '" + _jaasName + "' (id = " + _jaasId + ")");
                 ret = null;
-            } else if ((ret.getParameterTypes() != null) && (ret.getParameterTypes().length > 0)) {
+            } else if (ret.getParameterTypes() != null && ret.getParameterTypes().length > 0) {
                 JAASSystem.LOG.error("could not get a " + _type
                     + " method returning java.lang.String for JAAS System '" + _jaasName + "' (id = " + _jaasId + ")");
                 ret = null;
@@ -410,6 +412,7 @@ public final class JAASSystem
     /**
      * @param _group Group to be cached
      */
+    @SuppressFBWarnings("RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED")
     private static void cacheJAASSystem(final JAASSystem _group)
     {
         final Cache<String, JAASSystem> nameCache = InfinispanCache.get().<String, JAASSystem>getIgnReCache(
@@ -490,7 +493,7 @@ public final class JAASSystem
                             JAASSystem.LOG.debug("method '{}' not implemented yet.", method);
                             // TODO: person email method
                         }
-                        if ((roleClassName != null) && (roleClassName.trim().length() > 0)) {
+                        if (roleClassName != null && roleClassName.trim().length() > 0) {
                             @SuppressWarnings("unchecked")
                             final Class<Principal> fn = (Class<Principal>) Class.forName(roleClassName.trim());
                             system.roleJAASPrincipleClass = fn;
@@ -498,7 +501,7 @@ public final class JAASSystem
                                             roleMethodKey,
                                             "role key", name, id);
                         }
-                        if ((groupClassName != null) && (groupClassName.trim().length() > 0)) {
+                        if (groupClassName != null && groupClassName.trim().length() > 0) {
                             @SuppressWarnings("unchecked")
                             final Class<Principal> fn = (Class<Principal>) Class.forName(groupClassName.trim());
                             system.groupJAASPrincipleClass = fn;
@@ -523,7 +526,7 @@ public final class JAASSystem
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read roles", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
@@ -536,7 +539,7 @@ public final class JAASSystem
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof JAASSystem) {
             ret = ((JAASSystem) _obj).getId() == getId();
         } else {

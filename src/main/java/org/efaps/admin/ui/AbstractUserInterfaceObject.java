@@ -54,6 +54,8 @@ import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.InfinispanCache;
 import org.infinispan.Cache;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * This Class is the Abstract Class for all UserInterfaces in eFaps.<br/>
  * In this Class only a few Methods are defined which are common to all Class
@@ -62,8 +64,6 @@ import org.infinispan.Cache;
  * and the Triggers for the <code>UserInterfaceObjects</code> are handled.
  *
  * @author The eFaps Team
- * @version $Id: AbstractUserInterfaceObject.java 4820 2011-06-19 01:37:58Z
- *          jan.moxter $
  */
 public abstract class AbstractUserInterfaceObject
     extends AbstractAdminObject
@@ -72,7 +72,7 @@ public abstract class AbstractUserInterfaceObject
      * This enum id used to define the different Modes a Target of a Command can
      * have, like create, edit etc.
      */
-    public static enum TargetMode
+    public enum TargetMode
     {
         /** TargetMode for connect. */
         CONNECT,
@@ -406,6 +406,7 @@ public abstract class AbstractUserInterfaceObject
     /**
      * @param _object UIObject to be cache
      */
+    @SuppressFBWarnings("RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED")
     protected static void cacheUIObject(final AbstractUserInterfaceObject _object)
     {
         final Cache<UUID, AbstractUserInterfaceObject> cache4UUID = InfinispanCache.get()

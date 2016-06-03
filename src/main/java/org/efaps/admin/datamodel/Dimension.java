@@ -38,6 +38,8 @@ import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Class for Dimensions inside eFaps.
  *
@@ -387,7 +389,7 @@ public class Dimension
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read Dimension", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
@@ -421,6 +423,7 @@ public class Dimension
      * @throws CacheReloadException on error
      * @return false
      */
+    @SuppressFBWarnings("SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING")
     private static boolean getDimensionFromDB(final String _sql,
                                               final Object _criteria)
         throws CacheReloadException
@@ -461,7 +464,7 @@ public class Dimension
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read roles", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
@@ -475,7 +478,7 @@ public class Dimension
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof Dimension) {
             ret = ((Dimension) _obj).getId() == getId();
         } else {

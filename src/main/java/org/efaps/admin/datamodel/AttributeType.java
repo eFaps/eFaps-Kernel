@@ -35,6 +35,8 @@ import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * @author The eFaps Team
  *
@@ -251,7 +253,7 @@ public class AttributeType
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof AttributeType) {
             ret = ((AttributeType) _obj).getId() == getId();
         } else {
@@ -337,6 +339,7 @@ public class AttributeType
     /**
      * @param _role AttributeType to be cached
      */
+    @SuppressFBWarnings("RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORE")
     private static void cacheAttributeType(final AttributeType _role)
     {
         final Cache<String, AttributeType> nameCache = InfinispanCache.get()

@@ -145,7 +145,7 @@ public class MsgPhraseUpdate
         {
             final MsgPhrase.Argument argument = new MsgPhrase.Argument();
             argument.setValue(_value);
-            argument.setIndex(Integer.valueOf(_index));
+            argument.setIndex(Integer.parseInt(_index));
             if (_company != null) {
                 final Company company = Company.get(UUID.fromString(_company));
                 if (company != null) {

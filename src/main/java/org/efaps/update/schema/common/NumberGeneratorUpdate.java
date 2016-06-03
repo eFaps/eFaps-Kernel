@@ -84,7 +84,7 @@ public class NumberGeneratorUpdate
             if ("format".equals(value)) {
                 addValue("Format", _text);
             } else if ("startvalue".equals(value)) {
-                this.startvalue = Long.valueOf(_text);
+                this.startvalue = Long.parseLong(_text);
             } else {
                 super.readXML(_tags, _attributes, _text);
             }

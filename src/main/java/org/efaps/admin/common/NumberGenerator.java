@@ -244,7 +244,7 @@ public final class NumberGenerator
     {
         try {
             Context.getDbType().setSequence(Context.getThreadContext().getConnection(), getDBName(),
-                            Long.valueOf(_value));
+                            Long.parseLong(_value));
         } catch (final SQLException e) {
             throw new EFapsException(NumberGenerator.class, "setVal()", e);
         }
@@ -433,7 +433,7 @@ public final class NumberGenerator
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read roles", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
@@ -447,7 +447,7 @@ public final class NumberGenerator
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof NumberGenerator) {
             ret = ((NumberGenerator) _obj).getId() == getId();
         } else {

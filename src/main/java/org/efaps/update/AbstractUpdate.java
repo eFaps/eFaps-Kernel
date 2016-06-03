@@ -1162,8 +1162,7 @@ public abstract class AbstractUpdate
                         public int compare(final LinkInstance _o1,
                                            final LinkInstance _o2)
                         {
-                            return Long.valueOf(_o1.getInstance().getId()).compareTo(
-                                            Long.valueOf(_o2.getInstance().getId()));
+                            return Long.compare(_o1.getInstance().getId(), _o2.getInstance().getId());
                         }
                     });
 

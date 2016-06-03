@@ -257,7 +257,7 @@ public abstract class AbstractAdminObject
         if (!evenList.contains(_eventdef)) {
             evenList.add(_eventdef);
         }
-        // if there are more than one event the y must be sorted by their index
+        // if there are more than one event they must be sorted by their index
         // position
         if (evenList.size() > 1) {
             Collections.sort(evenList, new Comparator<EventDefinition>()
@@ -266,7 +266,7 @@ public abstract class AbstractAdminObject
                 public int compare(final EventDefinition _eventDef0,
                                    final EventDefinition _eventDef1)
                 {
-                    return Long.valueOf(_eventDef0.getIndexPos()).compareTo(Long.valueOf(_eventDef1.getIndexPos()));
+                    return Long.compare(_eventDef0.getIndexPos(), _eventDef1.getIndexPos());
                 }
             });
         }

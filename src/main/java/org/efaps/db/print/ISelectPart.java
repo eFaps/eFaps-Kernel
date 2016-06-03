@@ -49,8 +49,10 @@ public interface ISelectPart
      * Method to get the Type the part belongs to.
      *
      * @return type
+     * @throws EFapsException the e faps exception
      */
-    Type getType();
+    Type getType()
+        throws EFapsException;
 
 
     /**

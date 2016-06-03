@@ -238,7 +238,7 @@ public class OneSelect
             }
         }
         Object object = null;
-        AbstractValueSelect tmpValueSelect;
+        final AbstractValueSelect tmpValueSelect;
         if (this.valueSelect == null) {
             tmpValueSelect = this.fromSelect.getMainOneSelect().getValueSelect();
         } else {
@@ -277,11 +277,14 @@ public class OneSelect
     /**
      * Add the name of the attribute the link must go to, evaluated from an
      * <code>linkTo[ATTRIBUTENAME]</code> part of an select statement.
+     *
      * @param _linkTo   name of the attribute the link must go to
+     * @throws EFapsException the e faps exception
      */
     public void addLinkToSelectPart(final String _linkTo)
+        throws EFapsException
     {
-        Type type;
+        final Type type;
         // if a previous select exists it is based on the previous select,
         // else it is based on the basic table
         if (this.selectParts.size() > 0) {
@@ -295,10 +298,13 @@ public class OneSelect
 
     /**
      * Add the select part to connect the general store.
+     *
+     * @throws EFapsException the e faps exception
      */
     public void addFileSelectPart()
+        throws EFapsException
     {
-        Type type;
+        final Type type;
         // if a previous select exists it is based on the previous select,
         // else it is based on the basic table
         if (this.selectParts.size() > 0) {
@@ -312,10 +318,13 @@ public class OneSelect
 
     /**
      * Add the select part to connect the general instances.
+     *
+     * @throws EFapsException the e faps exception
      */
     public void addGenInstSelectPart()
+        throws EFapsException
     {
-        Type type;
+        final Type type;
         // if a previous select exists it is based on the previous select,
         // else it is based on the basic table
         if (this.selectParts.size() > 0) {
@@ -330,11 +339,14 @@ public class OneSelect
     /**
      * Add the name of the attribute the link must go to, evaluated from an
      * <code>attributeSet[ATTRIBUTESETNAME]</code> part of an select statement.
+     *
      * @param _attributeSet   name of the attribute the link must go to
+     * @throws EFapsException the e faps exception
      */
     public void addAttributeSetSelectPart(final String _attributeSet)
+        throws EFapsException
     {
-        Type type;
+        final Type type;
         // if a previous select exists it is based on the previous select,
         // else it is based on the basic table
         if (this.selectParts.size() > 0) {
@@ -377,7 +389,7 @@ public class OneSelect
     {
         // for attributes it must be evaluated if the attribute is inside a child table
         if (this.valueSelect != null && "attribute".equals(this.valueSelect.getValueType())) {
-            Type type;
+            final Type type;
             if (this.selectParts.size() > 0) {
                 type = this.selectParts.get(this.selectParts.size() - 1).getType();
             } else {
@@ -420,13 +432,13 @@ public class OneSelect
                                 final int _colIndex)
         throws EFapsException
     {
-        Type type;
+        final Type type;
         if (this.selectParts.size() > 0) {
             type = this.selectParts.get(this.selectParts.size() - 1).getType();
         } else {
             type = this.query.getMainType();
         }
-        int ret;
+        final int ret;
         if (this.valueSelect == null) {
             ret = this.fromSelect.getMainOneSelect().getValueSelect().append2SQLSelect(type, _select, this.tableIndex,
                                                                                        _colIndex);
@@ -681,7 +693,7 @@ public class OneSelect
                     }
                 }
             } else {
-                List<Long> idTmp;
+                final List<Long> idTmp;
                 if (this.valueSelect.getParentSelectPart() != null
                                 && this.valueSelect.getParentSelectPart() instanceof LinkToSelectPart) {
                     idTmp = (List<Long>) this.valueSelect.getParentSelectPart().getObject();
@@ -705,7 +717,7 @@ public class OneSelect
      */
     public Attribute getAttribute()
     {
-        Attribute ret;
+        final Attribute ret;
         if (this.valueSelect == null) {
             ret = this.fromSelect.getMainOneSelect().getAttribute();
         } else {
@@ -743,7 +755,7 @@ public class OneSelect
     private boolean isMultiple(final Object _object)
         throws EFapsException
     {
-        boolean ret;
+        final boolean ret;
         if (_object instanceof Long && this.fromSelect != null) {
             final Object object = this.getObject(_object);
             if (object instanceof List<?>) {
@@ -765,7 +777,7 @@ public class OneSelect
     public boolean isMultiple()
         throws EFapsException
     {
-        boolean ret;
+        final boolean ret;
         if (this.valueSelect == null) {
             ret = this.fromSelect.getMainOneSelect().isMultiple(this.currentObject);
         } else {
@@ -793,7 +805,7 @@ public class OneSelect
                                     final Integer _relIndex,
                                     final Long _clazzId)
     {
-        int ret;
+        final int ret;
         if (this.valueSelect == null && this.fromSelect != null) {
             ret = this.fromSelect.getNewTableIndex(_tableName, _column, _relIndex, _clazzId);
         } else {
@@ -821,7 +833,7 @@ public class OneSelect
                                  final int _relIndex,
                                  final Long _clazzId)
     {
-        Integer ret;
+        final Integer ret;
         if (this.valueSelect == null && this.fromSelect != null) {
             ret = this.fromSelect.getTableIndex(_tableName, _column, _relIndex, _clazzId);
         } else {

@@ -40,6 +40,8 @@ import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * TODO comment!
  *
@@ -281,6 +283,7 @@ public final class Consortium
     /**
      * @param _consortium Consortium to be cached
      */
+    @SuppressFBWarnings("RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED")
     private static void cacheConsortium(final Consortium _consortium)
     {
         final Cache<UUID, Consortium> cache4UUID = InfinispanCache.get().<UUID, Consortium>getIgnReCache(
@@ -342,7 +345,7 @@ public final class Consortium
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read consortiums", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
@@ -394,7 +397,7 @@ public final class Consortium
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read consortiums", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
@@ -407,7 +410,7 @@ public final class Consortium
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof Consortium) {
             ret = ((Consortium) _obj).getId() == getId();
         } else {

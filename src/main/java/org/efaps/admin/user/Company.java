@@ -38,6 +38,8 @@ import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * TODO comment!
  *
@@ -259,6 +261,7 @@ public final class Company
     /**
      * @param _role Company to be cached
      */
+    @SuppressFBWarnings("RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED")
     private static void cacheCompany(final Company _role)
     {
         final Cache<UUID, Company> cache4UUID = InfinispanCache.get().<UUID, Company>getIgnReCache(Company.UUIDCACHE);
@@ -313,7 +316,7 @@ public final class Company
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read roles", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
@@ -327,7 +330,7 @@ public final class Company
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof Company) {
             ret = ((Company) _obj).getId() == getId();
         } else {

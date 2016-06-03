@@ -39,6 +39,8 @@ import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * This is the class for the table description. The table description holds
  * information in which table attributes are stored.
@@ -203,7 +205,7 @@ public final class SQLTable
         super(_id, _uuid, _name);
         this.sqlTable = _sqlTable.trim();
         this.sqlColId = _sqlColId.trim();
-        this.sqlColType = (_sqlColType != null) ? _sqlColType.trim() : null;
+        this.sqlColType = _sqlColType != null ? _sqlColType.trim() : null;
         this.tableInformation = Context.getDbType().getCachedTableInformation(this.sqlTable);
     }
 
@@ -325,7 +327,7 @@ public final class SQLTable
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof SQLTable) {
             ret = ((SQLTable) _obj).getId() == getId();
         } else {
@@ -434,6 +436,7 @@ public final class SQLTable
     /**
      * @param _sqlTable SQLTable to be cached
      */
+    @SuppressFBWarnings("RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORE")
     private static void cacheSQLTable(final SQLTable _sqlTable)
     {
         final Cache<UUID, SQLTable> cache4UUID = InfinispanCache.get().<UUID, SQLTable>getIgnReCache(
@@ -504,7 +507,7 @@ public final class SQLTable
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read sql tables", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {

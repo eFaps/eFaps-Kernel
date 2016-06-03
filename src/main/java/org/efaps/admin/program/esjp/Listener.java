@@ -85,32 +85,33 @@ public final class Listener
             @SuppressWarnings("unchecked")
             final AnnotationAcceptingListener asl = new AnnotationAcceptingListener(EFapsClassLoader.getInstance(),
                             EFapsListener.class);
-            final EFapsResourceFinder resourceFinder = new EFapsResourceConfig.EFapsResourceFinder();
-            while (resourceFinder.hasNext()) {
-                final String next = resourceFinder.next();
-                if (asl.accept(next)) {
-                    final InputStream in = resourceFinder.open();
-                    try {
-                        Listener.LOG.debug("Scanning '{}' for annotations.", next);
-                        asl.process(next, in);
-                    } catch (final IOException e) {
-                        Listener.LOG.warn("Cannot process '{}'", next);
-                    } finally {
+            try (final EFapsResourceFinder resourceFinder = new EFapsResourceConfig.EFapsResourceFinder()) {
+                while (resourceFinder.hasNext()) {
+                    final String next = resourceFinder.next();
+                    if (asl.accept(next)) {
+                        final InputStream in = resourceFinder.open();
                         try {
-                            in.close();
-                        } catch (final IOException ex) {
-                            Listener.LOG.trace("Error closing resource stream.", ex);
+                            Listener.LOG.debug("Scanning '{}' for annotations.", next);
+                            asl.process(next, in);
+                        } catch (final IOException e) {
+                            Listener.LOG.warn("Cannot process '{}'", next);
+                        } finally {
+                            try {
+                                in.close();
+                            } catch (final IOException ex) {
+                                Listener.LOG.trace("Error closing resource stream.", ex);
+                            }
                         }
                     }
                 }
-            }
-            this.classes.clear();
-            this.classes.addAll(asl.getAnnotatedClasses());
+                this.classes.clear();
+                this.classes.addAll(asl.getAnnotatedClasses());
 
-            if (Listener.LOG.isInfoEnabled() && !this.classes.isEmpty()) {
-                logClasses("Listener classes found:", this.classes);
+                if (Listener.LOG.isInfoEnabled() && !this.classes.isEmpty()) {
+                    logClasses("Listener classes found:", this.classes);
+                }
+                this.initialized = true;
             }
-            this.initialized = true;
         }
     }
 
@@ -188,7 +189,7 @@ public final class Listener
             public int compare(final IEsjpListener _o1,
                                final IEsjpListener _o2)
             {
-                return Integer.valueOf(_o1.getWeight()).compareTo(Integer.valueOf(_o2.getWeight()));
+                return Integer.compare(_o1.getWeight(), _o2.getWeight());
             }
         });
         return Collections.unmodifiableList(ret);

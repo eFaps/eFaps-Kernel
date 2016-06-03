@@ -95,14 +95,14 @@ public class Event
                  final String _method,
                  final String _index)
     {
-        this.name = (_name == null) ? _event.getName() : _name;
+        this.name = _name == null ? _event.getName() : _name;
         this.event = _event;
         this.program = _program;
-        this.method = (_method == null) ? "execute" : _method;
+        this.method = _method == null ? "execute" : _method;
         if (_index == null)  {
             this.index = 0;
         } else  {
-            this.index = Long.valueOf(_index);
+            this.index = Long.parseLong(_index);
         }
     }
 

@@ -153,11 +153,13 @@ public class LinkToSelectPart
      */
     @Override
     public Type getType()
+        throws EFapsException
     {
         final Attribute attr = this.type.getAttribute(this.attrName);
         if (attr == null) {
             LinkToSelectPart.LOG.error("Could not find an Attribute with name '{}' for type:{}", this.attrName,
                             this.type);
+            throw new EFapsException(LinkFromSelect.class, "NoAttribute");
         }
         Type ret = null;
         try {
