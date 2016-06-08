@@ -17,9 +17,8 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import java.util.List;
+import java.io.Serializable;
 
-import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
 
 /**
@@ -27,10 +26,9 @@ import org.efaps.util.EFapsException;
  *
  * @author The eFaps Team
  *
- *
  */
 public class FormatedStringUI
-    extends AbstractUI
+    extends AbstractProvider
 {
 
     /**
@@ -38,47 +36,28 @@ public class FormatedStringUI
      */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue)
-    {
-        final StringBuilder ret = new StringBuilder();
-        final Field field = _fieldValue.getField();
-        final Object value = _fieldValue.getValue();
-
-        if (value instanceof List<?>) {
-            final List<?> values = (List<?>) value;
-            boolean first = true;
-            for (final Object obj : values) {
-                final String tmp = obj.toString();
-                if (tmp != null) {
-                    if (first) {
-                        first = false;
-                    } else {
-                        ret.append("<br/>");
-                    }
-                    ret.append(tmp);
-                }
-            }
-        } else {
-            final String tmp = value != null ? value.toString() : "";
-            if (tmp != null) {
-                ret.append("<span name=\"").append(field.getName()).append("\" ").append(UIInterface.EFAPSTMPTAG)
-                    .append(">").append(tmp).append("</span>");
-            }
-        }
-        return ret.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getEditHtml(final FieldValue _fieldValue)
+    public Object getValue(final UIValue _uiValue)
         throws EFapsException
     {
-        return (String) (_fieldValue.getValue() == null ? "" : _fieldValue.getValue());
+        return _uiValue.getDbValue();
+    }
+
+    @Override
+    public String validateValue(final UIValue _uiValue)
+        throws EFapsException
+    {
+        return null;
+    }
+
+    @Override
+    public Object transformObject(final UIValue _uiValue,
+                                  final Object _object)
+        throws EFapsException
+    {
+        if (_object instanceof Serializable) {
+            _uiValue.setDbValue((Serializable) _object);
+        }
+        return _object;
     }
 }
