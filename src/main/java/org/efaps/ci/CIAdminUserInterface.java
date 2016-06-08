@@ -164,17 +164,6 @@ public class CIAdminUserInterface
         }
     }
 
-    public static final _FieldChart FieldChart = new _FieldChart("43d1348a-1100-4460-a52d-cd23941a07aa");
-
-    public static class _FieldChart
-        extends _Field
-    {
-        protected _FieldChart(final String _uuid)
-        {
-            super(_uuid);
-        }
-    }
-
     public static final _FieldSet FieldSet = new _FieldSet("415c196f-c1aa-4aa0-b96e-f8541332a921");
 
     public static class _FieldSet

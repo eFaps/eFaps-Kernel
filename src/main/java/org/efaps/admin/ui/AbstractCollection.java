@@ -27,7 +27,6 @@ import java.util.TreeMap;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.field.Field;
-import org.efaps.admin.ui.field.FieldChart;
 import org.efaps.admin.ui.field.FieldClassification;
 import org.efaps.admin.ui.field.FieldCommand;
 import org.efaps.admin.ui.field.FieldGroup;
@@ -229,8 +228,6 @@ public abstract class AbstractCollection
                     field = new FieldClassification(id, null, name);
                 } else if (type.equals(CIAdminUserInterface.FieldPicker.getType())) {
                     field = new FieldPicker(id, null, name);
-                } else if (type.equals(CIAdminUserInterface.FieldChart.getType())) {
-                    field = new FieldChart(id, null, name);
                 } else {
                     field = new Field(id, null, name);
                 }
