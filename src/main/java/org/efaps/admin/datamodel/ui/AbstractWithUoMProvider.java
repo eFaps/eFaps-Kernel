@@ -1,5 +1,5 @@
 /*
-0 * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,41 +15,37 @@
  *
  */
 
+
 package org.efaps.admin.datamodel.ui;
 
-import org.efaps.admin.datamodel.attributetype.DecimalType;
-import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.util.EFapsException;
 
 /**
- * Class to represent a String for the user interface.
+ * TODO comment!
  *
  * @author The eFaps Team
- *
  */
-public class DecimalWithUoMUI
-    extends AbstractWithUoMProvider
+public abstract class AbstractWithUoMProvider
+    extends AbstractProvider
 {
-
-    /**
-     * Needed for serialization.
-     */
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String validateValue(final UIValue _value)
+    public Object getValue(final UIValue _uiValue)
+        throws EFapsException
     {
-        String ret = null;
-        try {
-            if (_value.getDbValue() != null) {
-                DecimalType.parseLocalized(String.valueOf(_value.getDbValue()));
-            }
-        } catch (final EFapsException e) {
-            ret = DBProperties.getProperty(DecimalUI.class.getName() + ".InvalidValue");
-        }
-        return ret;
+        // TODO Auto-generated method stub
+        return null;
     }
+
+    @Override
+    public Object transformObject(final UIValue _uiValue,
+                                  final Object _object)
+        throws EFapsException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
