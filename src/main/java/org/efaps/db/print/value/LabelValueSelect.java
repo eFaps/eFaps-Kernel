@@ -22,8 +22,8 @@ import org.efaps.admin.datamodel.Dimension.UoM;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.AbstractWithUoMType;
 import org.efaps.admin.datamodel.attributetype.RateType;
-import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.admin.datamodel.ui.RateUI;
+import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.db.print.FileSelectPart;
 import org.efaps.db.print.OneSelect;
 import org.efaps.db.store.AbstractStoreResource;
@@ -136,9 +136,9 @@ public class LabelValueSelect
     {
         Object ret = null;
         if (_object instanceof Object[]) {
-            final FieldValue fieldValue = new FieldValue(null, _attribute, _object, null, null);
-            fieldValue.setTargetMode(TargetMode.VIEW);
-            ret = fieldValue.getObject4Compare();
+            final UIValue uiValue = UIValue.get(null, _attribute, _object);
+            final RateUI rateUI = (RateUI) uiValue.getUIProvider();
+            ret = ((RateUI.Value)rateUI.getValue(uiValue)).getRate();
         }
         return ret;
     }

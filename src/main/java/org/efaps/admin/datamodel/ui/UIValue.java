@@ -135,7 +135,7 @@ public final class UIValue
                               final Attribute _attribute,
                               final Object _value)
     {
-        UIValue ret;
+        final UIValue ret;
         if (_value instanceof Serializable) {
             ret = new UIValue(_field, _attribute, (Serializable) _value);
         } else if (_value == null) {
@@ -256,7 +256,7 @@ public final class UIValue
     public IUIProvider getUIProvider()
         throws CacheReloadException
     {
-        IUIProvider ret;
+        final IUIProvider ret;
         if (this.attributeId > 0) {
             ret =  getAttribute().getAttributeType().getUIProvider();
         } else {
@@ -290,6 +290,7 @@ public final class UIValue
      * @return Attribute
      * @throws CacheReloadException on error
      */
+    @Override
     public Attribute getAttribute()
         throws CacheReloadException
     {
@@ -411,6 +412,7 @@ public final class UIValue
      *
      * @return value of instance variable {@link #callInstance}
      */
+    @Override
     public Instance getCallInstance()
     {
         return this.callInstance;
