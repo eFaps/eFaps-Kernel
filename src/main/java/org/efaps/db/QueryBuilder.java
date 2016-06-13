@@ -18,7 +18,6 @@
 package org.efaps.db;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,6 +28,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.Attribute;
@@ -235,12 +235,31 @@ public class QueryBuilder
     {
         final List<Type> allType = new ArrayList<Type>();
         if (this.types.isEmpty()) {
-            allType.add(Type.get(this.typeUUID));
+            final Type type = Type.get(this.typeUUID);
+            if (type.isAbstract()) {
+                final List<Type> childTypes = type.getChildTypes()
+                                .stream()
+                                .filter(t -> !t.isAbstract())
+                                .collect(Collectors.toList());
+                allType.addAll(childTypes);
+            } else {
+                allType.add(type);
+            }
         }
         for (final UUID type : this.types) {
             allType.add(Type.get(type));
         }
-        Collections.addAll(allType, _type);
+        for (final Type type : _type) {
+            if (type.isAbstract()) {
+                final List<Type> childTypes = type.getChildTypes()
+                                .stream()
+                                .filter(t -> !t.isAbstract())
+                                .collect(Collectors.toList());
+                allType.addAll(childTypes);
+            } else {
+                allType.add(type);
+            }
+        }
 
         //make for every type a list of types up to the parent
         final List<List<Type>> typeLists = new ArrayList<List<Type>>();
@@ -1219,7 +1238,7 @@ public class QueryBuilder
                 }
             } else {
                 final String typeStr = linktos.get(0);
-                Classification clazz;
+                final Classification clazz;
                 if (UUIDUtil.isUUID(typeStr)) {
                     clazz = Classification.get(UUID.fromString(typeStr));
                 } else {
