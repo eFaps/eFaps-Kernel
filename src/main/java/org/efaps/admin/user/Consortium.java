@@ -28,7 +28,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
@@ -184,17 +186,34 @@ public final class Consortium
         return ret;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.efaps.admin.user.AbstractUserObject#hasChildPerson(org.efaps.admin
-     * .user.Person)
-     */
     @Override
     public boolean hasChildPerson(final Person _person)
     {
-        // TODO Auto-generated method stub
         return false;
+    }
+
+    @Override
+    public Instance getInstance()
+    {
+        return Instance.get(CIAdminUser.Consortium.getType(), getId());
+    }
+
+    @Override
+    public boolean equals(final Object _obj)
+    {
+        final boolean ret;
+        if (_obj instanceof Consortium) {
+            ret = ((Consortium) _obj).getId() == getId();
+        } else {
+            ret = super.equals(_obj);
+        }
+        return ret;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return  Long.valueOf(getId()).intValue();
     }
 
     /**
@@ -405,24 +424,6 @@ public final class Consortium
                 }
             }
         }
-    }
-
-    @Override
-    public boolean equals(final Object _obj)
-    {
-        final boolean ret;
-        if (_obj instanceof Consortium) {
-            ret = ((Consortium) _obj).getId() == getId();
-        } else {
-            ret = super.equals(_obj);
-        }
-        return ret;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return  Long.valueOf(getId()).intValue();
     }
 
 }

@@ -154,6 +154,17 @@ public class CIAdminUser
         }
     }
 
+    public static final _Consortium Consortium = new _Consortium("e517a0b6-8452-4eb6-b106-22bcad24add4");
+
+    public static class _Consortium
+        extends _Abstract
+    {
+        protected _Consortium(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
     public static final _RoleAbstract RoleAbstract = new _RoleGlobal("2f970c5c-41be-444f-b129-e6779e24c3fa");
 
     public static class _RoleAbstract

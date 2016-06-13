@@ -38,6 +38,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributevalue.PasswordStore;
 import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.Update;
 import org.efaps.db.Update.Status;
@@ -1426,6 +1427,12 @@ public final class Person
     public Set<Long> getAssociations()
     {
         return this.associations;
+    }
+
+    @Override
+    public Instance getInstance()
+    {
+        return Instance.get(CIAdminUser.Person.getType(), getId());
     }
 
     /**

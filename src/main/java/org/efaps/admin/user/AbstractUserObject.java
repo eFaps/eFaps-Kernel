@@ -27,6 +27,7 @@ import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.transaction.ConnectionResource;
@@ -347,6 +348,15 @@ public abstract class AbstractUserObject
         }
         return ret;
     }
+
+    /**
+     * Gets the single instance of AbstractUserObject.
+     *
+     * @return single instance of AbstractUserObject
+     * @throws EFapsException the e faps exception
+     */
+    public abstract Instance getInstance()
+        throws EFapsException;
 
     /**
      * Method to set the status of a UserObject in the eFaps Database.
