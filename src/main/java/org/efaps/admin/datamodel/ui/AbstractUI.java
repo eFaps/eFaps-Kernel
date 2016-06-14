@@ -135,9 +135,6 @@ public abstract class AbstractUI
                                   final Object _object)
         throws EFapsException
     {
-        if (_object instanceof Serializable) {
-            _uiValue.setDbValue((Serializable) _object);
-        }
         return _object;
     }
 }
