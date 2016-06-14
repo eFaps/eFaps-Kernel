@@ -17,8 +17,6 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import java.io.Serializable;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -61,16 +59,5 @@ public class StringUI
         throws EFapsException
     {
         return _uiValue.getDbValue();
-    }
-
-    @Override
-    public Object transformObject(final UIValue _uiValue,
-                                  final Object _object)
-        throws EFapsException
-    {
-        if (_object instanceof Serializable) {
-            _uiValue.setDbValue((Serializable) _object);
-        }
-        return _object;
     }
 }

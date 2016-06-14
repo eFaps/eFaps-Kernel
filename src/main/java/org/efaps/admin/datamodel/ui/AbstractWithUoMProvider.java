@@ -35,17 +35,6 @@ public abstract class AbstractWithUoMProvider
     public Object getValue(final UIValue _uiValue)
         throws EFapsException
     {
-        // TODO Auto-generated method stub
-        return null;
+        return _uiValue.getObject();
     }
-
-    @Override
-    public Object transformObject(final UIValue _uiValue,
-                                  final Object _object)
-        throws EFapsException
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

@@ -47,12 +47,4 @@ public class PasswordUI
     {
         return null;
     }
-
-    @Override
-    public Object transformObject(final UIValue _uiValue,
-                                  final Object _object)
-        throws EFapsException
-    {
-        return null;
-    }
 }
