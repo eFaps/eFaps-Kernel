@@ -22,10 +22,13 @@ import java.io.InputStream;
 import java.util.Set;
 
 import org.apache.commons.jexl2.JexlContext;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.Checkin;
 import org.efaps.db.Context;
+import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.Install.InstallFile;
 import org.efaps.update.UpdateLifecycle;
@@ -131,6 +134,7 @@ public abstract class AbstractSourceUpdate
             if (_step == UpdateLifecycle.EFAPS_UPDATE && getValue("Name") != null)  {
                 final Checkin checkin = new Checkin(getInstance());
                 try {
+                    touch();
                     final InputStream in = getInstallFile().getUrl().openStream();
                     checkin.executeWithoutAccessCheck(getValue("Name"),
                                                       in,
@@ -142,6 +146,31 @@ public abstract class AbstractSourceUpdate
                     throw new InstallationException("EFapsException", e);
                 }
             }
+        }
+
+        /**
+         * Touch the main instance to register the update.
+         *
+         * @throws InstallationException the installation exception
+         */
+        protected void touch()
+            throws InstallationException
+        {
+            try {
+                final String tmpUUID = getValue(CIAdminProgram.Abstract.UUID.name);
+                if (StringUtils.isNotEmpty(tmpUUID)) {
+                    final Update update = new Update(getInstance());
+                    update.add(CIAdminProgram.Abstract.UUID, "TMP");
+                    update.executeWithoutAccessCheck();
+
+                    final Update update2 = new Update(getInstance());
+                    update2.add(CIAdminProgram.Abstract.UUID, tmpUUID);
+                    update2.executeWithoutAccessCheck();
+                }
+            } catch (final EFapsException e) {
+                throw new InstallationException("Catched", e);
+            }
+            registerRevision(getFileApplication(), getInstallFile(), getInstance());
         }
 
         @Override
