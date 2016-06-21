@@ -204,7 +204,7 @@ public abstract class AbstractObjectQuery<T>
      */
     public Integer getIndex4SqlTable(final SQLTable _sqlTable)
     {
-        Integer ret;
+        final Integer ret;
         if (this.sqlTable2Index.containsKey(_sqlTable)) {
             ret = this.sqlTable2Index.get(_sqlTable);
         } else {
@@ -337,6 +337,9 @@ public abstract class AbstractObjectQuery<T>
         throws EFapsException
     {
         this.sqlTable2Index.put(this.baseType.getMainTable(), 0);
+        if (this.baseType.getMainTable() == null) {
+            throw new EFapsException(AbstractObjectQuery.class, "BaseType", this.baseType);
+        }
         if (this.baseType.getMainTable().getSqlColType() != null) {
             final QEqual eqPart = new QEqual(new QAttribute(this.baseType.getTypeAttribute()),
                                            new QNumberValue(this.baseType.getId()));

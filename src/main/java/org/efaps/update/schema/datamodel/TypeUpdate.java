@@ -1090,7 +1090,8 @@ public class TypeUpdate
                     // update the related index informations
                     if (this.index == null) {
                         //check needed during first installation
-                        if (CIAdminIndex.IndexDefinition.getType() != null) {
+                        if (CIAdminIndex.IndexDefinition.getType() != null
+                                        && !CIAdminIndex.IndexDefinition.getType().getAttributes().isEmpty()) {
                             final QueryBuilder queryBldr = new QueryBuilder(CIAdminIndex.IndexDefinition);
                             queryBldr.addWhereAttrEqValue(CIAdminIndex.IndexDefinition.TypeLink, getInstance());
                             final InstanceQuery query = queryBldr.getQuery();
