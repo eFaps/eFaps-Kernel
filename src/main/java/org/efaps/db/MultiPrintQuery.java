@@ -70,7 +70,7 @@ public class MultiPrintQuery
     {
         this.instances = _instances;
         if (this.instances.size() > 0) {
-            final Set<Type> types = new HashSet<Type>();
+            final Set<Type> types = new HashSet<>();
             for (final Instance instance : _instances) {
                 if (!types.contains(instance.getType())) {
                     types.add(instance.getType());
@@ -82,9 +82,9 @@ public class MultiPrintQuery
             if (types.size() == 1) {
                 this.mainType = _instances.get(0).getType();
             } else {
-                final List<List<Type>> typeLists = new ArrayList<List<Type>>();
+                final List<List<Type>> typeLists = new ArrayList<>();
                 for (final Type type : types) {
-                    final List<Type> parents = new ArrayList<Type>();
+                    final List<Type> parents = new ArrayList<>();
                     Type currentType = type;
                     parents.add(currentType);
                     while (currentType.getParentType() != null) {
@@ -136,12 +136,13 @@ public class MultiPrintQuery
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
+     * Once the iterator has started, only a copy will be returned.
      */
     @Override
     public List<Instance> getInstanceList()
     {
-        return this.instances;
+        return this.iterator == null ? this.instances : new ArrayList<>(this.instances);
     }
 
     /**
@@ -152,11 +153,11 @@ public class MultiPrintQuery
         throws EFapsException
     {
         if (isMarked4execute()) {
-            final Map<Type, List<Instance>> types = new HashMap<Type, List<Instance>>();
+            final Map<Type, List<Instance>> types = new HashMap<>();
             for (final Instance instance : this.instances) {
-                List<Instance> list;
+                final List<Instance> list;
                 if (!types.containsKey(instance.getType())) {
-                    list = new ArrayList<Instance>();
+                    list = new ArrayList<>();
                     types.put(instance.getType(), list);
                 } else {
                     list = types.get(instance.getType());
@@ -164,7 +165,7 @@ public class MultiPrintQuery
                 list.add(instance);
             }
             // check the access for the given instances
-            final Map<Instance, Boolean> accessmap = new HashMap<Instance, Boolean>();
+            final Map<Instance, Boolean> accessmap = new HashMap<>();
             for (final Entry<Type, List<Instance>> entry : types.entrySet()) {
                 accessmap.putAll(entry.getKey().checkAccess(entry.getValue(), AccessTypeEnums.READ.getAccessType()));
             }
