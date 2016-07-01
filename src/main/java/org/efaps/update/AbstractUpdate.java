@@ -891,7 +891,7 @@ public abstract class AbstractUpdate
                     final Insert insert;
                     try {
                         insert = new Insert(getDataModelTypeName());
-                        insert.add("UUID", AbstractUpdate.this.uuid);
+                        insert.add("UUID", AbstractUpdate.this.getUUID());
                     } catch (final EFapsException e) {
                         throw new InstallationException("Initialize for the insert of '"
                                         + getDataModelTypeName() + "' with UUID '"

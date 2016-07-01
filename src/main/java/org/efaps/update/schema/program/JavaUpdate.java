@@ -141,6 +141,7 @@ public class JavaUpdate
                 if (this.updateAllowed) {
                     AbstractUpdate.LOG.info("    Update {} '{}'", getInstance().getType().getName(),
                                     this.importer.getProgramName());
+                    touch();
                     this.importer.updateDB(getInstance());
                 } else {
                     AbstractUpdate.LOG.info("    No Update set for esjp: {}", this.importer.getProgramName());

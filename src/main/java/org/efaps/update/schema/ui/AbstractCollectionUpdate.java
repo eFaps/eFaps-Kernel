@@ -313,8 +313,6 @@ public abstract class AbstractCollectionUpdate
                     insert = new Insert(CIAdminUserInterface.FieldClassification);
                 } else if ("Picker".equals(field.character)) {
                     insert = new Insert(CIAdminUserInterface.FieldPicker);
-                } else if ("Chart".equals(field.character)) {
-                    insert = new Insert(CIAdminUserInterface.FieldChart);
                 } else {
                     insert = new Insert(CIAdminUserInterface.Field);
                 }

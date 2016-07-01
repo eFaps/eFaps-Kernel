@@ -20,13 +20,9 @@ package org.efaps.admin.datamodel.ui;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.List;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.efaps.admin.datamodel.attributetype.DecimalType;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
-import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
@@ -37,193 +33,13 @@ import org.efaps.util.EFapsException;
  *
  */
 public class DecimalUI
-    extends AbstractUI
+    extends AbstractProvider
 {
 
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue)
-        throws EFapsException
-    {
-        final StringBuilder ret = new StringBuilder();
-        final Field field = _fieldValue.getField();
-        final Object value = _fieldValue.getValue();
-        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
-                        .getLocale());
-        if (_fieldValue.getAttribute() != null) {
-            formatter.setMaximumFractionDigits(_fieldValue.getAttribute().getScale());
-        }
-        if (value instanceof List<?>) {
-            final List<?> values = (List<?>) value;
-            boolean first = true;
-            for (final Object obj : values) {
-                final int scale = ((BigDecimal) value).scale();
-                if (formatter.getMinimumFractionDigits() < scale) {
-                    formatter.setMinimumFractionDigits(scale);
-                }
-                final String tmp = evalString4Object(formatter, obj);
-                if (tmp != null) {
-                    if (first) {
-                        first = false;
-                    } else {
-                        ret.append("<br/>");
-                    }
-                    ret.append(StringEscapeUtils.escapeHtml4(tmp));
-                }
-            }
-        } else {
-            final String tmp = evalString4Object(formatter, value);
-            if (tmp != null) {
-                ret.append("<span name=\"").append(field.getName()).append("\" ")
-                    .append(UIInterface.EFAPSTMPTAG).append(">")
-                    .append(StringEscapeUtils.escapeHtml4(tmp))
-                    .append("</span>");
-            }
-        }
-        return ret.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getHiddenHtml(final FieldValue _fieldValue)
-        throws EFapsException
-    {
-        final StringBuilder ret = new StringBuilder();
-        final Field field = _fieldValue.getField();
-        final Object value = _fieldValue.getValue();
-        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
-                        .getLocale());
-        if (_fieldValue.getAttribute() != null) {
-            formatter.setMaximumFractionDigits(_fieldValue.getAttribute().getScale());
-        }
-        final String tmp = evalString4Object(formatter, value);
-        ret.append("<input type=\"hidden\" ").append(" name=\"").append(field.getName())
-                        .append("\" value=\"").append(StringEscapeUtils.escapeHtml4(tmp)).append("\"")
-                        .append(UIInterface.EFAPSTMPTAG).append("/>");
-
-        return ret.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @throws EFapsException
-     */
-    @Override
-    public String getEditHtml(final FieldValue _fieldValue)
-        throws EFapsException
-    {
-        final StringBuilder ret = new StringBuilder();
-        final Field field = _fieldValue.getField();
-        final Object value = _fieldValue.getValue();
-        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
-                        .getLocale());
-        if (_fieldValue.getAttribute() != null) {
-            formatter.setMaximumFractionDigits(_fieldValue.getAttribute().getScale());
-        }
-        final String tmp = evalString4Object(formatter, value);
-        if (_fieldValue.getTargetMode().equals(TargetMode.SEARCH)) {
-            ret.append("<input type=\"text\"").append(" size=\"").append(field.getCols()).append("\" name=\"")
-                            .append(field.getName()).append("\" value=\"")
-                            .append(value != null ? StringEscapeUtils.escapeHtml4(tmp) : "*").append("\" />");
-        } else {
-            if (field.getRows() > 1) {
-                ret.append("<textarea type=\"text\"")
-                                .append(" cols=\"").append(field.getCols())
-                                .append("\" rows=\"").append(field.getRows())
-                                .append("\" name=\"").append(field.getName()).append("\"")
-                                .append(UIInterface.EFAPSTMPTAG).append("/>");
-                if (value != null) {
-                    ret.append(StringEscapeUtils.escapeHtml4(tmp));
-                }
-                ret.append("</textarea>");
-            } else {
-                ret.append("<input type=\"text\" size=\"").append(field.getCols())
-                    .append("\" name=\"").append(field.getName())
-                    .append("\" value=\"").append(StringEscapeUtils.escapeHtml4(tmp)).append("\"")
-                    .append(UIInterface.EFAPSTMPTAG).append("/>");
-            }
-        }
-        return ret.toString();
-    }
-
-    /**
-     * @param _formatter Formatter to be used
-     * @param _object object to be formatted
-     * @return String vor the object
-     */
-    private String evalString4Object(final DecimalFormat _formatter,
-                                     final Object _object)
-    {
-        final String ret;
-        if (_object == null) {
-            ret = "";
-        } else {
-            if (_object instanceof Number) {
-                if (_object instanceof BigDecimal) {
-                    final int scale = ((BigDecimal) _object).scale();
-                    if (_formatter.getMinimumFractionDigits() < scale) {
-                        _formatter.setMinimumFractionDigits(scale);
-                    }
-                }
-                ret = _formatter.format(_object);
-            } else {
-                ret = _object.toString();
-            }
-        }
-        return ret;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getStringValue(final FieldValue _fieldValue)
-        throws EFapsException
-    {
-        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
-                        .getLocale());
-        if (_fieldValue.getAttribute() != null) {
-            formatter.setMaximumFractionDigits(_fieldValue.getAttribute().getScale());
-        }
-        return evalString4Object(formatter, _fieldValue.getValue());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object getObject4Compare(final FieldValue _fieldValue)
-        throws EFapsException
-    {
-        return _fieldValue.getValue();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int compare(final FieldValue _fieldValue,
-                       final FieldValue _fieldValue2)
-    {
-        int ret = 0;
-        if (_fieldValue.getValue() instanceof BigDecimal && _fieldValue2.getValue() instanceof BigDecimal) {
-            final BigDecimal num = (BigDecimal) _fieldValue.getValue();
-            final BigDecimal num2 = (BigDecimal) _fieldValue2.getValue();
-            ret = num.compareTo(num2);
-        }
-        return ret;
-    }
 
     /**
      * {@inheritDoc}
@@ -238,6 +54,30 @@ public class DecimalUI
             }
         } catch (final EFapsException e) {
             ret = DBProperties.getProperty(DecimalUI.class.getName() + ".InvalidValue");
+        }
+        return ret;
+    }
+
+    @Override
+    public Object getValue(final UIValue _uiValue)
+        throws EFapsException
+    {
+        return _uiValue.getDbValue();
+    }
+
+    @Override
+    public String getStringValue(final IUIValue _uiValue)
+        throws EFapsException
+    {
+        final String ret;
+        if (_uiValue.getObject() == null) {
+            ret = null;
+        } else if (_uiValue.getObject() instanceof BigDecimal) {
+            final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
+                            .getLocale());
+            ret = formatter.format(_uiValue.getObject());
+        } else {
+            ret = String.valueOf(_uiValue.getObject());
         }
         return ret;
     }

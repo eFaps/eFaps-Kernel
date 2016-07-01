@@ -17,8 +17,6 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import java.io.Serializable;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.util.EFapsException;
 
@@ -49,17 +47,6 @@ public class TypeUI
         throws EFapsException
     {
         return null;
-    }
-
-    @Override
-    public Object transformObject(final UIValue _uiValue,
-                                  final Object _object)
-        throws EFapsException
-    {
-        if (_object instanceof Serializable) {
-            _uiValue.setDbValue((Serializable) _object);
-        }
-        return _object;
     }
 
     @Override

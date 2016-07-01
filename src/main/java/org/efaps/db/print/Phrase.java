@@ -20,8 +20,7 @@ package org.efaps.db.print;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.ValueList.Token;
 import org.efaps.db.Instance;
@@ -81,15 +80,14 @@ public class Phrase
         throws EFapsException
     {
         final StringBuilder buf = new StringBuilder();
-
         for (final Token token : this.valueList.getTokens()) {
             switch (token.getType()) {
                 case EXPRESSION:
                     final OneSelect oneselect = this.selectStmt2OneSelect.get(token.getValue());
                     final Object value = oneselect.getObject();
                     if (oneselect.getAttribute() != null) {
-                        buf.append(new FieldValue(null, oneselect.getAttribute(), value, _instance, null)
-                                        .getStringValue(TargetMode.VIEW));
+                        final UIValue uiValue = UIValue.get(null, oneselect.getAttribute(), value);
+                        buf.append(uiValue.getUIProvider().getStringValue(uiValue));
                     } else if (value != null) {
                         buf.append(value);
                     }

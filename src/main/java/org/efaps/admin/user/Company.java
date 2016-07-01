@@ -26,7 +26,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
@@ -177,6 +179,30 @@ public final class Company
         return ret;
     }
 
+    @Override
+    public Instance getInstance()
+    {
+        return Instance.get(CIAdminUser.Company.getType(), getId());
+    }
+
+    @Override
+    public boolean equals(final Object _obj)
+    {
+        final boolean ret;
+        if (_obj instanceof Company) {
+            ret = ((Company) _obj).getId() == getId();
+        } else {
+            ret = super.equals(_obj);
+        }
+        return ret;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return  Long.valueOf(getId()).intValue();
+    }
+
     /**
      * Method to initialize the Cache of this CacheObjectInterface.
      */
@@ -325,23 +351,5 @@ public final class Company
             }
         }
         return ret;
-    }
-
-    @Override
-    public boolean equals(final Object _obj)
-    {
-        final boolean ret;
-        if (_obj instanceof Company) {
-            ret = ((Company) _obj).getId() == getId();
-        } else {
-            ret = super.equals(_obj);
-        }
-        return ret;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return  Long.valueOf(getId()).intValue();
     }
 }

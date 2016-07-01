@@ -17,12 +17,12 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.math.RoundingMode;
 import java.util.List;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.DecimalType;
 import org.efaps.admin.event.EventType;
@@ -39,7 +39,7 @@ import org.efaps.util.EFapsException;
  *
  */
 public class RateUI
-    extends AbstractUI
+    extends AbstractProvider
 {
     /**
      * Suffix for the field in case the numerator is used.
@@ -51,172 +51,196 @@ public class RateUI
      */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Was the value for the rate inverted for the userinterface?
-     * The value is set by the Return from the esjp by using the
-     * <code>ReturnValue.TRUE</code>
-     */
-    private boolean inverted = false;
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue)
+    public Object getValue(final UIValue _uiValue)
         throws EFapsException
     {
-        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
-                        .getLocale());
-        if (_fieldValue.getAttribute() != null) {
-            formatter.setMaximumFractionDigits(_fieldValue.getAttribute().getScale());
-        }
-        final StringBuilder ret = new StringBuilder();
-        ret.append("<span name=\"").append(_fieldValue.getField().getName()).append("\" ")
-            .append(UIInterface.EFAPSTMPTAG).append(">")
-            .append(StringEscapeUtils.escapeHtml4(formatter.format(getRate(_fieldValue))))
-            .append("</span>");
-        return ret.toString();
+        return transformObject(_uiValue, _uiValue.getDbValue());
     }
 
-
-    /**
-     * Get the Rate for the UserInterface.
-     * @param _fieldValue   FieldValue
-     * @return rate
-     * @throws EFapsException on error
-     */
-    protected BigDecimal getRate(final FieldValue _fieldValue)
+    @Override
+    public String validateValue(final UIValue _uiValue)
         throws EFapsException
     {
-        final Attribute attribute = _fieldValue.getAttribute();
+        return null;
+    }
+
+    @Override
+    public Object transformObject(final UIValue _uiValue,
+                                  final Object _object)
+        throws EFapsException
+    {
+        final Attribute attribute = _uiValue.getAttribute();
         Object value = null;
-        BigDecimal rate = BigDecimal.ONE;
+        boolean inverted = false;
         if (attribute != null && attribute.hasEvents(EventType.RATE_VALUE)) {
+            if (_uiValue.getObject() == null && _object != null) {
+                _uiValue.setDbValue((Serializable) _object);
+            }
             final List<Return> returns = attribute.executeEvents(EventType.RATE_VALUE,
-                                                ParameterValues.UIOBJECT, _fieldValue,
-                                                ParameterValues.ACCESSMODE, _fieldValue.getTargetMode(),
-                                                ParameterValues.CALL_INSTANCE, _fieldValue.getCallInstance(),
-                                                ParameterValues.INSTANCE, _fieldValue.getInstance(),
-                                                ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
+                            ParameterValues.UIOBJECT, _uiValue,
+                            ParameterValues.ACCESSMODE, _uiValue.getTargetMode(),
+                            ParameterValues.CALL_INSTANCE, _uiValue.getCallInstance(),
+                            ParameterValues.INSTANCE, _uiValue.getInstance(),
+                            ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
             for (final Return values : returns) {
                 value = values.get(ReturnValues.VALUES);
-                this.inverted = values.get(ReturnValues.TRUE) != null;
+                inverted = values.get(ReturnValues.TRUE) != null;
             }
         } else {
-            value = _fieldValue.getValue();
+            value = _uiValue.getDbValue();
         }
+        final BigDecimal denominator;
+        final BigDecimal numerator;
         if (value instanceof Object[]) {
             final Object[] values = (Object[]) value;
 
-            BigDecimal numerator;
             if (values[0] instanceof BigDecimal) {
                 numerator = (BigDecimal) values[0];
             } else {
                 numerator = DecimalType.parseLocalized(values[0].toString());
             }
-            BigDecimal denominator;
+
             if (values[1] instanceof BigDecimal) {
                 denominator = (BigDecimal) values[1];
             } else {
                 denominator = DecimalType.parseLocalized(values[1].toString());
             }
-            rate = numerator.divide(denominator,
-                                numerator.scale() > denominator.scale() ? numerator.scale() : denominator.scale(),
-                                BigDecimal.ROUND_UP);
-        }
-        return rate;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getEditHtml(final FieldValue _fieldValue)
-        throws EFapsException
-    {
-        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
-                        .getLocale());
-        if (_fieldValue.getAttribute() != null) {
-            formatter.setMaximumFractionDigits(_fieldValue.getAttribute().getScale());
-        }
-        final StringBuilder ret = new StringBuilder();
-        ret.append("<input type=\"text\" size=\"").append(_fieldValue.getField().getCols())
-            .append("\" name=\"").append(_fieldValue.getField().getName())
-            .append("\" value=\"").append(StringEscapeUtils.escapeHtml4(formatter.format(getRate(_fieldValue))))
-            .append("\"").append(UIInterface.EFAPSTMPTAG).append("/>")
-            .append("<input type=\"hidden\" name=\"").append(_fieldValue.getField().getName())
-            .append(RateUI.INVERTEDSUFFIX).append("\" value=\"").append(this.inverted).append("\">");
-        return ret.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getStringValue(final FieldValue _fieldValue)
-        throws EFapsException
-    {
-        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
-                        .getLocale());
-        if (_fieldValue.getAttribute() != null) {
-            formatter.setMaximumFractionDigits(_fieldValue.getAttribute().getScale());
-        }
-        return formatter.format(getRate(_fieldValue));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getHiddenHtml(final FieldValue _fieldValue)
-        throws EFapsException
-    {
-        final StringBuilder ret = new StringBuilder();
-        ret.append("<input type=\"hidden\" size=\"").append(_fieldValue.getField().getCols())
-            .append("\" name=\"").append(_fieldValue.getField().getName())
-            .append("\" value=\"").append(getRate(_fieldValue))
-            .append("\"").append(UIInterface.EFAPSTMPTAG).append("/>")
-            .append("<input type=\"hidden\" name=\"").append(_fieldValue.getField().getName())
-            .append(RateUI.INVERTEDSUFFIX).append("\" value=\"").append(this.inverted).append("\">");
-        return ret.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int compare(final FieldValue _fieldValue,
-                       final FieldValue _fieldValue2)
-        throws EFapsException
-    {
-        final BigDecimal value;
-        if (_fieldValue.getValue() instanceof BigDecimal) {
-            value = (BigDecimal) _fieldValue.getValue();
         } else {
-            value = getRate(_fieldValue);
+            numerator = BigDecimal.ONE;
+            denominator = BigDecimal.ONE;
         }
-        final BigDecimal value2;
-        if (_fieldValue2.getValue() instanceof BigDecimal) {
-            value2 = (BigDecimal) _fieldValue2.getValue();
-        } else {
-            value2 = getRate(_fieldValue2);
-        }
-        return value.compareTo(value2);
+        return new Value(numerator, denominator, inverted);
     }
 
     /**
-     * {@inheritDoc}
+     * The Class Value.
      */
-    @Override
-    public Object getObject4Compare(final FieldValue _fieldValue)
-        throws EFapsException
+    public static class Value
+        implements Serializable
     {
-        final BigDecimal value;
-        if (_fieldValue.getValue() instanceof BigDecimal) {
-            value = (BigDecimal) _fieldValue.getValue();
-        } else {
-            value = getRate(_fieldValue);
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        /** The inverted. */
+        private boolean inverted;
+
+        /**
+         * Numerator.
+         */
+        private BigDecimal numerator;
+
+        /**
+         * Denominator.
+         */
+        private BigDecimal denominator;
+
+
+        /**
+         * Instantiates a new value.
+         * Constructor used by serialization implementations.
+         */
+        public Value()
+        {
         }
-        return value;
+
+        /**
+         * Instantiates a new value.
+         *
+         * @param _numerator the _numerator
+         * @param _denominator the _denominator
+         * @param _inverted the _inverted
+         */
+        public Value(final BigDecimal _numerator,
+                     final BigDecimal _denominator,
+                     final boolean _inverted)
+        {
+            this.numerator = _numerator;
+            this.denominator = _denominator;
+            this.inverted = _inverted;
+        }
+
+        /**
+         * Gets the rate.
+         *
+         * @return the rate
+         */
+        public BigDecimal getRate()
+        {
+            return getNumerator().divide(getDenominator(), getNumerator().scale() > getDenominator().scale()
+                            ? getNumerator().scale() : getDenominator().scale(), RoundingMode.HALF_UP);
+        }
+
+        /**
+         * Getter method for the instance variable {@link #inverted}.
+         *
+         * @return value of instance variable {@link #inverted}
+         */
+        public boolean isInverted()
+        {
+            return this.inverted;
+        }
+
+        /**
+         * Setter method for instance variable {@link #inverted}.
+         *
+         * @param _inverted value for instance variable {@link #inverted}
+         * @return the value
+         */
+        public Value setInverted(final boolean _inverted)
+        {
+            this.inverted = _inverted;
+            return this;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #numerator}.
+         *
+         * @return value of instance variable {@link #numerator}
+         */
+        public BigDecimal getNumerator()
+        {
+            return this.numerator;
+        }
+
+        /**
+         * Setter method for instance variable {@link #numerator}.
+         *
+         * @param _numerator value for instance variable {@link #numerator}
+         * @return the value
+         */
+        public Value setNumerator(final BigDecimal _numerator)
+        {
+            this.numerator = _numerator;
+            return this;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #denominator}.
+         *
+         * @return value of instance variable {@link #denominator}
+         */
+        public BigDecimal getDenominator()
+        {
+            return this.denominator;
+        }
+
+        /**
+         * Setter method for instance variable {@link #denominator}.
+         *
+         * @param _denominator value for instance variable {@link #denominator}
+         * @return the value
+         */
+        public Value setDenominator(final BigDecimal _denominator)
+        {
+            this.denominator = _denominator;
+            return this;
+        }
+
+        @Override
+        public String toString()
+        {
+            return ToStringBuilder.reflectionToString(this);
+        }
     }
 }

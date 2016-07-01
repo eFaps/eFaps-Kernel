@@ -23,8 +23,10 @@ import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
@@ -180,6 +182,31 @@ public final class Role
         return _person.isAssigned(this);
     }
 
+    @Override
+    public Instance getInstance()
+        throws CacheReloadException
+    {
+        return Instance.get(Type.get(this.typeId), getId());
+    }
+
+    @Override
+    public boolean equals(final Object _obj)
+    {
+        final boolean ret;
+        if (_obj instanceof Role) {
+            ret = ((Role) _obj).getId() == getId();
+        } else {
+            ret = super.equals(_obj);
+        }
+        return ret;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return  Long.valueOf(getId()).intValue();
+    }
+
     /**
      * Method to initialize the Cache of this CacheObjectInterface.
      */
@@ -320,7 +347,7 @@ public final class Role
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read roles", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
@@ -377,28 +404,10 @@ public final class Role
             }
             rsrc.commit();
         } finally {
-            if ((rsrc != null) && rsrc.isOpened()) {
+            if (rsrc != null && rsrc.isOpened()) {
                 rsrc.abort();
             }
         }
         return Role.get(roleId);
-    }
-
-    @Override
-    public boolean equals(final Object _obj)
-    {
-        boolean ret;
-        if (_obj instanceof Role) {
-            ret = ((Role) _obj).getId() == getId();
-        } else {
-            ret = super.equals(_obj);
-        }
-        return ret;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return  Long.valueOf(getId()).intValue();
     }
 }

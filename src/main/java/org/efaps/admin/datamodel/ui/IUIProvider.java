@@ -58,9 +58,12 @@ public interface IUIProvider
      * @return the transformed value
      * @throws EFapsException on error
      */
-    Object transformObject(final UIValue _uiValue,
-                           final Object _object)
-        throws EFapsException;
+    default Object transformObject(final UIValue _uiValue,
+                                   final Object _object)
+        throws EFapsException
+    {
+        return _object;
+    }
 
     /**
      * Method to get a String representation of the value. This is used e.g. for

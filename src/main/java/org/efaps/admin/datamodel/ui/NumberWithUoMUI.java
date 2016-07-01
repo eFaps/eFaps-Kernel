@@ -27,7 +27,7 @@ import org.efaps.admin.dbproperty.DBProperties;
  *
  */
 public class NumberWithUoMUI
-    extends StringWithUoMUI
+    extends AbstractWithUoMProvider
 {
 
     /**

@@ -16,33 +16,25 @@
  */
 
 
-package org.efaps.admin.ui.field;
+package org.efaps.admin.datamodel.ui;
 
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- *
  */
-public class FieldChart
-    extends Field
+public abstract class AbstractWithUoMProvider
+    extends AbstractProvider
 {
-    /**
-     * Needed for serialization.
-     */
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
-    /**
-     *
-     * @param _id id of the field group
-     * @param _uuid UUID of the field group
-     * @param _name name of the field group
-     */
-    public FieldChart(final long _id,
-                      final String _uuid,
-                      final String _name)
+    @Override
+    public Object getValue(final UIValue _uiValue)
+        throws EFapsException
     {
-        super(_id, _uuid, _name);
+        return _uiValue.getObject();
     }
 }
