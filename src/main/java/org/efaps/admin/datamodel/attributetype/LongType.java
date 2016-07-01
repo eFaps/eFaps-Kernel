@@ -18,10 +18,13 @@
 package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.db.Context;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.util.EFapsException;
 
@@ -35,6 +38,7 @@ import org.efaps.util.EFapsException;
  */
 public class LongType
     extends AbstractType
+    implements IFormattableType
 {
     /**
      * Needed for serialization.
@@ -63,9 +67,9 @@ public class LongType
     {
         final Long ret;
 
-        if ((_values == null) || (_values.length == 0) || (_values[0] == null))  {
+        if (_values == null || _values.length == 0 || _values[0] == null)  {
             ret = null;
-        } else if ((_values[0] instanceof String) && !"".equals(_values[0])) {
+        } else if (_values[0] instanceof String && !"".equals(_values[0])) {
             ret = Long.parseLong((String) _values[0]);
         } else if (_values[0] instanceof Number) {
             ret = ((Number) _values[0]).longValue();
@@ -87,7 +91,7 @@ public class LongType
         if (_objectList.size() < 1) {
             ret = null;
         } else if (_objectList.size() > 1) {
-            final List<Long> list = new ArrayList<Long>();
+            final List<Long> list = new ArrayList<>();
             Long temp = null;
             for (final Object object : _objectList) {
                 if (object instanceof Number) {
@@ -127,5 +131,16 @@ public class LongType
             ret = _value.toString();
         }
         return ret;
+    }
+
+    @Override
+    public Object format(final Object _object,
+                         final String _pattern)
+        throws EFapsException
+    {
+        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
+                        .getLocale());
+        formatter.applyPattern(_pattern);
+        return formatter.format(_object);
     }
 }

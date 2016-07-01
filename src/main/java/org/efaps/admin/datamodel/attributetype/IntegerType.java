@@ -18,10 +18,13 @@
 package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.db.Context;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.util.EFapsException;
 
@@ -34,6 +37,7 @@ import org.efaps.util.EFapsException;
  */
 public class IntegerType
     extends AbstractType
+    implements IFormattableType
 {
     /**
      * Needed for serialization.
@@ -64,7 +68,7 @@ public class IntegerType
 
         if (_value == null) {
             ret = null;
-        } else if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
+        } else if (_value[0] instanceof String && ((String) _value[0]).length() > 0) {
             ret = Long.parseLong((String) _value[0]);
         } else if (_value[0] instanceof Number) {
             ret = ((Number) _value[0]).longValue();
@@ -86,7 +90,7 @@ public class IntegerType
         if (_objectList.size() < 1) {
             ret = null;
         } else if (_objectList.size() > 1) {
-            final List<Integer> list = new ArrayList<Integer>();
+            final List<Integer> list = new ArrayList<>();
             Integer temp = null;
             for (final Object object : _objectList) {
                 if (object instanceof Number) {
@@ -105,7 +109,7 @@ public class IntegerType
             } else if (object != null) {
                 temp = Integer.parseInt(object.toString());
             }
-            ret = (object == null) ? new Integer(0) : temp;
+            ret = object == null ? new Integer(0) : temp;
         }
         return ret;
     }
@@ -126,5 +130,16 @@ public class IntegerType
             ret = _value.toString();
         }
         return ret;
+    }
+
+    @Override
+    public Object format(final Object _object,
+                         final String _pattern)
+        throws EFapsException
+    {
+        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
+                        .getLocale());
+        formatter.applyPattern(_pattern);
+        return formatter.format(_object);
     }
 }
