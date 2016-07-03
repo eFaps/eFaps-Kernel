@@ -184,16 +184,6 @@ public class Field
     private boolean sortAble = true;
 
     /**
-     * The width of the field as weighted int.
-     */
-    private int width;
-
-    /**
-     * Is the width of this field fixed or or weighted.
-     */
-    private boolean fixedWidth = false;
-
-    /**
      * Should the Label been hidden.
      */
     private boolean hideLabel = false;
@@ -488,44 +478,6 @@ public class Field
     public IUIProvider getUIProvider()
     {
         return this.uiProvider;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #width}.
-     *
-     * @return value of instance variable {@link #width}
-     */
-    public int getWidth()
-    {
-        if (this.width == 0) {
-            this.width = 1;
-        }
-        return this.width;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #width}.
-     *
-     * @param _value the width to set
-     */
-    private void setWidth(final String _value)
-    {
-        String strwidth = _value;
-        if (strwidth.endsWith("px")) {
-            this.fixedWidth = true;
-            strwidth = _value.substring(0, strwidth.length() - 2);
-        }
-        this.width = Integer.parseInt(strwidth);
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #fixedWidth}.
-     *
-     * @return value of instance variable {@link #fixedWidth}
-     */
-    public boolean isFixedWidth()
-    {
-        return this.fixedWidth;
     }
 
     /**
@@ -874,8 +826,6 @@ public class Field
             this.phrase = _value;
         } else if ("MsgPhrase".equals(_name)) {
             this.msgPhrase = _value;
-        } else if ("Width".equals(_name)) {
-            setWidth(_value);
         } else if ("SortAble".equals(_name)) {
             this.sortAble = !"false".equals(_value);
         } else if ("FilterBase".equals(_name)) {
