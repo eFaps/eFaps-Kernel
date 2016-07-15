@@ -188,7 +188,7 @@ public final class UIValue
             }
             this.editValue = obj;
         }
-        return this.editValue;
+        return IUIValue.NULL.equals(this.editValue) ? null : this.editValue;
     }
 
     /**
@@ -217,7 +217,7 @@ public final class UIValue
             }
             this.hiddenValue = obj;
         }
-        return this.hiddenValue;
+        return IUIValue.NULL.equals(this.hiddenValue) ? null : this.hiddenValue;
     }
 
     /**
@@ -246,7 +246,7 @@ public final class UIValue
             }
             this.readOnlyValue = obj;
         }
-        return this.readOnlyValue;
+        return IUIValue.NULL.equals(this.readOnlyValue) ? null : this.readOnlyValue;
     }
 
     /**

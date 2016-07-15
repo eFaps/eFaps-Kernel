@@ -18,6 +18,7 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Field.Display;
@@ -32,6 +33,8 @@ import org.efaps.util.EFapsException;
  */
 public interface IUIValue
 {
+    /** The null replacement. */
+    Object NULL = ObjectUtils.NULL;
 
     /**
      * Gets the display.
