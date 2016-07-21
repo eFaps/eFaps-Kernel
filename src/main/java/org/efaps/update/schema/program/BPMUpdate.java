@@ -65,7 +65,7 @@ public class BPMUpdate
         /**
          * Importer for the BPM.
          */
-        private BPMImporter bpmn2 = null;
+        private BPMImporter importer = null;
 
         /**
          * Constructor.
@@ -88,17 +88,21 @@ public class BPMUpdate
         protected void searchInstance()
             throws InstallationException
         {
-            if (this.bpmn2 == null) {
-                this.bpmn2 = new BPMImporter(getInstallFile());
+            if (this.importer == null) {
+                this.importer = new BPMImporter(getInstallFile());
             }
-            setName(this.bpmn2.getProgramName());
+            setName(this.importer.getProgramName());
 
-            if (this.bpmn2.getEFapsUUID() != null) {
-                addValue("UUID", this.bpmn2.getEFapsUUID().toString());
+            if (this.importer.getEFapsUUID() != null) {
+                addValue("UUID", this.importer.getEFapsUUID().toString());
             }
 
             if (getInstance() == null) {
-                setInstance(this.bpmn2.searchInstance());
+                setInstance(this.importer.searchInstance());
+            }
+
+            if (getFileApplication() == null && this.importer.getApplication() != null) {
+                setFileApplication(this.importer.getApplication());
             }
         }
     }

@@ -193,8 +193,8 @@ public abstract class AbstractSourceImporter
         Instance instance = null;
         try {
             // check if type exists. Necessary for first time installations
-            if (this.ciType.getType() != null) {
-                final QueryBuilder queryBldr = new QueryBuilder(this.ciType);
+            if (getCiType().getType() != null) {
+                final QueryBuilder queryBldr = new QueryBuilder(getCiType());
                 queryBldr.addWhereAttrEqValue(CIAdminProgram.Abstract.Name, this.programName);
                 final InstanceQuery query = queryBldr.getQuery();
                 query.executeWithoutAccessCheck();
@@ -203,9 +203,8 @@ public abstract class AbstractSourceImporter
                 }
             }
         } catch (final EFapsException e)  {
-            throw new InstallationException("Could not found '" + this.ciType + "' '" + this.programName + "'", e);
+            throw new InstallationException("Could not find '" + getCiType() + "' '" + this.programName + "'", e);
         }
-
         return instance;
     }
 
@@ -221,14 +220,14 @@ public abstract class AbstractSourceImporter
     {
         final Insert insert;
         try {
-            insert = new Insert(this.ciType);
+            insert = new Insert(getCiType());
             insert.add("Name", this.programName);
             if (getEFapsUUID() != null) {
                 insert.add("UUID", getEFapsUUID().toString());
             }
             insert.execute();
         } catch (final EFapsException e)  {
-            throw new InstallationException("Could not create " + this.ciType + " " + getProgramName(), e);
+            throw new InstallationException("Could not create " + getCiType() + " " + getProgramName(), e);
         }
         return insert.getInstance();
     }
@@ -313,7 +312,6 @@ public abstract class AbstractSourceImporter
         return this.programName;
     }
 
-
     /**
      * Getter method for the instance variable {@link #application}.
      *
@@ -322,5 +320,15 @@ public abstract class AbstractSourceImporter
     public String getApplication()
     {
         return this.application;
+    }
+
+    /**
+     * Gets the cIType.
+     *
+     * @return the cIType
+     */
+    protected CIType getCiType()
+    {
+        return this.ciType;
     }
 }

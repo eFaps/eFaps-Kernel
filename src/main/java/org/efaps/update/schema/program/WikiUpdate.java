@@ -41,7 +41,7 @@ public class WikiUpdate
     /**
      * Set off all links for this JasperReportUpdate.
      */
-    private static final Set<Link> ALLLINKS = new HashSet<Link>();
+    private static final Set<Link> ALLLINKS = new HashSet<>();
 
     static {
         WikiUpdate.ALLLINKS.add(WikiUpdate.LINK2WIKI);
@@ -82,7 +82,7 @@ public class WikiUpdate
         /**
          * Importer for the JasperReport.
          */
-        private WikiImporter wiki = null;
+        private WikiImporter importer = null;
 
         /**
          * Construtor.
@@ -105,17 +105,20 @@ public class WikiUpdate
         protected void searchInstance()
             throws InstallationException
         {
-            if (this.wiki == null) {
-                this.wiki = new WikiImporter(getInstallFile());
+            if (this.importer == null) {
+                this.importer = new WikiImporter(getInstallFile());
             }
-            setName(this.wiki.getProgramName());
+            setName(this.importer.getProgramName());
 
-            if (this.wiki.getEFapsUUID() != null) {
-                addValue("UUID", this.wiki.getEFapsUUID().toString());
+            if (this.importer.getEFapsUUID() != null) {
+                addValue("UUID", this.importer.getEFapsUUID().toString());
             }
 
             if (getInstance() == null) {
-                setInstance(this.wiki.searchInstance());
+                setInstance(this.importer.searchInstance());
+            }
+            if (getFileApplication() == null && this.importer.getApplication() != null) {
+                setFileApplication(this.importer.getApplication());
             }
         }
     }

@@ -47,7 +47,7 @@ public class CSSUpdate
     /**
      * Set off all links for this cssupdate.
      */
-    private static final Set<Link> ALLLINKS = new HashSet<Link>();
+    private static final Set<Link> ALLLINKS = new HashSet<>();
     static {
         CSSUpdate.ALLLINKS.add(CSSUpdate.LINK2SUPER);
     }
@@ -87,7 +87,7 @@ public class CSSUpdate
         /**
          * Importer for the css.
          */
-        private CSSImporter sourceCode = null;
+        private CSSImporter importer = null;
 
         /**
          * Construtor.
@@ -109,22 +109,26 @@ public class CSSUpdate
         protected void searchInstance()
             throws InstallationException
         {
-            if (this.sourceCode == null) {
-                this.sourceCode = new CSSImporter(getInstallFile());
+            if (this.importer == null) {
+                this.importer = new CSSImporter(getInstallFile());
             }
-            setName(this.sourceCode.getProgramName());
+            setName(this.importer.getProgramName());
 
-            if (this.sourceCode.getEFapsUUID() != null) {
-                addValue("UUID", this.sourceCode.getEFapsUUID().toString());
+            if (this.importer.getEFapsUUID() != null) {
+                addValue("UUID", this.importer.getEFapsUUID().toString());
             }
 
-            if (this.sourceCode.getExtendSource() != null) {
+            if (this.importer.getExtendSource() != null) {
                 addLink(CSSUpdate.LINK2SUPER,
-                                new LinkInstance(this.sourceCode.getExtendSource()));
+                                new LinkInstance(this.importer.getExtendSource()));
             }
 
             if (getInstance() == null) {
-                setInstance(this.sourceCode.searchInstance());
+                setInstance(this.importer.searchInstance());
+            }
+
+            if (getFileApplication() == null && this.importer.getApplication() != null) {
+                setFileApplication(this.importer.getApplication());
             }
         }
     }

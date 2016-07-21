@@ -42,7 +42,7 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
     /**
      * Set off all links for this JavaScriptUpdate.
      */
-    private static final Set<Link> ALLLINKS = new HashSet<Link>();
+    private static final Set<Link> ALLLINKS = new HashSet<>();
     static {
         JavaScriptUpdate.ALLLINKS.add(JavaScriptUpdate.LINK2SUPER);
     }
@@ -82,7 +82,7 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
         /**
          * Importer for the css.
          */
-        private JavaScriptImporter sourceCode = null;
+        private JavaScriptImporter importer = null;
 
         /**
          * Construtor.
@@ -105,21 +105,25 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
         protected void searchInstance()
             throws InstallationException
         {
-            if (this.sourceCode == null) {
-                this.sourceCode = new JavaScriptImporter(getInstallFile());
+            if (this.importer == null) {
+                this.importer = new JavaScriptImporter(getInstallFile());
             }
-            setName(this.sourceCode.getProgramName());
+            setName(this.importer.getProgramName());
 
-            if (this.sourceCode.getEFapsUUID() != null) {
-                addValue("UUID", this.sourceCode.getEFapsUUID().toString());
+            if (this.importer.getEFapsUUID() != null) {
+                addValue("UUID", this.importer.getEFapsUUID().toString());
             }
 
-            if (this.sourceCode.getExtendSource() != null) {
-                addLink(JavaScriptUpdate.LINK2SUPER, new LinkInstance(this.sourceCode.getExtendSource()));
+            if (this.importer.getExtendSource() != null) {
+                addLink(JavaScriptUpdate.LINK2SUPER, new LinkInstance(this.importer.getExtendSource()));
             }
 
             if (getInstance() == null) {
-                setInstance(this.sourceCode.searchInstance());
+                setInstance(this.importer.searchInstance());
+            }
+
+            if (getFileApplication() == null && this.importer.getApplication() != null) {
+                setFileApplication(this.importer.getApplication());
             }
         }
     }

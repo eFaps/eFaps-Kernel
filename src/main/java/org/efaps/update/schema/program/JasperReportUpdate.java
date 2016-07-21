@@ -40,7 +40,7 @@ public class JasperReportUpdate extends AbstractSourceUpdate
     /**
      * Set off all links for this JasperReportUpdate.
      */
-    private static final Set<Link> ALLLINKS = new HashSet<Link>();
+    private static final Set<Link> ALLLINKS = new HashSet<>();
     static {
         JasperReportUpdate.ALLLINKS.add(JasperReportUpdate.LINK2SUPER);
     }
@@ -79,7 +79,7 @@ public class JasperReportUpdate extends AbstractSourceUpdate
         /**
          * Importer for the JasperReport.
          */
-        private JasperReportImporter jrxml = null;
+        private JasperReportImporter importer = null;
 
         /**
          * Construtor.
@@ -103,17 +103,21 @@ public class JasperReportUpdate extends AbstractSourceUpdate
         protected void searchInstance()
             throws InstallationException
         {
-            if (this.jrxml == null) {
-                this.jrxml = new JasperReportImporter(getInstallFile());
+            if (this.importer == null) {
+                this.importer = new JasperReportImporter(getInstallFile());
             }
-            setName(this.jrxml.getProgramName());
+            setName(this.importer.getProgramName());
 
-            if (this.jrxml.getEFapsUUID() != null) {
-                addValue("UUID", this.jrxml.getEFapsUUID().toString());
+            if (this.importer.getEFapsUUID() != null) {
+                addValue("UUID", this.importer.getEFapsUUID().toString());
             }
 
             if (getInstance() == null) {
-                setInstance(this.jrxml.searchInstance());
+                setInstance(this.importer.searchInstance());
+            }
+
+            if (getFileApplication() == null && this.importer.getApplication() != null) {
+                setFileApplication(this.importer.getApplication());
             }
         }
     }

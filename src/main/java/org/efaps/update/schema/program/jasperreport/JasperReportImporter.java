@@ -24,9 +24,13 @@ import java.util.UUID;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.efaps.ci.CIAdminProgram;
+import org.efaps.db.Instance;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.update.Install.InstallFile;
 import org.efaps.update.schema.program.AbstractSourceImporter;
 import org.efaps.update.util.InstallationException;
+import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -50,6 +54,9 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
 public class JasperReportImporter
     extends AbstractSourceImporter
 {
+    /** The Constant PROPKEY. */
+    public static final String APPPROPKEY = "org.efaps.admin.program.jasper.EFapsApplication";
+
     /**
      * Logging instance used to give logging information of this class.
      */
@@ -100,6 +107,34 @@ public class JasperReportImporter
     }
 
     /**
+     * Method to search the Instance which is imported.
+     *
+     * @return Instance of the imported program
+     * @throws InstallationException if search failed
+     */
+    @Override
+    public Instance searchInstance()
+        throws InstallationException
+    {
+        Instance ret = null;
+        try {
+            // check if type exists. Necessary for first time installations
+            if (getCiType().getType() != null && getEFapsUUID() != null) {
+                final QueryBuilder queryBldr = new QueryBuilder(getCiType());
+                queryBldr.addWhereAttrEqValue(CIAdminProgram.Abstract.UUID, getEFapsUUID().toString());
+                final InstanceQuery query = queryBldr.getQuery();
+                query.executeWithoutAccessCheck();
+                if (query.next()) {
+                    ret = query.getCurrentValue();
+                }
+            }
+        } catch (final EFapsException e)  {
+            throw new InstallationException("Could not find '" + getCiType() + "' '" + getProgramName() + "'", e);
+        }
+        return ret == null ? super.searchInstance() : ret;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -114,7 +149,7 @@ public class JasperReportImporter
     @Override
     protected String evalApplication()
     {
-        return null;
+        return this.jasperDesign.getProperty(APPPROPKEY);
     }
 
     /**
