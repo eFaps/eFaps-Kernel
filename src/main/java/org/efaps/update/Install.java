@@ -67,7 +67,7 @@ public class Install
      *
      * @see #addFile(URL, String)
      */
-    private final List<InstallFile> files = new ArrayList<InstallFile>();
+    private final List<InstallFile> files = new ArrayList<>();
 
     /**
      * Flag to store that the cache is initialised.
@@ -196,7 +196,7 @@ public class Install
      */
     private List<UpdateLifecycle> getUpdateLifecycles()
     {
-        final List<UpdateLifecycle> ret = new ArrayList<UpdateLifecycle>();
+        final List<UpdateLifecycle> ret = new ArrayList<>();
         for (final UpdateLifecycle cycle : UpdateLifecycle.values()) {
             ret.add(cycle);
         }
@@ -250,7 +250,10 @@ public class Install
                     final Integer latestVersion = versions.get(update.getFileApplication());
                     // initialize JexlContext (used to evaluate version)
                     final JexlContext jexlContext = new MapContext();
-                    if (latestVersion != null) {
+                    if (latestVersion == null) {
+                        Install.LOG.warn("Could not find any version for {} with Application {}",
+                                        update.getInstallFile(), update.getFileApplication());
+                    } else {
                         jexlContext.set("version", latestVersion);
                         jexlContext.set("latest", latestVersion);
                     }
@@ -279,7 +282,7 @@ public class Install
     public Map<String, Integer> getLatestVersions()
         throws InstallationException
     {
-        final Map<String, Integer> versions = new HashMap<String, Integer>();
+        final Map<String, Integer> versions = new HashMap<>();
         try {
             if (Context.getDbType().existsView(Context.getThreadContext().getConnection(), "V_ADMINTYPE")
                             && CIAdminCommon.Application.getType() != null) {
@@ -333,7 +336,7 @@ public class Install
                                 if (this.cache.containsKey(elem.getIdentifier())) {
                                     list = this.cache.get(elem.getIdentifier());
                                 } else {
-                                    list = new ArrayList<IUpdate>();
+                                    list = new ArrayList<>();
                                     this.cache.put(elem.getIdentifier(), list);
                                 }
                                 list.add(handler.getUpdate());
@@ -372,7 +375,7 @@ public class Install
                                     if (this.cache.containsKey(iUpdate.getIdentifier())) {
                                         list = this.cache.get(iUpdate.getIdentifier());
                                     } else {
-                                        list = new ArrayList<IUpdate>();
+                                        list = new ArrayList<>();
                                         this.cache.put(iUpdate.getIdentifier(), list);
                                     }
                                     list.add(iUpdate);
@@ -425,7 +428,7 @@ public class Install
     {
         final Set<Profile> ret;
         if (_profile == null && _application != null) {
-            ret = new HashSet<Profile>();
+            ret = new HashSet<>();
             final Properties props = EFapsSystemConfiguration.get().getAttributeValueAsProperties(
                             KernelSettings.PROFILES4UPDATE, true);
             if (props.containsKey(_application)) {

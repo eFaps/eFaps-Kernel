@@ -39,7 +39,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
-import org.efaps.update.IUpdate;
+import org.efaps.update.AbstractUpdate;
 import org.efaps.update.Install.InstallFile;
 import org.efaps.update.Profile;
 import org.efaps.update.UpdateLifecycle;
@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  */
 public class DBPropertiesUpdate
-    implements IUpdate
+    extends AbstractUpdate
 {
     /**
      * name for the Type.
@@ -92,9 +92,9 @@ public class DBPropertiesUpdate
     private String bundeluuid;
 
     /**
-     * the ID of the Bundle.
+     * the Instance of the Bundle.
      */
-    private long bundleid;
+    private Instance bundleInstance;
 
     /**
      * Sequence of the Bundle.
@@ -114,7 +114,7 @@ public class DBPropertiesUpdate
     /**
      * List of all Resources in this Properties.
      */
-    private final List<Resource> resources = new ArrayList<Resource>();
+    private final List<Resource> resources = new ArrayList<>();
 
     /**
      * Name of the application.
@@ -128,20 +128,16 @@ public class DBPropertiesUpdate
     private Resource curResource;
 
     /**
-     * The URL of the underlying file.
-     */
-    private final InstallFile installFile;
-
-    /**
      * Instantiates a new DB properties update.
      *
      * @param _installFile the install file
      */
     public DBPropertiesUpdate(final InstallFile _installFile)
     {
-        this.installFile = _installFile;
+        super(_installFile, null);
         final String urlStr = getInstallFile().getUrl().toString();
         this.root = urlStr.substring(0, urlStr.lastIndexOf(File.separator) + 1);
+
     }
 
     /**
@@ -194,9 +190,9 @@ public class DBPropertiesUpdate
      *
      * @return ID of the new Bundle
      */
-    private long insertNewBundle()
+    private Instance insertNewBundle()
     {
-        Long ret = null;
+        Instance ret = null;
         try {
             final Insert insert = new Insert(DBPropertiesUpdate.TYPE_PROPERTIES_BUNDLE);
             insert.add("Name", this.bundlename);
@@ -204,16 +200,13 @@ public class DBPropertiesUpdate
             insert.add("Sequence", this.bundlesequence);
             insert.add("CacheOnStart", this.cacheOnStart);
             insert.executeWithoutAccessCheck();
-
-            ret = insert.getId();
+            ret = insert.getInstance();
             insert.close();
-
         } catch (final EFapsException e) {
             DBPropertiesUpdate.LOG.error("insertNewBundle()", e);
         }
         return ret;
     }
-
 
     /**
      * Import Properties from a Properties-File as default, if the key is
@@ -360,7 +353,7 @@ public class DBPropertiesUpdate
         try {
             final QueryBuilder queryBldr = new QueryBuilder(Type.get(DBPropertiesUpdate.TYPE_PROPERTIES));
             queryBldr.addWhereAttrEqValue("Key", _key);
-            queryBldr.addWhereAttrEqValue("BundleID", this.bundleid);
+            queryBldr.addWhereAttrEqValue("BundleID", this.bundleInstance);
             final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             if (query.next()) {
@@ -403,7 +396,7 @@ public class DBPropertiesUpdate
         Instance ret = null;
         try {
             final Insert insert = new Insert(DBPropertiesUpdate.TYPE_PROPERTIES);
-            insert.add("BundleID", this.bundleid);
+            insert.add("BundleID", this.bundleInstance);
             insert.add("Key", _key);
             insert.add("Default", _value);
             insert.executeWithoutAccessCheck();
@@ -422,21 +415,27 @@ public class DBPropertiesUpdate
      * @param _uuid UUID of the Bundle
      * @return ID of the Bundle if existing, else null
      */
-    private Long getExistingBundle(final String _uuid)
+    private Instance getExistingBundle(final String _uuid)
     {
-        Long ret = null;
+        Instance ret = null;
         try {
             final QueryBuilder queryBldr = new QueryBuilder(Type.get(DBPropertiesUpdate.TYPE_PROPERTIES_BUNDLE));
             queryBldr.addWhereAttrEqValue("UUID", _uuid);
             final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             if (query.next()) {
-                ret = query.getCurrentValue().getId();
+                ret = query.getCurrentValue();
             }
         } catch (final EFapsException e) {
             DBPropertiesUpdate.LOG.error("getExistingBundle(String)", e);
         }
         return ret;
+    }
+
+    @Override
+    protected AbstractDefinition newDefinition()
+    {
+        return null;
     }
 
     /**
@@ -463,13 +462,14 @@ public class DBPropertiesUpdate
                 DBPropertiesUpdate.LOG.info("Importing Properties '" + this.bundlename + "'");
             }
 
-            final Long bundleID = getExistingBundle(this.bundeluuid);
+            final Instance bundleInst = getExistingBundle(this.bundeluuid);
 
-            if (bundleID == null) {
-                this.bundleid = insertNewBundle();
+            if (bundleInst == null) {
+                this.bundleInstance = insertNewBundle();
             } else {
-                this.bundleid = bundleID;
+                this.bundleInstance = bundleInst;
             }
+            registerRevision(getFileApplication(), getInstallFile(), this.bundleInstance);
             try {
                 for (final Resource resource : this.resources) {
                     if ("Properties".equals(resource.type)) {
@@ -512,15 +512,6 @@ public class DBPropertiesUpdate
                 this.curResource.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
             }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public InstallFile getInstallFile()
-    {
-        return this.installFile;
     }
 
     @Override
