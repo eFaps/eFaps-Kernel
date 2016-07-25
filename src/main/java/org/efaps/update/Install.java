@@ -247,7 +247,12 @@ public class Install
             }
             for (final Map.Entry<String, List<IUpdate>> entry : this.cache.entrySet()) {
                 for (final IUpdate update : entry.getValue()) {
-                    final Integer latestVersion = versions.get(update.getFileApplication());
+                    final Integer latestVersion;
+                    if (update.getFileApplication() == null) {
+                        latestVersion = 1;
+                    } else {
+                        latestVersion = versions.get(update.getFileApplication());
+                    }
                     // initialize JexlContext (used to evaluate version)
                     final JexlContext jexlContext = new MapContext();
                     if (latestVersion == null) {
