@@ -346,8 +346,6 @@
 
         <local-cache name="org.efaps.ui.wicket.connectionregistry.RegistryManager.Session">
             <eviction size="5000" strategy="LIRS" />
-            <!--10 minutes, 5 minutes (miliseconds) -->
-            <expiration lifespan="600000" max-idle="300000" />
             <indexing index="ALL">
                 <indexed-entities>
                     <indexed-entity>org.efaps.ui.wicket.connectionregistry.UserSession</indexed-entity>
