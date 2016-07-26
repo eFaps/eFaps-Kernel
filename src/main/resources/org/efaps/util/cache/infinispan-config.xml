@@ -344,6 +344,24 @@
             <eviction size="500" strategy="LRU" />
         </local-cache>
 
+        <local-cache name="org.efaps.ui.wicket.connectionregistry.RegistryManager.Session">
+            <eviction size="5000" strategy="LIRS" />
+            <!--10 minutes, 5 minutes (miliseconds) -->
+            <expiration lifespan="600000" max-idle="300000" />
+            <indexing index="ALL">
+                <indexed-entities>
+                    <indexed-entity>org.efaps.ui.wicket.connectionregistry.UserSession</indexed-entity>
+                </indexed-entities>
+                <property name="hibernate.search.lucene_version">LUCENE_CURRENT</property>
+                <property name="hibernate.search.default.indexmanager">org.infinispan.query.indexmanager.InfinispanIndexManager</property>
+                <property name="hibernate.search.default.directory_provider">infinispan</property>
+                <property name="hibernate.search.default.exclusive_index_use">true</property>
+                <property name="hibernate.search.default.locking_cachename">org.efaps.db.QueryCache.LuceneIndexesLocking</property>
+                <property name="hibernate.search.default.data_cachename">org.efaps.db.QueryCache.LuceneIndexesData</property>
+                <property name="hibernate.search.default.metadata_cachename">org.efaps.db.QueryCache.LuceneIndexesMetadata</property>
+                <property name="hibernate.search.default.reader.strategy">shared</property>
+            </indexing>
+        </local-cache>
     </cache-container>
 </infinispan>
 
