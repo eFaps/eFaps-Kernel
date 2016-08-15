@@ -59,16 +59,13 @@
             <expiration lifespan="600000" max-idle="300000" />
         </local-cache>
 
-
         <!-- the Sql Query cache -->
         <local-cache name="org.efaps.db.QueryCache.Sql">
-            <eviction size="5000" strategy="LIRS" />
-            <!--10 minutes, 5 minutes (miliseconds) -->
+            <!--Only experation no eviction 10 minutes, 5 minutes (miliseconds) -->
             <expiration lifespan="600000" max-idle="300000" />
         </local-cache>
         <local-cache name="org.efaps.db.QueryCache.Index">
-            <eviction size="5000" strategy="LIRS" />
-            <!--10 minutes, 5 minutes (miliseconds) -->
+            <!---Only experation no eviction, 10 minutes, 5 minutes (miliseconds) -->
             <expiration lifespan="600000" max-idle="300000" />
             <indexing index="ALL">
                 <indexed-entities>

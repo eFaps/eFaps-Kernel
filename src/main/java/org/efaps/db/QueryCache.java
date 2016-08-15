@@ -156,7 +156,7 @@ public final class QueryCache
      */
     public static Cache<QueryKey, Object> getSqlCache()
     {
-        Cache<QueryKey, Object> ret;
+        final Cache<QueryKey, Object> ret;
         if (AppConfigHandler.get().isQueryCacheDeactivated()) {
             ret = QueryCache.NOOP;
         } else {
@@ -174,7 +174,6 @@ public final class QueryCache
     @Listener
     public static class SqlCacheListener
     {
-
         /**
          * If an QueryKey is inserted to SQLCache the QueryKey will also be
          * registered in the IndexCache.
