@@ -1,6 +1,8 @@
 # eFaps-Kernel
 Kernel for an eFaps Instance
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/00a9fa5043984fa5b730b3f82cb66ad5)](https://www.codacy.com/app/eFaps/eFaps-Kernel?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=eFaps/eFaps-Kernel&amp;utm_campaign=Badge_Grade)
+
 The kernel enables the following functionalities:
 - DataBase abstraction
 - Data Caching
