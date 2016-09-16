@@ -5,4 +5,8 @@ jdk:
 
 install:
   - wget https://raw.githubusercontent.com/eFaps/Utils/master/settings/settings.xml -O mySettings.xml
-  - mvn install -s mySettings.xml  
+  - mvn install -s mySettings.xml
+
+cache:
+  directories:
+    - $HOME/.m2
