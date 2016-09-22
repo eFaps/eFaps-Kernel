@@ -71,7 +71,7 @@ public class FormatValueSelect
      */
     @Override
     public Object get(final Attribute _attribute,
-                         final Object _object)
+                      final Object _object)
         throws EFapsException
     {
         Object ret = null;
@@ -79,7 +79,7 @@ public class FormatValueSelect
             final IFormattableType attrType = (IFormattableType) _attribute.getAttributeType().getDbAttrType();
             if (_object instanceof List<?>) {
                 final List<?> objectList = (List<?>) _object;
-                final List<Object> temp = new ArrayList<Object>();
+                final List<Object> temp = new ArrayList<>();
                 for (final Object object : objectList) {
                     temp.add(attrType.format(object, this.pattern));
                 }

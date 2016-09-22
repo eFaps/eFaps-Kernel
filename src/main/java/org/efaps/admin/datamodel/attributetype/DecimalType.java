@@ -96,7 +96,7 @@ public class DecimalType
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
     {
-        final List<BigDecimal> ret = new ArrayList<BigDecimal>();
+        final List<BigDecimal> ret = new ArrayList<>();
         for (final Object object : _objectList) {
             if (object instanceof BigDecimal) {
                 ret.add((BigDecimal) object);
@@ -156,18 +156,6 @@ public class DecimalType
         final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
                         .getLocale());
         formatter.applyPattern(_pattern);
-        Object ret;
-        if (_object instanceof BigDecimal
-                        && formatter.getNegativeSuffix().isEmpty() && "-".equals(formatter.getNegativePrefix())
-                        && formatter.getPositiveSuffix().isEmpty() && formatter.getPositivePrefix().isEmpty()) {
-            int scale = formatter.getMinimumFractionDigits();
-            if (scale < formatter.getMaximumFractionDigits()) {
-                scale = formatter.getMaximumFractionDigits();
-            }
-            ret = ((BigDecimal) _object).setScale(scale, BigDecimal.ROUND_HALF_UP);
-        } else {
-            ret = formatter.format(_object);
-        }
-        return ret;
+        return  formatter.format(_object);
     }
 }
