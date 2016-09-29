@@ -45,6 +45,7 @@ import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
+import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.SelectBuilder;
@@ -54,6 +55,7 @@ import org.efaps.update.event.Event;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -119,7 +121,7 @@ public abstract class AbstractUpdate
     /**
      * All definitions of versions are added to this list.
      */
-    private final List<AbstractDefinition> definitions = new ArrayList<AbstractDefinition>();
+    private final List<AbstractDefinition> definitions = new ArrayList<>();
 
     /**
      * Default constructor with no defined possible links for given
@@ -278,11 +280,20 @@ public abstract class AbstractUpdate
                     queryBldr.addWhereAttrEqValue(CIAdminCommon.ApplicationRevision.ApplicationLink, appInst);
                     queryBldr.addWhereAttrEqValue(CIAdminCommon.ApplicationRevision.Revision,
                                     _installFile.getRevision());
-                    final InstanceQuery query = queryBldr.getQuery();
-                    query.execute();
+                    final MultiPrintQuery multi = queryBldr.getPrint();
+                    multi.addAttribute(CIAdminCommon.ApplicationRevision.Date);
+                    multi.execute();
                     final Instance appRevInst;
-                    if (query.next()) {
-                        appRevInst = query.getCurrentValue();
+                    if (multi.next()) {
+                        appRevInst = multi.getCurrentInstance();
+                        if (_installFile.getDate().isAfter(multi.<DateTime>getAttribute(
+                                        CIAdminCommon.ApplicationRevision.Date))) {
+                            LOG.debug("Updated Revision {} - {} with Date {] ", _installFile.getRevision(),
+                                            _application, _installFile.getDate());
+                            final Update update = new Update(appRevInst);
+                            update.add(CIAdminCommon.ApplicationRevision.Date, _installFile.getDate());
+                            update.executeWithoutTrigger();
+                        }
                     } else {
                         final Insert insert = new Insert(CIAdminCommon.ApplicationRevision);
                         insert.add(CIAdminCommon.ApplicationRevision.ApplicationLink, appInst);
@@ -454,7 +465,7 @@ public abstract class AbstractUpdate
         /**
          * set of key attributes.
          */
-        private final Set<String> keyAttributes = new HashSet<String>();
+        private final Set<String> keyAttributes = new HashSet<>();
 
         /**
          * Include the child types during evaluation.
@@ -622,7 +633,7 @@ public abstract class AbstractUpdate
         /**
          * Link must be unique over a group of links.
          */
-        private final Set<Link> uniqueGroup = new HashSet<Link>();
+        private final Set<Link> uniqueGroup = new HashSet<>();
 
         /**
          * @param _linkName name of the link itself
@@ -682,20 +693,19 @@ public abstract class AbstractUpdate
          * @see #addValue
          * @see #getValue
          */
-        private final Map<String, String> values = new HashMap<String, String>();
+        private final Map<String, String> values = new HashMap<>();
 
         /**
          * Property value depending on the property name for this definition.
          *
          * @see #addProperty.
          */
-        private final Map<String, String> properties = new HashMap<String, String>();
+        private final Map<String, String> properties = new HashMap<>();
 
         /**
          *
          */
-        private final Map<AbstractUpdate.Link, Set<LinkInstance>> links = new HashMap<AbstractUpdate.Link,
-                                                                                                   Set<LinkInstance>>();
+        private final Map<AbstractUpdate.Link, Set<LinkInstance>> links = new HashMap<>();
 
         /**
          * Name of attribute by which the search in the database is done. If not
@@ -709,17 +719,17 @@ public abstract class AbstractUpdate
         /**
          * list of events.
          */
-        private final List<Event> events = new ArrayList<Event>();
+        private final List<Event> events = new ArrayList<>();
 
         /**
          * Profiles this Definition is activated for.
          */
-        private final Set<Profile> profiles = new HashSet<Profile>();
+        private final Set<Profile> profiles = new HashSet<>();
 
         /**
          * Application Dependencies this Definition is activated for.
          */
-        private final Map<AppDependency, Boolean> appDependencies = new HashMap<AppDependency, Boolean>();
+        private final Map<AppDependency, Boolean> appDependencies = new HashMap<>();
 
         /**
          * Default constructor for the attribute by which the object is searched
@@ -919,7 +929,7 @@ public abstract class AbstractUpdate
                         }
                     }
                     setPropertiesInDb(this.instance, this.properties);
-                    final List<Instance> eventInstList = new ArrayList<Instance>();
+                    final List<Instance> eventInstList = new ArrayList<>();
                     for (final Event event : getEvents()) {
                         final Instance eventInst = event.updateInDB(this.instance, getValue("Name"));
                         setPropertiesInDb(eventInst, event.getProperties());
@@ -1087,7 +1097,7 @@ public abstract class AbstractUpdate
                     }
                 }
 
-                final List<Instance> childInsts = new ArrayList<Instance>();
+                final List<Instance> childInsts = new ArrayList<>();
                 for (final LinkInstance oneLink : _links) {
                     childInsts.add(oneLink.getChildInstance());
                 }
@@ -1151,11 +1161,11 @@ public abstract class AbstractUpdate
 
                 // 6. Order if necessary
                 if (_linktype instanceof OrderedLink) {
-                    final List<Instance> childOrder = new ArrayList<Instance>();
+                    final List<Instance> childOrder = new ArrayList<>();
                     for (final LinkInstance oneLink : _links) {
                         childOrder.add(oneLink.getChildInstance());
                     }
-                    final ArrayList<LinkInstance> linkOrder = new ArrayList<LinkInstance>(_links);
+                    final ArrayList<LinkInstance> linkOrder = new ArrayList<>(_links);
                     Collections.sort(linkOrder, new Comparator<LinkInstance>()
                     {
                         @Override
@@ -1275,9 +1285,9 @@ public abstract class AbstractUpdate
             Set<LinkInstance> oneLink = this.links.get(_link);
             if (oneLink == null) {
                 if (_link instanceof OrderedLink) {
-                    oneLink = new LinkedHashSet<LinkInstance>();
+                    oneLink = new LinkedHashSet<>();
                 } else {
-                    oneLink = new HashSet<LinkInstance>();
+                    oneLink = new HashSet<>();
                 }
                 this.links.put(_link, oneLink);
             }
