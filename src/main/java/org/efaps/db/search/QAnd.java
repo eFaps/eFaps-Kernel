@@ -21,7 +21,7 @@ package org.efaps.db.search;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.AbstractTypeQuery;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -39,7 +39,7 @@ public class QAnd
     /**
      * List of parts that will be connected by "AND".
      */
-    private final List<AbstractQPart> parts = new ArrayList<AbstractQPart>();
+    private final List<AbstractQPart> parts = new ArrayList<>();
 
 
     /**
@@ -99,8 +99,8 @@ public class QAnd
      * {@inheritDoc}
      */
     @Override
-    public QAnd prepare(final AbstractObjectQuery<?> _query,
-                                 final AbstractQPart _part)
+    public QAnd prepare(final AbstractTypeQuery _query,
+                        final AbstractQPart _part)
         throws EFapsException
     {
         for (final AbstractQPart part : this.parts) {

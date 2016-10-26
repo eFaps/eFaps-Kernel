@@ -18,7 +18,7 @@
 
 package org.efaps.db.search.value;
 
-import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.AbstractTypeQuery;
 import org.efaps.db.search.AbstractQPart;
 import org.efaps.util.EFapsException;
 
@@ -36,7 +36,7 @@ public abstract class AbstractQValue
      * {@inheritDoc}
      */
     @Override
-    public AbstractQPart prepare(final AbstractObjectQuery<?> _query,
+    public AbstractQPart prepare(final AbstractTypeQuery _query,
                                  final AbstractQPart _part)
         throws EFapsException
     {

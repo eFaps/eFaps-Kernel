@@ -69,6 +69,8 @@ import org.efaps.db.search.value.QNullValue;
 import org.efaps.db.search.value.QNumberValue;
 import org.efaps.db.search.value.QSQLValue;
 import org.efaps.db.search.value.QStringValue;
+import org.efaps.eql.stmt.parts.where.AbstractWhere;
+import org.efaps.eql.stmt.parts.where.SelectWhere;
 import org.efaps.util.EFapsException;
 import org.efaps.util.UUIDUtil;
 import org.efaps.util.cache.CacheReloadException;
@@ -127,7 +129,7 @@ public class QueryBuilder
     /**
      * List of type that should be included.
      */
-    private final Set<UUID> types = new LinkedHashSet<UUID>();
+    private final Set<UUID> types = new LinkedHashSet<>();
 
     /**
      * Query this QueryBuilder will return.
@@ -201,7 +203,7 @@ public class QueryBuilder
     public void addType(final UUID... _uuid)
         throws EFapsException
     {
-        final Set<Type> typesTmp = new HashSet<Type>();
+        final Set<Type> typesTmp = new HashSet<>();
         for (final UUID uuid : _uuid) {
             typesTmp.add(Type.get(uuid));
         }
@@ -217,7 +219,7 @@ public class QueryBuilder
     public void addType(final CIType... _ciType)
         throws EFapsException
     {
-        final Set<Type> typesTmp = new HashSet<Type>();
+        final Set<Type> typesTmp = new HashSet<>();
         for (final CIType ciType : _ciType) {
             typesTmp.add(ciType.getType());
         }
@@ -233,7 +235,7 @@ public class QueryBuilder
     public void addType(final Type... _type)
         throws EFapsException
     {
-        final List<Type> allType = new ArrayList<Type>();
+        final List<Type> allType = new ArrayList<>();
         if (this.types.isEmpty()) {
             final Type type = Type.get(this.typeUUID);
             if (type.isAbstract()) {
@@ -262,9 +264,9 @@ public class QueryBuilder
         }
 
         //make for every type a list of types up to the parent
-        final List<List<Type>> typeLists = new ArrayList<List<Type>>();
+        final List<List<Type>> typeLists = new ArrayList<>();
         for (final Type type : allType) {
-            final List<Type> typesTmp = new ArrayList<Type>();
+            final List<Type> typesTmp = new ArrayList<>();
             typeLists.add(typesTmp);
             Type tmpType = type;
             while (tmpType != null) {
@@ -273,7 +275,7 @@ public class QueryBuilder
             }
         }
 
-        final Set<Type> common = new LinkedHashSet<Type>();
+        final Set<Type> common = new LinkedHashSet<>();
         if (!typeLists.isEmpty()) {
             final Iterator<List<Type>> iterator = typeLists.iterator();
             common.addAll(iterator.next());
@@ -340,7 +342,9 @@ public class QueryBuilder
         final String attribute = getAttr4Select(_select);
         final QueryBuilder queryBldr = getAttrQueryBuilder(_select);
         final QEqual equal = new QEqual(new QAttribute(attribute));
-        queryBldr.getCompares().add(equal);
+        if (queryBldr != null) {
+            queryBldr.getCompares().add(equal);
+        }
         for (final Object value : _values) {
             equal.addValue(getValue(value));
         }
@@ -1224,7 +1228,7 @@ public class QueryBuilder
             linkto = false;
         }
 
-        if (!this.attrQueryBldrs.containsKey(key)) {
+        if (StringUtils.isNotEmpty(key) && !this.attrQueryBldrs.containsKey(key)) {
             if (linkto) {
                 Type currentType = Type.get(this.typeUUID);
                 QueryBuilder queryBldr = this;
@@ -1311,5 +1315,30 @@ public class QueryBuilder
     protected void setSelectAttributeName(final String _selectAttributeName)
     {
         this.selectAttributeName = _selectAttributeName;
+    }
+
+    /**
+     * Gets the q part.
+     *
+     * @param _where the where
+     * @return the q part
+     * @throws EFapsException on error
+     */
+    public static AbstractQPart getQPart(final AbstractWhere _where)
+        throws EFapsException
+    {
+        AbstractQPart ret = null;
+        if (_where instanceof SelectWhere) {
+            switch (_where.getComparison()) {
+                case EQUAL:
+                    final QueryBuilder queryBldr = new QueryBuilder((UUID) null);
+                    ret = queryBldr.addWhereSelectEqValue(((SelectWhere) _where).getSelect(), ((SelectWhere) _where)
+                                    .getValues().toArray());
+                    break;
+                default:
+                    break;
+            }
+        }
+        return ret;
     }
 }

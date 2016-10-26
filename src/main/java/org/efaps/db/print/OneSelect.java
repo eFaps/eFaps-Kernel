@@ -79,7 +79,7 @@ public class OneSelect
     /**
      * List of select parts.
      */
-    private final List<ISelectPart> selectParts = new ArrayList<ISelectPart>();
+    private final List<ISelectPart> selectParts = new ArrayList<>();
 
     /**
      * FromSelect this OneSelect belong to.
@@ -90,20 +90,20 @@ public class OneSelect
      * List of objects retrieved from the ResultSet returned
      * from the eFaps database. It represent one row in a result set.
      */
-    private final List<Object> objectList = new ArrayList<Object>();
+    private final List<Object> objectList = new ArrayList<>();
 
 
     /**
      * List of ids retrieved from the ResultSet returned
      * from the eFaps database. It represent one row in a result set.
      */
-    private final List<Long> idList = new ArrayList<Long>();
+    private final List<Long> idList = new ArrayList<>();
 
     /**
      * If this OneSelect is a FromSelect the relation Ids are stored in this
      * List.
      */
-    private final List<Long> relIdList = new ArrayList<Long>();
+    private final List<Long> relIdList = new ArrayList<>();
 
     /**
      * table index for this table. It will finally contain the index of
@@ -346,6 +346,20 @@ public class OneSelect
     public void addAttributeSetSelectPart(final String _attributeSet)
         throws EFapsException
     {
+        addAttributeSetSelectPart(_attributeSet, null);
+    }
+
+    /**
+     * Adds the attribute set select part.
+     *
+     * @param _attributeSet the attribute set
+     * @param _where the where
+     * @throws EFapsException on error
+     */
+    public void addAttributeSetSelectPart(final String _attributeSet,
+                                          final String _where)
+        throws EFapsException
+    {
         final Type type;
         // if a previous select exists it is based on the previous select,
         // else it is based on the basic table
@@ -359,6 +373,7 @@ public class OneSelect
             final AttributeSet set = AttributeSet.find(type.getName(), _attributeSet);
             final String linkFrom = set.getName() + "#" + set.getAttributeName();
             this.fromSelect = new LinkFromSelect(linkFrom, getQuery().isCacheEnabled() ? getQuery().getKey() : null);
+            this.fromSelect.addWhere(_where);
         } catch (final CacheReloadException e) {
             OneSelect.LOG.error("Could not find AttributeSet for Type: {}, attribute: {}", type.getName(),
                             _attributeSet);
@@ -453,8 +468,10 @@ public class OneSelect
      * Method used to append to the where part of an SQL statement.
      *
      * @param _select   SQL select wrapper
+     * @throws EFapsException on error
      */
     public void append2SQLWhere(final SQLSelect _select)
+        throws EFapsException
     {
         for (final ISelectPart part : this.selectParts) {
             part.add2Where(this, _select);
@@ -469,11 +486,13 @@ public class OneSelect
     public void analyzeSelectStmt()
         throws EFapsException
     {
-        final Pattern mainPattern = Pattern.compile("[a-z]+\\[.+?\\]|[a-z]+");
+        final Pattern mainPattern = Pattern.compile("[^.]+");
         final Pattern attrPattern = Pattern.compile("(?<=\\[)[0-9a-zA-Z_]*(?=\\])");
         final Pattern esjpPattern = Pattern.compile("(?<=\\[)[\\w\\d\\s,.\"]*(?=\\])");
         final Pattern linkfomPat = Pattern.compile("(?<=\\[)[0-9a-zA-Z_#:]*(?=\\])");
         final Pattern formatPat = Pattern.compile("(?<=\\[).*(?=\\])");
+        final Pattern attrSetPattern = Pattern.compile("(?<=\\[)[0-9a-zA-Z_]+");
+        final Pattern attrSetWherePattern = Pattern.compile("(?<=\\|).+(?=\\])");
 
         final Matcher mainMatcher = mainPattern.matcher(this.selectStmt);
 
@@ -491,10 +510,15 @@ public class OneSelect
                     currentSelect.addLinkToSelectPart(matcher.group());
                 }
             } else if (part.startsWith("attributeset")) {
-                final Matcher matcher = attrPattern.matcher(part);
+                final Matcher matcher = attrSetPattern.matcher(part);
                 if (matcher.find()) {
                     currentSelect.addValueSelect(new IDValueSelect(currentSelect));
-                    currentSelect.addAttributeSetSelectPart(matcher.group());
+                    final Matcher whereMatcher = attrSetWherePattern.matcher(part);
+                    if (whereMatcher.find()) {
+                        currentSelect.addAttributeSetSelectPart(matcher.group(), whereMatcher.group());
+                    } else {
+                        currentSelect.addAttributeSetSelectPart(matcher.group());
+                    }
                     currentSelect = currentSelect.fromSelect.getMainOneSelect();
                 }
             } else if (part.startsWith("attribute")) {
@@ -603,7 +627,7 @@ public class OneSelect
         final Object ret;
         // inside a fromobject the correct value must be set
         if (this.fromSelect != null && _object instanceof Number) {
-            final List<Object> tmpList = new ArrayList<Object>();
+            final List<Object> tmpList = new ArrayList<>();
             final Long id = ((Number) _object).longValue();
             Iterator<Long> relIter = this.relIdList.iterator();
             // chained linkfroms
@@ -679,7 +703,7 @@ public class OneSelect
     public List<Instance> getInstances()
         throws EFapsException
     {
-        final List<Instance> ret = new ArrayList<Instance>();
+        final List<Instance> ret = new ArrayList<>();
         // no value select means, that the from select must be asked
         if (this.valueSelect == null) {
             ret.addAll(this.fromSelect.getMainOneSelect().getInstances());
@@ -895,8 +919,8 @@ public class OneSelect
     public void sortByInstanceList(final List<Instance> _targetList,
                                    final Map<Instance, Integer> _currentList)
     {
-        final List<Long> idListNew = new ArrayList<Long>();
-        final List<Object> objectListNew = new ArrayList<Object>();
+        final List<Long> idListNew = new ArrayList<>();
+        final List<Object> objectListNew = new ArrayList<>();
         for (final Instance instance : _targetList) {
             if (_currentList.containsKey(instance)) {
                 final Integer i = _currentList.get(instance);

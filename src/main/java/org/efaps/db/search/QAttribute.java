@@ -19,7 +19,7 @@ package org.efaps.db.search;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.AbstractTypeQuery;
 import org.efaps.db.search.compare.AbstractQAttrCompare;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
@@ -83,7 +83,7 @@ public class QAttribute
      * {@inheritDoc}
      */
     @Override
-    public AbstractQPart prepare(final AbstractObjectQuery<?> _query,
+    public AbstractQPart prepare(final AbstractTypeQuery _query,
                                  final AbstractQPart _part)
         throws EFapsException
     {

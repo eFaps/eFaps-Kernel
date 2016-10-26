@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.AbstractTypeQuery;
 import org.efaps.db.search.AbstractQPart;
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.value.AbstractQValue;
@@ -44,7 +44,7 @@ public class QEqual
    /**
     * The values the given attribute must be equal to.
     */
-    private final List<AbstractQValue> values = new ArrayList<AbstractQValue>();
+    private final List<AbstractQValue> values = new ArrayList<>();
 
     /**
      * Constructor setting attribute and value.
@@ -124,8 +124,8 @@ public class QEqual
      * {@inheritDoc}
      */
     @Override
-    public QEqual prepare(final AbstractObjectQuery<?> _query,
-                                 final AbstractQPart _part)
+    public QEqual prepare(final AbstractTypeQuery _query,
+                          final AbstractQPart _part)
         throws EFapsException
     {
         getAttribute().prepare(_query, this);

@@ -393,7 +393,20 @@ public class SelectBuilder
      */
     public SelectBuilder attributeset(final CIAttribute _attribute)
     {
-        return attributeset(_attribute.name);
+        return attributeset(_attribute, null);
+    }
+
+    /**
+     * Attributeset.
+     *
+     * @param _attribute attribute to be added
+     * @param _where the where
+     * @return this
+     */
+    public SelectBuilder attributeset(final CIAttribute _attribute,
+                                      final String _where)
+    {
+        return attributeset(_attribute.name, _where);
     }
 
     /**
@@ -402,8 +415,25 @@ public class SelectBuilder
      */
     public SelectBuilder attributeset(final String _attribute)
     {
+        return attributeset(_attribute, null);
+    }
+
+    /**
+     * Attributeset.
+     *
+     * @param _attribute attribute to be added
+     * @param _where the where
+     * @return this
+     */
+    public SelectBuilder attributeset(final String _attribute,
+                                      final String _where)
+    {
         addPoint();
-        this.bldr.append("attributeset[").append(_attribute).append("]");
+        this.bldr.append("attributeset[").append(_attribute);
+        if (_where != null) {
+            this.bldr.append("|").append(_where);
+        }
+        this.bldr.append("]");
         return this;
     }
 

@@ -31,11 +31,17 @@ import org.efaps.db.AbstractPrintQuery;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.db.QueryCache;
 import org.efaps.db.QueryKey;
+import org.efaps.db.search.AbstractQPart;
+import org.efaps.db.search.QAnd;
+import org.efaps.db.search.section.QWhereSection;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.eql.InvokerUtil;
+import org.efaps.eql.stmt.parts.where.AbstractWhere;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.infinispan.Cache;
@@ -75,6 +81,9 @@ public class LinkFromSelect
      */
     private final String key;
 
+    /** The select part. */
+    private final LinkFromSelectPart selectPart;
+
     /**
      * Instantiates a new link from select.
      *
@@ -97,7 +106,32 @@ public class LinkFromSelect
         final OneSelect onsel = new OneSelect(this, _linkFrom);
         addOneSelect(onsel);
         onsel.setFromSelect(this);
-        onsel.getSelectParts().add(new LinkFromSelectPart(this.type));
+        this.selectPart = new LinkFromSelectPart(this.type);
+        onsel.getSelectParts().add(this.selectPart);
+    }
+
+    /**
+     * Adds the where.
+     *
+     * @param _where the where
+     * @throws EFapsException on error
+     */
+    public void addWhere(final String _where)
+        throws EFapsException
+    {
+        if (_where != null) {
+            final List<AbstractWhere> wheres = InvokerUtil.analyzeWheres(_where);
+            QWhereSection whereSection = null;
+            for (final AbstractWhere where : wheres) {
+                final AbstractQPart part = QueryBuilder.getQPart(where);
+                if (whereSection == null) {
+                    whereSection = new QWhereSection(part);
+                } else {
+                    whereSection.setPart(new QAnd(whereSection.getPart(), part));
+                }
+            }
+            this.selectPart.setWhereSection(whereSection);
+        }
     }
 
     /**
@@ -204,10 +238,12 @@ public class LinkFromSelect
             } else {
                 select.addValuePart(this.type.getId());
             }
-
             select.addPart(SQLPart.PARENTHESIS_CLOSE);
         }
 
+        for (final OneSelect oneSel : getAllSelects()) {
+            oneSel.append2SQLWhere(select);
+        }
         return select.getSQL();
     }
 
@@ -221,7 +257,7 @@ public class LinkFromSelect
     private List<Type> getAllChildTypes(final Type _parent)
         throws CacheReloadException
     {
-        final List<Type> ret = new ArrayList<Type>();
+        final List<Type> ret = new ArrayList<>();
         for (final Type child : _parent.getChildTypes()) {
             ret.addAll(getAllChildTypes(child));
             ret.add(child);
@@ -334,7 +370,7 @@ public class LinkFromSelect
     @Override
     public Type getMainType()
     {
-        return null;
+        return getType();
     }
 
     /* (non-Javadoc)
@@ -366,6 +402,9 @@ public class LinkFromSelect
         /** The type. */
         private final Type type;
 
+        /** The where section. */
+        private QWhereSection whereSection;
+
         /**
          * Instantiates a new link from select part.
          *
@@ -374,6 +413,16 @@ public class LinkFromSelect
         public LinkFromSelectPart(final Type _type)
         {
             this.type = _type;
+        }
+
+        /**
+         * Sets the where section.
+         *
+         * @param _whereSection the new where section
+         */
+        public void setWhereSection(final QWhereSection _whereSection)
+        {
+            this.whereSection = _whereSection;
         }
 
         @Override
@@ -407,8 +456,13 @@ public class LinkFromSelect
         @Override
         public void add2Where(final OneSelect _oneselect,
                               final SQLSelect _select)
+            throws EFapsException
         {
-            // no clause must be added
+            if (this.whereSection != null) {
+                this.whereSection.getPart().prepare(_oneselect.getQuery(), null);
+                _select.addPart(SQLPart.AND);
+                this.whereSection.getPart().appendSQL(_select);
+            }
         }
 
         @Override

@@ -18,7 +18,7 @@
 
 package org.efaps.db.search;
 
-import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.AbstractTypeQuery;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -62,7 +62,7 @@ public class QOrderAsc
      * {@inheritDoc}
      */
     @Override
-    public AbstractQPart prepare(final AbstractObjectQuery<?> _query,
+    public AbstractQPart prepare(final AbstractTypeQuery _query,
                                  final AbstractQPart _part)
         throws EFapsException
     {

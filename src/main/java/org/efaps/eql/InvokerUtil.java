@@ -17,13 +17,19 @@
 
 package org.efaps.eql;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.efaps.eql.stmt.AbstractCIPrintStmt;
 import org.efaps.eql.stmt.AbstractDeleteStmt;
 import org.efaps.eql.stmt.AbstractExecStmt;
 import org.efaps.eql.stmt.AbstractInsertStmt;
 import org.efaps.eql.stmt.AbstractPrintStmt;
 import org.efaps.eql.stmt.AbstractUpdateStmt;
+import org.efaps.eql.stmt.impl.NonOpPrint;
 import org.efaps.eql.stmt.parts.INestedQueryStmtPart;
+import org.efaps.eql.stmt.parts.where.AbstractWhere;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -93,6 +99,29 @@ public final class InvokerUtil
         };
         ret.getValidator().setDiagnosticClazz(EFapsDiagnostic.class);
         ret.getValidator().addValidation("EQLJavaValidator.type", new TypeValidation());
+        return ret;
+    }
+
+    /**
+     * Gets the.
+     *
+     * @param _where the where
+     * @return the i query part
+     * @throws EFapsException on error
+     */
+    public static List<AbstractWhere> analyzeWheres(final String _where)
+        throws EFapsException
+    {
+        final List<AbstractWhere> ret = new ArrayList<>();
+        try {
+            final NonOpPrint print = (NonOpPrint) new EQLInvoker().invoke("print query type EFaps_ATypeName where "
+                            + _where + " select attribute[OID]");
+            if (print != null) {
+                ret.addAll(print.getWheres());
+            }
+        } catch (final Exception e) {
+            throw new EFapsException(InvokerUtil.class.getName(), e);
+        }
         return ret;
     }
 }

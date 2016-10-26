@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.AbstractTypeQuery;
 import org.efaps.db.search.AbstractQPart;
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.value.AbstractQValue;
@@ -45,7 +45,7 @@ public class QClassEqual
    /**
     * The values the given attribute must be equal to.
     */
-    private final List<QClassValue> values = new ArrayList<QClassValue>();
+    private final List<QClassValue> values = new ArrayList<>();
 
     /**
      * Constructor setting attribute and value.
@@ -95,8 +95,8 @@ public class QClassEqual
      * {@inheritDoc}
      */
     @Override
-    public QClassEqual prepare(final AbstractObjectQuery<?> _query,
-                                 final AbstractQPart _part)
+    public QClassEqual prepare(final AbstractTypeQuery _query,
+                               final AbstractQPart _part)
         throws EFapsException
     {
         getAttribute().prepare(_query, this);

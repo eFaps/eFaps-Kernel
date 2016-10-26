@@ -18,7 +18,7 @@
 
 package org.efaps.db.search.compare;
 
-import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.AbstractTypeQuery;
 import org.efaps.db.search.AbstractQPart;
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.value.AbstractQValue;
@@ -107,7 +107,7 @@ public abstract class AbstractQAttrCompare
      * {@inheritDoc}
      */
     @Override
-    public AbstractQPart prepare(final AbstractObjectQuery<?> _query,
+    public AbstractQPart prepare(final AbstractTypeQuery _query,
                                  final AbstractQPart _part)
         throws EFapsException
     {

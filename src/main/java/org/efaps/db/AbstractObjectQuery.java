@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
  * @param <T> type the query returns
  */
 public abstract class AbstractObjectQuery<T>
+    extends AbstractTypeQuery
 {
     /**
      * Logging instance used in this class.
@@ -60,11 +61,6 @@ public abstract class AbstractObjectQuery<T>
      * (if the type is company dependent)
      */
     private boolean companyDependent = true;
-
-    /**
-     * Base type this query is searching on.
-     */
-    private final Type baseType;
 
     /**
      * The where criteria for this search.
@@ -89,12 +85,12 @@ public abstract class AbstractObjectQuery<T>
     /**
      * Map to store the table to index relation.
      */
-    private final Map<SQLTable, Integer> sqlTable2Index = new HashMap<SQLTable, Integer>();
+    private final Map<SQLTable, Integer> sqlTable2Index = new HashMap<>();
 
     /**
      * List contains the values returned from the query.
      */
-    private final List<T> values = new ArrayList<T>();
+    private final List<T> values = new ArrayList<>();
 
     /**
      * Iterator for the instances.
@@ -112,7 +108,7 @@ public abstract class AbstractObjectQuery<T>
      */
     public AbstractObjectQuery(final Type _type)
     {
-        this.baseType = _type;
+        setBaseType(_type);
     }
 
     /**
@@ -173,16 +169,6 @@ public abstract class AbstractObjectQuery<T>
     {
         this.includeChildTypes = _includeChildTypes;
         return this;
-    }
-
-    /**
-     * Getter method for the instance variable {@link #baseType}.
-     *
-     * @return value of instance variable {@link #baseType}
-     */
-    public Type getBaseType()
-    {
-        return this.baseType;
     }
 
     /**
@@ -301,7 +287,7 @@ public abstract class AbstractObjectQuery<T>
     public boolean next()
     {
         if (this.iter == null) {
-            this.iter = new ArrayList<T>(this.values).iterator();
+            this.iter = new ArrayList<>(this.values).iterator();
         }
         final boolean ret = this.iter.hasNext();
         if (ret) {
@@ -336,15 +322,15 @@ public abstract class AbstractObjectQuery<T>
     protected void prepareQuery()
         throws EFapsException
     {
-        this.sqlTable2Index.put(this.baseType.getMainTable(), 0);
-        if (this.baseType.getMainTable() == null) {
-            throw new EFapsException(AbstractObjectQuery.class, "BaseType", this.baseType);
+        this.sqlTable2Index.put(getBaseType().getMainTable(), 0);
+        if (getBaseType().getMainTable() == null) {
+            throw new EFapsException(AbstractObjectQuery.class, "BaseType", getBaseType());
         }
-        if (this.baseType.getMainTable().getSqlColType() != null) {
-            final QEqual eqPart = new QEqual(new QAttribute(this.baseType.getTypeAttribute()),
-                                           new QNumberValue(this.baseType.getId()));
-            if (this.includeChildTypes && !this.baseType.getChildTypes().isEmpty()) {
-                for (final Type type : this.baseType.getChildTypes()) {
+        if (getBaseType().getMainTable().getSqlColType() != null) {
+            final QEqual eqPart = new QEqual(new QAttribute(getBaseType().getTypeAttribute()),
+                                           new QNumberValue(getBaseType().getId()));
+            if (this.includeChildTypes && !getBaseType().getChildTypes().isEmpty()) {
+                for (final Type type : getBaseType().getChildTypes()) {
                     eqPart.addValue(new QNumberValue(type.getId()));
                 }
             }
@@ -354,13 +340,13 @@ public abstract class AbstractObjectQuery<T>
                 this.where.setPart(new QAnd(this.where.getPart(), eqPart));
             }
         }
-        if (this.baseType.isCompanyDependent()) {
-            final QEqual eqPart = new QEqual(new QAttribute(this.baseType.getCompanyAttribute()));
+        if (getBaseType().isCompanyDependent()) {
+            final QEqual eqPart = new QEqual(new QAttribute(getBaseType().getCompanyAttribute()));
             if (this.isCompanyDependent()) {
                 if (Context.getThreadContext().getCompany() == null) {
                     throw new EFapsException(InstanceQuery.class, "noCompany");
                 }
-                if (this.baseType.getCompanyAttribute().getAttributeType().getClassRepr().equals(
+                if (getBaseType().getCompanyAttribute().getAttributeType().getClassRepr().equals(
                                 ConsortiumLinkType.class)) {
                     for (final Long consortium : Context.getThreadContext().getCompany().getConsortiums()) {
                         eqPart.addValue(new QNumberValue(consortium));
@@ -370,7 +356,7 @@ public abstract class AbstractObjectQuery<T>
                 }
             } else {
                 for (final Long compId : Context.getThreadContext().getPerson().getCompanies()) {
-                    if (this.baseType.getCompanyAttribute().getAttributeType().getClassRepr().equals(
+                    if (getBaseType().getCompanyAttribute().getAttributeType().getClassRepr().equals(
                                     ConsortiumLinkType.class)) {
                         for (final Long consortium : Company.get(compId).getConsortiums()) {
                             eqPart.addValue(new QNumberValue(consortium));

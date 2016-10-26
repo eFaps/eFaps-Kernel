@@ -27,7 +27,7 @@ import java.util.TreeMap;
 
 import org.efaps.admin.datamodel.IBitEnum;
 import org.efaps.admin.datamodel.attributetype.BitEnumType;
-import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.AbstractTypeQuery;
 import org.efaps.db.search.AbstractQPart;
 import org.efaps.db.search.compare.QEqual;
 import org.efaps.db.wrapper.SQLPart;
@@ -52,7 +52,7 @@ public class QBitValue
     /**
      * Set of integr allready added.
      */
-    private final Set<Integer> added = new HashSet<Integer>();;
+    private final Set<Integer> added = new HashSet<>();;
 
     /**
      * @param _bitEnum bit enum to be used
@@ -66,13 +66,13 @@ public class QBitValue
      * {@inheritDoc}
      */
     @Override
-    public AbstractQPart prepare(final AbstractObjectQuery<?> _query,
+    public AbstractQPart prepare(final AbstractTypeQuery _query,
                                  final AbstractQPart _part)
         throws EFapsException
     {
         if (_part instanceof QEqual) {
             final List<AbstractQValue> values = ((QEqual) _part).getValues();
-            final Map<Integer, IBitEnum>enums = new TreeMap<Integer, IBitEnum>();
+            final Map<Integer, IBitEnum>enums = new TreeMap<>();
             for (final AbstractQValue value : values) {
                 if (value instanceof QBitValue) {
                     final IBitEnum abitEnum = ((QBitValue) value).getBitEnum();

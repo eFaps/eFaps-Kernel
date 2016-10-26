@@ -19,7 +19,7 @@
 package org.efaps.db.search.value;
 
 import org.efaps.admin.datamodel.Status;
-import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.AbstractTypeQuery;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.search.AbstractQPart;
@@ -61,7 +61,7 @@ public class QStringValue
      *
      */
     @Override
-    public QStringValue prepare(final AbstractObjectQuery<?> _query,
+    public QStringValue prepare(final AbstractTypeQuery _query,
                                 final AbstractQPart _part)
         throws EFapsException
     {

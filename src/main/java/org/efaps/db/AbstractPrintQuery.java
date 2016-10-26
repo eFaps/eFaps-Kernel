@@ -33,6 +33,7 @@ import org.apache.commons.dbutils.handlers.ArrayListHandler;
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
+import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
@@ -53,10 +54,9 @@ import org.slf4j.LoggerFactory;
  * Abstract class all print queries are based on.
  *
  * @author The eFaps Team
- * @version $Id: AbstractPrintQuery.java 14276 2014-10-21 15:40:19Z
- *          jan@moxter.net $
  */
 public abstract class AbstractPrintQuery
+    extends AbstractTypeQuery
 {
 
     /**
@@ -67,29 +67,29 @@ public abstract class AbstractPrintQuery
     /**
      * Mapping of Select statements to OneSelect.
      */
-    private final Map<String, OneSelect> selectStmt2OneSelect = new HashMap<String, OneSelect>();
+    private final Map<String, OneSelect> selectStmt2OneSelect = new HashMap<>();
 
     /**
      * Mapping of attributes to OneSelect.
      */
-    private final Map<String, OneSelect> attr2OneSelect = new HashMap<String, OneSelect>();
+    private final Map<String, OneSelect> attr2OneSelect = new HashMap<>();
 
     /**
      * Mapping of sql tables to table index.
      *
      * @see #tableIndex
      */
-    private final Map<String, Integer> sqlTable2Index = new HashMap<String, Integer>();
+    private final Map<String, Integer> sqlTable2Index = new HashMap<>();
 
     /**
      * Mapping of key to Phrase.
      */
-    private final Map<String, Phrase> key2Phrase = new HashMap<String, Phrase>();
+    private final Map<String, Phrase> key2Phrase = new HashMap<>();
 
     /**
      * List of all OneSelect belonging to this PrintQuery.
      */
-    private final List<OneSelect> allSelects = new ArrayList<OneSelect>();
+    private final List<OneSelect> allSelects = new ArrayList<>();
 
     /**
      * Index of an sqltable.
@@ -238,6 +238,18 @@ public abstract class AbstractPrintQuery
         return (T) getAttribute(_attribute.getName());
     }
 
+    @Override
+    public Type getBaseType()
+    {
+        return getMainType();
+    }
+
+    @Override
+    public Integer getIndex4SqlTable(final SQLTable _sqlTable)
+    {
+        return 0;
+    }
+
     /**
      * Method returns the Main type of the query. In case that the query is
      * based on only one type, this Type is returned. In case that the query
@@ -324,14 +336,14 @@ public abstract class AbstractPrintQuery
         if (oneselect == null || oneselect.getFromSelect() == null) {
             LOG.error("Could not get an AttributeSet for the name: '{}' in PrintQuery '{]'", _setName, this);
         } else if (oneselect.getFromSelect().hasResult()) {
-            ret = new HashMap<String, Object>();
+            ret = new HashMap<>();
             // in an attributset the first one is fake
             boolean first = true;
             for (final OneSelect onsel : oneselect.getFromSelect().getAllSelects()) {
                 if (first) {
                     first = false;
                 } else {
-                    final ArrayList<Object> list = new ArrayList<Object>();
+                    final ArrayList<Object> list = new ArrayList<>();
                     final Object object = onsel.getObject();
                     if (object instanceof List<?>) {
                         list.addAll((List<?>) object);
@@ -756,7 +768,7 @@ public abstract class AbstractPrintQuery
         throws EFapsException
     {
         final OneSelect oneselect = this.selectStmt2OneSelect.get(_selectStmt);
-        return oneselect == null ? new ArrayList<Instance>() : oneselect.getInstances();
+        return oneselect == null ? new ArrayList<>() : oneselect.getInstances();
     }
 
     /**
@@ -956,8 +968,8 @@ public abstract class AbstractPrintQuery
                 ret = true;
             }
 
-            final List<Instance> tmpList = new ArrayList<Instance>();
-            final Map<Instance, Integer> sortMap = new HashMap<Instance, Integer>();
+            final List<Instance> tmpList = new ArrayList<>();
+            final Map<Instance, Integer> sortMap = new HashMap<>();
             int i = 0;
             for (final Object[] row : rows) {
                 final Instance instance;

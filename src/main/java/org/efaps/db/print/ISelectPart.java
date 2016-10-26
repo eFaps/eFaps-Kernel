@@ -17,6 +17,7 @@
 
 package org.efaps.db.print;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.efaps.admin.datamodel.Type;
@@ -54,7 +55,6 @@ public interface ISelectPart
     Type getType()
         throws EFapsException;
 
-
     /**
      * Add an Object.
      * @param _row values
@@ -69,15 +69,16 @@ public interface ISelectPart
      */
     Object getObject();
 
-
     /**
      * Add something to the where part of the SQL select.
+     *
      * @param _oneselect    oneselect this select part must be joined to
      * @param _select       SQL select statement wrapper
+     * @throws EFapsException on error
      */
     void add2Where(final OneSelect _oneselect,
-                   final SQLSelect _select);
-
+                   final SQLSelect _select)
+        throws EFapsException;
 
     /**
      * Move the SelectPart one step forward.
