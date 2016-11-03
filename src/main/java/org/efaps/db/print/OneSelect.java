@@ -539,7 +539,8 @@ public class OneSelect
                     currentSelect.addValueSelect(new FormatValueSelect(currentSelect, matcher.group()));
                 }
             } else if (part.startsWith("esjp[")) {
-                final Matcher matcher = esjpPattern.matcher(part);
+                final String esjpPart = this.selectStmt.substring(this.selectStmt.indexOf("esjp["));
+                final Matcher matcher = esjpPattern.matcher(esjpPart);
                 if (matcher.find()) {
                     currentSelect.addValueSelect(new EsjpValueSelect(currentSelect, matcher.group()));
                 }
