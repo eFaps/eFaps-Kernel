@@ -66,7 +66,9 @@ public class Dimension
     private static final String SQL_SELECT_UOM4DIMID = new SQLSelect()
                     .column("ID")
                     .column("DIMID")
+                    .column("SYMBOL")
                     .column("NAME")
+                    .column("CODE")
                     .column("NUMERATOR")
                     .column("DENOMINATOR")
                     .from("T_DMUOM", 0)
@@ -81,7 +83,9 @@ public class Dimension
     private static final String SQL_SELECT_UOM4ID = new SQLSelect()
                     .column("ID")
                     .column("DIMID")
+                    .column("SYMBOL")
                     .column("NAME")
+                    .column("CODE")
                     .column("NUMERATOR")
                     .column("DENOMINATOR")
                     .from("T_DMUOM", 0)
@@ -151,7 +155,7 @@ public class Dimension
     /**
      * List of UoM belonging to this Dimension.
      */
-    private final List<UoM> uoMs = new ArrayList<UoM>();
+    private final List<UoM> uoMs = new ArrayList<>();
 
     /**
      * Id of the base UoM.
@@ -345,7 +349,7 @@ public class Dimension
     {
         ConnectionResource con = null;
         try {
-            final List<Object[]> values = new ArrayList<Object[]>();
+            final List<Object[]> values = new ArrayList<>();
 
             con = Context.getThreadContext().getConnectionResource();
             PreparedStatement stmt = null;
@@ -357,9 +361,11 @@ public class Dimension
                     values.add(new Object[] {
                                     rs.getLong(1),
                                     rs.getLong(2),
-                                    rs.getString(3).trim(),
-                                    rs.getInt(4),
-                                    rs.getInt(5)
+                                    rs.getString(3),
+                                    rs.getString(4),
+                                    rs.getString(5),
+                                    rs.getInt(6),
+                                    rs.getInt(7)
                     });
                 }
                 rs.close();
@@ -373,12 +379,14 @@ public class Dimension
             for (final Object[] row : values) {
                 final long id = (Long) row[0];
                 final long dimId = (Long) row[1];
-                final String name = (String) row[2];
-                final int numerator = (Integer) row[3];
-                final int denominator = (Integer) row[4];
+                final String symbol = row[2] == null ? "" : String.valueOf(row[2]).trim();;
+                final String name = row[3] == null ? "" : String.valueOf(row[3]).trim();;
+                final String code = row[4] == null ? "" : String.valueOf(row[4]).trim();;
+                final int numerator = (Integer) row[5];
+                final int denominator = (Integer) row[6];
                 Dimension.LOG.debug("read UoM '" + name + "' (id = " + id + ")");
                 final Dimension dim = Dimension.get(dimId);
-                final UoM uom = new UoM(id, dimId, name, numerator, denominator);
+                final UoM uom = new UoM(id, dimId, symbol, name, code, numerator, denominator);
                 dim.addUoM(uom);
                 cache.put(uom.getId(), uom);
                 // needed due to cluster serialization that does not update automatically
@@ -520,6 +528,12 @@ public class Dimension
          */
         private final String name;
 
+        /** The symbol. */
+        private final String symbol;
+
+        /** The common code. */
+        private final String commonCode;
+
         /**
          * Numerator for this UoM.
          */
@@ -531,21 +545,29 @@ public class Dimension
         private final int denominator;
 
         /**
+         * Instantiates a new uo M.
+         *
          * @param _id id of this UoM
          * @param _dimId Id of the dimension this UoM belongs to
+         * @param _symbol the symbol
          * @param _name Name of this UoM
+         * @param _commonCode the common code
          * @param _numerator Numerator for this UoM
          * @param _denominator Denominator for this UoM
          */
         protected UoM(final long _id,
                       final long _dimId,
+                      final String _symbol,
                       final String _name,
+                      final String _commonCode,
                       final int _numerator,
                       final int _denominator)
         {
             this.id = _id;
             this.dimId = _dimId;
             this.name = _name;
+            this.symbol = _symbol;
+            this.commonCode = _commonCode;
             this.numerator = _numerator;
             this.denominator = _denominator;
         }
@@ -611,8 +633,7 @@ public class Dimension
             try {
                 ret = Dimension.get(this.dimId);
             } catch (final CacheReloadException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Dimension.LOG.error("read Dimension from Cache failed for id: '{}'", this.dimId);
             }
             return ret;
         }
@@ -626,6 +647,26 @@ public class Dimension
         public Double getBaseDouble(final Double _value)
         {
             return _value * this.numerator / this.denominator;
+        }
+
+        /**
+         * Gets the symbol.
+         *
+         * @return the symbol
+         */
+        public String getSymbol()
+        {
+            return this.symbol;
+        }
+
+        /**
+         * Gets the common code.
+         *
+         * @return the common code
+         */
+        public String getCommonCode()
+        {
+            return this.commonCode;
         }
     }
 }
