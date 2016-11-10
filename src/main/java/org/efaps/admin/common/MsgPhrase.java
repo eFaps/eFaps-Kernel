@@ -226,9 +226,10 @@ public final class MsgPhrase
         throws EFapsException
     {
         String ret = "empty";
+        final long companyID = _company == null ? 0 : _company.getId();
         final Cache<String, String> cache = InfinispanCache.get().<String, String>getCache(
                         MsgPhrase.LABELCACHE);
-        final String key = _language + "_" + _company.getId() + "_" + getUUID().toString();
+        final String key = _language + "_" + companyID + "_" + getUUID().toString();
         if (cache.containsKey(key)) {
             ret = cache.get(key);
         } else {
@@ -247,8 +248,7 @@ public final class MsgPhrase
                     if (current == null) {
                         current = label;
                     } else {
-                        if (label.getPriority(languageid, _company.getId()) > current.getPriority(languageid,
-                                        _company.getId())) {
+                        if (label.getPriority(languageid, companyID) > current.getPriority(languageid, companyID)) {
                             current = label;
                         }
                     }
@@ -283,10 +283,11 @@ public final class MsgPhrase
                                      final Company _company)
         throws EFapsException
     {
+        final long companyID = _company == null ? 0 : _company.getId();
         final List<String> ret = new ArrayList<>();
         final Cache<String, List<String>> cache = InfinispanCache.get().<String, List<String>>getCache(
                         MsgPhrase.ARGUMENTCACHE);
-        final String key = _language + "_" + _company.getId() + "_" + getUUID().toString();
+        final String key = _language + "_" + companyID + "_" + getUUID().toString();
         if (cache.containsKey(key)) {
             ret.addAll(cache.get(key));
         } else {
@@ -305,8 +306,7 @@ public final class MsgPhrase
                 for (final Argument argument : phrase.arguments) {
                     if (orderMap.containsKey(argument.getIndex())) {
                         final Argument current = orderMap.get(argument.getIndex());
-                        if (argument.getPriority(languageid, _company.getId()) > current.getPriority(languageid,
-                                        _company.getId())) {
+                        if (argument.getPriority(languageid, companyID) > current.getPriority(languageid, companyID)) {
                             orderMap.put(argument.getIndex(), argument);
                         }
                     } else {
@@ -352,7 +352,7 @@ public final class MsgPhrase
     public MsgPhrase getParent()
         throws EFapsException
     {
-        MsgPhrase ret;
+        final MsgPhrase ret;
         if (hasParent()) {
             ret = MsgPhrase.get(getParentId());
         } else {
@@ -391,7 +391,7 @@ public final class MsgPhrase
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof MsgPhrase) {
             ret = ((MsgPhrase) _obj).getId() == getId();
         } else {
