@@ -142,6 +142,16 @@ public final class InfinispanCache
     }
 
     /**
+     * Gets the manager for Infinspan.
+     *
+     * @return the manager for Infinspan
+     */
+    public CacheContainer getContainer()
+    {
+        return this.container;
+    }
+
+    /**
      * An advanced cache that does not return the value of the previous value in
      * case of replacement.
      *
