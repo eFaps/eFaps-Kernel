@@ -90,6 +90,12 @@ public class DimensionUpdate
          */
         private boolean base;
 
+        /** The symbol. */
+        private String symbol;
+
+        /** The code. */
+        private String code;
+
         /**
          * {@inheritDoc}
          * @throws EFapsException
@@ -101,7 +107,11 @@ public class DimensionUpdate
             throws EFapsException
         {
             final String value = _tags.get(0);
-            if ("numerator".equals(value)) {
+            if ("symbol".equals(value)) {
+                this.symbol = _text;
+            } else if ("code".equals(value)) {
+                this.code = _text;
+            } else if ("numerator".equals(value)) {
                 this.numerator = _text;
             } else if ("denominator".equals(value)) {
                 this.denominator = _text;
@@ -126,17 +136,19 @@ public class DimensionUpdate
             try {
                 final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.UoM);
                 queryBldr.addWhereAttrEqValue(CIAdminDataModel.UoM.Dimension, _instance.getId());
-                queryBldr.addWhereAttrEqValue(CIAdminDataModel.UoM.Name, getValue("Name"));
+                queryBldr.addWhereAttrEqValue(CIAdminDataModel.UoM.Symbol, this.symbol);
                 final InstanceQuery query = queryBldr.getQuery();
                 query.executeWithoutAccessCheck();
-                Update update;
+                final Update update;
                 if (query.next()) {
                     update = new Update(query.getCurrentValue());
                 } else {
                     update = new Insert(CIAdminDataModel.UoM);
                     update.add(CIAdminDataModel.UoM.Dimension, _instance.getId());
-                    update.add(CIAdminDataModel.UoM.Name, getValue("Name"));
+                    update.add(CIAdminDataModel.UoM.Symbol, this.symbol);
                 }
+                update.add(CIAdminDataModel.UoM.Name, getValue("Name"));
+                update.add(CIAdminDataModel.UoM.CommonCode, this.code);
                 update.add(CIAdminDataModel.UoM.Numerator,  this.numerator);
                 update.add(CIAdminDataModel.UoM.Denominator,  this.denominator);
                 update.executeWithoutAccessCheck();
@@ -168,7 +180,7 @@ public class DimensionUpdate
          * @see #updateInDB
          * @see #addAttribute
          */
-        private final List<DimensionUpdate.UoMDefinition> uoms = new ArrayList<DimensionUpdate.UoMDefinition>();
+        private final List<DimensionUpdate.UoMDefinition> uoms = new ArrayList<>();
 
         /**
          * Current read attribute definition instance.

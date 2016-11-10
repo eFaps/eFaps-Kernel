@@ -227,7 +227,9 @@ public class CIAdminDataModel
         }
 
         public final CIAttribute Dimension = new CIAttribute(this, "Dimension");
+        public final CIAttribute Symbol = new CIAttribute(this, "Symbol");
         public final CIAttribute Name = new CIAttribute(this, "Name");
+        public final CIAttribute CommonCode = new CIAttribute(this, "CommonCode");
         public final CIAttribute Numerator = new CIAttribute(this, "Numerator");
         public final CIAttribute Denominator = new CIAttribute(this, "Denominator");
     }

@@ -379,9 +379,9 @@ public class Dimension
             for (final Object[] row : values) {
                 final long id = (Long) row[0];
                 final long dimId = (Long) row[1];
-                final String symbol = row[2] == null ? "" : String.valueOf(row[2]).trim();;
-                final String name = row[3] == null ? "" : String.valueOf(row[3]).trim();;
-                final String code = row[4] == null ? "" : String.valueOf(row[4]).trim();;
+                final String symbol = row[2] == null ? "" : String.valueOf(row[2]).trim();
+                final String name = row[3] == null ? "" : String.valueOf(row[3]).trim();
+                final String code = row[4] == null ? "" : String.valueOf(row[4]).trim();
                 final int numerator = (Integer) row[5];
                 final int denominator = (Integer) row[6];
                 Dimension.LOG.debug("read UoM '" + name + "' (id = " + id + ")");
