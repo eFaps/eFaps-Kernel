@@ -19,11 +19,14 @@ package org.efaps.db;
 
 import java.io.Serializable;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
 
 /**
  * TODO comment!
@@ -43,6 +46,7 @@ public final class QueryKey
     /**
      * The sql statement executed.
      */
+    @Field(store = Store.NO, analyze = Analyze.NO, index = Index.NO)
     private final String sql;
 
     /**
@@ -59,7 +63,11 @@ public final class QueryKey
                      final String _sql)
     {
         this.key = _key;
-        this.sql = _sql;
+        if (_sql.length() > 30000) {
+            this.sql = DigestUtils.md2Hex(_sql);
+        } else {
+            this.sql = _sql;
+        }
     }
 
     /**
