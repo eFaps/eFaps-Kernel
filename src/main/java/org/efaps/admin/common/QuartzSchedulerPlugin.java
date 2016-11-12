@@ -25,6 +25,7 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.SelectBuilder;
 import org.efaps.util.EFapsException;
+import org.joda.time.DateTime;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
@@ -97,7 +98,7 @@ public class QuartzSchedulerPlugin
                                                     .withIntervalInMinutes(para1)
                                                     .withRepeatCount(para2)
                                                     :  SimpleScheduleBuilder.repeatMinutelyForever(para1))
-                                    .build();
+                                    .startAt(new DateTime().plusMinutes(para3).toDate()).build();
                 } else if (type.isKindOf(CIAdminCommon.QuartzTriggerHourly.getType())) {
                     trigger = TriggerBuilder.newTrigger()
                                     .withIdentity(name)
