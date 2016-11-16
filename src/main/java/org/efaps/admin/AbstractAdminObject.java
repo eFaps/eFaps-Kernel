@@ -28,10 +28,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -40,11 +43,13 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.AbstractUserInterfaceObject;
 import org.efaps.api.IEnumValue;
+import org.efaps.api.datamodel.Overwrite;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
+import org.efaps.util.UUIDUtil;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -107,12 +112,12 @@ public abstract class AbstractAdminObject
      *
      * @getProperties
      */
-    private final Map<String, String> properties = new HashMap<String, String>();
+    private final Map<String, String> properties = new HashMap<>();
 
     /**
      * All events for this AdminObject are stored in this map.
      */
-    private final Map<EventType, List<EventDefinition>> events = new HashMap<EventType, List<EventDefinition>>();
+    private final Map<EventType, List<EventDefinition>> events = new HashMap<>();
 
     /**
      * checked for events?
@@ -190,7 +195,7 @@ public abstract class AbstractAdminObject
      */
     public String getProperty(final String _name)
     {
-        return getProperties().get(_name);
+        return evalProperties().get(_name);
     }
 
     /**
@@ -214,7 +219,7 @@ public abstract class AbstractAdminObject
      */
     public boolean containsProperty(final String _name)
     {
-        return getProperties().containsKey(_name);
+        return evalProperties().containsKey(_name);
     }
 
     /**
@@ -234,7 +239,7 @@ public abstract class AbstractAdminObject
      */
     public Map<String, String> getPropertyMap()
     {
-        return MapUtils.unmodifiableMap(getProperties());
+        return MapUtils.unmodifiableMap(evalProperties());
     }
 
     /**
@@ -251,7 +256,7 @@ public abstract class AbstractAdminObject
     {
         List<EventDefinition> evenList = this.events.get(_eventtype);
         if (evenList == null) {
-            evenList = new ArrayList<EventDefinition>();
+            evenList = new ArrayList<>();
             this.events.put(_eventtype, evenList);
         }
         if (!evenList.contains(_eventdef)) {
@@ -326,7 +331,7 @@ public abstract class AbstractAdminObject
                                       final Object... _args)
         throws EFapsException
     {
-        final List<Return> ret = new ArrayList<Return>();
+        final List<Return> ret = new ArrayList<>();
         if (hasEvents(_eventtype)) {
             final Parameter param = new Parameter();
             if (_args != null) {
@@ -355,7 +360,7 @@ public abstract class AbstractAdminObject
                                       final Parameter _param)
         throws EFapsException
     {
-        final List<Return> ret = new ArrayList<Return>();
+        final List<Return> ret = new ArrayList<>();
         if (hasEvents(_eventtype)) {
             if (this instanceof AbstractUserInterfaceObject) {
                 // add ui object to parameter
@@ -443,7 +448,7 @@ public abstract class AbstractAdminObject
 
             AbstractAdminObject.LOG.debug("Reading Links for '{}'", getName());
 
-            final List<Object[]> values = new ArrayList<Object[]>();
+            final List<Object[]> values = new ArrayList<>();
             while (rs.next()) {
                 final long conTypeId = rs.getLong(1);
                 final long toId = rs.getLong(2);
@@ -530,6 +535,37 @@ public abstract class AbstractAdminObject
     protected Map<String, String> getProperties()
     {
         return this.properties;
+    }
+
+    /**
+     * This is the getter method for instance variable {@link #properties}.
+     *
+     * @return value of instance variable {@link #properties}
+     *
+     */
+    protected Map<String, String> evalProperties()
+    {
+        final Map<String, String> ret = getProperties();
+        try {
+            if (ret.containsKey(Overwrite.SYSTEMCONFIG.value())) {
+                final String sysConfStr = ret.get(Overwrite.SYSTEMCONFIG.value());
+                final SystemConfiguration sysConfig;
+                if (UUIDUtil.isUUID(sysConfStr)) {
+                    sysConfig = SystemConfiguration.get(UUID.fromString(sysConfStr));
+                } else {
+                    sysConfig = SystemConfiguration.get(sysConfStr);
+                }
+                if (sysConfig != null) {
+                    final Properties props = sysConfig.getAttributeValueAsProperties(ret.get(Overwrite.ATTRIBUTE
+                                    .value()));
+                    ret.putAll(props.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(), e -> e
+                                    .getValue().toString())));
+                }
+            }
+        } catch (final EFapsException e) {
+            LOG.error("Catched error on evaluation of Properties.", e);
+        }
+        return ret;
     }
 
     /**

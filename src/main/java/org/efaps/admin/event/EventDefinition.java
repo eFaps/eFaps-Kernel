@@ -178,11 +178,12 @@ public final class EventDefinition
      * @return Return
      * @throws EFapsException on error
      */
+    @Override
     public Return execute(final Parameter _parameter)
         throws EFapsException
     {
         Return ret = null;
-        _parameter.put(ParameterValues.PROPERTIES, new HashMap<String, String>(super.getProperties()));
+        _parameter.put(ParameterValues.PROPERTIES, new HashMap<>(super.evalProperties()));
         try {
             EventDefinition.LOG.debug("Invoking method '{}' for Resource '{}'", this.methodName, this.resourceName);
             final Class<?> cls = Class.forName(this.resourceName, true, EFapsClassLoader.getInstance());
@@ -214,7 +215,7 @@ public final class EventDefinition
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof EventDefinition) {
             ret = ((EventDefinition) _obj).getId() == getId();
         } else {

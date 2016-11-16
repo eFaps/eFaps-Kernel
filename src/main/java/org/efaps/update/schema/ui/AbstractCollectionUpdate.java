@@ -167,6 +167,9 @@ public abstract class AbstractCollectionUpdate
                                     _attributes.get("program"), _attributes.get("method"), _attributes.get("index")));
                 } else if (_tags.size() == 2 && "property".equals(_tags.get(1))) {
                     getEvents().get(getEvents().size() - 1).addProperty(_attributes.get("name"), _text);
+                } else if (_tags.size() == 2 && "propertiesOverwrite".equals(_tags.get(1))) {
+                    getEvents().get(getEvents().size() - 1).addPropertiesOverwrite(
+                                        _attributes.get("systemConfig"), _attributes.get("attribute"));
                 } else {
                     super.readXML(_tags, _attributes, _text);
                 }
@@ -197,7 +200,7 @@ public abstract class AbstractCollectionUpdate
     {
         /** All fields for the collection are stored in this variable. */
         private final List<AbstractCollectionUpdate.FieldDefinition> fields
-                                                            = new ArrayList<AbstractCollectionUpdate.FieldDefinition>();
+                                                            = new ArrayList<>();
 
         /**
          * Current read field definition.
@@ -323,7 +326,7 @@ public abstract class AbstractCollectionUpdate
                 setPropertiesInDb(insert.getInstance(), field.getProperties());
 
                 if (field.icon != null) {
-                    final Set<LinkInstance> iconset = new HashSet<LinkInstance>();
+                    final Set<LinkInstance> iconset = new HashSet<>();
                     iconset.add(new LinkInstance(field.icon));
                     setLinksInDB(insert.getInstance(), AbstractCollectionUpdate.LINKFIELD2ICON, iconset);
                 }

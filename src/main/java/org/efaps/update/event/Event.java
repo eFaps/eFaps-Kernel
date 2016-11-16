@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
+import org.efaps.api.datamodel.Overwrite;
 import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -50,7 +51,7 @@ public class Event
      *
      * @see #addProperty(String, String)
      */
-    private final Map<String, String> properties = new HashMap<String, String>();
+    private final Map<String, String> properties = new HashMap<>();
 
     /**
      * Event as defined in {@link EventType}.
@@ -200,5 +201,18 @@ public class Event
     public Map<String, String> getProperties()
     {
         return this.properties;
+    }
+
+    /**
+     * Adds the properties overwrite.
+     *
+     * @param _sytemConfig the sytem config
+     * @param _attribute the attribute
+     */
+    public void addPropertiesOverwrite(final String _sytemConfig,
+                                       final String _attribute)
+    {
+        this.properties.put(Overwrite.SYSTEMCONFIG.value(), _sytemConfig);
+        this.properties.put(Overwrite.ATTRIBUTE.value(), _attribute);
     }
 }

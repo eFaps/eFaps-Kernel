@@ -104,7 +104,7 @@ public class TypeUpdate
     /**
      * List of all links for the type.
      */
-    private static final Set<Link> ALLLINKS = new HashSet<Link>();
+    private static final Set<Link> ALLLINKS = new HashSet<>();
     static {
         TypeUpdate.ALLLINKS.add(TypeUpdate.LINK2ALLOWEDEVENT);
         TypeUpdate.ALLLINKS.add(TypeUpdate.LINK2STORE);
@@ -206,6 +206,9 @@ public class TypeUpdate
                                     _attributes.get("program"), _attributes.get("method"), _attributes.get("index")));
                 } else if (_tags.size() == 2 && "property".equals(_tags.get(1))) {
                     getEvents().get(getEvents().size() - 1).addProperty(_attributes.get("name"), _text);
+                } else if (_tags.size() == 2 && "propertiesOverwrite".equals(_tags.get(1))) {
+                    getEvents().get(getEvents().size() - 1).addPropertiesOverwrite(
+                                    _attributes.get("systemConfig"), _attributes.get("attribute"));
                 } else {
                     super.readXML(_tags, _attributes, _text);
                 }
@@ -487,7 +490,7 @@ public class TypeUpdate
         /**
          * List of the related attributes.
          */
-        private final List<TypeUpdate.AttributeDefinition> attributes = new ArrayList<TypeUpdate.AttributeDefinition>();
+        private final List<TypeUpdate.AttributeDefinition> attributes = new ArrayList<>();
 
         /**
          * Name of the parent Type.
@@ -890,7 +893,7 @@ public class TypeUpdate
          * @see #updateInDB
          * @see #addAttribute
          */
-        private final List<TypeUpdate.AttributeDefinition> attributes = new ArrayList<TypeUpdate.AttributeDefinition>();
+        private final List<TypeUpdate.AttributeDefinition> attributes = new ArrayList<>();
 
         /**
          * All attribute sets of the type are stored in this list.
@@ -899,7 +902,7 @@ public class TypeUpdate
          * @see #addAttribute
          */
         private final List<TypeUpdate.AttributeSetDefinition> attributeSets
-            = new ArrayList<TypeUpdate.AttributeSetDefinition>();
+            = new ArrayList<>();
 
         /**
          * Current read attribute definition instance.
@@ -1003,6 +1006,9 @@ public class TypeUpdate
                                     _attributes.get("program"), _attributes.get("method"), _attributes.get("index")));
                 } else if (_tags.size() == 2 && "property".equals(_tags.get(1))) {
                     getEvents().get(getEvents().size() - 1).addProperty(_attributes.get("name"), _text);
+                } else if (_tags.size() == 2 && "propertiesOverwrite".equals(_tags.get(1))) {
+                    getEvents().get(getEvents().size() - 1).addPropertiesOverwrite(
+                                    _attributes.get("systemConfig"), _attributes.get("attribute"));
                 } else {
                     super.readXML(_tags, _attributes, _text);
                 }
@@ -1115,7 +1121,7 @@ public class TypeUpdate
         private void removeObsoleteAttributes()
             throws EFapsException
         {
-            final Set<String> attrNames = new HashSet<String>();
+            final Set<String> attrNames = new HashSet<>();
             for (final AttributeDefinition attr : this.attributes) {
                 attrNames.add(attr.name);
             }

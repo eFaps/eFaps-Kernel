@@ -43,7 +43,7 @@ public class FormUpdate
     /**
      * Set of all links.
      */
-    private static final Set<Link> ALLLINKS = new HashSet<Link>();
+    private static final Set<Link> ALLLINKS = new HashSet<>();
     static  {
         FormUpdate.ALLLINKS.add(FormUpdate.LINK2TYPE);
     }
@@ -96,10 +96,12 @@ public class FormUpdate
                                     _attributes.get("program"), _attributes.get("method"), _attributes.get("index")));
                 } else if (_tags.size() == 2 && "property".equals(_tags.get(1))) {
                     getEvents().get(getEvents().size() - 1).addProperty(_attributes.get("name"), _text);
+                } else if (_tags.size() == 2 && "propertiesOverwrite".equals(_tags.get(1))) {
+                    getEvents().get(getEvents().size() - 1).addPropertiesOverwrite(
+                                    _attributes.get("systemConfig"), _attributes.get("attribute"));
                 } else {
                     super.readXML(_tags, _attributes, _text);
                 }
-
             } else {
                 super.readXML(_tags, _attributes, _text);
             }
