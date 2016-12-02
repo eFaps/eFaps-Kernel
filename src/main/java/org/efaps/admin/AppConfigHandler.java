@@ -68,7 +68,7 @@ public final class AppConfigHandler
         /**
          * @param _key key of the enum instance.
          */
-        private Parameter(final String _key)
+        Parameter(final String _key)
         {
             this.key = _key;
         }
@@ -164,7 +164,7 @@ public final class AppConfigHandler
      */
     public File getTempFolder()
     {
-        File ret;
+        final File ret;
         if (this.tmpURI == null) {
             ret = null;
         } else {

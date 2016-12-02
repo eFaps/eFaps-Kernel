@@ -25,12 +25,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.Company;
 import org.efaps.ci.CIAdminCommon;
@@ -39,6 +42,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.jaas.AppAccessHandler;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheObjectInterface;
@@ -75,6 +79,7 @@ public final class SystemConfiguration
                     .column(0, "KEY")
                     .column(0, "VALUE")
                     .column(0, "COMPANYID")
+                    .column(0, "APPKEY")
                     .from("T_CMSYSCONF", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "ABSTRACTID").addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
@@ -165,20 +170,8 @@ public final class SystemConfiguration
      */
     private final String name;
 
-    /**
-     * Map with all attributes for this system configuration.
-     */
-    private final Map<Long, Map<String, String>> attributes = new HashMap<Long, Map<String, String>>();
-
-    /**
-     * Map with all links for this system configuration.
-     */
-    private final Map<Long, Map<String, String>> links = new HashMap<Long, Map<String, String>>();
-
-    /**
-     * Map with all object attributes for this system configuration.
-     */
-    private final Map<Long, Map<String, String>> objectAttributes = new HashMap<Long, Map<String, String>>();
+    /** The values. */
+    private final List<Value> values = new ArrayList<>();
 
     /**
      * Constructor setting instance variables.
@@ -194,9 +187,6 @@ public final class SystemConfiguration
         this.id = _id;
         this.uuid = UUID.fromString(_uuid);
         this.name = _name;
-        this.attributes.put(new Long(0), new HashMap<String, String>());
-        this.links.put(new Long(0), new HashMap<String, String>());
-        this.objectAttributes.put(new Long(0), new HashMap<String, String>());
     }
 
     /**
@@ -290,43 +280,6 @@ public final class SystemConfiguration
     }
 
     /**
-     * Get a value from the maps. The following logic applies:
-     * <ol>
-     * <li>Check if a Context exists</li>
-     * <li>If a Context exist check if a company is given</li>
-     * <li>If a company is given, check for a company specific map</li>
-     * <li>If a company specific map is given search for the key in this map</li>
-     * <li>If any of the earlier point fails the value from the default map is
-     * returned</li>
-     * </ol>
-     *
-     * @param _key key the value is wanted for
-     * @param _map map the key will be search in for
-     * @return String value
-     * @throws EFapsException on error
-     */
-    private String getValue(final String _key,
-                            final Map<Long, Map<String, String>> _map)
-        throws EFapsException
-    {
-        Company company = null;
-        if (Context.isThreadActive()) {
-            company = Context.getThreadContext().getCompany();
-        }
-        final long companyId = company == null ? 0 : company.getId();
-        Map<String, String> innerMap;
-        if (_map.containsKey(companyId)) {
-            innerMap = _map.get(companyId);
-            if (!innerMap.containsKey(_key)) {
-                innerMap = _map.get(new Long(0));
-            }
-        } else {
-            innerMap = _map.get(new Long(0));
-        }
-        return innerMap.get(_key);
-    }
-
-    /**
      * Returns for given <code>_key</code> the related link. If no link is found
      * <code>null</code> is returned.
      *
@@ -338,7 +291,7 @@ public final class SystemConfiguration
     public Instance getLink(final String _key)
         throws EFapsException
     {
-        return Instance.get(getValue(_key, this.links));
+        return Instance.get(getValue(_key, ConfType.LINK));
     }
 
     /**
@@ -368,7 +321,7 @@ public final class SystemConfiguration
     public String getObjectAttributeValue(final String _oid)
         throws EFapsException
     {
-        return getValue(_oid, this.objectAttributes);
+        return getValue(_oid, ConfType.OBJATTR);
     }
 
     /**
@@ -399,7 +352,7 @@ public final class SystemConfiguration
         throws EFapsException
     {
         final Properties ret = new Properties();
-        final String value = getValue(_key, this.objectAttributes);
+        final String value = getValue(_key, ConfType.ATTRIBUTE);
         if (value != null) {
             try {
                 ret.load(new StringReader(value));
@@ -420,7 +373,7 @@ public final class SystemConfiguration
     public boolean containsAttributeValue(final String _key)
         throws EFapsException
     {
-        return getValue(_key, this.attributes) != null;
+        return getValue(_key, ConfType.ATTRIBUTE) != null;
     }
 
     /**
@@ -435,7 +388,7 @@ public final class SystemConfiguration
     public String getAttributeValue(final String _key)
         throws EFapsException
     {
-        return getValue(_key, this.attributes);
+        return getValue(_key, ConfType.ATTRIBUTE);
     }
 
     /**
@@ -573,6 +526,77 @@ public final class SystemConfiguration
     }
 
     /**
+     * Gets the value.
+     *
+     * @param _key the key
+     * @param _type the type
+     * @return the value
+     * @throws EFapsException on error
+     */
+    private String getValue(final String _key,
+                            final ConfType _type)
+        throws EFapsException
+    {
+        final List<Value> fv = this.values.stream()
+                        .filter(p -> p.type.equals(_type))
+                        .filter(p -> p.key.equals(_key))
+                        .filter(p -> priority(p) > 0)
+                        .sorted(new Comparator<Value>()
+                        {
+
+                            @Override
+                            public int compare(final Value _o1,
+                                               final Value _o2)
+                            {
+                                return Integer.compare(priority(_o2), priority(_o1));
+                            }
+                        }).collect(Collectors.toList());
+        LOG.info("Analyzed for key {}: {}", _key, fv);
+        final String ret;
+        if (fv.isEmpty()) {
+            ret = null;
+        } else {
+            ret = fv.get(0).value;
+        }
+        return ret;
+    }
+
+    /**
+     * Priority.
+     *
+     * @param _value the value
+     * @return the int
+     */
+    private int priority(final Value _value)
+    {
+        int ret = 1;
+        try {
+            if (StringUtils.isNotEmpty(_value.appKey)
+                            && !_value.appKey.equals(AppAccessHandler.getApplicationKey())) {
+                ret = -1;
+            } else {
+                final long companyId;
+                if (Context.isThreadActive()) {
+                    final Company company = Context.getThreadContext().getCompany();
+                    companyId = company == null ? 0 : company.getId();
+                } else {
+                    companyId = 0;
+                }
+                if (_value.companyId == companyId) {
+                    ret = ret + 100;
+                } else if (_value.companyId == 0) {
+                    ret = ret + 10;
+                } else if (_value.companyId != companyId) {
+                    ret = -1;
+                }
+            }
+        } catch (final EFapsException e) {
+            LOG.error("Catched", e);
+        }
+        return ret;
+    }
+
+    /**
      * Reload the current SystemConfiguration by removing it from the Cache.
      */
     public void reload()
@@ -596,7 +620,7 @@ public final class SystemConfiguration
                 Context.begin();
                 closeContext = true;
             }
-            final List<Object[]> values = new ArrayList<Object[]>();
+            final List<Object[]> dbValues = new ArrayList<>();
             con = Context.getThreadContext().getConnectionResource();
             PreparedStatement stmt = null;
             try {
@@ -605,11 +629,12 @@ public final class SystemConfiguration
                 final ResultSet rs = stmt.executeQuery();
 
                 while (rs.next()) {
-                    values.add(new Object[] {
+                    dbValues.add(new Object[] {
                                     rs.getLong(1),
-                                    rs.getString(2).trim(),
-                                    rs.getString(3).trim(),
-                                    rs.getLong(4)
+                                    rs.getString(2),
+                                    rs.getString(3),
+                                    rs.getLong(4),
+                                    rs.getString(5)
                     });
                 }
                 rs.close();
@@ -622,28 +647,22 @@ public final class SystemConfiguration
             if (closeContext) {
                 Context.rollback();
             }
-            for (final Object[] row : values) {
+            for (final Object[] row : dbValues) {
                 final Long typeId = (Long) row[0];
                 final String key = (String) row[1];
                 final String value = (String) row[2];
                 final Long companyId = (Long) row[3];
+                final String appkey = (String) row[4];
                 final Type type = Type.get(typeId);
-                final Map<Long, Map<String, String>> configMap;
+                final ConfType confType;
                 if (type.equals(CIAdminCommon.SystemConfigurationLink.getType())) {
-                    configMap = this.links;
+                    confType = ConfType.LINK;
                 } else if (type.equals(CIAdminCommon.SystemConfigurationObjectAttribute.getType())) {
-                    configMap = this.objectAttributes;
+                    confType = ConfType.OBJATTR;
                 } else {
-                    configMap = this.attributes;
+                    confType = ConfType.ATTRIBUTE;
                 }
-                final Map<String, String> map;
-                if (configMap.containsKey(companyId)) {
-                    map = configMap.get(companyId);
-                } else {
-                    map = new HashMap<String, String>();
-                    configMap.put(companyId, map);
-                }
-                map.put(key, value);
+                this.values.add(new Value(confType, key, value, companyId, appkey));
             }
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read SystemConfiguration attributes", e);
@@ -778,11 +797,10 @@ public final class SystemConfiguration
         return SystemConfiguration.BPECONF;
     }
 
-
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof SystemConfiguration) {
             ret = ((SystemConfiguration) _obj).getId() == getId();
         } else {
@@ -795,6 +813,72 @@ public final class SystemConfiguration
     public int hashCode()
     {
         return  Long.valueOf(getId()).intValue();
+    }
+
+    /**
+     * Value class.
+     */
+    private enum ConfType
+    {
+
+        /** The attribute. */
+        ATTRIBUTE,
+
+        /** The link. */
+        LINK,
+
+        /** The objattr. */
+        OBJATTR
+    }
+
+    /**
+     * Value class.
+     */
+    private static class Value
+    {
+
+        /** The type. */
+        private final ConfType type;
+
+        /** The key. */
+        private final String key;
+
+        /** The value. */
+        private final String value;
+
+        /** The company id. */
+        private final long companyId;
+
+        /** The app key. */
+        private final String appKey;
+
+        /**
+         * Instantiates a new value.
+         *
+         * @param _confType the conf type
+         * @param _key the key
+         * @param _value the value
+         * @param _companyId the company id
+         * @param _appkey the appkey
+         */
+        Value(final ConfType _confType,
+              final String _key,
+              final String _value,
+              final Long _companyId,
+              final String _appkey)
+        {
+            this.type = _confType;
+            this.key = StringUtils.trim(_key);
+            this.value = StringUtils.trim(_value);
+            this.companyId = _companyId;
+            this.appKey = StringUtils.trim(_appkey);
+        }
+
+        @Override
+        public String toString()
+        {
+            return ToStringBuilder.reflectionToString(this, ToStringStyle.NO_CLASS_NAME_STYLE);
+        }
     }
 
     /**
