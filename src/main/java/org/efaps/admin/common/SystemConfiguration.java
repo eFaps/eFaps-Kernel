@@ -551,7 +551,7 @@ public final class SystemConfiguration
                                 return Integer.compare(priority(_o2), priority(_o1));
                             }
                         }).collect(Collectors.toList());
-        LOG.info("Analyzed for key {}: {}", _key, fv);
+        LOG.debug("Analyzed for key {}: {}", _key, fv);
         final String ret;
         if (fv.isEmpty()) {
             ret = null;
