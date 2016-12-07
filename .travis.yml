@@ -15,5 +15,5 @@ script:
   - mvn test -s mySettings.xml -B
 
 after_success:
-  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} == '' ]] && mvn deploy -DskipTests -s mySettings.xml"
+ - "[[ $TRAVIS_BRANCH == \"master\" ]] && [[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} == '' ]] && mvn deploy -DskipTests -s mySettings.xml"
 
