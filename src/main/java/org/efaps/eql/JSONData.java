@@ -34,6 +34,7 @@ import org.efaps.eql.stmt.IPrintStmt;
 import org.efaps.eql.stmt.parts.select.AbstractSelect;
 import org.efaps.json.data.AbstractValue;
 import org.efaps.json.data.BooleanValue;
+import org.efaps.json.data.ByteValue;
 import org.efaps.json.data.DataList;
 import org.efaps.json.data.DateTimeValue;
 import org.efaps.json.data.DecimalValue;
@@ -48,7 +49,6 @@ import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 /**
  * TODO comment!
  *
@@ -163,6 +163,8 @@ public final class JSONData
                     ret = new StringListValue().setValue(tmpList);
                 }
             }
+        } else if (_object instanceof byte[]) {
+            ret = new ByteValue().setValue((byte[]) _object);
         } else if (_object != null) {
             ret = new StringValue().setValue(_object.toString());
         } else {
