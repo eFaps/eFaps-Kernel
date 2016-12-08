@@ -18,6 +18,7 @@
 
 package org.efaps.db.search.value;
 
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.db.AbstractTypeQuery;
 import org.efaps.db.Context;
@@ -78,8 +79,13 @@ public class QStringValue
                 if (((QEqual) _part).getAttribute().getAttribute().getParent().isCheckStatus()
                                 && ((QEqual) _part).getAttribute().getAttribute().equals(
                                    ((QEqual) _part).getAttribute().getAttribute().getParent().getStatusAttribute())) {
-                    final Status status = Status.find(
-                                    ((QEqual) _part).getAttribute().getAttribute().getLink().getUUID(), this.value);
+                    final Status status;
+                    if (StringUtils.isNumeric(this.value)) {
+                        status = Status.get(Long.valueOf(this.value));
+                    } else {
+                        status = Status.find(
+                                        ((QEqual) _part).getAttribute().getAttribute().getLink().getUUID(), this.value);
+                    }
                     if (status != null) {
                         this.value = Long.valueOf(status.getId()).toString();
                         this.noEscape = true;
