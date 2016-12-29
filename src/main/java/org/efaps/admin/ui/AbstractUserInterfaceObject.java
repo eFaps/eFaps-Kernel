@@ -108,7 +108,7 @@ public abstract class AbstractUserInterfaceObject
      *
      * @see #getAccess
      */
-    private final Set<Long> access = new HashSet<Long>();
+    private final Set<Long> access = new HashSet<>();
 
     /**
      * Constructor to set the id, the uuid and the name of the user interface
@@ -278,6 +278,7 @@ public abstract class AbstractUserInterfaceObject
             parameter.put(ParameterValues.INSTANCE, _instance);
             parameter.put(ParameterValues.CALL_CMD, _callCmd);
             parameter.put(ParameterValues.CALL_INSTANCE, _callInstance);
+            parameter.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
             for (final EventDefinition event : events) {
                 final Return retIn = event.execute(parameter);
                 if (retIn.get(ReturnValues.TRUE) == null) {
