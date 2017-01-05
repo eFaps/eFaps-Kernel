@@ -86,7 +86,7 @@ public final class AccessCache
             final CacheQuery query = searchManager.getQuery(
                             NumericRangeQuery.newLongRange("personId", _personId, _personId, true,
                                             true), AccessKey.class);
-            try (final ResultIterator iter = query.iterator()) {
+            try (ResultIterator iter = query.iterator()) {
                 while (iter.hasNext()) {
                     final AccessKey key = (AccessKey) iter.next();
                     AccessCache.getKeyCache().remove(key);
@@ -107,7 +107,7 @@ public final class AccessCache
             AccessCache.LOG.debug("registered Update for Instance: {}", _instance);
             final Cache<String, AccessKey> indexCache = InfinispanCache.get()
                             .<String, AccessKey>getIgnReCache(AccessCache.INDEXCACHE);
-            if (!indexCache.isEmpty()) {
+            if (!indexCache.isEmpty() && _instance != null && _instance.isValid()) {
                 final SearchManager searchManager = Search.getSearchManager(indexCache);
                 final Term typeUUIDTerm = new Term("instanceTypeUUID", _instance.getTypeUUID().toString());
 
@@ -117,7 +117,7 @@ public final class AccessCache
                                 true), Occur.MUST);
                 final CacheQuery query = searchManager.getQuery(builder.build(), AccessKey.class);
 
-                try (final ResultIterator iter = query.iterator()) {
+                try (ResultIterator iter = query.iterator()) {
                     while (iter.hasNext()) {
                         final AccessKey key = (AccessKey) iter.next();
                         AccessCache.getKeyCache().remove(key);
