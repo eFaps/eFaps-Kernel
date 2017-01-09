@@ -352,7 +352,7 @@ public final class SystemConfiguration
         throws EFapsException
     {
         final Properties ret = new Properties();
-        final String value = getValue(_key, ConfType.ATTRIBUTE);
+        final String value = getValue(_key, ConfType.OBJATTR);
         if (value != null) {
             try {
                 ret.load(new StringReader(value));
@@ -669,7 +669,7 @@ public final class SystemConfiguration
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read SystemConfiguration attributes", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
@@ -778,7 +778,7 @@ public final class SystemConfiguration
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read SystemConfiguration", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
