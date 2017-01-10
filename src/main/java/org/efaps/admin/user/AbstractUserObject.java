@@ -32,6 +32,7 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
+import org.efaps.util.UUIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +88,7 @@ public abstract class AbstractUserObject
      * @see #persons
      * @see #getPersons
      */
-    public abstract boolean hasChildPerson(final Person _person);
+    public abstract boolean hasChildPerson(Person _person);
 
     /**
      * Checks, if the context user is assigned to this user object. The instance
@@ -483,18 +484,18 @@ public abstract class AbstractUserObject
     public static AbstractUserObject getUserObject(final String _name)
         throws EFapsException
     {
-        AbstractUserObject ret = Role.get(_name);
+        AbstractUserObject ret = UUIDUtil.isUUID(_name) ? Role.get(UUID.fromString(_name)) : Role.get(_name);
         if (ret == null) {
-            ret = Group.get(_name);
+            ret = UUIDUtil.isUUID(_name) ? Group.get(UUID.fromString(_name)) : Group.get(_name);
         }
         if (ret == null) {
-            ret = Company.get(_name);
+            ret = UUIDUtil.isUUID(_name) ? Company.get(UUID.fromString(_name)) : Company.get(_name);
         }
         if (ret == null) {
-            ret = Consortium.get(_name);
+            ret = UUIDUtil.isUUID(_name) ? Consortium.get(UUID.fromString(_name)) : Consortium.get(_name);
         }
         if (ret == null) {
-            ret = Person.get(_name);
+            ret = UUIDUtil.isUUID(_name) ? Person.get(UUID.fromString(_name)) : Person.get(_name);
         }
         return ret;
     }

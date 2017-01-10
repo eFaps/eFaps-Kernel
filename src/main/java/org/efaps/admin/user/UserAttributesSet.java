@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUser;
@@ -31,6 +32,7 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
+import org.efaps.util.UUIDUtil;
 
 /**
  * This class represents a set of UserAttribute related to a User.<br>
@@ -65,7 +67,7 @@ public class UserAttributesSet
      * enumeration.
      */
     private static final Map<String, UserAttributesSet.UserAttributesDefinition> MAPPER
-        = new HashMap<String, UserAttributesSet.UserAttributesDefinition>();
+        = new HashMap<>();
 
     /**
      * This enumeration is used to get a relation to the necessary types in the
@@ -99,9 +101,9 @@ public class UserAttributesSet
          * @param _keyAttribute name of the key attribute
          * @param _value name of the value attribute
          */
-        private UserAttributesDefinition(final String _name,
-                                         final String _keyAttribute,
-                                         final String _value)
+        UserAttributesDefinition(final String _name,
+                                 final String _keyAttribute,
+                                 final String _value)
         {
             this.name = _name;
             this.keyAttribute = _keyAttribute;
@@ -114,7 +116,7 @@ public class UserAttributesSet
     /**
      * instance map to store a Key-to-UserAttribute Relation.
      */
-    private final Map<String, UserAttribute> attributes = new HashMap<String, UserAttribute>();
+    private final Map<String, UserAttribute> attributes = new HashMap<>();
 
     /**
      * this instance variable stores the Id of the User this UserAttributeSet
@@ -126,14 +128,14 @@ public class UserAttributesSet
      * Constructor using the constructor {@link #UserAttributesSet(long)}
      * through searching the person id for the given name.
      *
-     * @param _userName name of the user this attribute set will belong to
+     * @param _user name or UUID of the user this attribute set will belong to
      * @throws EFapsException if user attribute set could not be fetched from
      *             eFaps database
      */
-    public UserAttributesSet(final String _userName)
+    public UserAttributesSet(final String _user)
         throws EFapsException
     {
-        this(Person.get(_userName).getId());
+        this(UUIDUtil.isUUID(_user) ? Person.get(UUID.fromString(_user)).getId() : Person.get(_user).getId());
     }
 
     /**
@@ -266,7 +268,7 @@ public class UserAttributesSet
                 }
                 final InstanceQuery query = queryBldr.getQuery();
                 query.execute();
-                Update update;
+                final Update update;
                 if (query.next()) {
                     update = new Update(query.getCurrentValue());
                 } else {
@@ -314,7 +316,7 @@ public class UserAttributesSet
                 }
                 multi.executeWithoutAccessCheck();
                 while (multi.next()) {
-                    String key;
+                    final String key;
                     if (definition.keyAttribute == null) {
                         key = definition.name;
                     } else {

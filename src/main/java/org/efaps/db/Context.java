@@ -27,6 +27,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.UUID;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -54,6 +55,7 @@ import org.efaps.init.INamingBinds;
 import org.efaps.init.IeFapsProperties;
 import org.efaps.init.StartupException;
 import org.efaps.util.EFapsException;
+import org.efaps.util.UUIDUtil;
 import org.efaps.util.cache.CacheReloadException;
 import org.joda.time.Chronology;
 import org.joda.time.DateTimeZone;
@@ -154,7 +156,7 @@ public final class Context
      * thread. This is needed e.g. in JasperReport for SubReports.
      * @see #inherit
      */
-    private static ThreadLocal<Context> INHERITTHREADCONTEXT = new InheritableThreadLocal<Context>();
+    private static ThreadLocal<Context> INHERITTHREADCONTEXT = new InheritableThreadLocal<>();
 
     /**
      * Each thread has his own context object. The value is automatically
@@ -163,7 +165,7 @@ public final class Context
      * a thread creates a child threat a different context is created this is
      * needed e.g. for background process form quartz.
      */
-    private static ThreadLocal<Context> THREADCONTEXT = new ThreadLocal<Context>();
+    private static ThreadLocal<Context> THREADCONTEXT = new ThreadLocal<>();
 
     /**
      * The instance variable stores all open instances of {@link Resource}.
@@ -171,17 +173,17 @@ public final class Context
      * @see #getStoreResource(Instance)
      * @see #getStoreResource(Type,long)
      */
-    private final Set<Resource> storeStore = new HashSet<Resource>();
+    private final Set<Resource> storeStore = new HashSet<>();
 
     /**
      * Stores all created connection resources.
      */
-    private final Set<ConnectionResource> connectionStore = new HashSet<ConnectionResource>();
+    private final Set<ConnectionResource> connectionStore = new HashSet<>();
 
     /**
      * Stack used to store returned connections for reuse.
      */
-    private final Stack<ConnectionResource> connectionStack = new Stack<ConnectionResource>();
+    private final Stack<ConnectionResource> connectionStack = new Stack<>();
 
     /**
      * Transaction for the context.
@@ -236,7 +238,7 @@ public final class Context
      * @see #getRequestAttribute
      * @see #setRequestAttribute
      */
-    private final Map<String, Object> requestAttributes = new HashMap<String, Object>();
+    private final Map<String, Object> requestAttributes = new HashMap<>();
 
     /**
      * A map to be able to set attributes with a lifetime of a session (e.g. as
@@ -246,7 +248,7 @@ public final class Context
      * @see #getSessionAttribute
      * @see #setSessionAttribute
      */
-    private Map<String, Object> sessionAttributes = new HashMap<String, Object>();
+    private Map<String, Object> sessionAttributes = new HashMap<>();
 
     /**
      * Holds the timezone belonging to the user of this context.
@@ -309,9 +311,9 @@ public final class Context
         this.inherit = _inherit;
         this.transaction = _transaction;
         this.requestId = RandomStringUtils.randomAlphanumeric(8);
-        this.parameters = _parameters == null ? new HashMap<String, String[]>() : _parameters;
-        this.fileParameters = _fileParameters == null ? new HashMap<String, FileParameter>() : _fileParameters;
-        this.sessionAttributes = _sessionAttributes == null ? new HashMap<String, Object>() : _sessionAttributes;
+        this.parameters = _parameters == null ? new HashMap<>() : _parameters;
+        this.fileParameters = _fileParameters == null ? new HashMap<>() : _fileParameters;
+        this.sessionAttributes = _sessionAttributes == null ? new HashMap<>() : _sessionAttributes;
         this.locale = _locale == null ? Locale.ENGLISH : _locale;
         try {
             setConnection(Context.DATASOURCE.getConnection());
@@ -1035,7 +1037,7 @@ public final class Context
     /**
      * For current thread a new context object must be created.
      *
-     * @param _userName             name of current user to set
+     * @param _user                 name or UIID of current user to set
      * @param _locale               locale instance (which language settings has the user)
      * @param _sessionAttributes    attributes for this session
      * @param _parameters           map with parameters for this thread context
@@ -1046,7 +1048,7 @@ public final class Context
      *             current thread context is already set
      * @see #INHERITTHREADCONTEXT
      */
-    public static Context begin(final String _userName,
+    public static Context begin(final String _user,
                                 final Locale _locale,
                                 final Map<String, Object> _sessionAttributes,
                                 final Map<String, String[]> _parameters,
@@ -1095,8 +1097,8 @@ public final class Context
                 break;
         }
 
-        if (_userName != null) {
-            context.person = Person.get(_userName);
+        if (_user != null) {
+            context.person = UUIDUtil.isUUID(_user) ? Person.get(UUID.fromString(_user)) : Person.get(_user);
             context.locale = context.person.getLocale();
             context.timezone = context.person.getTimeZone();
             context.chronology = context.person.getChronology();
