@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,12 @@ import java.util.UUID;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
-import org.efaps.util.RequestHandler;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
- * TODO:
- *          description
  */
 public class Image
     extends AbstractUserInterfaceObject
@@ -57,16 +54,6 @@ public class Image
                  final String _name)
     {
         super(_id, _uuid, _name);
-    }
-
-    /**
-     * Returns the URL of this image.
-     *
-     * @return URL of this image
-     */
-    public String getUrl()
-    {
-        return RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + getName());
     }
 
     /**

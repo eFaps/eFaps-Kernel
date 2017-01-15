@@ -32,7 +32,6 @@ import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
-import org.efaps.util.RequestHandler;
 import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.InfinispanCache;
@@ -197,7 +196,7 @@ public class Field
      * Map stores the target mode to display relations for this field.
      */
     private final Map<AbstractUserInterfaceObject.TargetMode, Field.Display> mode2display =
-        new HashMap<AbstractUserInterfaceObject.TargetMode, Field.Display>();
+        new HashMap<>();
 
     /**
      * Stores the select that returns the value for this field.
@@ -780,7 +779,7 @@ public class Field
         throws EFapsException
     {
         if (_linkTypeUUID.equals(CIAdminUserInterface.LinkIcon.uuid)) {
-            this.icon = RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + _toName);
+            this.icon = _toName;
         }
         super.setLinkProperty(_linkTypeUUID, _toId, _toTypeUUID, _toName);
     }
@@ -841,9 +840,9 @@ public class Field
         } else if ("HideLabel".equals(_name)) {
             this.hideLabel = "true".equals(_value);
         } else if ("HRef".equals(_name)) {
-            this.reference = RequestHandler.replaceMacrosInUrl(_value);
+            this.reference = _value;
         } else if ("Icon".equals(_name)) {
-            this.icon = RequestHandler.replaceMacrosInUrl(_value);
+            this.icon = _value;
         } else if ("Label".equals(_name)) {
             this.label = _value;
         } else if ("ModeConnect".equals(_name)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Role;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
-import org.efaps.util.RequestHandler;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -51,7 +50,7 @@ public abstract class AbstractCommand
     /**
      * This enum is used to define the Sortdirection of a Field.
      */
-    public static enum SortDirection {
+    public enum SortDirection {
         /**
          * Sortdirection descending.
          */
@@ -75,7 +74,7 @@ public abstract class AbstractCommand
          *
          * @param _value value
          */
-        private SortDirection(final String _value)
+        SortDirection(final String _value)
         {
             this.value = _value;
             AbstractCommand.MAPPER.put(this.value, this);
@@ -108,12 +107,12 @@ public abstract class AbstractCommand
      * getEnum.
      */
     private static final Map<String, AbstractCommand.SortDirection> MAPPER
-        = new HashMap<String, AbstractCommand.SortDirection>();
+        = new HashMap<>();
 
     /**
      * This enum id used to define the different Targets a Command can have.
      */
-    public static enum Target {
+    public enum Target {
         /** The target of the href is the content frame. */
         CONTENT,
         /** The target of the href is the hidden frame. */
@@ -236,7 +235,7 @@ public abstract class AbstractCommand
     /**
      * Classifications that will be added to the object on create.
      */
-    private final Set<Long> targetCreateClassificationIds = new HashSet<Long>();
+    private final Set<Long> targetCreateClassificationIds = new HashSet<>();
 
     /**
      * Is the target Menu/Command the default.
@@ -639,7 +638,7 @@ public abstract class AbstractCommand
     public Set<Classification> getTargetCreateClassification()
         throws CacheReloadException
     {
-        final Set<Classification> ret = new HashSet<Classification>();
+        final Set<Classification> ret = new HashSet<>();
         for (final Long id : this.targetCreateClassificationIds) {
             ret.add(Classification.get(id));
         }
@@ -901,7 +900,7 @@ public abstract class AbstractCommand
         throws EFapsException
     {
         if (_linkTypeUUID.equals(CIAdminUserInterface.LinkIcon.uuid)) {
-            this.icon = RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + _toName);
+            this.icon = _toName;
         } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetForm.uuid)) {
             this.targetForm = Form.get(_toId);
         } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetMenu.uuid)) {
@@ -936,7 +935,7 @@ public abstract class AbstractCommand
         } else if ("DefaultSelected".equals(_name)) {
             this.defaultSelected = "true".equalsIgnoreCase(_value);
         } else if ("HRef".equals(_name)) {
-            this.reference = RequestHandler.replaceMacrosInUrl(_value);
+            this.reference = _value;
         } else if ("Label".equals(_name)) {
             this.label = _value;
         } else if ("Submit".equals(_name)) {
