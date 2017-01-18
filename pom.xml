@@ -443,6 +443,12 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <artifactId>jcr</artifactId>
             <version>2.0</version>
         </dependency>
+        <!-- to be able to send to a JCR via RMI we use this library -->
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-jcr-rmi</artifactId>
+            <version>2.14.0</version>
+        </dependency>
         <dependency>
             <groupId>javax.jms</groupId>
             <artifactId>javax.jms-api</artifactId>

@@ -50,11 +50,13 @@ import javax.naming.NamingException;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
+import org.apache.jackrabbit.rmi.value.SerialValueFactory;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,6 +88,11 @@ public class JCRStoreResource
      * directory.
      */
     private static final String PROPERTY_WORKSPACENAME = "JCRWorkSpaceName";
+
+    /**
+     * Property Name to define if the file will be deleted on deletion of the related object.
+     */
+    private static final String PROPERTY_BASEFOLDER = "JCRBaseFolder";
 
     /**
      * Property Name to define if the file will be deleted on deletion of the related object.
@@ -134,25 +141,42 @@ public class JCRStoreResource
                 final String name = this.repository.getDescriptor(Repository.REP_NAME_DESC);
                 JCRStoreResource.LOG.debug("Successfully retrieved '%s' repository from JNDI", new Object[]{ name });
             }
-            String username = getProperties().get(JCRStoreResource.PROPERTY_USERNAME);
-            if (username == null) {
-                username = Context.getThreadContext().getPerson().getName();
-            }
-            String passwd = getProperties().get(JCRStoreResource.PROPERTY_PASSWORD);
-            if (passwd == null) {
-                passwd = "efaps";
-            }
-            this.session = this.repository.login(new SimpleCredentials(username, passwd.toCharArray()),
-                            getProperties().get(JCRStoreResource.PROPERTY_WORKSPACENAME));
+
         } catch (final NamingException e) {
             throw new EFapsException(JCRStoreResource.class, "initialize.NamingException", e);
-        } catch (final LoginException e) {
-            throw new EFapsException(JCRStoreResource.class, "initialize.LoginException", e);
-        } catch (final NoSuchWorkspaceException e) {
-            throw new EFapsException(JCRStoreResource.class, "initialize.NoSuchWorkspaceException", e);
-        } catch (final RepositoryException e) {
-            throw new EFapsException(JCRStoreResource.class, "initialize.RepositoryException", e);
         }
+    }
+
+    /**
+     * Gets the session for JCR access.
+     *
+     * @return the session for JCR access
+     * @throws EFapsException on error
+     */
+    protected Session getSession()
+        throws EFapsException
+    {
+        if (this.session == null) {
+            try {
+                String username = getProperties().get(JCRStoreResource.PROPERTY_USERNAME);
+                if (username == null) {
+                    username = Context.getThreadContext().getPerson().getName();
+                }
+                String passwd = getProperties().get(JCRStoreResource.PROPERTY_PASSWORD);
+                if (passwd == null) {
+                    passwd = "efaps";
+                }
+                this.session = this.repository.login(new SimpleCredentials(username, passwd.toCharArray()),
+                                getProperties().get(JCRStoreResource.PROPERTY_WORKSPACENAME));
+            } catch (final LoginException e) {
+                throw new EFapsException(JCRStoreResource.class, "initialize.LoginException", e);
+            } catch (final NoSuchWorkspaceException e) {
+                throw new EFapsException(JCRStoreResource.class, "initialize.NoSuchWorkspaceException", e);
+            } catch (final RepositoryException e) {
+                throw new EFapsException(JCRStoreResource.class, "initialize.RepositoryException", e);
+            }
+        }
+        return this.session;
     }
 
     /**
@@ -207,20 +231,26 @@ public class JCRStoreResource
      */
     @Override
     public long write(final InputStream _in,
-                     final long _size,
-                     final String _fileName)
+                      final long _size,
+                      final String _fileName)
         throws EFapsException
     {
-        final JCRBinary bin = new JCRBinary(_in);
         long size = _size;
         try {
-            final Node rootNode = this.session.getRootNode();
-            final Node fileNode = rootNode.addNode(getInstance().getOid(), NodeType.NT_FILE);
-            final Node resNode = fileNode.addNode(Property.JCR_CONTENT, NodeType.NT_RESOURCE);
+            final Binary bin = getBinary(_in);
+            final Node resNode;
+            if (this.identifier == null) {
+                final Node fileNode = getFolderNode().addNode(getInstance().getOid(), NodeType.NT_FILE);
+                setIdentifer(fileNode.getIdentifier());
+                resNode = fileNode.addNode(Property.JCR_CONTENT, NodeType.NT_RESOURCE);
+            } else {
+                final Node fileNode = getSession().getNodeByIdentifier(this.identifier);
+                resNode = fileNode.getNode(Property.JCR_CONTENT);
+            }
             resNode.setProperty(Property.JCR_DATA, bin);
+            resNode.setProperty(Property.JCR_ENCODING, "UTF-8");
             resNode.setProperty(Property.JCR_LAST_MODIFIED, Calendar.getInstance());
             resNode.setProperty(Property.JCR_LAST_MODIFIED_BY, Context.getThreadContext().getPerson().getName());
-            setIdentifer(fileNode.getIdentifier());
             // if size is unkown!
             if (size < 0)  {
                 final byte[] buffer = new byte[1024];
@@ -243,6 +273,53 @@ public class JCRStoreResource
         setFileInfo(_fileName, size);
         return size;
     }
+
+    /**
+     * Gets the folder node.
+     *
+     * @return the folder node
+     * @throws EFapsException on error
+     * @throws RepositoryException the repository exception
+     */
+    protected Node getFolderNode()
+        throws EFapsException, RepositoryException
+    {
+        Node ret = getSession().getRootNode();
+        if (getProperties().containsKey(JCRStoreResource.PROPERTY_BASEFOLDER)) {
+            if (ret.hasNode(getProperties().get(JCRStoreResource.PROPERTY_BASEFOLDER))) {
+                ret = ret.getNode(getProperties().get(JCRStoreResource.PROPERTY_BASEFOLDER));
+            } else {
+                ret = ret.addNode(getProperties().get(JCRStoreResource.PROPERTY_BASEFOLDER), NodeType.NT_FOLDER);
+            }
+        }
+        final String subFolder = new DateTime().toString("yyyy-MM");
+        if (ret.hasNode(subFolder)) {
+            ret = ret.getNode(subFolder);
+        } else {
+            ret = ret.addNode(subFolder, NodeType.NT_FOLDER);
+        }
+        return ret;
+    }
+
+    /**
+     * Gets the binary.
+     *
+     * @param _in the in
+     * @return the binary
+     * @throws EFapsException on error
+     */
+    protected Binary getBinary(final InputStream _in)
+        throws EFapsException
+    {
+        Binary ret = null;
+        try {
+            ret = SerialValueFactory.getInstance().createBinary(_in);
+        } catch (final RepositoryException e) {
+            throw new EFapsException("RepositoryException", e);
+        }
+        return ret;
+    }
+
 
     /**
      * Set the identifier in the eFaps DataBase.
@@ -301,7 +378,7 @@ public class JCRStoreResource
     {
         InputStream input = null;
         try {
-            final Node fileNode = this.session.getNodeByIdentifier(this.identifier);
+            final Node fileNode = getSession().getNodeByIdentifier(this.identifier);
             final Node resNode = fileNode.getNode(Property.JCR_CONTENT);
             final Property data = resNode.getProperty(Property.JCR_DATA);
             final Binary bin = data.getBinary();
@@ -325,7 +402,7 @@ public class JCRStoreResource
         if (getExist()[0] && getExist()[1]
                         && "TRUE".equalsIgnoreCase(getProperties().get(JCRStoreResource.PROPERTY_ENABLEDELETION))) {
             try {
-                final Node fileNode = this.session.getNodeByIdentifier(this.identifier);
+                final Node fileNode = getSession().getNodeByIdentifier(this.identifier);
                 fileNode.remove();
             } catch (final RepositoryException e) {
                 throw new EFapsException(JCRStoreResource.class, "delete.RepositoryException", e);
@@ -351,10 +428,10 @@ public class JCRStoreResource
         throws XAException
     {
         try {
-            if (this.session.hasPendingChanges()) {
-                this.session.save();
+            if (getSession().hasPendingChanges()) {
+                getSession().save();
             }
-            this.session.logout();
+            getSession().logout();
         } catch (final AccessDeniedException e) {
             throw new XAException("AccessDeniedException");
         } catch (final ItemExistsException e) {
@@ -372,6 +449,8 @@ public class JCRStoreResource
         } catch (final NoSuchNodeTypeException e) {
             throw new XAException("NoSuchNodeTypeException");
         } catch (final RepositoryException e) {
+            throw new XAException("RepositoryException");
+        } catch (final EFapsException e) {
             throw new XAException("RepositoryException");
         }
     }
@@ -450,7 +529,11 @@ public class JCRStoreResource
     public void rollback(final Xid _xid)
         throws XAException
     {
-        this.session.logout();
+        try {
+            getSession().logout();
+        } catch (final EFapsException e) {
+            throw new XAException("EFapsException");
+        }
     }
 
     /**
@@ -466,106 +549,6 @@ public class JCRStoreResource
             JCRStoreResource.LOG.debug("setTransactionTimeout (seconds = " + _seconds + ")");
         }
         return true;
-    }
-
-
-    /**
-     * Implementation of Binary from JCR.
-     */
-    private static class JCRBinary
-        implements Binary
-    {
-        /**
-         * The InpuStrema this Binary belongs to.
-         */
-        private final InputStream stream;
-
-        /**
-         * @param _in InputStream
-         */
-        public JCRBinary(final InputStream _in)
-        {
-            this.stream = _in;
-        }
-
-        /**
-         * Returns an {@link InputStream} representation of this value. Each call to
-         * <code>getStream()</code> returns a new stream. The API consumer is
-         * responsible for calling <code>close()</code> on the returned stream.
-         * <p>
-         * If {@link #dispose()} has been called on this <code>Binary</code>
-         * object, then this method will throw the runtime exception
-         * {@link java.lang.IllegalStateException}.
-         *
-         * @return A stream representation of this value.
-         * @throws RepositoryException if an error occurs.
-         */
-        @Override
-        public InputStream getStream()
-            throws RepositoryException
-        {
-            return this.stream;
-        }
-
-        /**
-         * Reads successive bytes from the specified <code>position</code> in this
-         * <code>Binary</code> into the passed byte array until either the byte
-         * array is full or the end of the <code>Binary</code> is encountered.
-         * <p>
-         * If {@link #dispose()} has been called on this <code>Binary</code>
-         * object, then this method will throw the runtime exception
-         * {@link java.lang.IllegalStateException}.
-         *
-         * @param _b        the buffer into which the data is read.
-         * @param _position the position in this Binary from which to start reading
-         *                 bytes.
-         * @return the number of bytes read into the buffer, or -1 if there is no
-         *         more data because the end of the Binary has been reached.
-         * @throws IOException              if an I/O error occurs.
-         * @throws NullPointerException     if b is null.
-         * @throws IllegalArgumentException if offset is negative.
-         * @throws RepositoryException      if another error occurs.
-         */
-        @Override
-        public int read(final byte[] _b,
-                        final long _position)
-            throws IOException, RepositoryException
-        {
-            return this.stream.read(_b);
-        }
-
-        /**
-         * Returns the size of this <code>Binary</code> value in bytes.
-         * <p>
-         * If {@link #dispose()} has been called on this <code>Binary</code>
-         * object, then this method will throw the runtime exception
-         * {@link java.lang.IllegalStateException}.
-         *
-         * @return the size of this value in bytes.
-         * @throws RepositoryException if an error occurs.
-         */
-        @Override
-        public long getSize()
-            throws RepositoryException
-        {
-            return 0;
-        }
-
-        /**
-         * Releases all resources associated with this <code>Binary</code> object
-         * and informs the repository that these resources may now be reclaimed.
-         * An application should call this method when it is finished with the
-         * <code>Binary</code> object.
-         */
-        @Override
-        public void dispose()
-        {
-            try {
-                this.stream.close();
-            } catch (final IOException e) {
-                JCRStoreResource.LOG.error("Error on disposal of inpustream.", e);
-            }
-        }
     }
 
     /**
