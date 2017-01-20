@@ -628,6 +628,15 @@ public final class Context
     }
 
     /**
+     * Remove a attribute form the request.
+     * @param _key key of the session attribute to be removed.
+     */
+    public void removeRequestAttribute(final String _key)
+    {
+        this.requestAttributes.remove(_key);
+    }
+
+    /**
      * Returns true if session attributes maps one or more keys to the specified
      * object. More formally, returns <i>true</i> if and only if the session
      * attributes contains at least one mapping to a object o such that (o==null
