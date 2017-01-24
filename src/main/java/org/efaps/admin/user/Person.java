@@ -49,6 +49,7 @@ import org.efaps.jaas.AppAccessHandler;
 import org.efaps.util.ChronologyType;
 import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
+import org.efaps.util.UUIDUtil;
 import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.InfinispanCache;
 import org.infinispan.Cache;
@@ -269,7 +270,7 @@ public final class Person
      * @see #getRoles
      * @see #add(Role)
      */
-    private final Set<Long> roles = new HashSet<Long>();
+    private final Set<Long> roles = new HashSet<>();
 
     /**
      * HashSet instance variable to hold all id of groups for this person.
@@ -277,7 +278,7 @@ public final class Person
      * @see #getGroups
      * @see #add(Group)
      */
-    private final Set<Long> groups = new HashSet<Long>();
+    private final Set<Long> groups = new HashSet<>();
 
     /**
      * HashSet instance variable to hold all id of groups for this person.
@@ -285,7 +286,7 @@ public final class Person
      * @see #getCompanies
      * @see #add(Company)
      */
-    private final Set<Long> companies = new HashSet<Long>();
+    private final Set<Long> companies = new HashSet<>();
 
     /**
      * HashSet instance variable to hold all id of associations for this person.
@@ -293,7 +294,7 @@ public final class Person
      * @see #getAssociations
      * @see #add(Associations)
      */
-    private final Set<Long> associations = new HashSet<Long>();
+    private final Set<Long> associations = new HashSet<>();
 
     /**
      * The map is used to store all attribute values depending on attribute
@@ -303,7 +304,7 @@ public final class Person
      * @see #updateAttrValue
      * @see #AttrName
      */
-    private final Map<Person.AttrName, String> attrValues = new HashMap<Person.AttrName, String>();
+    private final Map<Person.AttrName, String> attrValues = new HashMap<>();
 
     /**
      * The map is used to store information about updates on attribute values.
@@ -313,7 +314,7 @@ public final class Person
      * @see #commitAttrValuesInDB
      * @see #AttrName
      */
-    private final Map<Person.AttrName, String> attrUpdated = new HashMap<Person.AttrName, String>();
+    private final Map<Person.AttrName, String> attrUpdated = new HashMap<>();
 
     /**
      * The constructor creates a new instance of class {@link Person} and sets
@@ -919,10 +920,10 @@ public final class Person
     public Set<Association> getAssociationsFromDB(final JAASSystem _jaasSystem)
         throws EFapsException
     {
-        final Set<Association> ret = new HashSet<Association>();
+        final Set<Association> ret = new HashSet<>();
         ConnectionResource rsrc = null;
         try {
-            final List<Long> associationIds = new ArrayList<Long>();
+            final List<Long> associationIds = new ArrayList<>();
             rsrc = Context.getThreadContext().getConnectionResource();
 
             Statement stmt = null;
@@ -985,10 +986,10 @@ public final class Person
     public Set<Company> getCompaniesFromDB(final JAASSystem _jaasSystem)
         throws EFapsException
     {
-        final Set<Company> ret = new HashSet<Company>();
+        final Set<Company> ret = new HashSet<>();
         ConnectionResource rsrc = null;
         try {
-            final List<Long> companyIds = new ArrayList<Long>();
+            final List<Long> companyIds = new ArrayList<>();
             rsrc = Context.getThreadContext().getConnectionResource();
 
             PreparedStatement stmt = null;
@@ -1084,10 +1085,10 @@ public final class Person
         throws EFapsException
     {
 
-        final Set<Role> ret = new HashSet<Role>();
+        final Set<Role> ret = new HashSet<>();
         ConnectionResource rsrc = null;
         try {
-            final List<Long> roleIds = new ArrayList<Long>();
+            final List<Long> roleIds = new ArrayList<>();
             rsrc = Context.getThreadContext().getConnectionResource();
             PreparedStatement stmt = null;
             try {
@@ -1222,10 +1223,10 @@ public final class Person
     public Set<Group> getGroupsFromDB(final JAASSystem _jaasSystem)
         throws EFapsException
     {
-        final Set<Group> ret = new HashSet<Group>();
+        final Set<Group> ret = new HashSet<>();
         ConnectionResource rsrc = null;
         try {
-            final List<Long> groupIds = new ArrayList<Long>();
+            final List<Long> groupIds = new ArrayList<>();
             rsrc = Context.getThreadContext().getConnectionResource();
 
             PreparedStatement stmt = null;
@@ -1468,7 +1469,7 @@ public final class Person
     @Override
     public int hashCode()
     {
-        return  Long.valueOf(getId()).intValue();
+        return Long.valueOf(getId()).intValue();
     }
 
     /**
@@ -1555,6 +1556,30 @@ public final class Person
     }
 
     /**
+     * Reset a person. Meaning ti will be removed from all Caches.
+     *
+     * @param _key for the Person to be cleaned from Cache. UUID or Name.
+     * @throws EFapsException the e faps exception
+     */
+    public static void reset(final String _key)
+        throws EFapsException
+    {
+        final Person person;
+        if (UUIDUtil.isUUID(_key)) {
+            person = Person.get(UUID.fromString(_key));
+        } else {
+            person = Person.get(_key);
+        }
+        if (person != null) {
+            InfinispanCache.get().<Long, Person>getCache(Person.IDCACHE).remove(person.getId());
+            InfinispanCache.get().<String, Person>getCache(Person.NAMECACHE).remove(person.getName());
+            if (person.getUUID() != null) {
+                InfinispanCache.get().<UUID, Person>getCache(Person.UUIDCACHE).remove(person.getUUID());
+            }
+        }
+    }
+
+    /**
      * @param _person Person to be cached
      * @throws EFapsException on error
      */
@@ -1573,7 +1598,6 @@ public final class Person
             uuidCache.putIfAbsent(_person.getUUID(), _person);
         }
     }
-
 
     /**
      * @param _sql      SQL Statment to be execuetd
