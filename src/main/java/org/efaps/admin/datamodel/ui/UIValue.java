@@ -126,28 +126,6 @@ public final class UIValue
     }
 
     /**
-     * @param _field        Field
-     * @param _attribute    attribute
-     * @param _value        value
-     * @return  UIValue
-     */
-    public static UIValue get(final Field _field,
-                              final Attribute _attribute,
-                              final Object _value)
-    {
-        final UIValue ret;
-        if (_value instanceof Serializable) {
-            ret = new UIValue(_field, _attribute, (Serializable) _value);
-        } else if (_value == null) {
-            ret = new UIValue(_field, _attribute, null);
-        } else {
-            // throw warning!
-            ret = new UIValue(_field, _attribute, null);
-        }
-        return ret;
-    }
-
-    /**
      * @return the field belonging to this UIValue
      */
     @Override
@@ -479,5 +457,55 @@ public final class UIValue
     public Object getObject()
     {
         return getDbValue();
+    }
+
+    /**
+     * Clone.
+     *
+     * @param _value the value
+     * @return the UI value
+     * @throws CacheReloadException the cache reload exception
+     */
+    public UIValue clone(final Object _value)
+        throws CacheReloadException
+    {
+        final UIValue ret;
+        if (_value instanceof Serializable) {
+            ret = new UIValue(getField(), getAttribute(), (Serializable) _value);
+        } else if (_value == null) {
+            ret = new UIValue(getField(), getAttribute(), null);
+        } else {
+            // throw warning!
+            ret = new UIValue(getField(), getAttribute(), null);
+        }
+        ret.display = this.display;
+        ret.targetMode = this.targetMode;
+        ret.instance = this.callInstance;
+        ret.classObject = this.classObject;
+        ret.callInstance = this.callInstance;
+        ret.requestInstances = this.requestInstances;
+        return ret;
+    }
+
+    /**
+     * @param _field        Field
+     * @param _attribute    attribute
+     * @param _value        value
+     * @return  UIValue
+     */
+    public static UIValue get(final Field _field,
+                              final Attribute _attribute,
+                              final Object _value)
+    {
+        final UIValue ret;
+        if (_value instanceof Serializable) {
+            ret = new UIValue(_field, _attribute, (Serializable) _value);
+        } else if (_value == null) {
+            ret = new UIValue(_field, _attribute, null);
+        } else {
+            // throw warning!
+            ret = new UIValue(_field, _attribute, null);
+        }
+        return ret;
     }
 }
