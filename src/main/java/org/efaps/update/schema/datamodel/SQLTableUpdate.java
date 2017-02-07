@@ -578,12 +578,12 @@ public class SQLTableUpdate
                 } catch (final SQLException e) {
                     throw new InstallationException("SQLTable can not be updated", e);
                 } finally {
-                    if (con != null) {
-                        try {
+                    try {
+                        if (con != null && !con.isClosed()) {
                             con.close();
-                        } catch (final SQLException e) {
-                            throw new InstallationException("SQLTable can not be updated", e);
                         }
+                    } catch (final SQLException e) {
+                        throw new InstallationException("SQLTable can not be updated", e);
                     }
                 }
             }
@@ -616,7 +616,7 @@ public class SQLTableUpdate
                 throw new EFapsException("SQLTableUpdate.createSQLTable.EFapsException", e);
             } finally {
                 try {
-                    if (con != null && con.isClosed()) {
+                    if (con != null && !con.isClosed()) {
                         con.close();
                     }
                 } catch (final SQLException e) {
@@ -640,8 +640,6 @@ public class SQLTableUpdate
         {
             if (SQLTableUpdate.this.created)  {
                 SQLTableUpdate.this.created = false;
-
-
                 Connection con = null;
                 final String tableName = getValue("SQLTable");
                 if (SQLTableUpdate.LOG.isInfoEnabled()) {
@@ -665,12 +663,12 @@ public class SQLTableUpdate
                     SQLTableUpdate.LOG.error("SQLTableUpdate.updateSQLTable.EFapsException", e);
                     throw new EFapsException(getClass(), "updateSQLTable.Throwable", e);
                 } finally {
-                    if (con != null) {
-                        try {
+                    try {
+                        if (con != null && !con.isClosed()) {
                             con.close();
-                        } catch (final SQLException e) {
-                            throw new InstallationException("SQLTable can not be updated", e);
                         }
+                    } catch (final SQLException e) {
+                        throw new CacheReloadException("Cannot read a type for an attribute.", e);
                     }
                 }
             }
@@ -763,18 +761,17 @@ public class SQLTableUpdate
                             checkKey.name, checkKey.condition);
                 }
                 con.commit();
-                con = null;
             } catch (final EFapsException e) {
                 throw new InstallationException("update of the SQL table failed", e);
             } catch (final SQLException e) {
                 throw new InstallationException("update of the SQL table failed", e);
             } finally {
-                if (con != null) {
-                    try {
+                try {
+                    if (con != null && !con.isClosed()) {
                         con.close();
-                    } catch (final SQLException e) {
-                        throw new InstallationException("SQLTable can not be updated", e);
                     }
+                } catch (final SQLException e) {
+                    throw new InstallationException("Cannot read a type for an attribute.", e);
                 }
             }
         }

@@ -445,7 +445,7 @@ public final class NumberGenerator
             throw new CacheReloadException("could not read roles", e);
         } finally {
             try {
-                if (con != null && con.isClosed()) {
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (final SQLException e) {

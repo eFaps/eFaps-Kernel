@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -288,14 +289,15 @@ public class Install
         throws InstallationException
     {
         final Map<String, Integer> versions = new HashMap<>();
+        Connection con = null;
         try {
-            if (Context.getDbType().existsView(Context.getConnection(),
-                            "V_ADMINTYPE") && CIAdminCommon.Application.getType() != null) {
+            con = Context.getConnection();
+            if (Context.getDbType().existsView(con, "V_ADMINTYPE") && CIAdminCommon.Application.getType() != null) {
                 final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.ApplicationVersion);
                 final MultiPrintQuery multi = queryBldr.getPrint();
-                final SelectBuilder selName = SelectBuilder.get()
-                                .linkto(CIAdminCommon.ApplicationVersion.ApplicationLink)
-                                .attribute(CIAdminCommon.Application.Name);
+                final SelectBuilder selName = SelectBuilder.get().linkto(
+                                CIAdminCommon.ApplicationVersion.ApplicationLink).attribute(
+                                                CIAdminCommon.Application.Name);
                 multi.addSelect(selName);
                 multi.addAttribute(CIAdminCommon.ApplicationVersion.Revision);
                 multi.executeWithoutAccessCheck();
@@ -311,6 +313,15 @@ public class Install
             throw new InstallationException("Latest version could not be found", e);
         } catch (final SQLException e) {
             throw new InstallationException("Latest version could not be found", e);
+        } finally {
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         return versions;
     }

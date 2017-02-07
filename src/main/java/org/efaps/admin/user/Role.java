@@ -348,7 +348,7 @@ public final class Role
             throw new CacheReloadException("could not read roles", e);
         } finally {
             try {
-                if (con != null && con.isClosed()) {
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (final SQLException e) {
@@ -405,7 +405,7 @@ public final class Role
             }
         } finally {
             try {
-                if (con != null && con.isClosed()) {
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (final SQLException e) {

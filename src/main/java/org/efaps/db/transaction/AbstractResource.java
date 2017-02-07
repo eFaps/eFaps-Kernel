@@ -90,6 +90,16 @@ public abstract class AbstractResource
         throws EFapsException;
 
     /**
+     * Setter method for instance variable {@link #opened}.
+     *
+     * @param _opened value for instance variable {@link #opened}
+     */
+    protected void setOpened(final boolean _opened)
+    {
+        this.opened = _opened;
+    }
+
+    /**
      * This is the getter method for instance variable {@link #opened}.
      *
      * @return <code>true</code> if this resource is open, otherwise

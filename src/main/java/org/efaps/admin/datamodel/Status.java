@@ -487,7 +487,7 @@ public final class Status
             throw new CacheReloadException("could not read types", e);
         } finally {
             try {
-                if (con != null && con.isClosed()) {
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (final SQLException e) {
@@ -548,7 +548,7 @@ public final class Status
             throw new CacheReloadException("could not read types", e);
         } finally {
             try {
-                if (con != null && con.isClosed()) {
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (final SQLException e) {

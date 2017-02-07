@@ -1665,7 +1665,7 @@ public class Type
                 throw new CacheReloadException("could not read child type ids", e);
             } finally {
                 try {
-                    if (con != null && con.isClosed()) {
+                    if (con != null && !con.isClosed()) {
                         con.close();
                     }
                 } catch (final SQLException e) {

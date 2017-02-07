@@ -269,7 +269,7 @@ public final class Context
     private final String requestId;
 
     /** The connections. */
-    private final Set<ConnectionResource> connectionResources = new HashSet<>();
+    private ConnectionResource connectionResource;
 
     /**
      * Private Constructor.
@@ -369,14 +369,14 @@ public final class Context
     public ConnectionResource getConnectionResource()
         throws EFapsException
     {
-        ConnectionResource con = null;
         try {
-            con = new ConnectionResource(Context.DATASOURCE.getConnection());
-            this.connectionResources.add(con);
+            if (this.connectionResource == null) {
+                this.connectionResource = new ConnectionResource(Context.DATASOURCE.getConnection());
+            }
         } catch (final SQLException e) {
             throw new EFapsException(getClass(), "getConnectionResource.SQLException", e);
         }
-        return con;
+        return this.connectionResource;
     }
 
     /**

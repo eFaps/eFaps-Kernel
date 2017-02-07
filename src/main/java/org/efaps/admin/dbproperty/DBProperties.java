@@ -348,6 +348,7 @@ public final class DBProperties
             resultset.close();
             stmt.close();
             con.commit();
+            con.close();
             if (closeContext) {
                 Context.rollback();
             }
@@ -406,6 +407,7 @@ public final class DBProperties
             resultset.close();
             stmt.close();
             con.commit();
+            con.close();
             if (closeContext) {
                 Context.rollback();
             }

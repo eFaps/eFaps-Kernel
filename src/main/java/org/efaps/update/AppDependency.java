@@ -18,6 +18,7 @@
 
 package org.efaps.update;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,9 +71,11 @@ public final class AppDependency
         throws InstallationException
     {
         if (this.met == null) {
+            Connection con = null;
             try {
-                if (Context.getDbType().existsView(Context.getConnection(),
-                                "V_ADMINTYPE") && CIAdminCommon.ApplicationVersion.getType() != null) {
+                con = Context.getConnection();
+                if (Context.getDbType().existsView(con, "V_ADMINTYPE") && CIAdminCommon.ApplicationVersion
+                                .getType() != null) {
                     final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.Application);
                     queryBldr.addWhereAttrEqValue(CIAdminCommon.Application.Name, this.name);
                     final InstanceQuery query = queryBldr.getQuery();
@@ -87,6 +90,13 @@ public final class AppDependency
             } finally {
                 if (this.met == null) {
                     this.met = true;
+                }
+                try {
+                    if (con != null && !con.isClosed()) {
+                        con.close();
+                    }
+                } catch (final SQLException e) {
+                    throw new InstallationException("Cannot read a type for an attribute.", e);
                 }
             }
         }

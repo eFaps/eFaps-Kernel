@@ -175,6 +175,7 @@ public class ConnectionResource
                     this.connection.close();
                 }
                 this.connection = null;
+                setOpened(false);
             } catch (final SQLException e) {
                 ConnectionResource.LOG.error("SQLException", e);
             }
@@ -207,6 +208,7 @@ public class ConnectionResource
                     this.connection.close();
                 }
                 this.connection = null;
+                setOpened(false);
             } catch (final SQLException e) {
                 ConnectionResource.LOG.error("SQLException", e);
             }

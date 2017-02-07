@@ -193,12 +193,12 @@ public class MessageStatusHolder
             } catch (final SQLException e) {
                 MessageStatusHolder.LOG.error("SQLException");
             } finally {
-                if (con != null) {
-                    try {
+                try {
+                    if (con != null && !con.isClosed()) {
                         con.close();
-                    } catch (final SQLException e) {
-                        MessageStatusHolder.LOG.error("SQLException", e);
                     }
+                } catch (final SQLException e) {
+                    MessageStatusHolder.LOG.error("SQLException", e);
                 }
             }
         }

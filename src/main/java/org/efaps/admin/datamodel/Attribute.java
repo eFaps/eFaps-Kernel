@@ -871,7 +871,7 @@ public class Attribute
             throw new CacheReloadException("Cannot read a type for an attribute.", e);
         } finally {
             try {
-                if (con != null && con.isClosed()) {
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (final SQLException e) {

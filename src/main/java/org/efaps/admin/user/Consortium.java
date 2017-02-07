@@ -365,7 +365,7 @@ public final class Consortium
             throw new CacheReloadException("could not read consortiums", e);
         } finally {
             try {
-                if (con != null && con.isClosed()) {
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (final SQLException e) {
@@ -417,7 +417,7 @@ public final class Consortium
             throw new CacheReloadException("could not read consortiums", e);
         } finally {
             try {
-                if (con != null && con.isClosed()) {
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (final SQLException e) {
