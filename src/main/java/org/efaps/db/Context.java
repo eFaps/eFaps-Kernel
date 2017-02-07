@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 import java.util.UUID;
 
 import javax.naming.InitialContext;
@@ -176,27 +175,9 @@ public final class Context
     private final Set<Resource> storeStore = new HashSet<>();
 
     /**
-     * Stores all created connection resources.
-     */
-    private final Set<ConnectionResource> connectionStore = new HashSet<>();
-
-    /**
-     * Stack used to store returned connections for reuse.
-     */
-    private final Stack<ConnectionResource> connectionStack = new Stack<>();
-
-    /**
      * Transaction for the context.
      */
     private Transaction transaction;
-
-    /**
-     * This is the instance variable for the SQL Connection to the database.
-     *
-     * @see #getConnection
-     * @see #setConnection
-     */
-    private Connection connection = null;
 
     /**
      * This instance variable represents the user of the context.
@@ -287,6 +268,9 @@ public final class Context
      */
     private final String requestId;
 
+    /** The connections. */
+    private final Set<ConnectionResource> connectionResources = new HashSet<>();
+
     /**
      * Private Constructor.
      *
@@ -315,11 +299,6 @@ public final class Context
         this.fileParameters = _fileParameters == null ? new HashMap<>() : _fileParameters;
         this.sessionAttributes = _sessionAttributes == null ? new HashMap<>() : _sessionAttributes;
         this.locale = _locale == null ? Locale.ENGLISH : _locale;
-        try {
-            setConnection(Context.DATASOURCE.getConnection());
-        } catch (final SQLException e) {
-            Context.LOG.error("could not get a sql connection", e);
-        }
     }
 
     /**
@@ -344,46 +323,7 @@ public final class Context
     {
         if (Context.LOG.isDebugEnabled()) {
             Context.LOG.debug("finalize context for " + this.person);
-            Context.LOG.debug("connection is " + getConnection());
         }
-        if (this.connection != null) {
-            try {
-                this.connection.close();
-            } catch (final SQLException e) {
-                Context.LOG.error("could not close a sql connection", e);
-            }
-        }
-    }
-
-    /**
-     * The method tests if all resources (JDBC connection and store resources)
-     * are closed, that means that the resources are freeed and returned for
-     * reuse.
-     *
-     * @return <i>true</i> if all resources are closed, otherwise <i>false</i>
-     *         is returned
-     * @see #connectionStore
-     * @see #storeStore
-     */
-    public boolean allConnectionClosed()
-    {
-        boolean closed = true;
-
-        for (final ConnectionResource con : this.connectionStore) {
-            if (con.isOpened()) {
-                closed = false;
-                break;
-            }
-        }
-        if (closed) {
-            for (final Resource store : this.storeStore) {
-                if (store.isOpened()) {
-                    closed = false;
-                    break;
-                }
-            }
-        }
-        return closed;
     }
 
     /**
@@ -396,33 +336,10 @@ public final class Context
     {
         if (Context.LOG.isDebugEnabled()) {
             Context.LOG.debug("close context for " + this.person);
-            Context.LOG.debug("connection is " + getConnection());
         }
         QueryCache.cleanByKey(getRequestId());
-        if (this.connection != null) {
-            try {
-                //this.connection.commit();
-                this.connection.close();
-            } catch (final SQLException e) {
-                Context.LOG.error("could not close a sql connection", e);
-            }
-        }
-
-        setConnection(null);
         if (getThreadLocal().get() != null && getThreadLocal().get() == this) {
             getThreadLocal().set(null);
-        }
-        // check if all JDBC connection are close...
-        for (final ConnectionResource con : this.connectionStore) {
-            try {
-                if (con.getConnection() != null && !con.getConnection().isClosed()) {
-                    con.getConnection().close();
-                    Context.LOG.error("connection was not closed!");
-                }
-            } catch (final SQLException e) {
-                Context.LOG.error("QLException is thrown while trying to get close status of "
-                                + "connection or while trying to close", e);
-            }
         }
     }
 
@@ -453,28 +370,14 @@ public final class Context
         throws EFapsException
     {
         ConnectionResource con = null;
-        if (this.connectionStack.isEmpty()) {
-            try {
-                con = new ConnectionResource(Context.DATASOURCE.getConnection());
-            } catch (final SQLException e) {
-                throw new EFapsException(getClass(), "getConnectionResource.SQLException", e);
-            }
-            this.connectionStore.add(con);
-        } else {
-            con = this.connectionStack.pop();
-        }
-        if (!con.isOpened()) {
+        try {
+            con = new ConnectionResource(Context.DATASOURCE.getConnection());
+            this.connectionResources.add(con);
             con.open();
+        } catch (final SQLException e) {
+            throw new EFapsException(getClass(), "getConnectionResource.SQLException", e);
         }
         return con;
-    }
-
-    /**
-     * @param _con ConnectionResource
-     */
-    public void returnConnectionResource(final ConnectionResource _con)
-    {
-        this.connectionStack.push(_con);
     }
 
     /**
@@ -812,30 +715,6 @@ public final class Context
     }
 
     /**
-     * This is the getter method for instance variable {@link #connection}.
-     *
-     * @return value of instance variable {@link #connection}
-     * @see #connection
-     * @see #setConnection
-     */
-    public Connection getConnection()
-    {
-        return this.connection;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #connection}.
-     *
-     * @param _connection new value for instance variable {@link #connection}
-     * @see #connection
-     * @see #getConnection
-     */
-    private void setConnection(final Connection _connection)
-    {
-        this.connection = _connection;
-    }
-
-    /**
      * @param _transaction Transaction to set
      */
     private void setTransaction(final Transaction _transaction)
@@ -965,6 +844,27 @@ public final class Context
     public Map<String, FileParameter> getFileParameters()
     {
         return this.fileParameters;
+    }
+
+    /**
+     * Returns a opened connection resource. If a previous close connection
+     * resource already exists, this already existing connection resource is
+     * returned.
+     *
+     * @return opened connection resource
+     * @throws EFapsException if connection resource cannot be created
+     */
+    public static Connection getConnection()
+        throws EFapsException
+    {
+        Connection con = null;
+        try {
+            con = Context.DATASOURCE.getConnection();
+            con.setAutoCommit(false);
+        } catch (final SQLException e) {
+            throw new EFapsException(Context.class, "getConnection.SQLException", e);
+        }
+        return con;
     }
 
     /**
@@ -1144,8 +1044,6 @@ public final class Context
             Context.TRANSMANAG.begin();
             final Context context = Context.getThreadContext();
             context.setTransaction(Context.TRANSMANAG.getTransaction());
-            context.connectionStack.clear();
-            context.connectionStore.clear();
         } catch (final SecurityException e) {
             throw new EFapsException(Context.class, "save.SecurityException", e);
         } catch (final IllegalStateException e) {

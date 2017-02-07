@@ -140,8 +140,11 @@ public abstract class AbstractResource
     /**
      * Method used to free this resource in the eFaps context object (so that
      * the resource instance could be reused).
+     *
+     * @throws EFapsException on error
      */
-    protected abstract void freeResource();
+    protected abstract void freeResource()
+        throws EFapsException;
 
     /**
      * This is the getter method for instance variable {@link #opened}.
@@ -164,6 +167,7 @@ public abstract class AbstractResource
      * @param _xid      global transaction identifier
      * @param _flags    flags
      */
+    @Override
     public void start(final Xid _xid,
                       final int _flags)
     {
@@ -178,6 +182,7 @@ public abstract class AbstractResource
      * @param _xid      global transaction identifier
      * @param _flags    flags
      */
+    @Override
     public void end(final Xid _xid,
                     final int _flags)
     {
@@ -197,6 +202,7 @@ public abstract class AbstractResource
      *         equal, otherwise <code>false</code> is returned
      * @see XAResource#isSameRM(XAResource)
      */
+    @Override
     public boolean isSameRM(final XAResource _xares)
     {
         final boolean ret = _xares.toString().equals(toString());

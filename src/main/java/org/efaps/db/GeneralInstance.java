@@ -17,7 +17,6 @@
 
 package org.efaps.db;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -110,7 +109,7 @@ public final class GeneralInstance
      * @throws EFapsException on  error
      */
     protected static long insert(final Instance _instance,
-                                 final Connection _con)
+                                 final ConnectionResource _con)
         throws EFapsException
     {
         long ret = 0;
@@ -140,7 +139,7 @@ public final class GeneralInstance
      * @throws EFapsException on  error
      */
     protected static void generaliseInstance(final Instance _instance,
-                                             final Connection _con)
+                                             final ConnectionResource _con)
         throws EFapsException
     {
         if (_instance.isValid() && _instance.getType().isGeneralInstance()) {
@@ -188,7 +187,7 @@ public final class GeneralInstance
         ConnectionResource con = null;
         try {
             con = context.getConnectionResource();
-            GeneralInstance.generaliseInstance(_instance, con.getConnection());
+            GeneralInstance.generaliseInstance(_instance, con);
             con.commit();
         } finally {
             if (con != null && con.isOpened()) {
@@ -204,10 +203,10 @@ public final class GeneralInstance
      * @throws EFapsException on error
      */
     protected static Collection<? extends DeleteDefintion> getDeleteDefintion(final Instance _instance,
-                                                                              final Connection _con)
+                                                                              final ConnectionResource _con)
         throws EFapsException
     {
-        final List<DeleteDefintion> ret = new ArrayList<DeleteDefintion>();
+        final List<DeleteDefintion> ret = new ArrayList<>();
         if (_instance.isValid() && _instance.getType().isGeneralInstance() && !_instance.getType().isHistory()) {
             GeneralInstance.generaliseInstance(_instance, _con);
             final long id = _instance.getGeneralId();

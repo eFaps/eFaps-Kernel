@@ -17,6 +17,7 @@
 
 package org.efaps.admin.user;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -51,6 +52,7 @@ import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
 import org.efaps.util.UUIDUtil;
 import org.efaps.util.cache.CacheLogListener;
+import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.InfinispanCache;
 import org.infinispan.Cache;
 import org.joda.time.Chronology;
@@ -643,7 +645,7 @@ public final class Person
                             cmd.append(attrName.sqlColumn).append("=?");
                         }
                         cmd.append(" where ID=").append(getId());
-                        stmt = rsrc.getConnection().prepareStatement(cmd.toString());
+                        stmt = rsrc.prepareStatement(cmd.toString());
 
                         int col = 1;
                         for (final AttrName attrName : this.attrUpdated.keySet()) {
@@ -774,7 +776,7 @@ public final class Person
                 cmd.append("update T_USERPERSON ").append("set LOGINTRY=").append(
                                 Context.getDbType().getCurrentTimeStamp()).append(", LOGINTRIES=").append(_tries)
                                 .append(" where ID=").append(getId());
-                stmt = rsrc.getConnection().createStatement();
+                stmt = rsrc.createStatement();
                 final int rows = stmt.executeUpdate(cmd.toString());
                 if (rows == 0) {
                     Person.LOG.error("could not execute '" + cmd.toString()
@@ -866,12 +868,12 @@ public final class Person
     private void readFromDBAttributes()
         throws EFapsException
     {
-        ConnectionResource rsrc = null;
+        Connection con = null;
         try {
-            rsrc = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             Statement stmt = null;
             try {
-                stmt = rsrc.getConnection().createStatement();
+                stmt = con.createStatement();
 
                 final StringBuilder cmd = new StringBuilder("select ");
                 for (final AttrName attrName : Person.AttrName.values()) {
@@ -895,14 +897,18 @@ public final class Person
                     if (stmt != null) {
                         stmt.close();
                     }
+                    con.commit();
                 } catch (final SQLException e) {
                     Person.LOG.error("close of SQL statement is not possible", e);
                 }
             }
-            rsrc.commit();
         } finally {
-            if (rsrc != null && rsrc.isOpened()) {
-                rsrc.abort();
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("could not read child type ids", e);
             }
         }
     }
@@ -921,10 +927,10 @@ public final class Person
         throws EFapsException
     {
         final Set<Association> ret = new HashSet<>();
-        ConnectionResource rsrc = null;
+        Connection con = null;
         try {
             final List<Long> associationIds = new ArrayList<>();
-            rsrc = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
 
             Statement stmt = null;
 
@@ -942,7 +948,7 @@ public final class Person
                         .append("where USERABSTRACTFROM =").append(getId())
                     .append(")");
 
-                stmt = rsrc.getConnection().createStatement();
+                stmt = con.createStatement();
                 final ResultSet resultset = stmt.executeQuery(cmd.toString());
                 while (resultset.next()) {
                     associationIds.add(resultset.getLong(1));
@@ -955,19 +961,24 @@ public final class Person
                 try {
                     if (stmt != null) {
                         stmt.close();
+                        con.commit();
                     }
                 } catch (final SQLException e) {
                     throw new EFapsException(getClass(), "getAssociationsFromDB.SQLException", e, getName());
                 }
             }
-            rsrc.commit();
+
             for (final Long associationId : associationIds) {
                 final Association association = Association.get(associationId);
                 ret.add(association);
             }
         } finally {
-            if (rsrc != null && rsrc.isOpened()) {
-                rsrc.abort();
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("could not read child type ids", e);
             }
         }
         return ret;
@@ -995,9 +1006,9 @@ public final class Person
             PreparedStatement stmt = null;
             try {
                 if (_jaasSystem == null) {
-                    stmt = rsrc.getConnection().prepareStatement(SQL_COMPANY);
+                    stmt = rsrc.prepareStatement(Person.SQL_COMPANY);
                 } else {
-                    stmt = rsrc.getConnection().prepareStatement(SQL_COMPANYJAASKEY);
+                    stmt = rsrc.prepareStatement(Person.SQL_COMPANYJAASKEY);
                     stmt.setObject(2, _jaasSystem.getId());
                 }
                 stmt.setObject(1, getId());
@@ -1086,16 +1097,16 @@ public final class Person
     {
 
         final Set<Role> ret = new HashSet<>();
-        ConnectionResource rsrc = null;
+        Connection con = null;
         try {
             final List<Long> roleIds = new ArrayList<>();
-            rsrc = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
                 if (_jaasSystem == null) {
-                    stmt = rsrc.getConnection().prepareStatement(SQL_ROLE);
+                    stmt = con.prepareStatement(Person.SQL_ROLE);
                 } else {
-                    stmt = rsrc.getConnection().prepareStatement(SQL_ROLEJAASKEY);
+                    stmt = con.prepareStatement(Person.SQL_ROLEJAASKEY);
                     stmt.setObject(2, _jaasSystem.getId());
                 }
                 stmt.setObject(1, getId());
@@ -1112,11 +1123,11 @@ public final class Person
                     if (stmt != null) {
                         stmt.close();
                     }
+                    con.commit();
                 } catch (final SQLException e) {
                     throw new EFapsException(getClass(), "getRolesFromDB.SQLException", e, getName());
                 }
             }
-            rsrc.commit();
 
             final Set<UUID> roleUUIDs = AppAccessHandler.getLoginRoles();
             for (final Long roleId : roleIds) {
@@ -1127,8 +1138,12 @@ public final class Person
                 }
             }
         } finally {
-            if (rsrc != null && rsrc.isOpened()) {
-                rsrc.abort();
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("could not read child type ids", e);
             }
         }
         return ret;
@@ -1224,17 +1239,17 @@ public final class Person
         throws EFapsException
     {
         final Set<Group> ret = new HashSet<>();
-        ConnectionResource rsrc = null;
+        Connection con = null;
         try {
             final List<Long> groupIds = new ArrayList<>();
-            rsrc = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
 
             PreparedStatement stmt = null;
             try {
                 if (_jaasSystem == null) {
-                    stmt = rsrc.getConnection().prepareStatement(SQL_GROUP);
+                    stmt = con.prepareStatement(Person.SQL_GROUP);
                 } else {
-                    stmt = rsrc.getConnection().prepareStatement(SQL_GROUPJAASKEY);
+                    stmt = con.prepareStatement(Person.SQL_GROUPJAASKEY);
                     stmt.setObject(2, _jaasSystem.getId());
                 }
                 stmt.setObject(1, getId());
@@ -1250,17 +1265,21 @@ public final class Person
                     if (stmt != null) {
                         stmt.close();
                     }
+                    con.commit();
                 } catch (final SQLException e) {
                     throw new EFapsException(getClass(), "getGroupsFromDB.SQLException", e, getName());
                 }
             }
-            rsrc.commit();
             for (final Long groupId : groupIds) {
                 ret.add(Group.get(groupId));
             }
         } finally {
-            if (rsrc != null && rsrc.isOpened()) {
-                rsrc.abort();
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("could not read child type ids", e);
             }
         }
         return ret;
@@ -1360,7 +1379,7 @@ public final class Person
                 cmd.append("update T_USERPERSON ").append("set LASTLOGIN=").append(
                                 Context.getDbType().getCurrentTimeStamp()).append(", LOGINTRIES=0 ")
                                 .append("where ID=").append(getId());
-                stmt = rsrc.getConnection().createStatement();
+                stmt = rsrc.createStatement();
                 final int rows = stmt.executeUpdate(cmd.toString());
                 if (rows == 0) {
                     Person.LOG.error("could not execute '" + cmd.toString()
@@ -1611,12 +1630,12 @@ public final class Person
         throws EFapsException
     {
         Person ret = null;
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(_sql);
+                stmt = con.prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
 
@@ -1638,16 +1657,20 @@ public final class Person
                     if (stmt != null) {
                         stmt.close();
                     }
+                    if (con != null) {
+                        con.commit();
+                    }
                 } catch (final SQLException e) {
                     Person.LOG.error("Catched error on closing statement", e);
                 }
-                if (con != null) {
-                    con.commit();
-                }
             }
         } finally {
-            if (con != null && con.isOpened()) {
-                con.abort();
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("could not read child type ids", e);
             }
         }
         if (ret != null) {
@@ -1679,7 +1702,7 @@ public final class Person
             rsrc = Context.getThreadContext().getConnectionResource();
             PreparedStatement stmt = null;
             try {
-                stmt = rsrc.getConnection().prepareStatement(Person.SQL_JAASKEY);
+                stmt = rsrc.prepareStatement(Person.SQL_JAASKEY);
                 stmt.setObject(1, _jaasKey);
                 stmt.setObject(2, _jaasSystem.getId());
                 final ResultSet rs = stmt.executeQuery();
@@ -1743,7 +1766,7 @@ public final class Person
                     cmd.append("insert into ").append(persType.getMainTable().getSqlTable()).append(
                                     "(TYPEID,NAME,CREATOR,CREATED,MODIFIER,MODIFIED) ").append("values (");
                 } else {
-                    persId = Context.getDbType().getNewId(rsrc.getConnection(), persType.getMainTable().getSqlTable(),
+                    persId = Context.getDbType().getNewId(null, persType.getMainTable().getSqlTable(),
                                     "ID");
                     cmd.append("insert into ").append(persType.getMainTable().getSqlTable()).append(
                                     "(ID,TYPEID,NAME,CREATOR,CREATED,MODIFIER,MODIFIED) ").append("values (").append(
@@ -1755,9 +1778,9 @@ public final class Person
                                                 Context.getDbType().getCurrentTimeStamp()).append(")");
 
                 if (persId == 0) {
-                    stmt = rsrc.getConnection().prepareStatement(cmd.toString(), new String[] { "ID" });
+                   // stmt = rsrc.getConnection().prepareStatement(cmd.toString(), new String[] { "ID" });
                 } else {
-                    stmt = rsrc.getConnection().prepareStatement(cmd.toString());
+                   // stmt = rsrc.getConnection().prepareStatement(cmd.toString());
                 }
 
                 int rows = stmt.executeUpdate();
@@ -1780,7 +1803,7 @@ public final class Person
                 cmd = new StringBuilder();
                 cmd.append("insert into T_USERPERSON").append("(ID,FIRSTNAME,LASTNAME,EMAIL) ").append("values (")
                                 .append(persId).append(",'-','-','-')");
-                stmt = rsrc.getConnection().prepareStatement(cmd.toString());
+                stmt = rsrc.prepareStatement(cmd.toString());
                 rows = stmt.executeUpdate();
                 if (rows == 0) {
                     Person.LOG.error("could not execute '" + cmd.toString() + "' for JAAS system '"

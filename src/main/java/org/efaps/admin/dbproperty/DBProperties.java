@@ -17,6 +17,7 @@
 
 package org.efaps.admin.dbproperty;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,7 +31,6 @@ import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.db.Context;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -319,8 +319,8 @@ public final class DBProperties
                 Context.begin();
                 closeContext = true;
             }
-            final ConnectionResource con = Context.getThreadContext().getConnectionResource();
-            final PreparedStatement stmt = con.getConnection().prepareStatement(DBProperties.SQLSELECT);
+            final Connection con = Context.getConnection();
+            final PreparedStatement stmt = con.prepareStatement(DBProperties.SQLSELECT);
             stmt.setString(1, _key);
             stmt.setString(2, _language);
             final ResultSet resultset = stmt.executeQuery();
@@ -333,7 +333,7 @@ public final class DBProperties
                     ret = defaultValue.trim();
                 }
             } else {
-                final PreparedStatement stmt2 = con.getConnection().prepareStatement(DBProperties.SQLSELECTDEF);
+                final PreparedStatement stmt2 = con.prepareStatement(DBProperties.SQLSELECTDEF);
                 stmt2.setString(1, _key);
                 final ResultSet resultset2 = stmt2.executeQuery();
                 if (resultset2.next()) {
@@ -370,10 +370,11 @@ public final class DBProperties
                 Context.begin();
                 closeContext = true;
             }
-            final ConnectionResource con = Context.getThreadContext().getConnectionResource();
-            final PreparedStatement stmtLang = con.getConnection().prepareStatement(DBProperties.SQLLANG);
+            Context.getThreadContext();
+            final Connection con = Context.getConnection();
+            final PreparedStatement stmtLang = con.prepareStatement(DBProperties.SQLLANG);
             final ResultSet rsLang = stmtLang.executeQuery();
-            final Set<String> languages = new HashSet<String>();
+            final Set<String> languages = new HashSet<>();
             while (rsLang.next()) {
                 languages.add(rsLang.getString(1).trim());
             }
@@ -381,7 +382,7 @@ public final class DBProperties
             stmtLang.close();
             final Cache<String, String> cache = InfinispanCache.get().<String, String>getCache(
                             DBProperties.CACHENAME);
-            final PreparedStatement stmt = con.getConnection().prepareStatement(DBProperties.SQLSELECTONSTART);
+            final PreparedStatement stmt = con.prepareStatement(DBProperties.SQLSELECTONSTART);
             final ResultSet resultset = stmt.executeQuery();
             while (resultset.next()) {
                 final String propKey = resultset.getString(1).trim();

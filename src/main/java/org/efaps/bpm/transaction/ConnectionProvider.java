@@ -21,7 +21,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.efaps.db.Context;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.hibernate.engine.jdbc.connections.internal.UserSuppliedConnectionProviderImpl;
 
@@ -40,11 +39,6 @@ public class ConnectionProvider
     private static final long serialVersionUID = 1L;
 
     /**
-     * The ConnectionResource used for Hibernate.
-     */
-    private ConnectionResource connectionResource;
-
-    /**
      * Obtains a connection for Hibernate use according to the underlying
      * strategy of this provider.
      *
@@ -57,8 +51,7 @@ public class ConnectionProvider
         throws SQLException
     {
         try {
-            this.connectionResource = Context.getThreadContext().getConnectionResource();
-            return this.connectionResource.getConnection();
+            return Context.getConnection();
         } catch (final EFapsException e) {
             throw new SQLException(e);
         }
@@ -75,13 +68,6 @@ public class ConnectionProvider
     public void closeConnection(final Connection _conn)
         throws SQLException
     {
-        if (this.connectionResource != null) {
-            try {
-                Context.getThreadContext().returnConnectionResource(this.connectionResource);
-                this.connectionResource = null;
-            } catch (final EFapsException e) {
-                throw new SQLException(e);
-            }
-        }
+
     }
 }

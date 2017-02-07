@@ -17,6 +17,7 @@
 
 package org.efaps.message;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,7 +27,6 @@ import java.util.UUID;
 
 import org.efaps.admin.datamodel.Status;
 import org.efaps.db.Context;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -143,8 +143,8 @@ public class MessageStatusHolder
          */
         private MsgCache()
         {
-            this.userID2UnRead = new HashMap<Long,  Integer>();
-            this.userID2Read = new HashMap<Long,  Integer>();
+            this.userID2UnRead = new HashMap<>();
+            this.userID2Read = new HashMap<>();
         }
 
         /**
@@ -152,15 +152,15 @@ public class MessageStatusHolder
          */
         public void update()
         {
-            ConnectionResource con = null;
+            Connection con = null;
             boolean abort = true;
             try {
-                con = Context.getThreadContext().getConnectionResource();
+                con = Context.getConnection();
 
-                final Map<Long, Integer> unread = new HashMap<Long, Integer>();
-                final Map<Long, Integer> read = new HashMap<Long, Integer>();
+                final Map<Long, Integer> unread = new HashMap<>();
+                final Map<Long, Integer> read = new HashMap<>();
 
-                final PreparedStatement stmt = con.getConnection().prepareStatement(MessageStatusHolder.SELECT);
+                final PreparedStatement stmt = con.prepareStatement(MessageStatusHolder.SELECT);
                 stmt.setLong(1, Status.find(UUID.fromString("87b82fee-69d3-4e45-aced-0d57c6a0cd1d"), "Unread").getId());
 
                 final ResultSet rs = stmt.executeQuery();
@@ -193,11 +193,11 @@ public class MessageStatusHolder
             } catch (final SQLException e) {
                 MessageStatusHolder.LOG.error("SQLException");
             } finally {
-                if (abort && con != null) {
+                if (con != null) {
                     try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        MessageStatusHolder.LOG.error("EFapsException");
+                        con.close();
+                    } catch (final SQLException e) {
+                        MessageStatusHolder.LOG.error("SQLException", e);
                     }
                 }
             }

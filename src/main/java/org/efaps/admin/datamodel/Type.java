@@ -17,6 +17,7 @@
 
 package org.efaps.admin.datamodel;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -60,7 +61,6 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.QueryCache;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -218,12 +218,12 @@ public class Type
      *
      * @see #getChildTypes
      */
-    private final Set<Long> childTypes = new HashSet<Long>();
+    private final Set<Long> childTypes = new HashSet<>();
 
     /**
      * Classification ids which are classifying this type.
      */
-    private final Set<Long> classifiedByTypes = new HashSet<Long>();
+    private final Set<Long> classifiedByTypes = new HashSet<>();
 
     /**
      * The instance variables stores all attributes for this type object.
@@ -233,7 +233,7 @@ public class Type
      * @see #getAttribute
      * @see #getAttributes(Class)
      */
-    private final Map<String, Attribute> attributes = new HashMap<String, Attribute>();
+    private final Map<String, Attribute> attributes = new HashMap<>();
 
     /**
      * Instance of a HashSet to store all needed tables for this type. The
@@ -242,7 +242,7 @@ public class Type
      * @see #add(Attribute)
      * @see #getTables
      */
-    private final Set<SQLTable> tables = new HashSet<SQLTable>();
+    private final Set<SQLTable> tables = new HashSet<>();
 
     /**
      * The instance variable stores the main table, which must be inserted
@@ -263,7 +263,7 @@ public class Type
      * @see #addAccessSet
      * @see #getAccessSets
      */
-    private final Set<Long> accessSets = new HashSet<Long>();
+    private final Set<Long> accessSets = new HashSet<>();
 
     /**
      * Have the accessSet been evaluated.
@@ -286,7 +286,7 @@ public class Type
      *
      * @see #setLinkProperty
      */
-    private final Set<Long> allowedEventTypes = new HashSet<Long>();
+    private final Set<Long> allowedEventTypes = new HashSet<>();
 
     /**
      * Id of the store for this type.
@@ -505,7 +505,7 @@ public class Type
         throws CacheReloadException
     {
         Type parent = getParentType();
-        final List<Attribute> attributesTmp = new ArrayList<Attribute>();
+        final List<Attribute> attributesTmp = new ArrayList<>();
         while (parent != null) {
             for (final Attribute attribute : getParentType().getAttributes().values()) {
                 attributesTmp.add(attribute.copy(getId()));
@@ -582,7 +582,7 @@ public class Type
      */
     public Attribute getTypeAttribute()
     {
-        Attribute ret;
+        final Attribute ret;
         if (this.typeAttributeName == null && getParentType() != null) {
             ret = getParentType().getTypeAttribute();
         } else {
@@ -611,7 +611,7 @@ public class Type
      */
     public final Set<Attribute> getAttributes(final Class<?> _class)
     {
-        final Set<Attribute> ret = new HashSet<Attribute>();
+        final Set<Attribute> ret = new HashSet<>();
         for (final Attribute attr : getAttributes().values()) {
             if (attr.getAttributeType().getClassRepr().isAssignableFrom(_class)) {
                 ret.add(attr);
@@ -744,7 +744,7 @@ public class Type
                                               final AccessType _accessType)
         throws EFapsException
     {
-        Map<Instance, Boolean> ret = new HashMap<Instance, Boolean>();
+        Map<Instance, Boolean> ret = new HashMap<>();
         if (_instances != null && !_instances.isEmpty() && _instances.size() == 1) {
             final Instance instance = _instances.get(0);
             ret.put(instance, hasAccess(instance, _accessType));
@@ -801,7 +801,7 @@ public class Type
             }
             setDirty();
         }
-        final Set<AccessSet> ret = new HashSet<AccessSet>();
+        final Set<AccessSet> ret = new HashSet<>();
         for (final Long id : this.accessSets) {
             ret.add(AccessSet.get(id));
         }
@@ -912,7 +912,7 @@ public class Type
             this.checked4classifiedBy = true;
             setDirty();
         }
-        final Set<Classification> ret = new HashSet<Classification>();
+        final Set<Classification> ret = new HashSet<>();
         if (getParentType() != null) {
             ret.addAll(getParentType().getClassifiedByTypes());
         }
@@ -932,7 +932,7 @@ public class Type
     public Set<Type> getChildTypes()
         throws CacheReloadException
     {
-        final Set<Type> ret = new HashSet<Type>();
+        final Set<Type> ret = new HashSet<>();
         for (final Long id : this.childTypes) {
             final Type child = Type.get(id);
             ret.add(child);
@@ -1006,7 +1006,7 @@ public class Type
     public Set<Type> getAllowedEventTypes()
         throws CacheReloadException
     {
-        final Set<Type> ret = new HashSet<Type>();
+        final Set<Type> ret = new HashSet<>();
         for (final Long id : this.allowedEventTypes) {
             ret.add(Type.get(id));
         }
@@ -1185,7 +1185,7 @@ public class Type
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof Type) {
             ret = ((Type) _obj).getId() == getId();
         } else {
@@ -1381,13 +1381,13 @@ public class Type
                                                   final String _statement)
         throws CacheReloadException
     {
-        final List<Object[]> ret = new ArrayList<Object[]>();
-        ConnectionResource con = null;
+        final List<Object[]> ret = new ArrayList<>();
+        Connection con = null;
         try {
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(_statement);
+                stmt = con.prepareStatement(_statement);
                 stmt.setObject(1, _parentID);
                 final ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
@@ -1405,12 +1405,12 @@ public class Type
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read child type ids", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read child type ids", e);
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("could not read child type ids", e);
             }
         }
         return ret;
@@ -1427,10 +1427,10 @@ public class Type
         throws CacheReloadException
     {
         Type ret = null;
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            con = Context.getThreadContext().getConnectionResource();
-            final PreparedStatement stmt = con.getConnection().prepareStatement(_sql);
+            con = Context.getConnection();
+            final PreparedStatement stmt = con.prepareStatement(_sql);
             stmt.setObject(1, _criteria);
             final ResultSet rs = stmt.executeQuery();
             long parentTypeId = 0;
@@ -1508,12 +1508,12 @@ public class Type
         } catch (final SQLException e) {
             Type.LOG.error("initialiseCache()", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read child tyep ids", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
         return ret;
@@ -1538,13 +1538,13 @@ public class Type
         if (cache.containsKey(_typeId)) {
             ret = cache.get(_typeId).getUUID().equals(_typeUUID);
         } else {
-            ConnectionResource con = null;
+            Connection con = null;
             String uuidTmp = "";
             try {
-                con = Context.getThreadContext().getConnectionResource();
+                con = Context.getConnection();
                 PreparedStatement stmt = null;
                 try {
-                    stmt = con.getConnection().prepareStatement(Type.SQL_ID);
+                    stmt = con.prepareStatement(Type.SQL_ID);
                     stmt.setObject(1, _typeId);
                     final ResultSet rs = stmt.executeQuery();
                     while (rs.next()) {
@@ -1562,12 +1562,12 @@ public class Type
             } catch (final EFapsException e) {
                 throw new CacheReloadException("could not read child type ids", e);
             } finally {
-                if (con != null && con.isOpened()) {
-                    try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        throw new CacheReloadException("could not read child type ids", e);
+                try {
+                    if (con != null && !con.isClosed()) {
+                        con.close();
                     }
+                } catch (final SQLException e) {
+                    throw new CacheReloadException("could not read child type ids", e);
                 }
             }
             ret = UUID.fromString(uuidTmp).equals(_typeUUID);
@@ -1589,12 +1589,12 @@ public class Type
         if (cache.containsKey(_typeUUID)) {
             ret = cache.get(_typeUUID).getId();
         } else {
-            ConnectionResource con = null;
+            Connection con = null;
             try {
-                con = Context.getThreadContext().getConnectionResource();
+                con = Context.getConnection();
                 PreparedStatement stmt = null;
                 try {
-                    stmt = con.getConnection().prepareStatement(Type.SQL_UUID);
+                    stmt = con.prepareStatement(Type.SQL_UUID);
                     stmt.setObject(1, _typeUUID.toString());
                     final ResultSet rs = stmt.executeQuery();
                     while (rs.next()) {
@@ -1612,12 +1612,12 @@ public class Type
             } catch (final EFapsException e) {
                 throw new CacheReloadException("could not read child type ids", e);
             } finally {
-                if (con != null && con.isOpened()) {
-                    try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        throw new CacheReloadException("could not read child type ids", e);
+                try {
+                    if (con != null && !con.isClosed()) {
+                        con.close();
                     }
+                } catch (final SQLException e) {
+                    throw new CacheReloadException("could not read child type ids", e);
                 }
             }
         }
@@ -1638,12 +1638,12 @@ public class Type
         if (cache.containsKey(_typeId)) {
             ret = cache.get(_typeId).getUUID();
         } else {
-            ConnectionResource con = null;
+            Connection con = null;
             try {
-                con = Context.getThreadContext().getConnectionResource();
+                con = Context.getConnection();
                 PreparedStatement stmt = null;
                 try {
-                    stmt = con.getConnection().prepareStatement(Type.SQL_ID);
+                    stmt = con.prepareStatement(Type.SQL_ID);
                     stmt.setObject(1, _typeId);
                     final ResultSet rs = stmt.executeQuery();
                     while (rs.next()) {
@@ -1661,12 +1661,12 @@ public class Type
             } catch (final EFapsException e) {
                 throw new CacheReloadException("could not read child type ids", e);
             } finally {
-                if (con != null && con.isOpened()) {
-                    try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        throw new CacheReloadException("could not read child type ids", e);
+                try {
+                    if (con != null && con.isClosed()) {
+                        con.close();
                     }
+                } catch (final SQLException e) {
+                    throw new CacheReloadException("Cannot read a type for an attribute.", e);
                 }
             }
         }

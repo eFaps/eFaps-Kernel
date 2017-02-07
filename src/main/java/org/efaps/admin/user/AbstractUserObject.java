@@ -18,6 +18,7 @@
 package org.efaps.admin.user;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -33,6 +34,7 @@ import org.efaps.db.QueryBuilder;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.UUIDUtil;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,10 +124,10 @@ public abstract class AbstractUserObject
                                    final String _jaasKey)
         throws EFapsException
     {
-        ConnectionResource rsrc = null;
+        Connection con = null;
         try {
             final Context context = Context.getThreadContext();
-            rsrc = context.getConnectionResource();
+            con = Context.getConnection();
             final Type keyType = CIAdminUser.JAASKey.getType();
 
             PreparedStatement stmt = null;
@@ -137,7 +139,8 @@ public abstract class AbstractUserObject
                                     "(KEY,CREATOR,CREATED,MODIFIER,MODIFIED,").append("USERABSTRACT,USERJAASSYSTEM) ")
                                     .append("values (");
                 } else {
-                    keyId = Context.getDbType().getNewId(rsrc.getConnection(), keyType.getMainTable().getSqlTable(),
+                    keyId = Context.getDbType().getNewId(new ConnectionResource(con),
+                                    keyType.getMainTable().getSqlTable(),
                                     "ID");
                     cmd.append("insert into ").append(keyType.getMainTable().getSqlTable()).append(
                                     "(ID,KEY,CREATOR,CREATED,MODIFIER,MODIFIED,").append(
@@ -148,7 +151,7 @@ public abstract class AbstractUserObject
                                 .append(",").append(Context.getDbType().getCurrentTimeStamp()).append(",").append(
                                                 getId()).append(",").append(_jaasSystem.getId()).append(")");
 
-                stmt = rsrc.getConnection().prepareStatement(cmd.toString());
+                stmt = con.prepareStatement(cmd.toString());
                 final int rows = stmt.executeUpdate();
                 if (rows == 0) {
                     AbstractUserObject.LOG.error("could not execute '" + cmd.toString()
@@ -168,15 +171,18 @@ public abstract class AbstractUserObject
                     if (stmt != null) {
                         stmt.close();
                     }
+                    con.commit();
                 } catch (final SQLException e) {
                     AbstractUserObject.LOG.error("Could not close a statement.", e);
                 }
             }
-
-            rsrc.commit();
         } finally {
-            if (rsrc != null && rsrc.isOpened()) {
-                rsrc.abort();
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                AbstractUserObject.LOG.error("Could not close a connection.", e);
             }
         }
     }
@@ -197,10 +203,10 @@ public abstract class AbstractUserObject
                                           final AbstractUserObject _object)
         throws EFapsException
     {
-        ConnectionResource rsrc = null;
+        Connection con = null;
         try {
             final Context context = Context.getThreadContext();
-            rsrc = context.getConnectionResource();
+            con = Context.getConnection();
 
             Statement stmt = null;
             final StringBuilder cmd = new StringBuilder();
@@ -209,7 +215,7 @@ public abstract class AbstractUserObject
                 cmd.append("insert into ").append(_assignType.getMainTable().getSqlTable()).append("(");
                 long keyId = 0;
                 if (!Context.getDbType().supportsGetGeneratedKeys()) {
-                    keyId = Context.getDbType().getNewId(rsrc.getConnection(),
+                    keyId = Context.getDbType().getNewId(new ConnectionResource(con),
                                     _assignType.getMainTable().getSqlTable(), "ID");
                     cmd.append("ID,");
                 }
@@ -224,7 +230,7 @@ public abstract class AbstractUserObject
                                                 getId()).append(",").append(_object.getId()).append(",").append(
                                                 _jaasSystem.getId()).append(")");
 
-                stmt = rsrc.getConnection().createStatement();
+                stmt = con.createStatement();
                 final int rows = stmt.executeUpdate(cmd.toString());
                 if (rows == 0) {
                     AbstractUserObject.LOG.error("could not execute '" + cmd.toString()
@@ -243,14 +249,19 @@ public abstract class AbstractUserObject
                     if (stmt != null) {
                         stmt.close();
                     }
+                    con.commit();
                 } catch (final SQLException e) {
                     AbstractUserObject.LOG.error("Could not close a statement.", e);
                 }
             }
-            rsrc.commit();
+
         } finally {
-            if (rsrc != null && rsrc.isOpened()) {
-                rsrc.abort();
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                AbstractUserObject.LOG.error("Could not close a connection.", e);
             }
         }
     }
@@ -271,10 +282,9 @@ public abstract class AbstractUserObject
                                               final AbstractUserObject _object)
         throws EFapsException
     {
-
-        ConnectionResource rsrc = null;
+        Connection con = null;
         try {
-            rsrc = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             Statement stmt = null;
             final StringBuilder cmd = new StringBuilder();
             try {
@@ -283,7 +293,7 @@ public abstract class AbstractUserObject
                                 "and USERABSTRACTFROM=").append(getId()).append(" ").append("and USERABSTRACTTO=")
                                 .append(_object.getId());
 
-                stmt = rsrc.getConnection().createStatement();
+                stmt = con.createStatement();
                 stmt.executeUpdate(cmd.toString());
 
             } catch (final SQLException e) {
@@ -297,14 +307,18 @@ public abstract class AbstractUserObject
                     if (stmt != null) {
                         stmt.close();
                     }
+                    con.commit();
                 } catch (final SQLException e) {
                     AbstractUserObject.LOG.error("Could not close a statement.", e);
                 }
             }
-            rsrc.commit();
         } finally {
-            if (rsrc != null && rsrc.isOpened()) {
-                rsrc.abort();
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
     }
@@ -368,17 +382,15 @@ public abstract class AbstractUserObject
     protected void setStatusInDB(final boolean _status)
         throws EFapsException
     {
-        ConnectionResource rsrc = null;
+        Connection con = null;
         try {
-            final Context context = Context.getThreadContext();
-            rsrc = context.getConnectionResource();
+            con = Context.getConnection();
 
             PreparedStatement stmt = null;
             final StringBuilder cmd = new StringBuilder();
             try {
-
                 cmd.append(" update T_USERABSTRACT set STATUS=? where ID=").append(getId());
-                stmt = rsrc.getConnection().prepareStatement(cmd.toString());
+                stmt = con.prepareStatement(cmd.toString());
                 stmt.setBoolean(1, _status);
                 final int rows = stmt.executeUpdate();
                 if (rows == 0) {
@@ -395,14 +407,18 @@ public abstract class AbstractUserObject
                     if (stmt != null) {
                         stmt.close();
                     }
+                    con.commit();
                 } catch (final SQLException e) {
                     throw new EFapsException(getClass(), "setStatusInDB.SQLException", e, cmd.toString(), getName());
                 }
             }
-            rsrc.commit();
         } finally {
-            if (rsrc != null && rsrc.isOpened()) {
-                rsrc.abort();
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
     }

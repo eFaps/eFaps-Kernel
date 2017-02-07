@@ -334,7 +334,7 @@ public abstract class AbstractPrintQuery
         final OneSelect oneselect = this.attr2OneSelect.get(_setName);
         Map<String, Object> ret = null;
         if (oneselect == null || oneselect.getFromSelect() == null) {
-            LOG.error("Could not get an AttributeSet for the name: '{}' in PrintQuery '{]'", _setName, this);
+            AbstractPrintQuery.LOG.error("Could not get an AttributeSet for the name: '{}' in PrintQuery '{]'", _setName, this);
         } else if (oneselect.getFromSelect().hasResult()) {
             ret = new HashMap<>();
             // in an attributset the first one is fake
@@ -816,7 +816,7 @@ public abstract class AbstractPrintQuery
         throws EFapsException
     {
         final String sql = createSQLStatement();
-        LOG.debug("DryRun SQL", sql);
+        AbstractPrintQuery.LOG.debug("DryRun SQL", sql);
     }
 
     /**
@@ -948,7 +948,7 @@ public abstract class AbstractPrintQuery
 
             if (!cached) {
                 con = Context.getThreadContext().getConnectionResource();
-                final Statement stmt = con.getConnection().createStatement();
+                final Statement stmt = con.createStatement();
                 final ResultSet rs = stmt.executeQuery(_complStmt);
                 final ArrayListHandler handler = new ArrayListHandler(Context.getDbType().getRowProcessor());
                 rows = handler.handle(rs);
@@ -993,10 +993,6 @@ public abstract class AbstractPrintQuery
             }
         } catch (final SQLException e) {
             throw new EFapsException(InstanceQuery.class, "executeOneCompleteStmt", e);
-        } finally {
-            if (con != null && con.isOpened()) {
-                con.abort();
-            }
         }
         return ret;
     }

@@ -52,7 +52,7 @@ public class ClassificationValueSelect
     /**
      * Mapping of the instances to classIds. Used as temporary cache.
      */
-    private final Map<Instance, List<Long>> instances2classId = new HashMap<Instance, List<Long>>();
+    private final Map<Instance, List<Long>> instances2classId = new HashMap<>();
 
     /**
      * Have the values been retrieved allready.
@@ -117,7 +117,7 @@ public class ClassificationValueSelect
     public Object getValue(final List<Object> _objectList)
         throws EFapsException
     {
-        final List<Object> ret = new ArrayList<Object>();
+        final List<Object> ret = new ArrayList<>();
         for (final Object object : _objectList) {
             ret.add(getValue(object));
         }
@@ -134,8 +134,8 @@ public class ClassificationValueSelect
     private Set<Classification> getClassification(final List<Long> _classIds)
         throws CacheReloadException
     {
-        final Set<Classification> noadd = new HashSet<Classification>();
-        final Set<Classification> add = new HashSet<Classification>();
+        final Set<Classification> noadd = new HashSet<>();
+        final Set<Classification> add = new HashSet<>();
         if (_classIds != null) {
             for (final Long id : _classIds) {
                 Classification clazz = (Classification) Type.get(id);
@@ -166,9 +166,9 @@ public class ClassificationValueSelect
         // group the instance by type
         // check if the current instance is the list (happens if this
         // value select is e.g. part of a linkto
-        final Map<Type, List<Instance>> type2instance = new HashMap<Type, List<Instance>>();
+        final Map<Type, List<Instance>> type2instance = new HashMap<>();
         final Instance currentInst = Instance.get(_oid);
-        final List<Instance> instances = new ArrayList<Instance>();
+        final List<Instance> instances = new ArrayList<>();
         if (getOneSelect().getQuery().getInstanceList().contains(currentInst)) {
             instances.addAll(getOneSelect().getQuery().getInstanceList());
         } else {
@@ -179,11 +179,11 @@ public class ClassificationValueSelect
         }
 
         for (final Instance instance : instances) {
-            List<Instance> tmpList;
+            final List<Instance> tmpList;
             if (type2instance.containsKey(instance.getType())) {
                 tmpList = type2instance.get(instance.getType());
             } else {
-                tmpList = new ArrayList<Instance>();
+                tmpList = new ArrayList<>();
                 type2instance.put(instance.getType(), tmpList);
             }
             tmpList.add(instance);
@@ -193,7 +193,7 @@ public class ClassificationValueSelect
         for (final Entry<Type, List<Instance>> entry : type2instance.entrySet()) {
 
             boolean union = false;
-            final Set<Classification> classTypes = new HashSet<Classification>();
+            final Set<Classification> classTypes = new HashSet<>();
             Type curr = entry.getKey();
             while (curr.getParentType() != null) {
                 classTypes.addAll(curr.getClassifiedByTypes());
@@ -265,18 +265,18 @@ public class ClassificationValueSelect
         try {
             con = Context.getThreadContext().getConnectionResource();
 
-            final Statement stmt = con.getConnection().createStatement();
+            final Statement stmt = con.createStatement();
 
             final ResultSet rs = stmt.executeQuery(_complStmt.toString());
-            final Map<Long, List<Long>> link2clazz = new HashMap<Long, List<Long>>();
+            final Map<Long, List<Long>> link2clazz = new HashMap<>();
             while (rs.next()) {
                 final long linkId = rs.getLong(2);
                 final long classificationID = rs.getLong(3);
-                List<Long> templ;
+                final List<Long> templ;
                 if (link2clazz.containsKey(linkId)) {
                     templ = link2clazz.get(linkId);
                 } else {
-                    templ = new ArrayList<Long>();
+                    templ = new ArrayList<>();
                     link2clazz.put(linkId, templ);
                 }
                 templ.add(classificationID);

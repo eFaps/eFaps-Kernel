@@ -50,7 +50,7 @@ public final class JmsSession
     /**
      * The map holds all cached Sessions.
      */
-    private static final Map<String, JmsSession> CACHE = new HashMap<String, JmsSession>();
+    private static final Map<String, JmsSession> CACHE = new HashMap<>();
 
     /**
      * Timer used to look for expired Session.
@@ -71,7 +71,7 @@ public final class JmsSession
      *
      * @see #openContext()
      */
-    private final Map<String, Object> sessionAttributes = new HashMap<String, Object>();
+    private final Map<String, Object> sessionAttributes = new HashMap<>();
 
     /**
      * Key to this Session.
@@ -255,14 +255,12 @@ public final class JmsSession
                 }
                 ok = true;
             } finally {
-                if (ok && context.allConnectionClosed() && Context.isTMActive()) {
+                if (ok && Context.isTMActive()) {
                     Context.commit();
                 } else {
                     if (Context.isTMMarkedRollback()) {
                         JmsSession.LOG.error("transaction is marked to roll back");
-                    } else if (!context.allConnectionClosed()) {
-                        JmsSession.LOG.error("not all connection to database are closed");
-                    } else {
+                    }else {
                         JmsSession.LOG.error("transaction manager in undefined status");
                     }
                     Context.rollback();

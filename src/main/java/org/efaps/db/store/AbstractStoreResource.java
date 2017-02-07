@@ -20,7 +20,6 @@ package org.efaps.db.store;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -231,13 +230,11 @@ public abstract class AbstractStoreResource
         if (!getExist()[0] && getGeneralID() != null) {
             try {
                 final ConnectionResource res = Context.getThreadContext().getConnectionResource();
-                final Connection con = res.getConnection();
                 Context.getDbType().newInsert(AbstractStoreResource.TABLENAME_STORE, "ID", false)
                                 .column("ID", getGeneralID())
                                 .column(AbstractStoreResource.COLNAME_FILENAME, "TMP")
                                 .column(AbstractStoreResource.COLNAME_FILELENGTH, 0)
-                                .execute(con);
-                res.commit();
+                                .execute(res);
                 this.fileName = "TMP";
                 this.fileLength = new Long(0);
             } catch (final SQLException e) {
@@ -277,7 +274,7 @@ public abstract class AbstractStoreResource
                         .append(db.getColumnQuote()).append("ID").append(db.getColumnQuote())
                         .append(db.getSQLPart(SQLPart.EQUAL)).append(getGeneralID());
 
-                final PreparedStatement stmt = res.getConnection().prepareStatement(cmd.toString());
+                final PreparedStatement stmt = res.prepareStatement(cmd.toString());
                 try {
                     stmt.setString(1, _filename);
                     stmt.setLong(2, _fileLength);
@@ -315,7 +312,7 @@ public abstract class AbstractStoreResource
         try {
             con = Context.getThreadContext().getConnectionResource();
 
-            final Statement stmt = con.getConnection().createStatement();
+            final Statement stmt = con.createStatement();
 
             final ResultSet rs = stmt.executeQuery(_complStmt.toString());
 
@@ -333,13 +330,8 @@ public abstract class AbstractStoreResource
             }
             rs.close();
             stmt.close();
-            con.commit();
         } catch (final SQLException e) {
             throw new EFapsException(InstanceQuery.class, "executeOneCompleteStmt", e);
-        } finally {
-            if (con != null && con.isOpened()) {
-                con.abort();
-            }
         }
     }
 

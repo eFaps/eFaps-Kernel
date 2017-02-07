@@ -81,7 +81,7 @@ public final class Application
     /**
      * Default Mapping of a a file extension to a Type for import and update.
      */
-    private static final Map<String, String> DEFAULT_TYPE_MAPPING = new HashMap<String, String>();
+    private static final Map<String, String> DEFAULT_TYPE_MAPPING = new HashMap<>();
     static {
         Application.DEFAULT_TYPE_MAPPING.put("bpmn2", FileType.BPM.getType());
         Application.DEFAULT_TYPE_MAPPING.put("css", FileType.CSS.getType());
@@ -98,7 +98,7 @@ public final class Application
      *
      * @see #getFiles
      */
-    private static final Set<String> DEFAULT_INCLUDES = new HashSet<String>();
+    private static final Set<String> DEFAULT_INCLUDES = new HashSet<>();
     static {
         Application.DEFAULT_INCLUDES.add("**/*.bpmn2");
         Application.DEFAULT_INCLUDES.add("**/*.css");
@@ -115,7 +115,7 @@ public final class Application
      *
      * @see #getFiles
      */
-    private static final Set<String> DEFAULT_EXCLUDES = new HashSet<String>();
+    private static final Set<String> DEFAULT_EXCLUDES = new HashSet<>();
     static {
         Application.DEFAULT_EXCLUDES.add("**/versions.xml");
         Application.DEFAULT_EXCLUDES.add("**/package-info.java");
@@ -136,7 +136,7 @@ public final class Application
      *
      * @see #getVersions()
      */
-    private final Set<ApplicationVersion> versions = new TreeSet<ApplicationVersion>();
+    private final Set<ApplicationVersion> versions = new TreeSet<>();
 
     /**
      * Install instance holding all XML definition / update files.
@@ -150,7 +150,7 @@ public final class Application
      * version could not be updated till the SQL tables and the data model is
      * already installed and the cache is reloaded).
      */
-    private final List<Long> notStoredVersions = new ArrayList<Long>();
+    private final List<Long> notStoredVersions = new ArrayList<>();
 
     /**
      * Stores the highest or maximum number of the versions to be installed.
@@ -168,7 +168,7 @@ public final class Application
     /**
      * Dependencies to other applications for this application ordered.
      */
-    private final List<Dependency> dependencies = new ArrayList<Dependency>();
+    private final List<Dependency> dependencies = new ArrayList<>();
 
     /**
      * Root URL where the source files are located. Could be a file directory (
@@ -395,7 +395,7 @@ public final class Application
                                                                         final List<String> _classpath)
         throws InstallationException
     {
-        final Map<String, Application> appls = new HashMap<String, Application>();
+        final Map<String, Application> appls = new HashMap<>();
         try {
             final ClassLoader parent = Application.class.getClassLoader();
             final List<URL> urls = new ArrayList<>();
@@ -668,7 +668,7 @@ public final class Application
     {
         try {
             Context.begin();
-            if (Context.getDbType().existsView(Context.getThreadContext().getConnection(), "V_ADMINTYPE")
+            if (Context.getDbType().existsView(Context.getConnection(), "V_ADMINTYPE")
                             && CIAdminCommon.ApplicationVersion.getType() != null
                             && CIAdminCommon.Application.getType() != null
                             && CIAdminCommon.Application.getType().getAttributes().size() > 4) {
@@ -680,7 +680,7 @@ public final class Application
                     appQueryBldr.addWhereAttrEqValue(CIAdminCommon.Application.Name, this.application);
                     final InstanceQuery appQuery = appQueryBldr.getQuery();
                     appQuery.execute();
-                    Instance appInst;
+                    final Instance appInst;
                     if (appQuery.next()) {
                         appInst = appQuery.getCurrentValue();
                     } else {
@@ -700,7 +700,7 @@ public final class Application
                 appQueryBldr.addWhereAttrEqValue(CIAdminCommon.Application.Name, this.application);
                 final InstanceQuery appQuery = appQueryBldr.getQuery();
                 appQuery.execute();
-                Instance appInst;
+                final Instance appInst;
                 if (appQuery.next()) {
                     appInst = appQuery.getCurrentValue();
                 } else {

@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -166,7 +167,7 @@ public class OracleDatabaseWithAutoSequence
    *                      generating keys
    */
     @Override
-    public long getNewId(final Connection _con,
+    public long getNewId(final ConnectionResource _con,
                          final String _table,
                          final String _column)
         throws SQLException

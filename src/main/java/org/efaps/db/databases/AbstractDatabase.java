@@ -36,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.efaps.bpm.NamingStrategy;
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.TableInformation;
+import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLDelete;
 import org.efaps.db.wrapper.SQLDelete.DeleteDefintion;
 import org.efaps.db.wrapper.SQLInsert;
@@ -154,7 +155,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @see #getWriteSQLTypeName(ColumnType)
      */
     private final Map<AbstractDatabase.ColumnType, String> writeColTypeMap
-        = new HashMap<AbstractDatabase.ColumnType, String>();
+        = new HashMap<>();
 
     /**
      * The map stores the mapping between column types used in the database and
@@ -164,7 +165,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @see #getReadColumnTypes(String)
      */
     private final Map<String, Set<AbstractDatabase.ColumnType>> readColTypeMap
-        = new HashMap<String, Set<AbstractDatabase.ColumnType>>();
+        = new HashMap<>();
 
     /**
      * The map stores the mapping between column types used in eFaps and the
@@ -173,7 +174,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @see #addMapping(ColumnType, String, String, String...)
      */
     private final Map<AbstractDatabase.ColumnType, String> nullValueColTypeMap
-        = new HashMap<AbstractDatabase.ColumnType, String>();
+        = new HashMap<>();
 
     /**
      * Caching for table information read from the SQL database.
@@ -258,7 +259,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         for (final String readTypeName : _readTypeNames) {
             Set<AbstractDatabase.ColumnType> colTypes = this.readColTypeMap.get(readTypeName);
             if (colTypes == null) {
-                colTypes = new HashSet<AbstractDatabase.ColumnType>();
+                colTypes = new HashSet<>();
                 this.readColTypeMap.put(readTypeName, colTypes);
             }
             colTypes.add(_columnType);
@@ -517,7 +518,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
     {
         final TableInformation tableInfo = new TableInformation(_tableName.toUpperCase());
 
-        final Map<String, TableInformation> tableInfos = new HashMap<String, TableInformation>(1);
+        final Map<String, TableInformation> tableInfos = new HashMap<>(1);
         tableInfos.put(_tableName.toUpperCase(), tableInfo);
         this.initTableInfoColumns(_con, null, tableInfos);
         this.initTableInfoUniqueKeys(_con, null, tableInfos);
@@ -600,8 +601,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @return next value in sequence
      * @throws SQLException on error
      */
-    public abstract long nextSequence(final Connection _con,
-                                      final String _name)
+    public abstract long nextSequence(ConnectionResource _con,
+                                      String _name)
         throws SQLException;
 
     /**
@@ -616,9 +617,9 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @return this instance
      * @throws SQLException on error
      */
-    public abstract T setSequence(final Connection _con,
-                                  final String _name,
-                                  final long _value)
+    public abstract T setSequence(Connection _con,
+                                  String _name,
+                                  long _value)
         throws SQLException;
 
     /**
@@ -1039,7 +1040,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @throws SQLException always, because method itself is not implemented not
      *             not allowed to call
      */
-    public long getNewId(final Connection _con,
+    public long getNewId(final ConnectionResource _con,
                          final String _table,
                          final String _column)
         throws SQLException
@@ -1411,11 +1412,12 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
             throws CacheReloadException
         {
             try {
-                final Connection con = Context.getThreadContext().getConnectionResource().getConnection();
+                final Connection con = Context.getConnection();
                 AbstractDatabase.this.initTableInfo(con, null, _cache4Name);
                 AbstractDatabase.this.initTableInfoColumns(con, null, _cache4Name);
                 AbstractDatabase.this.initTableInfoUniqueKeys(con, null, _cache4Name);
                 AbstractDatabase.this.initTableInfoForeignKeys(con, null, _cache4Name);
+                con.close();
             } catch (final SQLException e) {
                 throw new CacheReloadException("cache for table information could not be read", e);
             } catch (final EFapsException e) {

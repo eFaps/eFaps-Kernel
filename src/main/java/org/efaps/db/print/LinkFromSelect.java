@@ -178,7 +178,7 @@ public class LinkFromSelect
         final Attribute attr = this.type.getAttribute(this.attrName);
 
         if (attr == null) {
-            LOG.error("Could not find Attribute '{}' in Type '{}'", this.attrName, this.type.getName());
+            LinkFromSelect.LOG.error("Could not find Attribute '{}' in Type '{}'", this.attrName, this.type.getName());
             throw new EFapsException(LinkFromSelect.class, "NoAttribute");
         }
 
@@ -277,7 +277,7 @@ public class LinkFromSelect
         boolean ret = false;
         ConnectionResource con = null;
         try {
-            LOG.debug("Executing SQLL: {}", _complStmt);
+            LinkFromSelect.LOG.debug("Executing SQLL: {}", _complStmt);
             List<Object[]> rows = null;
             boolean cached = false;
             if (isCacheEnabled()) {
@@ -293,7 +293,7 @@ public class LinkFromSelect
             }
             if (!cached) {
                 con = Context.getThreadContext().getConnectionResource();
-                final Statement stmt = con.getConnection().createStatement();
+                final Statement stmt = con.createStatement();
 
                 final ResultSet rs = stmt.executeQuery(_complStmt.toString());
                 final ArrayListHandler handler = new ArrayListHandler(Context.getDbType().getRowProcessor());

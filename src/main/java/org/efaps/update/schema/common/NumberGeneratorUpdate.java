@@ -17,13 +17,13 @@
 
 package org.efaps.update.schema.common;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.Install.InstallFile;
 import org.efaps.update.util.InstallationException;
@@ -103,19 +103,27 @@ public class NumberGeneratorUpdate
                 throw new InstallationException("Format could not be defined", e);
             }
             super.createInDB(_insert);
-            final ConnectionResource con;
+            final Connection con;
             try {
-                con = Context.getThreadContext().getConnectionResource();
+                con = Context.getConnection();
             } catch (final EFapsException e) {
                 throw new InstallationException("Connection resource could not be fetched", e);
             }
             final String name = "numgen_" + ((Long) getInstance().getId()).toString() + "_seq";
             try {
-                if (!Context.getDbType().existsSequence(con.getConnection(), name)) {
-                    Context.getDbType().createSequence(con.getConnection(), name, this.startvalue);
+                if (!Context.getDbType().existsSequence(con, name)) {
+                    Context.getDbType().createSequence(con, name, this.startvalue);
                 }
             } catch (final SQLException e) {
                 throw new InstallationException("Sequence '" + name + "' could not be created", e);
+            } finally {
+                try {
+                    if (con != null && con.isClosed()) {
+                        con.close();
+                    }
+                } catch (final SQLException e) {
+                    throw new InstallationException("Cannot read a type for an attribute.", e);
+                }
             }
         }
     }

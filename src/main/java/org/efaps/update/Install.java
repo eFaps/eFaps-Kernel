@@ -289,8 +289,8 @@ public class Install
     {
         final Map<String, Integer> versions = new HashMap<>();
         try {
-            if (Context.getDbType().existsView(Context.getThreadContext().getConnection(), "V_ADMINTYPE")
-                            && CIAdminCommon.Application.getType() != null) {
+            if (Context.getDbType().existsView(Context.getConnection(),
+                            "V_ADMINTYPE") && CIAdminCommon.Application.getType() != null) {
                 final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.ApplicationVersion);
                 final MultiPrintQuery multi = queryBldr.getPrint();
                 final SelectBuilder selName = SelectBuilder.get()

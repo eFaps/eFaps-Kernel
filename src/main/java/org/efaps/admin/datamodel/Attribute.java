@@ -17,6 +17,7 @@
 
 package org.efaps.admin.datamodel;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,7 +40,6 @@ import org.efaps.ci.CIAdminDataModel;
 import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.ColumnInformation;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
@@ -193,7 +193,7 @@ public class Attribute
      * @see #getSqlColName
      * @see #setSqlColName
      */
-    private final ArrayList<String> sqlColNames = new ArrayList<String>();
+    private final ArrayList<String> sqlColNames = new ArrayList<>();
 
     /**
      * The instance variable stores the attribute type for this attribute.
@@ -431,7 +431,7 @@ public class Attribute
         throws CacheReloadException
     {
         if (this.link == null) {
-            LOG.error("Access on Attribute Link without parent defintion: {}", this);
+            Attribute.LOG.error("Access on Attribute Link without parent defintion: {}", this);
         }
         return Type.get(this.link);
     }
@@ -446,7 +446,7 @@ public class Attribute
         throws CacheReloadException
     {
         if (this.dependencies == null) {
-            this.dependencies = new TreeMap<String, Attribute>();
+            this.dependencies = new TreeMap<>();
             // in case of a rate attribute the dependencies to the currencies
             // must be given
             if (getProperties().containsKey("CurrencyAttribute4Rate")) {
@@ -575,7 +575,7 @@ public class Attribute
         try {
             ret = Dimension.get(UUID.fromString(this.dimensionUUID));
         } catch (final CacheReloadException e) {
-            LOG.error("Catched CacheReloadException", e);
+            Attribute.LOG.error("Catched CacheReloadException", e);
         }
         return ret;
     }
@@ -847,12 +847,12 @@ public class Attribute
         throws CacheReloadException
     {
         long ret = 0;
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(Attribute.SQL_ATTR);
+                stmt = con.prepareStatement(Attribute.SQL_ATTR);
                 stmt.setObject(1, _attrId);
                 final ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
@@ -870,12 +870,12 @@ public class Attribute
         } catch (final EFapsException e) {
             throw new CacheReloadException("Cannot read a type for an attribute.", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("Cannot read a type for an attribute.", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
         return ret;
@@ -888,13 +888,14 @@ public class Attribute
     protected static void add4Type(final Type _type)
         throws EFapsException
     {
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            con = Context.getThreadContext().getConnectionResource();
+            Context.getThreadContext();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
-            final List<Object[]> values = new ArrayList<Object[]>();
+            final List<Object[]> values = new ArrayList<>();
             try {
-                stmt = con.getConnection().prepareStatement(Attribute.SQL_TYPE);
+                stmt = con.prepareStatement(Attribute.SQL_TYPE);
                 stmt.setObject(1, _type.getId());
                 final ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
@@ -920,9 +921,9 @@ public class Attribute
             }
             con.commit();
 
-            final Map<Long, AttributeSet> id2Set = new HashMap<Long, AttributeSet>();
-            final Map<Attribute, Long> attribute2setId = new HashMap<Attribute, Long>();
-            final List<Attribute> attributes = new ArrayList<Attribute>();
+            final Map<Long, AttributeSet> id2Set = new HashMap<>();
+            final Map<Attribute, Long> attribute2setId = new HashMap<>();
+            final List<Attribute> attributes = new ArrayList<>();
             for (final Object[] row : values) {
                 final long id = (Long) row[0];
                 final String name = (String) row[1];
@@ -998,8 +999,12 @@ public class Attribute
         } catch (final SQLException e) {
             throw new CacheReloadException("Cannot read attributes.", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                con.abort();
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read attributes.", e);
             }
         }
     }

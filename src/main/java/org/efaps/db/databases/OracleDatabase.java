@@ -34,6 +34,7 @@ import java.util.zip.CheckedInputStream;
 import org.apache.commons.dbutils.BasicRowProcessor;
 import org.apache.commons.dbutils.RowProcessor;
 import org.efaps.db.databases.information.TableInformation;
+import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -391,7 +392,7 @@ public class OracleDatabase
      * @throws SQLException if a new id could not be retrieved
      */
     @Override
-    public long getNewId(final Connection _con,
+    public long getNewId(final ConnectionResource _con,
                          final String _table,
                          final String _column)
         throws SQLException
@@ -435,8 +436,7 @@ public class OracleDatabase
         } finally {
             stmt.close();
         }
-
-        nextSequence(_con, _name);
+        nextSequence(new ConnectionResource(_con), _name);
         return this;
     }
 
@@ -490,7 +490,7 @@ public class OracleDatabase
      * {@inheritDoc}
      */
     @Override
-    public long nextSequence(final Connection _con,
+    public long nextSequence(final ConnectionResource _con,
                              final String _name)
         throws SQLException
     {

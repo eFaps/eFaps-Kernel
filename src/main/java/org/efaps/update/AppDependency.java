@@ -42,7 +42,7 @@ public final class AppDependency
     /**
      * The mapping of all names to their Dependency.
      */
-    private static final Map<String, AppDependency> NAME2APPDEPENDENCY = new  HashMap<String, AppDependency>();
+    private static final Map<String, AppDependency> NAME2APPDEPENDENCY = new  HashMap<>();
 
     /**
      * Name of the AppDependency.
@@ -71,8 +71,8 @@ public final class AppDependency
     {
         if (this.met == null) {
             try {
-                if (Context.getDbType().existsView(Context.getThreadContext().getConnection(), "V_ADMINTYPE")
-                                && CIAdminCommon.ApplicationVersion.getType() != null) {
+                if (Context.getDbType().existsView(Context.getConnection(),
+                                "V_ADMINTYPE") && CIAdminCommon.ApplicationVersion.getType() != null) {
                     final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.Application);
                     queryBldr.addWhereAttrEqValue(CIAdminCommon.Application.Name, this.name);
                     final InstanceQuery query = queryBldr.getQuery();
@@ -92,6 +92,7 @@ public final class AppDependency
         }
         return this.met;
     }
+
     /**
      * Getter method for the instance variable {@link #name}.
      *

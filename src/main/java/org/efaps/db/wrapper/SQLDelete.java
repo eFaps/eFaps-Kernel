@@ -17,11 +17,11 @@
 
 package org.efaps.db.wrapper;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.efaps.db.Context;
+import org.efaps.db.transaction.ConnectionResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +83,7 @@ public class SQLDelete
      * @param _con Connection the delete will be executed in
      * @throws SQLException on error during deletion
      */
-    public void execute(final Connection _con)
+    public void execute(final ConnectionResource _con)
         throws SQLException
     {
         final Statement stmt = _con.createStatement();

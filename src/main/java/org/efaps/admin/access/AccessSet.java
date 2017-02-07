@@ -17,6 +17,7 @@
 
 package org.efaps.admin.access;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,7 +32,6 @@ import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -159,7 +159,7 @@ public final class AccessSet
      *
      * @see #getAccessTypes
      */
-    private final Set<AccessType> accessTypes = new HashSet<AccessType>();
+    private final Set<AccessType> accessTypes = new HashSet<>();
 
     /**
      * All related data models types of this access set are referenced in this
@@ -167,19 +167,19 @@ public final class AccessSet
      *
      * @see #getDataModelTypes
      */
-    private final Set<Long> dataModelTypes = new HashSet<Long>();
+    private final Set<Long> dataModelTypes = new HashSet<>();
 
     /**
      * All related Status of this access set are referenced in this instance
      * variable.
      */
-    private final Set<Status> statuses = new HashSet<Status>();
+    private final Set<Status> statuses = new HashSet<>();
 
     /**
      * All related Abstract User (Roles, Person) of this access set are
      * referenced in this instance variable.
      */
-    private final Set<Long> userIds = new HashSet<Long>();
+    private final Set<Long> userIds = new HashSet<>();
 
     /**
      * This is the constructor.
@@ -216,7 +216,7 @@ public final class AccessSet
     public Set<Type> getDataModelTypes()
         throws CacheReloadException
     {
-        final Set<Type> ret = new HashSet<Type>();
+        final Set<Type> ret = new HashSet<>();
         for (final Long id : this.dataModelTypes) {
             ret.add(Type.get(id));
         }
@@ -261,13 +261,13 @@ public final class AccessSet
     private void readLinks2AccessTypes()
         throws CacheReloadException
     {
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            final List<Long> values = new ArrayList<Long>();
-            con = Context.getThreadContext().getConnectionResource();
+            final List<Long> values = new ArrayList<>();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(AccessSet.SQL_SET2TYPE);
+                stmt = con.prepareStatement(AccessSet.SQL_SET2TYPE);
                 stmt.setObject(1, getId());
                 final ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
@@ -297,12 +297,12 @@ public final class AccessSet
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read roles", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read roles", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
     }
@@ -314,13 +314,13 @@ public final class AccessSet
     private void readLinks2DMTypes()
         throws CacheReloadException
     {
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            final List<Long> values = new ArrayList<Long>();
-            con = Context.getThreadContext().getConnectionResource();
+            final List<Long> values = new ArrayList<>();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(AccessSet.SQL_SET2DMTYPE);
+                stmt = con.prepareStatement(AccessSet.SQL_SET2DMTYPE);
                 stmt.setObject(1, getId());
                 final ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
@@ -351,12 +351,12 @@ public final class AccessSet
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read roles", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read roles", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
     }
@@ -368,13 +368,13 @@ public final class AccessSet
     private void readLinks2Status()
         throws CacheReloadException
     {
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            final List<Long> values = new ArrayList<Long>();
-            con = Context.getThreadContext().getConnectionResource();
+            final List<Long> values = new ArrayList<>();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(AccessSet.SQL_SET2STATUS);
+                stmt = con.prepareStatement(AccessSet.SQL_SET2STATUS);
                 stmt.setObject(1, getId());
                 final ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
@@ -403,12 +403,12 @@ public final class AccessSet
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read roles", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read roles", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
     }
@@ -420,13 +420,13 @@ public final class AccessSet
     private void readLinks2Person()
         throws CacheReloadException
     {
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            final List<Long> values = new ArrayList<Long>();
-            con = Context.getThreadContext().getConnectionResource();
+            final List<Long> values = new ArrayList<>();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(AccessSet.SQL_SET2PERSON);
+                stmt = con.prepareStatement(AccessSet.SQL_SET2PERSON);
                 stmt.setObject(1, getId());
                 final ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
@@ -450,12 +450,12 @@ public final class AccessSet
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read persons for accessset", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read persons for accessset", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
     }
@@ -569,13 +569,13 @@ public final class AccessSet
         throws CacheReloadException
     {
         boolean ret = false;
-        ConnectionResource con = null;
+        Connection con = null;
         try {
             AccessSet accessSet = null;
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(_sql);
+                stmt = con.prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
 
@@ -607,12 +607,12 @@ public final class AccessSet
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read roles", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read roles", e);
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("could not read child type ids", e);
             }
         }
         return ret;

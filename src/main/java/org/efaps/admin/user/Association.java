@@ -18,13 +18,13 @@
 
 package org.efaps.admin.user;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 import org.efaps.db.Context;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -184,12 +184,12 @@ public class Association
                                                 final Object _criteria) throws CacheReloadException
     {
         boolean ret = false;
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(_sql);
+                stmt = con.prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
 
@@ -215,24 +215,21 @@ public class Association
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read Association", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read Association", e);
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("could not read child type ids", e);
             }
         }
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof Association) {
             ret = ((Association) _obj).id == this.id;
         } else {
@@ -241,9 +238,6 @@ public class Association
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode()
     {

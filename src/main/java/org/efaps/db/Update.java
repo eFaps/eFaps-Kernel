@@ -75,17 +75,17 @@ public class Update
     /**
      * Mapping of SQL-Table to Attribute and Value.
      */
-    private final Map<SQLTable, List<Value>> table2values = new Hashtable<SQLTable, List<Value>>();
+    private final Map<SQLTable, List<Value>> table2values = new Hashtable<>();
 
     /**
      * Mapping of attribute to values.
      */
-    private final Map<Attribute, Value> attr2values = new HashMap<Attribute, Value>();
+    private final Map<Attribute, Value> attr2values = new HashMap<>();
 
     /**
      * Mapping of attribute to values.
      */
-    private final Map<Attribute, Value> trigRelevantAttr2values = new HashMap<Attribute, Value>();
+    private final Map<Attribute, Value> trigRelevantAttr2values = new HashMap<>();
 
     /**
      * @param _type     Type to be updated
@@ -208,7 +208,7 @@ public class Update
     protected final Map<Attribute, Object[]> getNewValuesMap()
     {
         // convert the map in a more simple map (following existing API)
-        final Map<Attribute, Object[]> ret = new HashMap<Attribute, Object[]>();
+        final Map<Attribute, Object[]> ret = new HashMap<>();
         for (final Entry<Attribute, Value> entry : this.trigRelevantAttr2values.entrySet()) {
             ret.put(entry.getKey(), entry.getValue().getValues());
         }
@@ -288,7 +288,7 @@ public class Update
         validate(getInstance(), value);
         List<Value> values = this.table2values.get(_attr.getTable());
         if (values == null) {
-            values = new ArrayList<Value>();
+            values = new ArrayList<>();
             this.table2values.put(_attr.getTable(), values);
         }
         values.add(value);
@@ -322,7 +322,7 @@ public class Update
     protected Value getValue(final Attribute _attr,
                              final Object[] _value)
     {
-        final List<Object> values = new ArrayList<Object>();
+        final List<Object> values = new ArrayList<>();
         if (_value != null) {
             for (final Object obj : _value) {
                 final Object object;
@@ -358,7 +358,7 @@ public class Update
     public void execute()
         throws EFapsException
     {
-        final Set<Attribute> attributes = new HashSet<Attribute>();
+        final Set<Attribute> attributes = new HashSet<>();
         for (final Attribute attr : this.attr2values.keySet()) {
             final AttributeType attrType = attr.getAttributeType();
             if (!attrType.isAlwaysUpdate()) {
@@ -427,9 +427,9 @@ public class Update
                                     getInstance().getId());
                     // iterate in reverse order and only execute the ones that are not added yet, permitting
                     // to overwrite the value for attributes by adding them later
-                    final ReverseListIterator<Value> iterator = new ReverseListIterator<Value>(entry.getValue());
+                    final ReverseListIterator<Value> iterator = new ReverseListIterator<>(entry.getValue());
 
-                    final Set<String> added = new HashSet<String>();
+                    final Set<String> added = new HashSet<>();
                     while (iterator.hasNext()) {
                         final Value value = iterator.next();
                         final String colKey = value.getAttribute().getSqlColNames().toString();
@@ -438,7 +438,7 @@ public class Update
                             added.add(colKey);
                         }
                     }
-                    final Set<String> updatedColumns = update.execute(con.getConnection());
+                    final Set<String> updatedColumns = update.execute(con);
                     final Iterator<Entry<Attribute, Value>> attrIter = this.trigRelevantAttr2values.entrySet()
                                     .iterator();
                     while (attrIter.hasNext()) {
@@ -531,7 +531,7 @@ public class Update
          *
          * @see #getStati()
          */
-        private final List<Update.Status> stati = new ArrayList<Update.Status>();
+        private final List<Update.Status> stati = new ArrayList<>();
 
         /**
          * This instance variable stores the ReturnValue of the esjp.

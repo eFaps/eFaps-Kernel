@@ -17,6 +17,7 @@
 
 package org.efaps.admin.access;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,7 +25,6 @@ import java.util.UUID;
 
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.db.Context;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -254,12 +254,12 @@ public final class AccessType
         throws CacheReloadException
     {
         final boolean ret = false;
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(_sql);
+                stmt = con.prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
@@ -282,13 +282,12 @@ public final class AccessType
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read access types", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not abort transaction "
-                                    + "while reading access types", e);
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("could not read child type ids", e);
             }
         }
         return ret;

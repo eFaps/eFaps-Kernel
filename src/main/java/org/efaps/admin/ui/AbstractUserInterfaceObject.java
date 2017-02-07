@@ -152,7 +152,7 @@ public abstract class AbstractUserInterfaceObject
     {
         Statement stmt = null;
         try {
-            stmt = Context.getThreadContext().getConnection().createStatement();
+            stmt = Context.getThreadContext().getConnectionResource().createStatement();
             final ResultSet resultset = stmt.executeQuery("select "
                             + "T_UIACCESS.USERABSTRACT "
                             + "from T_UIACCESS "

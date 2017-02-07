@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.security.Provider;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,7 +40,6 @@ import org.efaps.admin.user.Company;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.jaas.AppAccessHandler;
@@ -551,7 +551,7 @@ public final class SystemConfiguration
                                 return Integer.compare(priority(_o2), priority(_o1));
                             }
                         }).collect(Collectors.toList());
-        LOG.debug("Analyzed for key {}: {}", _key, fv);
+        SystemConfiguration.LOG.debug("Analyzed for key {}: {}", _key, fv);
         final String ret;
         if (fv.isEmpty()) {
             ret = null;
@@ -591,7 +591,7 @@ public final class SystemConfiguration
                 }
             }
         } catch (final EFapsException e) {
-            LOG.error("Catched", e);
+            SystemConfiguration.LOG.error("Catched", e);
         }
         return ret;
     }
@@ -613,7 +613,7 @@ public final class SystemConfiguration
     private void readConfig()
         throws CacheReloadException
     {
-        ConnectionResource con = null;
+        Connection con = null;
         try {
             boolean closeContext = false;
             if (!Context.isThreadActive()) {
@@ -621,10 +621,10 @@ public final class SystemConfiguration
                 closeContext = true;
             }
             final List<Object[]> dbValues = new ArrayList<>();
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(SystemConfiguration.SQL_CONFIG);
+                stmt = con.prepareStatement(SystemConfiguration.SQL_CONFIG);
                 stmt.setObject(1, getId());
                 final ResultSet rs = stmt.executeQuery();
 
@@ -669,12 +669,12 @@ public final class SystemConfiguration
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read SystemConfiguration attributes", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read SystemConfiguration attributes", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
     }
@@ -737,7 +737,7 @@ public final class SystemConfiguration
         throws CacheReloadException
     {
         boolean ret = false;
-        ConnectionResource con = null;
+        Connection con = null;
         try {
             boolean closeContext = false;
             if (!Context.isThreadActive()) {
@@ -745,10 +745,10 @@ public final class SystemConfiguration
                 closeContext = true;
             }
             SystemConfiguration sysConfig = null;
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(_sql);
+                stmt = con.prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
@@ -778,12 +778,12 @@ public final class SystemConfiguration
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read SystemConfiguration", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read SystemConfiguration", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
         return ret;

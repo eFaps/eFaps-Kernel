@@ -18,6 +18,7 @@
 package org.efaps.admin.datamodel;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,7 +28,6 @@ import java.util.UUID;
 
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.db.Context;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -347,14 +347,14 @@ public class Dimension
                                      final Object _criteria)
         throws CacheReloadException
     {
-        ConnectionResource con = null;
+        Connection con = null;
         try {
             final List<Object[]> values = new ArrayList<>();
 
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(_sql);
+                stmt = con.prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
@@ -397,12 +397,12 @@ public class Dimension
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read Dimension", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read Dimension", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
     }
@@ -437,13 +437,13 @@ public class Dimension
         throws CacheReloadException
     {
         boolean ret = false;
-        ConnectionResource con = null;
+        Connection con = null;
         try {
             Dimension dim = null;
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(_sql);
+                stmt = con.prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
@@ -472,12 +472,12 @@ public class Dimension
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read roles", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read roles", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
         return ret;

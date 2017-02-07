@@ -28,7 +28,6 @@ import java.util.UUID;
 
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.TableInformation;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -168,7 +167,7 @@ public final class SQLTable
      *
      * @see #getTypes()
      */
-    private final Set<Long> types = new HashSet<Long>();
+    private final Set<Long> types = new HashSet<>();
 
     /**
      * The instance variables is set to <i>true</i> if this table is only a read
@@ -306,7 +305,7 @@ public final class SQLTable
     public Set<Type> getTypes()
         throws CacheReloadException
     {
-        final Set<Type> ret = new HashSet<Type>();
+        final Set<Type> ret = new HashSet<>();
         for (final Long id : this.types) {
             ret.add(Type.get(id));
         }
@@ -462,20 +461,20 @@ public final class SQLTable
         throws CacheReloadException
     {
         final boolean ret = false;
-        ConnectionResource con = null;
+        Connection con = null;
         try {
             SQLTable table = null;
             long tableMainId = 0;
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(_sql);
+                stmt = con.prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     final long id = rs.getLong(1);
                     final String name = rs.getString(3).trim();
-                    table = new SQLTable(con.getConnection(),
+                    table = new SQLTable(con,
                                     id,
                                     rs.getString(2),
                                     name,
@@ -507,12 +506,12 @@ public final class SQLTable
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read sql tables", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read sql tables", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
         return ret;

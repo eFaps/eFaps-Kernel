@@ -20,7 +20,6 @@ package org.efaps.db.store;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -101,11 +100,9 @@ public class JDBCStoreResource
         if (!getExist()[1] && getGeneralID() != null) {
             try {
                 final ConnectionResource res = Context.getThreadContext().getConnectionResource();
-                final Connection con = res.getConnection();
                 Context.getDbType().newInsert(JDBCStoreResource.TABLENAME_STORE, "ID", false)
                                 .column("ID", getGeneralID())
-                                .execute(con);
-                res.commit();
+                                .execute(res);
             } catch (final SQLException e) {
                 throw new EFapsException(JDBCStoreResource.class, "insertDefaults", e);
             }
@@ -147,7 +144,7 @@ public class JDBCStoreResource
                     .append(db.getColumnQuote()).append("ID").append(db.getColumnQuote())
                     .append(db.getSQLPart(SQLPart.EQUAL)).append(getGeneralID());
 
-            final PreparedStatement stmt = res.getConnection().prepareStatement(cmd.toString());
+            final PreparedStatement stmt = res.prepareStatement(cmd.toString());
             try {
                 stmt.setBinaryStream(1, _in, ((Long) _size).intValue());
                 stmt.execute();
@@ -155,7 +152,6 @@ public class JDBCStoreResource
                 stmt.close();
             }
             size = _size;
-            res.commit();
         } catch (final EFapsException e) {
             res.abort();
             throw e;
@@ -191,7 +187,7 @@ public class JDBCStoreResource
         try {
             res = Context.getThreadContext().getConnectionResource();
 
-            final Statement stmt = res.getConnection().createStatement();
+            final Statement stmt = res.createStatement();
             final StringBuffer cmd = new StringBuffer()
                 .append("select ").append(JDBCStoreResource.COLNAME_FILECONTENT).append(" ")
                 .append("from ").append(JDBCStoreResource.TABLENAME_STORE).append(" ")
@@ -216,10 +212,6 @@ public class JDBCStoreResource
         } catch (final SQLException e) {
             JDBCStoreResource.LOG.error("read of content failed", e);
             throw new EFapsException(JDBCStoreResource.class, "read.SQLException", e);
-        } finally {
-            if (in == null) {
-                res.abort();
-            }
         }
         return in;
     }

@@ -18,6 +18,7 @@
 package org.efaps.admin;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -45,7 +46,6 @@ import org.efaps.admin.ui.AbstractUserInterfaceObject;
 import org.efaps.api.IEnumValue;
 import org.efaps.api.datamodel.Overwrite;
 import org.efaps.db.Context;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -385,10 +385,10 @@ public abstract class AbstractAdminObject
     protected void readFromDB4Properties()
         throws CacheReloadException
     {
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            con = Context.getThreadContext().getConnectionResource();
-            final PreparedStatement stmt = con.getConnection().prepareStatement(AbstractAdminObject.SELECT);
+            con = Context.getConnection();
+            final PreparedStatement stmt = con.prepareStatement(AbstractAdminObject.SELECT);
             stmt.setObject(1, getId());
             final ResultSet rs = stmt.executeQuery();
             AbstractAdminObject.LOG.debug("Reading Properties for '{}'", getName());
@@ -400,20 +400,18 @@ public abstract class AbstractAdminObject
             }
             rs.close();
             stmt.close();
-            if (con.isOpened()) {
-                con.commit();
-            }
+            con.commit();
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read properties for " + "'" + getName() + "'", e);
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read properties for " + "'" + getName() + "'", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read properties for " + "'" + getName() + "'", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
     }
@@ -428,9 +426,9 @@ public abstract class AbstractAdminObject
     protected void readFromDB4Links()
         throws CacheReloadException
     {
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             final SQLSelect select = new SQLSelect()
                             .column(0, "TYPEID")
                             .column(0, "TOID")
@@ -443,7 +441,7 @@ public abstract class AbstractAdminObject
                             .addPart(SQLPart.EQUAL)
                             .addValuePart(getId());
 
-            final Statement stmt = con.getConnection().createStatement();
+            final Statement stmt = con.createStatement();
             final ResultSet rs = stmt.executeQuery(select.getSQL());
 
             AbstractAdminObject.LOG.debug("Reading Links for '{}'", getName());
@@ -479,12 +477,12 @@ public abstract class AbstractAdminObject
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read properties for " + "'" + getName() + "'", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read properties for " + "'" + getName() + "'", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
     }
@@ -563,7 +561,7 @@ public abstract class AbstractAdminObject
                 }
             }
         } catch (final EFapsException e) {
-            LOG.error("Catched error on evaluation of Properties.", e);
+            AbstractAdminObject.LOG.error("Catched error on evaluation of Properties.", e);
         }
         return ret;
     }

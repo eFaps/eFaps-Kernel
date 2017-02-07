@@ -18,6 +18,7 @@
 package org.efaps.admin.common;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,7 +27,6 @@ import java.util.Locale;
 import java.util.UUID;
 
 import org.efaps.db.Context;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -196,7 +196,8 @@ public final class NumberGenerator
     {
         final Object[] args = new Object[_args.length + 1];
         try {
-            final long val = Context.getDbType().nextSequence(Context.getThreadContext().getConnection(), getDBName());
+            final long val = Context.getDbType().nextSequence(Context.getThreadContext().getConnectionResource(),
+                            getDBName());
             args[0] = val;
         } catch (final SQLException e) {
             throw new EFapsException(NumberGenerator.class, " getNextVal()", e);
@@ -224,7 +225,8 @@ public final class NumberGenerator
     {
         long ret = 0;
         try {
-            ret = Context.getDbType().nextSequence(Context.getThreadContext().getConnection(), getDBName());
+            ret = Context.getDbType().nextSequence(Context.getThreadContext().getConnectionResource(),
+                            getDBName());
         } catch (final SQLException e) {
             throw new EFapsException(NumberGenerator.class, " getNextValAsLong()", e);
         }
@@ -242,11 +244,21 @@ public final class NumberGenerator
     public void setVal(final String _value)
         throws EFapsException
     {
+        Connection con = null;
         try {
-            Context.getDbType().setSequence(Context.getThreadContext().getConnection(), getDBName(),
-                            Long.parseLong(_value));
+            con = Context.getConnection();
+            Context.getDbType().setSequence(con, getDBName(), Long.parseLong(_value));
+            con.commit();
         } catch (final SQLException e) {
             throw new EFapsException(NumberGenerator.class, "setVal()", e);
+        } finally {
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("could not read child type ids", e);
+            }
         }
     }
 
@@ -402,12 +414,12 @@ public final class NumberGenerator
         throws CacheReloadException
     {
         boolean ret = false;
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(_sql);
+                stmt = con.prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
@@ -427,18 +439,17 @@ public final class NumberGenerator
                 }
             }
             con.commit();
-
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read roles", e);
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read roles", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read roles", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
         return ret;

@@ -151,48 +151,39 @@ public class Delete
         throws EFapsException
     {
         final Context context = Context.getThreadContext();
-        ConnectionResource con = null;
+        final ConnectionResource con = context.getConnectionResource();
+        // first remove the storeresource, because the information needed from the general
+        // instance to actually delete will be removed in the second step
+        Resource storeRsrc = null;
         try {
-            con = context.getConnectionResource();
-            // first remove the storeresource, because the information needed from the general
-            // instance to actually delete will be removed in the second step
-            Resource storeRsrc = null;
-            try {
-                if (getInstance().getType().hasStore()) {
-                    storeRsrc = context.getStoreResource(getInstance(), Resource.StoreEvent.DELETE);
-                    storeRsrc.delete();
-                    storeRsrc.commit();
-                }
-            } finally {
-                if (storeRsrc != null && storeRsrc.isOpened()) {
-                    storeRsrc.abort();
-                }
+            if (getInstance().getType().hasStore()) {
+                storeRsrc = context.getStoreResource(getInstance(), Resource.StoreEvent.DELETE);
+                storeRsrc.delete();
+                storeRsrc.commit();
             }
-            try {
-                final List<DeleteDefintion> defs = new ArrayList<DeleteDefintion>();
-                defs.addAll(GeneralInstance.getDeleteDefintion(getInstance(), con.getConnection()));
-                final SQLTable mainTable = getInstance().getType().getMainTable();
-                for (final SQLTable curTable : getInstance().getType().getTables()) {
-                    if (curTable != mainTable && !curTable.isReadOnly()) {
-                        defs.add(new DeleteDefintion(curTable.getSqlTable(),
-                                        curTable.getSqlColId(), getInstance().getId()));
-                    }
-                }
-                defs.add(new DeleteDefintion(mainTable.getSqlTable(), mainTable.getSqlColId(), getInstance().getId()));
-                final SQLDelete delete = Context.getDbType().newDelete(defs.toArray(new DeleteDefintion[defs.size()]));
-                delete.execute(con.getConnection());
-
-                AccessCache.registerUpdate(getInstance());
-                Queue.registerUpdate(getInstance());
-            } catch (final SQLException e) {
-                throw new EFapsException(getClass(),
-                                         "executeWithoutAccessCheck.SQLException", e, this.instance);
-            }
-            con.commit();
         } finally {
-            if (con != null && con.isOpened()) {
-                con.abort();
+            if (storeRsrc != null && storeRsrc.isOpened()) {
+                storeRsrc.abort();
             }
+        }
+        try {
+            final List<DeleteDefintion> defs = new ArrayList<>();
+            defs.addAll(GeneralInstance.getDeleteDefintion(getInstance(), con));
+            final SQLTable mainTable = getInstance().getType().getMainTable();
+            for (final SQLTable curTable : getInstance().getType().getTables()) {
+                if (curTable != mainTable && !curTable.isReadOnly()) {
+                    defs.add(new DeleteDefintion(curTable.getSqlTable(),
+                                    curTable.getSqlColId(), getInstance().getId()));
+                }
+            }
+            defs.add(new DeleteDefintion(mainTable.getSqlTable(), mainTable.getSqlColId(), getInstance().getId()));
+            final SQLDelete delete = Context.getDbType().newDelete(defs.toArray(new DeleteDefintion[defs.size()]));
+            delete.execute(con);
+            AccessCache.registerUpdate(getInstance());
+            Queue.registerUpdate(getInstance());
+        } catch (final SQLException e) {
+            throw new EFapsException(getClass(),
+                                     "executeWithoutAccessCheck.SQLException", e, this.instance);
         }
     }
 

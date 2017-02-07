@@ -19,6 +19,7 @@ package org.efaps.admin.user;
 
 import java.lang.reflect.Method;
 import java.security.Principal;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,7 +30,6 @@ import java.util.Set;
 
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.db.Context;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -153,7 +153,7 @@ public final class JAASSystem
      * Map between person attributes the the method of the JAAS.
      */
     private final Map<Person.AttrName, Method> personMethodAttributes
-        = new HashMap<Person.AttrName, Method>();
+        = new HashMap<>();
 
     /**
      * The class used as principle for roles for this JAAS system is stored in
@@ -355,7 +355,7 @@ public final class JAASSystem
      */
     public static Set<JAASSystem> getAllJAASSystems()
     {
-        final Set<JAASSystem> ret = new HashSet<JAASSystem>();
+        final Set<JAASSystem> ret = new HashSet<>();
         final Cache<Long, JAASSystem> cache = InfinispanCache.get().<Long, JAASSystem>getCache(JAASSystem.IDCACHE);
         for (final Map.Entry<Long, JAASSystem> entry : cache.entrySet()) {
             ret.add(entry.getValue());
@@ -433,13 +433,13 @@ public final class JAASSystem
                                             final Object _criteria)
         throws CacheReloadException
     {
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
 
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(_sql);
+                stmt = con.prepareStatement(_sql);
                 if (!_sql.equals(JAASSystem.SQL_SELECT)) {
                     stmt.setObject(1, _criteria);
                 }
@@ -526,12 +526,12 @@ public final class JAASSystem
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read roles", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read roles", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
     }

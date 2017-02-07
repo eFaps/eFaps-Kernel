@@ -17,6 +17,7 @@
 
 package org.efaps.admin.user;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,7 +28,6 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -314,12 +314,12 @@ public final class Role
         throws CacheReloadException
     {
         boolean ret = false;
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(_sql);
+                stmt = con.prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
 
@@ -347,12 +347,12 @@ public final class Role
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read roles", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read roles", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
         return ret;
@@ -376,13 +376,13 @@ public final class Role
         throws EFapsException
     {
         long roleId = 0;
-        ConnectionResource rsrc = null;
+        Connection con = null;
         try {
-            rsrc = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
 
             PreparedStatement stmt = null;
             try {
-                stmt = rsrc.getConnection().prepareStatement(Role.SQL_JAASKEY);
+                stmt = con.prepareStatement(Role.SQL_JAASKEY);
                 stmt.setObject(1, _jaasKey);
                 stmt.setObject(2, _jaasSystem.getId());
                 final ResultSet rs = stmt.executeQuery();
@@ -398,14 +398,18 @@ public final class Role
             } finally {
                 try {
                     stmt.close();
+                    con.commit();
                 } catch (final SQLException e) {
                     Role.LOG.warn("Catched SQLException in class " + Role.class);
                 }
             }
-            rsrc.commit();
         } finally {
-            if (rsrc != null && rsrc.isOpened()) {
-                rsrc.abort();
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
         return Role.get(roleId);

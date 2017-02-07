@@ -66,9 +66,9 @@ public final class DateTimeUtil
     {
         Timestamp now = null;
         final ConnectionResource rsrc = Context.getThreadContext().getConnectionResource();
-        Statement stmt;
+        final Statement stmt;
         try {
-            stmt = rsrc.getConnection().createStatement();
+            stmt = rsrc.createStatement();
             final ResultSet resultset = stmt.executeQuery("SELECT " + Context.getDbType().getCurrentTimeStamp());
             resultset.next();
             now = resultset.getTimestamp(1);

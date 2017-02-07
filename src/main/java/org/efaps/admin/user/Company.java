@@ -17,6 +17,7 @@
 
 package org.efaps.admin.user;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -116,7 +116,7 @@ public final class Company
     /**
      * The company belonging to this Consortiums.
      */
-    private final Set<Long> consortiumIds = new HashSet<Long>();
+    private final Set<Long> consortiumIds = new HashSet<>();
 
     /**
      * @param _id       id for this company
@@ -311,12 +311,12 @@ public final class Company
         throws CacheReloadException
     {
         boolean ret = false;
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(_sql);
+                stmt = con.prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
@@ -335,19 +335,19 @@ public final class Company
                 if (stmt != null) {
                     stmt.close();
                 }
+                con.commit();
             }
-            con.commit();
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read roles", e);
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read roles", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read roles", e);
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("could not read child type ids", e);
             }
         }
         return ret;

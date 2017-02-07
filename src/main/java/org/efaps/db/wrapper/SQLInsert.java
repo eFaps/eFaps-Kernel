@@ -17,13 +17,13 @@
 
 package org.efaps.db.wrapper;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.efaps.db.Context;
+import org.efaps.db.transaction.ConnectionResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +81,7 @@ public class SQLInsert
      *         generated id is returned
      * @throws SQLException if insert failed
      */
-    public Long execute(final Connection _con)
+    public Long execute(final ConnectionResource _con)
         throws SQLException
     {
         final boolean supGenKey = Context.getDbType().supportsGetGeneratedKeys();
@@ -141,10 +141,10 @@ public class SQLInsert
 
         SQLInsert.LOG.debug("Executing SQL: {}", cmd.toString());
 
-        PreparedStatement stmt;
+        final PreparedStatement stmt;
         if (this.newId && supGenKey) {
             if (Context.getDbType().supportsMultiGeneratedKeys()) {
-                stmt = _con.prepareStatement(cmd.toString(), new String[]{getIdColumn()});
+                stmt = _con.prepareStatement(cmd.toString(), new String[]{ getIdColumn() });
             } else {
                 stmt = _con.prepareStatement(cmd.toString(), Statement.RETURN_GENERATED_KEYS);
             }

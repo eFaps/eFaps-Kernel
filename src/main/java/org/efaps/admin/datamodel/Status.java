@@ -18,6 +18,7 @@
 package org.efaps.admin.datamodel;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,7 +32,6 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ci.CIStatus;
 import org.efaps.ci.CIType;
 import org.efaps.db.Context;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -159,6 +159,7 @@ public final class Status
      *
      * @return value of instance variable {@link #id}
      */
+    @Override
     public long getId()
     {
         return this.id;
@@ -432,13 +433,13 @@ public final class Status
         throws CacheReloadException
     {
         boolean ret = false;
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            final List<Object[]> values = new ArrayList<Object[]>();
-            con = Context.getThreadContext().getConnectionResource();
+            final List<Object[]> values = new ArrayList<>();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(_sql);
+                stmt = con.prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
@@ -467,7 +468,7 @@ public final class Status
                 final Type type = Type.get(typeid);
                 final Cache<UUID, StatusGroup> cache = InfinispanCache.get().<UUID, StatusGroup>getCache(
                                 Status.UUIDCACHE4GRP);
-                StatusGroup statusGroup;
+                final StatusGroup statusGroup;
                 if (cache.containsKey(type.getUUID())) {
                     statusGroup = cache.get(type.getUUID());
                 } else {
@@ -485,12 +486,12 @@ public final class Status
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read types", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read types", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
         return ret;
@@ -507,13 +508,13 @@ public final class Status
         throws CacheReloadException
     {
         final boolean ret = false;
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            final List<Object[]> values = new ArrayList<Object[]>();
-            con = Context.getThreadContext().getConnectionResource();
+            final List<Object[]> values = new ArrayList<>();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(_sql);
+                stmt = con.prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
@@ -546,12 +547,12 @@ public final class Status
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read types", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read types", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
         return ret;
@@ -560,7 +561,7 @@ public final class Status
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof Status) {
             ret = ((Status) _obj).getId() == getId();
         } else {

@@ -210,7 +210,7 @@ public class AttributeQuery
                 AbstractObjectQuery.LOG.debug(_complStmt.toString());
             }
 
-            final Statement stmt = con.getConnection().createStatement();
+            final Statement stmt = con.createStatement();
 
             final ResultSet rs = stmt.executeQuery(_complStmt.toString());
             new ArrayList<Instance>();
@@ -219,13 +219,8 @@ public class AttributeQuery
             }
             rs.close();
             stmt.close();
-            con.commit();
         } catch (final SQLException e) {
             throw new EFapsException(AttributeQuery.class, "executeOneCompleteStmt", e);
-        } finally {
-            if (con != null && con.isOpened()) {
-                con.abort();
-            }
         }
         return ret;
     }

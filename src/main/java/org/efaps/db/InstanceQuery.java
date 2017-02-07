@@ -138,10 +138,10 @@ public class InstanceQuery
 
             AbstractObjectQuery.LOG.debug("Executing SQL: {}", _complStmt);
 
-            final Statement stmt = con.getConnection().createStatement();
+            final Statement stmt = con.createStatement();
 
             final ResultSet rs = stmt.executeQuery(_complStmt.toString());
-            final List<Object[]> values = new ArrayList<Object[]>();
+            final List<Object[]> values = new ArrayList<>();
             while (rs.next()) {
                 final long id = rs.getLong(1);
                 Long typeId = null;
@@ -152,7 +152,6 @@ public class InstanceQuery
             }
             rs.close();
             stmt.close();
-            con.commit();
             for (final Object[] row: values) {
                 final Long id = (Long) row[0];
                 final Long typeId = (Long) row[1];
@@ -160,10 +159,6 @@ public class InstanceQuery
             }
         } catch (final SQLException e) {
             throw new EFapsException(InstanceQuery.class, "executeOneCompleteStmt", e);
-        } finally {
-            if (con != null && con.isOpened()) {
-                con.abort();
-            }
         }
         return ret;
     }

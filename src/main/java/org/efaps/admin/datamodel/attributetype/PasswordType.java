@@ -85,7 +85,7 @@ public class PasswordType
             try {
                 con = Context.getThreadContext().getConnectionResource();
 
-                final Statement stmt = con.getConnection().createStatement();
+                final Statement stmt = con.createStatement();
                 final ResultSet rs = stmt.executeQuery(sel.getSQL());
                 if (rs.next()) {
                     this.currentValue = rs.getString(1);

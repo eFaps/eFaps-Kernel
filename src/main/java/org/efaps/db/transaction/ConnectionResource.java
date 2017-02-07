@@ -18,12 +18,13 @@
 package org.efaps.db.transaction;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
-import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,7 @@ public class ConnectionResource
      * @return value of instance variable {@link #connection}
      * @see #connection
      */
-    public final Connection getConnection()
+    protected final Connection getConnection()
     {
         return this.connection;
     }
@@ -72,15 +73,139 @@ public class ConnectionResource
     /**
      * Frees the resource and gives this connection resource back to the
      * context object.
+     *
+     * @throws EFapsException on error
      */
     @Override
     protected void freeResource()
+        throws EFapsException
     {
         try {
-            ConnectionResource.LOG.debug("free Resource: {}", this);
-            Context.getThreadContext().returnConnectionResource(this);
-        } catch (final EFapsException e) {
-            ConnectionResource.LOG.error("EFapsException", e);
+            if (!getConnection().isClosed()) {
+                getConnection().close();
+            }
+        } catch (final SQLException e) {
+            throw new EFapsException("Could not close", e);
+        }
+    }
+
+    /**
+     * Creates the statement.
+     *
+     * @return the statement
+     * @throws SQLException the SQL exception
+     */
+    public Statement createStatement()
+        throws SQLException
+    {
+        return getConnection().createStatement();
+    }
+
+    /**
+     * Prepare statement.
+     *
+     * @param _sql the sql
+     * @return the prepared statement
+     * @throws SQLException the SQL exception
+     */
+    public PreparedStatement prepareStatement(final String _sql)
+        throws SQLException
+    {
+        return getConnection().prepareStatement(_sql);
+    }
+
+    /**
+     * Prepare statement.
+     *
+     * @param _sql the sql
+     * @param _strings the strings
+     * @return the prepared statement
+     * @throws SQLException the SQL exception
+     */
+    public PreparedStatement prepareStatement(final String _sql,
+                                              final String[] _strings)
+        throws SQLException
+    {
+        return getConnection().prepareStatement(_sql, _strings);
+    }
+
+    /**
+     * Prepare statement.
+     *
+     * @param _string the string
+     * @param _returnGeneratedKeys the return generated keys
+     * @return the prepared statement
+     * @throws SQLException the SQL exception
+     */
+    public PreparedStatement prepareStatement(final String _string,
+                                              final int _returnGeneratedKeys)
+        throws SQLException
+    {
+
+        return getConnection().prepareStatement(_string, _returnGeneratedKeys);
+    }
+
+
+    /**
+     * Informs the resource manager to roll back work done on behalf of a
+     * transaction branch.
+     * @param _xid Xid
+     * @throws XAException on error
+     */
+    @Override
+    public void rollback(final Xid _xid)
+        throws XAException
+    {
+        ConnectionResource.LOG.trace("rollback (xid = {})", _xid);
+        try  {
+            if (this.connection != null && !this.connection.isClosed())  {
+                this.connection.rollback();
+            }
+        } catch (final SQLException e)  {
+            final XAException xa = new XAException(XAException.XA_RBCOMMFAIL);
+            xa.initCause(e);
+            throw xa;
+        } finally  {
+            try {
+                if (this.connection != null && !this.connection.isClosed())  {
+                    this.connection.close();
+                }
+                this.connection = null;
+            } catch (final SQLException e) {
+                ConnectionResource.LOG.error("SQLException", e);
+            }
+        }
+    }
+
+    /**
+     * Commits the global transaction specified by xid.
+     * @param _xid      Xid
+     * @param _onePhase one phase
+     * @throws XAException on error
+     */
+    @Override
+    public void commit(final Xid _xid,
+                       final boolean _onePhase)
+        throws XAException
+    {
+        ConnectionResource.LOG.trace("commit (xid = {}, one phase = {})", _xid, _onePhase);
+        try  {
+            if (this.connection != null && !this.connection.isClosed())  {
+                this.connection.commit();
+            }
+        } catch (final SQLException e)  {
+            final XAException xa = new XAException(XAException.XA_RBCOMMFAIL);
+            xa.initCause(e);
+            throw xa;
+        } finally  {
+            try {
+                if (this.connection != null && !this.connection.isClosed())  {
+                    this.connection.close();
+                }
+                this.connection = null;
+            } catch (final SQLException e) {
+                ConnectionResource.LOG.error("SQLException", e);
+            }
         }
     }
 
@@ -90,6 +215,7 @@ public class ConnectionResource
      * @param _xid Xid
      * @return 0
      */
+    @Override
     public int prepare(final Xid _xid)
     {
         ConnectionResource.LOG.trace("prepare (xid = {})", _xid);
@@ -97,71 +223,11 @@ public class ConnectionResource
     }
 
     /**
-     * Commits the global transaction specified by xid.
-     * @param _xid      Xid
-     * @param _onePhase one phase
-     * @throws XAException on error
-     */
-    public void commit(final Xid _xid,
-                       final boolean _onePhase)
-        throws XAException
-    {
-        ConnectionResource.LOG.trace("commit (xid = {}, one phase = {})", _xid, _onePhase);
-        try  {
-            if (this.connection != null)  {
-                this.connection.commit();
-            }
-        } catch (final SQLException e)  {
-            final XAException xa = new XAException(XAException.XA_RBCOMMFAIL);
-            xa.initCause(e);
-            throw xa;
-        } finally  {
-            try {
-                if (this.connection != null)  {
-                    this.connection.close();
-                    this.connection = null;
-                }
-            } catch (final SQLException e) {
-                ConnectionResource.LOG.error("SQLException", e);
-            }
-        }
-    }
-
-    /**
-     * Informs the resource manager to roll back work done on behalf of a
-     * transaction branch.
-     * @param _xid Xid
-     * @throws XAException on error
-     */
-    public void rollback(final Xid _xid)
-        throws XAException
-    {
-        ConnectionResource.LOG.trace("rollback (xid = {})", _xid);
-        try  {
-            if (this.connection != null)  {
-                this.connection.rollback();
-            }
-        } catch (final SQLException e)  {
-            final XAException xa = new XAException(XAException.XA_RBCOMMFAIL);
-            xa.initCause(e);
-            throw xa;
-        } finally  {
-            try {
-                if (this.connection != null)  {
-                    this.connection.close();
-                    this.connection = null;
-                }
-            } catch (final SQLException e) {
-                ConnectionResource.LOG.error("SQLException", e);
-            }
-        }
-    }
-
-    /**
      * Tells the resource manager to forget about a heuristically completed
      * transaction branch.
      * @param _xid Xid
      */
+    @Override
     public void forget(final Xid _xid)
     {
         ConnectionResource.LOG.trace("forget (xid = {})", _xid);
@@ -172,6 +238,7 @@ public class ConnectionResource
      * instance.
      * @return 0
      */
+    @Override
     public int getTransactionTimeout()
     {
         ConnectionResource.LOG.trace("getTransactionTimeout");
@@ -183,6 +250,7 @@ public class ConnectionResource
      * @param _flag flag
      * @return null
      */
+    @Override
     public Xid[] recover(final int _flag)
     {
         ConnectionResource.LOG.trace("recover (flag = {})", _flag);
@@ -196,6 +264,7 @@ public class ConnectionResource
      * @param _seconds  time out in seconds
      * @return always <i>true</i>
      */
+    @Override
     public boolean setTransactionTimeout(final int _seconds)
     {
         ConnectionResource.LOG.debug("setTransactionTimout");

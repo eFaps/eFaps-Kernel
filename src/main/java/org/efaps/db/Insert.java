@@ -225,7 +225,7 @@ public class Insert
             getInstance().setExchangeId(this.exchangeId);
             getInstance().setExchangeSystemId(this.exchangeSystemId);
 
-            GeneralInstance.insert(getInstance(), con.getConnection());
+            GeneralInstance.insert(getInstance(), con);
 
             for (final Entry<SQLTable, List<Value>> entry :  getTable2values().entrySet()) {
                 final SQLTable table = entry.getKey();
@@ -289,9 +289,9 @@ public class Insert
                 insert.column(_table.getSqlColType(), getType().getId());
             }
 
-            final ReverseListIterator<Value> iterator = new ReverseListIterator<Value>(_values);
+            final ReverseListIterator<Value> iterator = new ReverseListIterator<>(_values);
 
-            final Set<String> added = new HashSet<String>();
+            final Set<String> added = new HashSet<>();
             while (iterator.hasNext()) {
                 final Value value = iterator.next();
                 final String colKey = value.getAttribute().getSqlColNames().toString();
@@ -300,12 +300,10 @@ public class Insert
                     added.add(colKey);
                 }
             }
-
-            final Long bck = insert.execute(_con.getConnection());
+            final Long bck = insert.execute(_con);
             if (bck != null)  {
                 ret = bck;
             }
-
         } catch (final SQLException e) {
             Insert.LOG.error("executeOneStatement", e);
             throw new EFapsException(getClass(), "executeOneStatement.Exception", e, _table.getName());

@@ -19,6 +19,7 @@ package org.efaps.admin.runlevel;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -29,11 +30,11 @@ import java.util.Map;
 
 import org.efaps.admin.common.Quartz;
 import org.efaps.db.Context;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.AbstractCache;
+import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.InfinispanCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,13 +92,13 @@ public final class RunLevel
     /**
      * Mapping of all RunLevels to id.
      */
-    private static final Map<Long, RunLevel> ALL_RUNLEVELS = new HashMap<Long, RunLevel>();
+    private static final Map<Long, RunLevel> ALL_RUNLEVELS = new HashMap<>();
 
     /**
      * All cache initialize methods for this RunLevel are stored in this instance
      * variable. They are ordered by the priority.
      */
-    private final List<CacheMethod> cacheMethods = new ArrayList<CacheMethod>();
+    private final List<CacheMethod> cacheMethods = new ArrayList<>();
 
     /**
      * The id in the eFaps database of this run level.
@@ -164,7 +165,6 @@ public final class RunLevel
         Quartz.shutDown();
     }
 
-
     /**
      * @return Return the name of the currenct active RunLevel.
      */
@@ -186,8 +186,10 @@ public final class RunLevel
         throws EFapsException
     {
         try {
-            return Context.getDbType().existsTable(Context.getThreadContext().getConnection(),
-                                                   RunLevel.TABLE_TESTS);
+            final Connection con = Context.getConnection();
+            final boolean ret = Context.getDbType().existsTable(Context.getConnection(), RunLevel.TABLE_TESTS);
+            con.close();
+            return ret;
         } catch (final SQLException e) {
             throw new EFapsException(RunLevel.class, "isInitialisable.SQLException", e);
         }
@@ -219,7 +221,7 @@ public final class RunLevel
      */
     private List<String> getAllInitializers()
     {
-        final List<String> ret = new ArrayList<String>();
+        final List<String> ret = new ArrayList<>();
         for (final CacheMethod cacheMethod : this.cacheMethods) {
             ret.add(cacheMethod.className);
         }
@@ -260,14 +262,14 @@ public final class RunLevel
     protected void initialize(final String _sql)
         throws EFapsException
     {
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             Statement stmt = null;
             long parentId = 0;
 
             try {
-                stmt = con.getConnection().createStatement();
+                stmt = con.createStatement();
                 // read run level itself
                 ResultSet rs = stmt.executeQuery(_sql);
                 if (rs.next()) {
@@ -309,6 +311,7 @@ public final class RunLevel
                 }
             }
             con.commit();
+            con.close();
             RunLevel.ALL_RUNLEVELS.put(this.id, this);
             if (parentId != 0) {
                 this.parent = RunLevel.ALL_RUNLEVELS.get(parentId);
@@ -321,8 +324,12 @@ public final class RunLevel
         } catch (final SQLException e) {
             RunLevel.LOG.error("initialise()", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
-                con.abort();
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
     }

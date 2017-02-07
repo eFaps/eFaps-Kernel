@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.commons.dbutils.BasicRowProcessor;
 import org.apache.commons.dbutils.RowProcessor;
 import org.efaps.db.databases.information.TableInformation;
+import org.efaps.db.transaction.ConnectionResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -393,7 +394,7 @@ public class DerbyDatabase
      * {@inheritDoc}
      */
     @Override
-    public long nextSequence(final Connection _con,
+    public long nextSequence(final ConnectionResource _con,
                              final String _name)
         throws SQLException
     {

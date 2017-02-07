@@ -29,6 +29,7 @@ import java.util.Map;
 import org.apache.commons.dbutils.BasicRowProcessor;
 import org.apache.commons.dbutils.RowProcessor;
 import org.efaps.db.databases.information.TableInformation;
+import org.efaps.db.transaction.ConnectionResource;
 import org.joda.time.ReadableDateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
@@ -394,7 +395,7 @@ public class PostgreSQLDatabase
      * @return new id for the sequence
      */
     @Override
-    public long getNewId(final Connection _con,
+    public long getNewId(final ConnectionResource _con,
                          final String _table,
                          final String _column)
         throws SQLException
@@ -467,8 +468,6 @@ public class PostgreSQLDatabase
         if (!_con.getAutoCommit()) {
             _con.commit();
         }
-
-        nextSequence(_con, _name);
         return this;
     }
 
@@ -529,7 +528,7 @@ public class PostgreSQLDatabase
      * {@inheritDoc}
      */
     @Override
-    public long nextSequence(final Connection _con,
+    public long nextSequence(final ConnectionResource _con,
                              final String _name)
         throws SQLException
     {

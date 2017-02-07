@@ -21,7 +21,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -214,12 +213,10 @@ public class JCRStoreResource
         if (!getExist()[1] && getGeneralID() != null) {
             try {
                 final ConnectionResource res = Context.getThreadContext().getConnectionResource();
-                final Connection con = res.getConnection();
                 Context.getDbType().newInsert(JCRStoreResource.TABLENAME_STORE, "ID", false)
                                 .column("ID", getGeneralID())
                                 .column(JCRStoreResource.COLNAME_IDENTIFIER, "NEW")
-                                .execute(con);
-                res.commit();
+                                .execute(res);
             } catch (final SQLException e) {
                 throw new EFapsException(JCRStoreResource.class, "insertDefaults", e);
             }
@@ -340,14 +337,13 @@ public class JCRStoreResource
                                 .append(JCRStoreResource.COLNAME_IDENTIFIER).append("=? ")
                                 .append("where ID =").append(getGeneralID());
 
-                final PreparedStatement stmt = res.getConnection().prepareStatement(cmd.toString());
+                final PreparedStatement stmt = res.prepareStatement(cmd.toString());
                 try {
                     stmt.setString(1, _identifier);
                     stmt.execute();
                 } finally {
                     stmt.close();
                 }
-                res.commit();
                 this.identifier = _identifier;
             } catch (final EFapsException e) {
                 res.abort();

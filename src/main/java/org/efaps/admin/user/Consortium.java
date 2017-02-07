@@ -17,6 +17,7 @@
 
 package org.efaps.admin.user;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -131,7 +131,7 @@ public final class Consortium
     /**
      * The companies belonging to this Consortium.
      */
-    private final Set<Long> companieIds = new HashSet<Long>();
+    private final Set<Long> companieIds = new HashSet<>();
 
     /**
      * @param _id id for this company
@@ -329,13 +329,13 @@ public final class Consortium
         throws CacheReloadException
     {
         boolean ret = false;
-        ConnectionResource con = null;
+        Connection con = null;
         try {
             Consortium consortium = null;
-            con = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(_sql);
+                stmt = con.prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
 
@@ -364,12 +364,12 @@ public final class Consortium
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read consortiums", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read consortiums", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
         return ret;
@@ -381,13 +381,13 @@ public final class Consortium
     private void getCompanyRelationFromDB()
         throws CacheReloadException
     {
-        ConnectionResource con = null;
+        Connection con = null;
         try {
-            final List<Long> companyIds = new ArrayList<Long>();
-            con = Context.getThreadContext().getConnectionResource();
+            final List<Long> companyIds = new ArrayList<>();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(Consortium.SQL_SELECTREL);
+                stmt = con.prepareStatement(Consortium.SQL_SELECTREL);
                 stmt.setObject(1, getId());
                 final ResultSet rs = stmt.executeQuery();
 
@@ -416,12 +416,12 @@ public final class Consortium
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read consortiums", e);
         } finally {
-            if (con != null && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read consortiums", e);
+            try {
+                if (con != null && con.isClosed()) {
+                    con.close();
                 }
+            } catch (final SQLException e) {
+                throw new CacheReloadException("Cannot read a type for an attribute.", e);
             }
         }
     }

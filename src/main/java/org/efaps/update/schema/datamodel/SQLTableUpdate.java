@@ -17,6 +17,7 @@
 
 package org.efaps.update.schema.datamodel;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -36,12 +37,12 @@ import org.efaps.db.databases.information.ColumnInformation;
 import org.efaps.db.databases.information.ForeignKeyInformation;
 import org.efaps.db.databases.information.TableInformation;
 import org.efaps.db.databases.information.UniqueKeyInformation;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.Install.InstallFile;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -342,27 +343,27 @@ public class SQLTableUpdate
          * @see #addSQL
          * @see #executeSQLs
          */
-        private final List<String> sqls = new ArrayList<String>();
+        private final List<String> sqls = new ArrayList<>();
 
         /**
          * Defines columns of the SQL table.
          */
-        private final List<SQLTableUpdate.Column> columns = new ArrayList<SQLTableUpdate.Column>();
+        private final List<SQLTableUpdate.Column> columns = new ArrayList<>();
 
         /**
          * Defined unique keys of the SQL table.
          */
-        private final List<SQLTableUpdate.UniqueKey> uniqueKeys = new ArrayList<SQLTableUpdate.UniqueKey>();
+        private final List<SQLTableUpdate.UniqueKey> uniqueKeys = new ArrayList<>();
 
         /**
          * Defined foreign keys of the table.
          */
-        private final List<SQLTableUpdate.ForeignKey> foreignKeys = new ArrayList<SQLTableUpdate.ForeignKey>();
+        private final List<SQLTableUpdate.ForeignKey> foreignKeys = new ArrayList<>();
 
         /**
          * Defined check keys of the table.
          */
-        private final List<SQLTableUpdate.CheckKey> checkKeys = new ArrayList<SQLTableUpdate.CheckKey>();
+        private final List<SQLTableUpdate.CheckKey> checkKeys = new ArrayList<>();
 
         /**
          * Is this table a view.
@@ -553,18 +554,17 @@ public class SQLTableUpdate
                 if (SQLTableUpdate.LOG.isInfoEnabled())  {
                     SQLTableUpdate.LOG.info("    Execute Script for DB SQL '" + getValue("SQLTable") + "'");
                 }
-                ConnectionResource con = null;
+                Connection con = null;
                 try {
-                    final Context context = Context.getThreadContext();
-                    con = context.getConnectionResource();
+                    con = Context.getConnection();
                     if (this.view) {
                         final String tableName = getValue("SQLTable");
-                        if (Context.getDbType().existsView(con.getConnection(), tableName)) {
-                            Context.getDbType().deleteView(con.getConnection(), tableName);
+                        if (Context.getDbType().existsView(con, tableName)) {
+                            Context.getDbType().deleteView(con, tableName);
                         }
                     }
 
-                    final Statement stmt = con.getConnection().createStatement();
+                    final Statement stmt = con.createStatement();
                     for (final String sql : this.sqls) {
                         if (SQLTableUpdate.LOG.isDebugEnabled()) {
                             SQLTableUpdate.LOG.debug("    ..SQL> " + sql);
@@ -574,16 +574,17 @@ public class SQLTableUpdate
                     stmt.close();
                     con.commit();
                 } catch (final EFapsException e) {
-                    if (con != null) {
-                        try {
-                            con.abort();
-                        } catch (final EFapsException e1) {
-                            throw new InstallationException("SQLTable can not be updated", e1);
-                        }
-                    }
                     throw new InstallationException("SQLTable can not be updated", e);
                 } catch (final SQLException e) {
                     throw new InstallationException("SQLTable can not be updated", e);
+                } finally {
+                    if (con != null) {
+                        try {
+                            con.close();
+                        } catch (final SQLException e) {
+                            throw new InstallationException("SQLTable can not be updated", e);
+                        }
+                    }
                 }
             }
         }
@@ -597,29 +598,29 @@ public class SQLTableUpdate
         protected void createSQLTable()
             throws EFapsException
         {
-            final Context context = Context.getThreadContext();
-            ConnectionResource con = null;
+            Connection con = null;
             final String tableName = getValue("SQLTable");
             try {
-                con = context.getConnectionResource();
+                con = Context.getConnection();
 
-                if (!Context.getDbType().existsTable(con.getConnection(), tableName)
-                        && !Context.getDbType().existsView(con.getConnection(), tableName))  {
+                if (!Context.getDbType().existsTable(con, tableName)
+                        && !Context.getDbType().existsView(con, tableName))  {
 
                     SQLTableUpdate.LOG.info("    Create DB SQL Table '{}' for '{}'", tableName, getValue("Name"));
-
-                    Context.getDbType().createTable(con.getConnection(), tableName);
-
+                    Context.getDbType().createTable(con, tableName);
                     SQLTableUpdate.this.created = true;
                 }
                 con.commit();
-
             } catch (final SQLException e) {
                 SQLTableUpdate.LOG.error("SQLTableUpdate.createSQLTable.EFapsException", e);
                 throw new EFapsException("SQLTableUpdate.createSQLTable.EFapsException", e);
             } finally {
-                if (con != null && con.isOpened()) {
-                    con.abort();
+                try {
+                    if (con != null && con.isClosed()) {
+                        con.close();
+                    }
+                } catch (final SQLException e) {
+                    throw new CacheReloadException("Cannot read a type for an attribute.", e);
                 }
             }
         }
@@ -640,8 +641,8 @@ public class SQLTableUpdate
             if (SQLTableUpdate.this.created)  {
                 SQLTableUpdate.this.created = false;
 
-                final Context context = Context.getThreadContext();
-                ConnectionResource con = null;
+
+                Connection con = null;
                 final String tableName = getValue("SQLTable");
                 if (SQLTableUpdate.LOG.isInfoEnabled()) {
                     if (this.parentSQLTableName != null)  {
@@ -652,20 +653,24 @@ public class SQLTableUpdate
                     }
                 }
                 try {
-                    con = context.getConnectionResource();
+                    con = Context.getConnection();
 
                     if (this.parentSQLTableName != null)  {
-                        Context.getDbType().defineTableParent(con.getConnection(), tableName, this.parentSQLTableName);
+                        Context.getDbType().defineTableParent(con, tableName, this.parentSQLTableName);
                     } else  {
-                        Context.getDbType().defineTableAutoIncrement(con.getConnection(), tableName);
+                        Context.getDbType().defineTableAutoIncrement(con, tableName);
                     }
                     con.commit();
                 }  catch (final SQLException e) {
                     SQLTableUpdate.LOG.error("SQLTableUpdate.updateSQLTable.EFapsException", e);
                     throw new EFapsException(getClass(), "updateSQLTable.Throwable", e);
                 } finally {
-                    if (con != null && con.isOpened()) {
-                        con.abort();
+                    if (con != null) {
+                        try {
+                            con.close();
+                        } catch (final SQLException e) {
+                            throw new InstallationException("SQLTable can not be updated", e);
+                        }
                     }
                 }
             }
@@ -680,13 +685,12 @@ public class SQLTableUpdate
         protected void updateSQLTable()
             throws InstallationException
         {
-            ConnectionResource con = null;
+            Connection con = null;
             final String tableName = getValue("SQLTable");
             SQLTableUpdate.LOG.info("    Update DB SQL Table '{}'", tableName);
             try {
-                con = Context.getThreadContext().getConnectionResource();
-                final TableInformation tableInfo = Context.getDbType().getRealTableInformation(con.getConnection(),
-                                                                                               tableName);
+                con = Context.getConnection();
+                final TableInformation tableInfo = Context.getDbType().getRealTableInformation(con, tableName);
 
                 for (final Column column : this.columns)  {
                     final ColumnInformation colInfo = tableInfo.getColInfo(column.name);
@@ -694,14 +698,14 @@ public class SQLTableUpdate
                         SQLTableUpdate.LOG.debug("column '{}' already defined in table '{}'", column.name, tableName);
                         // null must be handeled sperately
                         if (colInfo.isNullable() == column.isNotNull) {
-                            Context.getDbType().updateColumnIsNotNull(con.getConnection(), tableName, column.name,
+                            Context.getDbType().updateColumnIsNotNull(con, tableName, column.name,
                                             column.isNotNull);
                         }
                         // the scale must never be made smaller, because it would lead to data loss
                         if (column.length > 0
                                         && colInfo.getSize() < column.length && colInfo.getScale() <= column.scale) {
                             try {
-                                Context.getDbType().updateColumn(con.getConnection(), tableName, column.name,
+                                Context.getDbType().updateColumn(con, tableName, column.name,
                                                 column.type, column.length, column.scale);
                             } catch (final SQLException e) {
                                 SQLTableUpdate.LOG
@@ -710,10 +714,10 @@ public class SQLTableUpdate
                             }
                         }
                     } else  {
-                        Context.getDbType().addTableColumn(con.getConnection(), tableName,
+                        Context.getDbType().addTableColumn(con, tableName,
                                 column.name, column.type, null, column.length, column.scale);
                         if (column.isNotNull) {
-                            Context.getDbType().updateColumnIsNotNull(con.getConnection(), tableName, column.name,
+                            Context.getDbType().updateColumnIsNotNull(con, tableName, column.name,
                                             column.isNotNull);
                         }
                     }
@@ -733,7 +737,7 @@ public class SQLTableUpdate
                         if (ukInfo2 != null)  {
                             SQLTableUpdate.LOG.error("unique key for columns " + uniqueKey.columns + " exists");
                         } else  {
-                            Context.getDbType().addUniqueKey(con.getConnection(), tableName,
+                            Context.getDbType().addUniqueKey(con, tableName,
                                     uniqueKey.name, uniqueKey.columns);
                         }
                     }
@@ -748,14 +752,14 @@ public class SQLTableUpdate
                                 + "table '" + tableName + "'");
                         }
                     } else  {
-                        Context.getDbType().addForeignKey(con.getConnection(), tableName,
+                        Context.getDbType().addForeignKey(con, tableName,
                                 foreignKey.name, foreignKey.key, foreignKey.reference,
                                 foreignKey.cascade);
                     }
                 }
                 // update check keys
                 for (final CheckKey checkKey : this.checkKeys) {
-                    Context.getDbType().addCheckKey(con.getConnection(), tableName,
+                    Context.getDbType().addCheckKey(con, tableName,
                             checkKey.name, checkKey.condition);
                 }
                 con.commit();
@@ -764,12 +768,12 @@ public class SQLTableUpdate
                 throw new InstallationException("update of the SQL table failed", e);
             } catch (final SQLException e) {
                 throw new InstallationException("update of the SQL table failed", e);
-            } finally  {
+            } finally {
                 if (con != null) {
                     try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        throw new InstallationException("Abort failed", e);
+                        con.close();
+                    } catch (final SQLException e) {
+                        throw new InstallationException("SQLTable can not be updated", e);
                     }
                 }
             }
