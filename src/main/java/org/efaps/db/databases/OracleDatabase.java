@@ -436,7 +436,12 @@ public class OracleDatabase
         } finally {
             stmt.close();
         }
-        nextSequence(new ConnectionResource(_con), _name);
+        try {
+            nextSequence(new ConnectionResource(_con), _name);
+        } catch (final EFapsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return this;
     }
 

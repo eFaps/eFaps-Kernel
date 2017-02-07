@@ -670,7 +670,7 @@ public final class SystemConfiguration
             throw new CacheReloadException("could not read SystemConfiguration attributes", e);
         } finally {
             try {
-                if (con != null && con.isClosed()) {
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (final SQLException e) {
@@ -766,6 +766,7 @@ public final class SystemConfiguration
                 }
             }
             con.commit();
+            con.close();
             if (closeContext) {
                 Context.rollback();
             }
@@ -779,7 +780,7 @@ public final class SystemConfiguration
             throw new CacheReloadException("could not read SystemConfiguration", e);
         } finally {
             try {
-                if (con != null && con.isClosed()) {
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (final SQLException e) {

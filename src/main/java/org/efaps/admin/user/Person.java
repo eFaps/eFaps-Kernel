@@ -43,7 +43,6 @@ import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.Update;
 import org.efaps.db.Update.Status;
-import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.jaas.AppAccessHandler;
@@ -626,10 +625,9 @@ public final class Person
     {
         synchronized (this.attrUpdated) {
             if (this.attrUpdated.size() > 0) {
-                ConnectionResource rsrc = null;
+                Connection con = null;
                 try {
-                    final Context context = Context.getThreadContext();
-                    rsrc = context.getConnectionResource();
+                    con = Context.getConnection();
 
                     final StringBuilder cmd = new StringBuilder();
                     PreparedStatement stmt = null;
@@ -645,7 +643,7 @@ public final class Person
                             cmd.append(attrName.sqlColumn).append("=?");
                         }
                         cmd.append(" where ID=").append(getId());
-                        stmt = rsrc.prepareStatement(cmd.toString());
+                        stmt = con.prepareStatement(cmd.toString());
 
                         int col = 1;
                         for (final AttrName attrName : this.attrUpdated.keySet()) {
@@ -681,11 +679,11 @@ public final class Person
                                             .toString(), getName(), getId());
                         }
                     }
-                    rsrc.commit();
-                } finally {
-                    if (rsrc != null && rsrc.isOpened()) {
-                        rsrc.abort();
-                    }
+                    con.commit();
+                    con.close();
+                } catch (final SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
                 this.attrUpdated.clear();
             }
@@ -764,10 +762,9 @@ public final class Person
     private void updateFalseLoginDB(final int _tries)
         throws EFapsException
     {
-        ConnectionResource rsrc = null;
+        Connection con = null;
         try {
-            final Context context = Context.getThreadContext();
-            rsrc = context.getConnectionResource();
+            con = Context.getConnection();
 
             Statement stmt = null;
             final StringBuilder cmd = new StringBuilder();
@@ -776,7 +773,7 @@ public final class Person
                 cmd.append("update T_USERPERSON ").append("set LOGINTRY=").append(
                                 Context.getDbType().getCurrentTimeStamp()).append(", LOGINTRIES=").append(_tries)
                                 .append(" where ID=").append(getId());
-                stmt = rsrc.createStatement();
+                stmt = con.createStatement();
                 final int rows = stmt.executeUpdate(cmd.toString());
                 if (rows == 0) {
                     Person.LOG.error("could not execute '" + cmd.toString()
@@ -796,11 +793,11 @@ public final class Person
                     throw new EFapsException(getClass(), "updateLastLogin.SQLException", e, cmd.toString(), getName());
                 }
             }
-            rsrc.commit();
-        } finally {
-            if (rsrc != null && rsrc.isOpened()) {
-                rsrc.abort();
-            }
+            con.commit();
+            con.close();
+        } catch (final SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
@@ -998,17 +995,17 @@ public final class Person
         throws EFapsException
     {
         final Set<Company> ret = new HashSet<>();
-        ConnectionResource rsrc = null;
+        Connection con = null;
         try {
             final List<Long> companyIds = new ArrayList<>();
-            rsrc = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
 
             PreparedStatement stmt = null;
             try {
                 if (_jaasSystem == null) {
-                    stmt = rsrc.prepareStatement(Person.SQL_COMPANY);
+                    stmt = con.prepareStatement(Person.SQL_COMPANY);
                 } else {
-                    stmt = rsrc.prepareStatement(Person.SQL_COMPANYJAASKEY);
+                    stmt = con.prepareStatement(Person.SQL_COMPANYJAASKEY);
                     stmt.setObject(2, _jaasSystem.getId());
                 }
                 stmt.setObject(1, getId());
@@ -1017,7 +1014,8 @@ public final class Person
                     companyIds.add(resultset.getLong(1));
                 }
                 resultset.close();
-
+                con.commit();
+                con.close();
             } catch (final SQLException e) {
                 throw new EFapsException(getClass(), "getCompaniesFromDB.SQLException", e, getName());
             } finally {
@@ -1029,14 +1027,18 @@ public final class Person
                     throw new EFapsException(getClass(), "getCompaniesFromDB.SQLException", e, getName());
                 }
             }
-            rsrc.commit();
             for (final Long companyId : companyIds) {
                 final Company company = Company.get(companyId);
                 ret.add(company);
             }
         } finally {
-            if (rsrc != null && rsrc.isOpened()) {
-                rsrc.abort();
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         }
         return ret;
@@ -1367,10 +1369,9 @@ public final class Person
     public void updateLastLogin()
         throws EFapsException
     {
-        ConnectionResource rsrc = null;
+        Connection con = null;
         try {
-            final Context context = Context.getThreadContext();
-            rsrc = context.getConnectionResource();
+            con = Context.getConnection();
 
             Statement stmt = null;
             final StringBuilder cmd = new StringBuilder();
@@ -1379,7 +1380,7 @@ public final class Person
                 cmd.append("update T_USERPERSON ").append("set LASTLOGIN=").append(
                                 Context.getDbType().getCurrentTimeStamp()).append(", LOGINTRIES=0 ")
                                 .append("where ID=").append(getId());
-                stmt = rsrc.createStatement();
+                stmt = con.createStatement();
                 final int rows = stmt.executeUpdate(cmd.toString());
                 if (rows == 0) {
                     Person.LOG.error("could not execute '" + cmd.toString()
@@ -1394,15 +1395,19 @@ public final class Person
                 try {
                     if (stmt != null) {
                         stmt.close();
+                        con.commit();
                     }
                 } catch (final SQLException e) {
                     throw new EFapsException(getClass(), "updateLastLogin.SQLException", e, cmd.toString(), getName());
                 }
             }
-            rsrc.commit();
         } finally {
-            if (rsrc != null && rsrc.isOpened()) {
-                rsrc.abort();
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                throw new EFapsException(getClass(), "updateLastLogin.SQLException", e, getName());
             }
         }
     }
@@ -1697,12 +1702,12 @@ public final class Person
         throws EFapsException
     {
         long personId = 0;
-        ConnectionResource rsrc = null;
+        Connection con = null;
         try {
-            rsrc = Context.getThreadContext().getConnectionResource();
+            con = Context.getConnection();
             PreparedStatement stmt = null;
             try {
-                stmt = rsrc.prepareStatement(Person.SQL_JAASKEY);
+                stmt = con.prepareStatement(Person.SQL_JAASKEY);
                 stmt.setObject(1, _jaasKey);
                 stmt.setObject(2, _jaasSystem.getId());
                 final ResultSet rs = stmt.executeQuery();
@@ -1719,16 +1724,20 @@ public final class Person
                 try {
                     if (stmt != null) {
                         stmt.close();
+                        con.commit();
                     }
                 } catch (final SQLException e) {
                     throw new EFapsException(Person.class, "getWithJAASKey.SQLException", e, _jaasSystem.getName(),
                                     _jaasKey);
                 }
             }
-            rsrc.commit();
         } finally {
-            if (rsrc != null && rsrc.isOpened()) {
-                rsrc.abort();
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                throw new EFapsException(Person.class, "updateLastLogin.SQLException", e);
             }
         }
         return Person.get(personId);
@@ -1750,11 +1759,10 @@ public final class Person
     {
         long persId = 0;
         final Type persType = CIAdminUser.Person.getType();
-        ConnectionResource rsrc = null;
+        Connection con = null;
         try {
             final Context context = Context.getThreadContext();
-
-            rsrc = context.getConnectionResource();
+            con = Context.getConnection();
 
             PreparedStatement stmt = null;
             try {
@@ -1778,9 +1786,9 @@ public final class Person
                                                 Context.getDbType().getCurrentTimeStamp()).append(")");
 
                 if (persId == 0) {
-                   // stmt = rsrc.getConnection().prepareStatement(cmd.toString(), new String[] { "ID" });
+                    stmt = con.prepareStatement(cmd.toString(), new String[] { "ID" });
                 } else {
-                   // stmt = rsrc.getConnection().prepareStatement(cmd.toString());
+                    con.prepareStatement(cmd.toString());
                 }
 
                 int rows = stmt.executeUpdate();
@@ -1803,7 +1811,7 @@ public final class Person
                 cmd = new StringBuilder();
                 cmd.append("insert into T_USERPERSON").append("(ID,FIRSTNAME,LASTNAME,EMAIL) ").append("values (")
                                 .append(persId).append(",'-','-','-')");
-                stmt = rsrc.prepareStatement(cmd.toString());
+                stmt = con.prepareStatement(cmd.toString());
                 rows = stmt.executeUpdate();
                 if (rows == 0) {
                     Person.LOG.error("could not execute '" + cmd.toString() + "' for JAAS system '"
@@ -1822,16 +1830,20 @@ public final class Person
                 try {
                     if (stmt != null) {
                         stmt.close();
+                        con.commit();
                     }
                 } catch (final SQLException e) {
                     throw new EFapsException(Person.class, "createPerson.SQLException", e, _jaasSystem.getName(),
                                     _jaasKey);
                 }
             }
-            rsrc.commit();
         } finally {
-            if (rsrc != null && rsrc.isOpened()) {
-                rsrc.abort();
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (final SQLException e) {
+                throw new EFapsException(Person.class, "updateLastLogin.SQLException", e);
             }
         }
 

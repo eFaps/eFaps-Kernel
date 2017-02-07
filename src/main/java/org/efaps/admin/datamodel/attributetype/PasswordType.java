@@ -92,17 +92,8 @@ public class PasswordType
                 }
                 rs.close();
                 stmt.close();
-                con.commit();
             } catch (final EFapsException e) {
                 throw new SQLException(e);
-            } finally {
-                if (con != null && con.isOpened()) {
-                    try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        throw new SQLException(e);
-                    }
-                }
             }
         }
         checkSQLColumnSize(_attribute, 1);

@@ -59,82 +59,25 @@ public abstract class AbstractResource
      * @throws EFapsException if the resource is already opened or this
      *                        resource could not be enlisted
      */
-    public void open() throws EFapsException
+    protected void open()
+        throws EFapsException
     {
         AbstractResource.LOG.debug("open resource:{}", this);
-        if (this.opened)  {
+        if (this.opened) {
             AbstractResource.LOG.error("resource already opened");
             throw new EFapsException(AbstractResource.class, "open.AlreadyOpened");
         }
-        try  {
+        try {
             final Context context = Context.getThreadContext();
             context.getTransaction().enlistResource(this);
-        } catch (final RollbackException e)  {
-            AbstractResource.LOG.error("exception occurs while delisting in transaction, "
-                                                + "commit not possible", e);
-            throw new EFapsException(AbstractResource.class,
-                                     "open.RollbackException", e);
-        } catch (final SystemException e)  {
-            AbstractResource.LOG.error("exception occurs while delisting in transaction, "
-                                                + "commit not possible", e);
-            throw new EFapsException(AbstractResource.class,
-                                     "open.SystemException", e);
+        } catch (final RollbackException e) {
+            AbstractResource.LOG.error("exception occurs while delisting in transaction, " + "commit not possible", e);
+            throw new EFapsException(AbstractResource.class, "open.RollbackException", e);
+        } catch (final SystemException e) {
+            AbstractResource.LOG.error("exception occurs while delisting in transaction, " + "commit not possible", e);
+            throw new EFapsException(AbstractResource.class, "open.SystemException", e);
         }
         this.opened = true;
-    }
-
-    /**
-     * Closes this connection resource and delisted this resource in the
-     * transaction. The method must be called if the transaction should be
-     * commited.
-     *
-     * @throws EFapsException if the resource is not opened or this resource
-     *                        could not delisted
-     */
-    public void commit() throws EFapsException
-    {
-        AbstractResource.LOG.debug("commit resource:{}", this);
-        if (!this.opened)  {
-            AbstractResource.LOG.error("resource not opened, commit not possible");
-            throw new EFapsException(AbstractResource.class, "commit.NotOpened");
-        }
-        try  {
-            final Context context = Context.getThreadContext();
-            context.getTransaction().delistResource(this, XAResource.TMSUCCESS);
-        } catch (final SystemException e)  {
-            AbstractResource.LOG.error("exception occurs while delisting in transaction, "
-                                                + "commit not possible", e);
-            throw new EFapsException(AbstractResource.class, "commit.SystemException", e);
-        }
-        freeResource();
-        this.opened = false;
-    }
-
-    /**
-     * Closes this XA resource and delisted this resource in the transaction.
-     * <br/>
-     * The method must be called if the transaction should be aborted (rolled
-     * back).
-     *
-     * @throws EFapsException if the resource is not opened or this resource
-     *                        could not delisted
-     */
-    public void abort()
-        throws EFapsException
-    {
-        AbstractResource.LOG.debug("abort resource:{}", this);
-        if (!this.opened)  {
-            throw new EFapsException(AbstractResource.class, "abort.NotOpened");
-        }
-        try  {
-            final Context context = Context.getThreadContext();
-            context.getTransaction().delistResource(this, XAResource.TMFAIL);
-            context.abort();
-        } catch (final SystemException e)  {
-            throw new EFapsException(AbstractResource.class, "abort.SystemException", e);
-        }
-        freeResource();
-        this.opened = false;
     }
 
     /**

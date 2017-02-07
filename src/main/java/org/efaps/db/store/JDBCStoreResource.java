@@ -153,10 +153,8 @@ public class JDBCStoreResource
             }
             size = _size;
         } catch (final EFapsException e) {
-            res.abort();
             throw e;
         } catch (final SQLException e) {
-            res.abort();
             JDBCStoreResource.LOG.error("write of content failed", e);
             throw new EFapsException(JDBCStoreResource.class, "write.SQLException", e);
         }
@@ -459,23 +457,6 @@ public class JDBCStoreResource
         {
             super(_storeRes, _in);
             this.res = _res;
-        }
-
-        /**
-         * @throws IOException on error
-         */
-        @Override
-        protected void beforeClose()
-            throws IOException
-        {
-            super.beforeClose();
-            try {
-                if (this.res.isOpened()) {
-                    this.res.commit();
-                }
-            } catch (final EFapsException e) {
-                throw new IOException("commit of connection resource not possible", e);
-            }
         }
     }
 }

@@ -49,14 +49,18 @@ public class ConnectionResource
     private Connection connection = null;
 
     /**
+     * Instantiates a new connection resource.
+     *
      * @param _connection   SQL connection
      * @throws SQLException if auto commit could not be set to <i>false</i>
+     * @throws EFapsException on error
      */
     public ConnectionResource(final Connection _connection)
-        throws SQLException
+        throws SQLException, EFapsException
     {
         this.connection = _connection;
         this.connection.setAutoCommit(false);
+        open();
     }
 
     /**

@@ -109,23 +109,9 @@ public interface Resource
     void delete() throws EFapsException;
 
     /**
-     * Method to commit the Resource.
-     *
-     * @throws EFapsException on error
-     */
-    void commit() throws EFapsException;
-
-    /**
      * @return if the Resource was opened.
      */
     boolean isOpened();
-
-    /**
-     * Method to open the Resource.
-     *
-     * @throws EFapsException on error
-     */
-    void abort() throws EFapsException;
 
     /**
      * The output stream is written with the content of the file. From method

@@ -282,12 +282,9 @@ public abstract class AbstractStoreResource
                 } finally {
                     stmt.close();
                 }
-                res.commit();
             } catch (final EFapsException e) {
-                res.abort();
                 throw e;
             } catch (final SQLException e) {
-                res.abort();
                 throw new EFapsException(JDBCStoreResource.class, "write.SQLException", e);
             }
         }
@@ -520,24 +517,9 @@ public abstract class AbstractStoreResource
         public void close()
             throws IOException
         {
-            try {
-                super.close();
-                beforeClose();
-                if (this.store.isOpened()) {
-                    this.store.commit();
-                }
-                afterClose();
-            } catch (final EFapsException e) {
-                throw new IOException("commit of store not possible", e);
-            } finally {
-                if (this.store.isOpened()) {
-                    try {
-                        this.store.abort();
-                    } catch (final EFapsException e) {
-                        throw new IOException("store resource could not be aborted", e);
-                    }
-                }
-            }
+            beforeClose();
+            super.close();
+            afterClose();
         }
 
         /**

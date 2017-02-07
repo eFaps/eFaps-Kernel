@@ -920,6 +920,7 @@ public class Attribute
                 }
             }
             con.commit();
+            con.close();
 
             final Map<Long, AttributeSet> id2Set = new HashMap<>();
             final Map<Attribute, Long> attribute2setId = new HashMap<>();

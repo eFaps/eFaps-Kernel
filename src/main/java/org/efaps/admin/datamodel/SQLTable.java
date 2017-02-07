@@ -492,6 +492,7 @@ public final class SQLTable
                 }
             }
             con.commit();
+            con.close();
             if (table != null) {
                 table.readFromDB4Properties();
                 if (tableMainId > 0) {
@@ -507,7 +508,7 @@ public final class SQLTable
             throw new CacheReloadException("could not read sql tables", e);
         } finally {
             try {
-                if (con != null && con.isClosed()) {
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (final SQLException e) {

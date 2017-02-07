@@ -373,7 +373,6 @@ public final class Context
         try {
             con = new ConnectionResource(Context.DATASOURCE.getConnection());
             this.connectionResources.add(con);
-            con.open();
         } catch (final SQLException e) {
             throw new EFapsException(getClass(), "getConnectionResource.SQLException", e);
         }

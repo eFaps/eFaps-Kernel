@@ -286,13 +286,8 @@ public class ClassificationValueSelect
             }
             rs.close();
             stmt.close();
-            con.commit();
         } catch (final SQLException e) {
             throw new EFapsException(ClassificationValueSelect.class, "executeOneCompleteStmt", e);
-        } finally {
-            if (con != null && con.isOpened()) {
-                con.abort();
-            }
         }
         return ret;
     }

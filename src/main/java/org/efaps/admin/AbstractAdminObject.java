@@ -401,13 +401,14 @@ public abstract class AbstractAdminObject
             rs.close();
             stmt.close();
             con.commit();
+            con.close();
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read properties for " + "'" + getName() + "'", e);
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read properties for " + "'" + getName() + "'", e);
         } finally {
             try {
-                if (con != null && con.isClosed()) {
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (final SQLException e) {
@@ -457,7 +458,7 @@ public abstract class AbstractAdminObject
             rs.close();
             stmt.close();
             con.commit();
-
+            con.close();
             for (final Object[] row : values) {
                 final UUID conTypeUUID = Type.getUUID4Id((Long) row[0]);
                 AbstractAdminObject.LOG.debug("     Connection Type UUID: {}", conTypeUUID);
@@ -478,7 +479,7 @@ public abstract class AbstractAdminObject
             throw new CacheReloadException("could not read properties for " + "'" + getName() + "'", e);
         } finally {
             try {
-                if (con != null && con.isClosed()) {
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (final SQLException e) {

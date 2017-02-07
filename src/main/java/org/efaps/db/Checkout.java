@@ -140,14 +140,10 @@ public class Checkout
             storeRsrc.read(_out);
             this.fileLength = storeRsrc.getFileLength();
             this.fileName = storeRsrc.getFileName();
-            storeRsrc.commit();
         } catch (final EFapsException e) {
             Checkout.LOG.error("could not checkout " + super.getInstance(), e);
             throw e;
         } finally {
-            if ((storeRsrc != null) && storeRsrc.isOpened()) {
-                storeRsrc.abort();
-            }
         }
     }
 
@@ -218,14 +214,10 @@ public class Checkout
             in = storeRsrc.read();
             this.fileLength = storeRsrc.getFileLength();
             this.fileName = storeRsrc.getFileName();
-            storeRsrc.commit();
         } catch (final EFapsException e) {
             Checkout.LOG.error("could not checkout " + super.getInstance(), e);
             throw e;
         } finally {
-            if ((in == null) && (storeRsrc != null) && storeRsrc.isOpened()) {
-                storeRsrc.abort();
-            }
         }
         return in;
     }

@@ -300,7 +300,6 @@ public class LinkFromSelect
                 rows = handler.handle(rs);
                 rs.close();
                 stmt.close();
-                con.commit();
                 if (isCacheEnabled()) {
                     final QueryKey querykey = QueryKey.get(getKey(), _complStmt);
                     final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
@@ -313,13 +312,8 @@ public class LinkFromSelect
                 }
                 ret = true;
             }
-
         } catch (final SQLException e) {
             throw new EFapsException(InstanceQuery.class, "executeOneCompleteStmt", e);
-        } finally {
-            if (con != null && con.isOpened()) {
-                con.abort();
-            }
         }
         return ret;
     }

@@ -457,16 +457,12 @@ public class Update
                         }
                     }
                 }
-                con.commit();
                 AccessCache.registerUpdate(getInstance());
                 Queue.registerUpdate(getInstance());
             } catch (final SQLException e) {
                 Update.LOG.error("Update of '" + this.instance + "' not possible", e);
                 throw new EFapsException(getClass(), "executeWithoutTrigger.SQLException", e, this.instance);
             } finally {
-                if (con != null && con.isOpened()) {
-                    con.abort();
-                }
             }
         } else {
             throw new EFapsException(getClass(), "executeWithout.StatusInvalid", Update.STATUSOK.getStati());

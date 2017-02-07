@@ -74,7 +74,6 @@ public final class DateTimeUtil
             now = resultset.getTimestamp(1);
             resultset.close();
             stmt.close();
-            rsrc.commit();
         } catch (final SQLException e) {
             DateTimeUtil.LOG.error("could not execute SQL-Statement", e);
         }

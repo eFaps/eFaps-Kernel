@@ -346,10 +346,8 @@ public class JCRStoreResource
                 }
                 this.identifier = _identifier;
             } catch (final EFapsException e) {
-                res.abort();
                 throw e;
             } catch (final SQLException e) {
-                res.abort();
                 throw new EFapsException(JDBCStoreResource.class, "write.SQLException", e);
             }
         }

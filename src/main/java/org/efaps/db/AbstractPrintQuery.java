@@ -954,8 +954,6 @@ public abstract class AbstractPrintQuery
                 rows = handler.handle(rs);
                 rs.close();
                 stmt.close();
-                con.commit();
-
                 if (isCacheEnabled()) {
                     QueryCache.put((ICacheDefinition) this, QueryKey.get(getKey(), _complStmt), rows);
                 }

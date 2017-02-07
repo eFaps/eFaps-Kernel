@@ -185,15 +185,8 @@ public final class GeneralInstance
     {
         final Context context = Context.getThreadContext();
         ConnectionResource con = null;
-        try {
-            con = context.getConnectionResource();
-            GeneralInstance.generaliseInstance(_instance, con);
-            con.commit();
-        } finally {
-            if (con != null && con.isOpened()) {
-                con.abort();
-            }
-        }
+        con = context.getConnectionResource();
+        GeneralInstance.generaliseInstance(_instance, con);
     }
 
     /**

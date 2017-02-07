@@ -140,7 +140,6 @@ public class Checkin
             getInstance().getType();
             storeRsrc = context.getStoreResource(getInstance(), Resource.StoreEvent.WRITE);
             storeRsrc.write(_in, _size, _fileName);
-            storeRsrc.commit();
             storeRsrc = null;
             ok = true;
         } catch (final EFapsException e) {
@@ -149,9 +148,6 @@ public class Checkin
         } finally {
             if (!ok) {
                 context.abort();
-            }
-            if ((storeRsrc != null) && (storeRsrc.isOpened())) {
-                storeRsrc.abort();
             }
         }
     }

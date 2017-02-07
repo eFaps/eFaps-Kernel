@@ -233,12 +233,9 @@ public class Insert
                     executeOneStatement(con, table, entry.getValue(), id);
                 }
             }
-            con.commit();
             Queue.registerUpdate(getInstance());
         } finally {
-            if (con != null && con.isOpened()) {
-                con.abort();
-            }
+
         }
     }
 

@@ -403,6 +403,7 @@ public class AttributeType
                 }
             }
             con.commit();
+            con.close();
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read roles", e);
         } catch (final EFapsException e) {

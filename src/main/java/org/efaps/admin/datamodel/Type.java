@@ -1400,6 +1400,7 @@ public class Type
                 }
             }
             con.commit();
+            con.close();
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read child type ids", e);
         } catch (final EFapsException e) {
@@ -1471,6 +1472,7 @@ public class Type
             rs.close();
             stmt.close();
             con.commit();
+            con.close();
             if (ret != null) {
                 if (parentTypeId != 0) {
                     Type.LOG.trace("get parent for id = {}",  parentTypeId);
@@ -1509,7 +1511,7 @@ public class Type
             Type.LOG.error("initialiseCache()", e);
         } finally {
             try {
-                if (con != null && con.isClosed()) {
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (final SQLException e) {
@@ -1557,6 +1559,7 @@ public class Type
                     }
                 }
                 con.commit();
+                con.close();
             } catch (final SQLException e) {
                 throw new CacheReloadException("could not read child type ids", e);
             } catch (final EFapsException e) {

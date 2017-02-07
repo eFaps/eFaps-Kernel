@@ -159,11 +159,9 @@ public class Delete
             if (getInstance().getType().hasStore()) {
                 storeRsrc = context.getStoreResource(getInstance(), Resource.StoreEvent.DELETE);
                 storeRsrc.delete();
-                storeRsrc.commit();
             }
         } finally {
             if (storeRsrc != null && storeRsrc.isOpened()) {
-                storeRsrc.abort();
             }
         }
         try {
