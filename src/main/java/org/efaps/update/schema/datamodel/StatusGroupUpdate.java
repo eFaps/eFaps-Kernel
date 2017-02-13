@@ -26,6 +26,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Dimension;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminDataModel;
+import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
@@ -144,7 +145,7 @@ public class StatusGroupUpdate
         /**
          * Set of all definitions.
          */
-        private final Set<StatusGroupUpdate.StatusDefintion> stati = new HashSet<StatusGroupUpdate.StatusDefintion>();
+        private final Set<StatusGroupUpdate.StatusDefintion> stati = new HashSet<>();
 
         /**
          *
@@ -219,6 +220,7 @@ public class StatusGroupUpdate
                     // type (StatusGroup)
                     // is already cached.
                     if (Type.get(getValue("Name")) == null) {
+                        Context.save();
                         Type.initialize(StatusGroupUpdate.class);
                         Dimension.initialize(StatusGroupUpdate.class);
                         Attribute.initialize(StatusGroupUpdate.class);
