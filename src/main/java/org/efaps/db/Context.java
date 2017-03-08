@@ -1042,6 +1042,7 @@ public final class Context
             Context.TRANSMANAG.commit();
             Context.TRANSMANAG.begin();
             final Context context = Context.getThreadContext();
+            context.connectionResource = null;
             context.setTransaction(Context.TRANSMANAG.getTransaction());
         } catch (final SecurityException e) {
             throw new EFapsException(Context.class, "save.SecurityException", e);
