@@ -60,6 +60,7 @@ import org.joda.time.Chronology;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 /**
  * @author The eFaps Team
@@ -1007,6 +1008,7 @@ public final class Context
 
         if (_user != null) {
             context.person = UUIDUtil.isUUID(_user) ? Person.get(UUID.fromString(_user)) : Person.get(_user);
+            MDC.put("person", context.person.getName());
             context.locale = context.person.getLocale();
             context.timezone = context.person.getTimeZone();
             context.chronology = context.person.getChronology();
