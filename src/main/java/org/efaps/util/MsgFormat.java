@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,36 +84,37 @@ public final class MsgFormat
             @SuppressWarnings("unchecked")
             final AnnotationAcceptingListener asl = new AnnotationAcceptingListener(EFapsClassLoader.getInstance(),
                             EFapsFormatFactory.class);
-            final EFapsResourceFinder resourceFinder = new EFapsResourceConfig.EFapsResourceFinder();
-            while (resourceFinder.hasNext()) {
-                final String next = resourceFinder.next();
-                if (asl.accept(next)) {
-                    final InputStream in = resourceFinder.open();
-                    try {
-                        MsgFormat.LOG.debug("Scanning '{}' for annotations.", next);
-                        asl.process(next, in);
-                    } catch (final IOException e) {
-                        MsgFormat.LOG.warn("Cannot process '{}'", next);
-                    } finally {
+            try (EFapsResourceFinder resourceFinder = new EFapsResourceConfig.EFapsResourceFinder()) {
+                while (resourceFinder.hasNext()) {
+                    final String next = resourceFinder.next();
+                    if (asl.accept(next)) {
+                        final InputStream in = resourceFinder.open();
                         try {
-                            in.close();
-                        } catch (final IOException ex) {
-                            MsgFormat.LOG.trace("Error closing resource stream.", ex);
+                            MsgFormat.LOG.debug("Scanning '{}' for annotations.", next);
+                            asl.process(next, in);
+                        } catch (final IOException e) {
+                            MsgFormat.LOG.warn("Cannot process '{}'", next);
+                        } finally {
+                            try {
+                                in.close();
+                            } catch (final IOException ex) {
+                                MsgFormat.LOG.trace("Error closing resource stream.", ex);
+                            }
                         }
                     }
                 }
-            }
-            for (final Class<?> clazz : asl.getAnnotatedClasses()) {
-                try {
-                    final FormatFactory factory = (FormatFactory) clazz.newInstance();
-                    final EFapsFormatFactory ano = clazz.getAnnotation(EFapsFormatFactory.class);
-                    this.registry.put(ano.name(), factory);
-                } catch (final InstantiationException | IllegalAccessException e) {
-                    LOG.error("Catched error on instantiotion", e);
+                for (final Class<?> clazz : asl.getAnnotatedClasses()) {
+                    try {
+                        final FormatFactory factory = (FormatFactory) clazz.newInstance();
+                        final EFapsFormatFactory ano = clazz.getAnnotation(EFapsFormatFactory.class);
+                        this.registry.put(ano.name(), factory);
+                    } catch (final InstantiationException | IllegalAccessException e) {
+                        MsgFormat.LOG.error("Catched error on instantiotion", e);
+                    }
                 }
+                MsgFormat.LOG.info("registered FormatFactories: {}", this.registry);
+                this.initialized = true;
             }
-            LOG.info("registered FormatFactories: {}", this.registry);
-            this.initialized = true;
         }
         return this;
     }
@@ -147,7 +148,7 @@ public final class MsgFormat
     public static ExtendedMessageFormat getFormat(final String _pattern)
         throws EFapsException
     {
-        return getFormat(_pattern, Context.getThreadContext().getLocale());
+        return MsgFormat.getFormat(_pattern, Context.getThreadContext().getLocale());
     }
 
     /**
@@ -160,6 +161,6 @@ public final class MsgFormat
                                                   final Locale _locale)
         throws EFapsException
     {
-        return new ExtendedMessageFormat(_pattern, _locale, get().registry);
+        return new ExtendedMessageFormat(_pattern, _locale, MsgFormat.get().registry);
     }
 }
