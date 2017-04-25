@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,14 +55,14 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
      *
      * @see #columnWithSQLValue(String, String)
      */
-    private final List<AbstractColumnWithValue<?>> columnWithValues = new ArrayList<AbstractColumnWithValue<?>>();
+    private final List<AbstractColumnWithValue<?>> columnWithValues = new ArrayList<>();
 
     /**
      * Columns to insert or update.
      *
      * @see #columnWithSQLValue(String, String)
      */
-    private final List<ColumnWithSQLValue> columnWithSQLValues = new ArrayList<ColumnWithSQLValue>();
+    private final List<ColumnWithSQLValue> columnWithSQLValues = new ArrayList<>();
 
     /**
      * Initializes the {@link #tableName table name} to update.
@@ -444,8 +444,8 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
          * @throws SQLException if value could not be set within the prepared
          *                      statement <code>_stmt</code>
          */
-        public abstract void set(final int _index,
-                                 final PreparedStatement _stmt)
+        public abstract void set(int _index,
+                                 PreparedStatement _stmt)
             throws SQLException;
 
         @Override

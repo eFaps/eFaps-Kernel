@@ -34,7 +34,7 @@ public interface IUIProvider
      * @return Object   for the UserInterface
      * @throws EFapsException on any error
      */
-    Object getValue(final UIValue _uiValue)
+    Object getValue(UIValue _uiValue)
         throws EFapsException;
 
     /**
@@ -46,7 +46,7 @@ public interface IUIProvider
      *         must be returned
      * @throws EFapsException on error
      */
-    String validateValue(final UIValue _uiValue)
+    String validateValue(UIValue _uiValue)
         throws EFapsException;
 
     /**
@@ -73,7 +73,7 @@ public interface IUIProvider
      * @return String representation of the object for viewing
      * @throws EFapsException on error
      */
-    String getStringValue(final IUIValue _uiValue)
+    String getStringValue(IUIValue _uiValue)
         throws EFapsException;
 
 }

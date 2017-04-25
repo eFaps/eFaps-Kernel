@@ -1009,7 +1009,7 @@ public abstract class AbstractCommand
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof AbstractCommand) {
             ret = ((AbstractCommand) _obj).getId() == getId();
         } else {

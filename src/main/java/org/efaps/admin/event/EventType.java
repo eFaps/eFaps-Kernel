@@ -27,9 +27,11 @@ package org.efaps.admin.event;
  * @author The eFaps Team
  *
  */
+@SuppressWarnings("checkstyle:methodparampad")
 public enum EventType
 {
     /** EventType for checking the access to a type. */
+
     ACCESSCHECK          ("Admin_DataModel_TypeAccessCheckEvent"),
     /** EventType executed instead the checkin of a type. */
     CHECKIN_OVERRIDE     ("Admin_DataModel_Type_Trigger_CheckinOverride"),
@@ -142,7 +144,7 @@ public enum EventType
     /**
      * @param _name name for the event
      */
-    private EventType(final String _name)
+    EventType(final String _name)
     {
         this.name = _name;
     }

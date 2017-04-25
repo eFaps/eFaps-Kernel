@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ import java.io.Serializable;
 import org.apache.commons.lang3.EnumUtils;
 import org.efaps.api.ui.FilterBase;
 import org.efaps.api.ui.FilterType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -41,11 +39,6 @@ public class Filter
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Logger for this class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(Field.class);
 
     /**
      * Is this filter required.

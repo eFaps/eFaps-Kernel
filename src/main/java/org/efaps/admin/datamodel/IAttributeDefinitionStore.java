@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,10 +39,10 @@ public interface IAttributeDefinitionStore
      * @param _in       file represented by input stream
      * @throws EFapsException if check in failed
      */
-    void checkin(final Context _context,
-                 final Instance _instance,
-                 final String _fileName,
-                 final InputStream _in)
+    void checkin(Context _context,
+                 Instance _instance,
+                 String _fileName,
+                 InputStream _in)
         throws EFapsException;
 
     /**
@@ -53,8 +53,8 @@ public interface IAttributeDefinitionStore
      * @return found file name
      * @throws EFapsException if fetching of the file name failed
      */
-    String getFileName(final Context _context,
-                       final Instance _instance)
+    String getFileName(Context _context,
+                       Instance _instance)
         throws EFapsException;
 
     /**
@@ -63,8 +63,8 @@ public interface IAttributeDefinitionStore
      * @param _out      output stream to write the file in
      * @throws EFapsException if check out failed
      */
-    void checkout(final Context _context,
-                  final Instance _instance,
-                  final OutputStream _out)
+    void checkout(Context _context,
+                  Instance _instance,
+                  OutputStream _out)
         throws EFapsException;
 }

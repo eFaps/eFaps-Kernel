@@ -295,7 +295,7 @@ public abstract class AbstractStoreResource
      * @param _select select to add to
      * @return number of added columns
      */
-    protected abstract int add2Select(final SQLSelect _select);
+    protected abstract int add2Select(SQLSelect _select);
 
     /**
      * Get the generalID etc. from the eFasp DataBase.
@@ -377,7 +377,7 @@ public abstract class AbstractStoreResource
      */
     protected Compress getCompress()
     {
-        Compress compress;
+        final Compress compress;
         if (this.store.getResourceProperties().containsKey(Store.PROPERTY_COMPRESS)) {
             compress = Compress.valueOf(this.store.getResourceProperties().get(Store.PROPERTY_COMPRESS).toUpperCase());
         } else {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ public abstract class AbstractQPart
      * @return this AbstractPart
      * @throws EFapsException on any error
      */
-    public abstract AbstractQPart appendSQL(final SQLSelect _sql)
+    public abstract AbstractQPart appendSQL(SQLSelect _sql)
         throws EFapsException;
 
     /**
@@ -49,8 +49,8 @@ public abstract class AbstractQPart
      * @return this AbstractPart
      * @throws EFapsException on any error
      */
-    public abstract AbstractQPart prepare(final AbstractTypeQuery _query,
-                                          final AbstractQPart _part)
+    public abstract AbstractQPart prepare(AbstractTypeQuery _query,
+                                          AbstractQPart _part)
         throws EFapsException;
 
 }

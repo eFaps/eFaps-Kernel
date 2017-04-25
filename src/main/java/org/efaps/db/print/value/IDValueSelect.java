@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public class IDValueSelect
     public Object getValue(final Object _object)
         throws EFapsException
     {
-        Long tempId;
+        final Long tempId;
         // check is necessary because Oracle JDBC returns for getObject always a BigDecimal
         if (_object instanceof BigDecimal) {
             tempId = ((BigDecimal) _object).longValue();

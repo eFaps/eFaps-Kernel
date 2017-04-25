@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public interface IAttributeChildValueSelect
      * @return Object
      * @throws EFapsException on error
      */
-    Object get(final Attribute _attribute,
-               final Object _object)
+    Object get(Attribute _attribute,
+               Object _object)
         throws EFapsException;
 }

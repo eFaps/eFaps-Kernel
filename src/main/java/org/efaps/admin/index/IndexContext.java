@@ -145,6 +145,7 @@ public class IndexContext
      * Setter method for instance variable {@link #taxonomyDirectory}.
      *
      * @param _taxonomyDirectory value for instance variable {@link #taxonomyDirectory}
+     * @return the index context
      */
     public IndexContext setTaxonomyDirectory(final Directory _taxonomyDirectory)
     {

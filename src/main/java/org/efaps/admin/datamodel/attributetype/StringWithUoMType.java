@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public class StringWithUoMType
      */
     protected StringWithUoM eval(final Object[] _values)
     {
-        StringWithUoM ret;
+        final StringWithUoM ret;
         if ((_values == null) || (_values.length == 0) || (_values.length < 2))  {
             ret = null;
         } else  {

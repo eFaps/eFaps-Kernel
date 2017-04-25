@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: $
  */
 public class ExecStmt
     extends AbstractExecStmt
@@ -55,9 +54,9 @@ public class ExecStmt
 
         final Class<?> clazz = Class.forName(getESJPName(), false, EFapsClassLoader.getInstance());
         final IEsjpExecute esjp = (IEsjpExecute) clazz.newInstance();
-        LOG.debug("Instantiated class: {}", esjp);
+        ExecStmt.LOG.debug("Instantiated class: {}", esjp);
         final List<String> parameters = getParameters();
-        List<Map<String, Object>> ret;
+        final List<Map<String, Object>> ret;
         if (parameters.isEmpty()) {
             ret = esjp.execute(map);
         } else {

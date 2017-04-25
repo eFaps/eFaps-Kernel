@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -260,7 +260,7 @@ public final class JmsSession
                 } else {
                     if (Context.isTMMarkedRollback()) {
                         JmsSession.LOG.error("transaction is marked to roll back");
-                    }else {
+                    } else {
                         JmsSession.LOG.error("transaction manager in undefined status");
                     }
                     Context.rollback();

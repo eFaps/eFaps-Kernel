@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,5 +58,5 @@ public abstract class AbstractTypeQuery
      * @param _sqlTable the sql table
      * @return the index for sql table
      */
-    public abstract Integer getIndex4SqlTable(final SQLTable _sqlTable);
+    public abstract Integer getIndex4SqlTable(SQLTable _sqlTable);
 }

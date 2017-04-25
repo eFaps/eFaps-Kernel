@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ public class ESJPCompiler
      *
      * @see #readESJPPrograms()
      */
-    private final Map<String, SourceObject> name2Source  = new HashMap<String, SourceObject>();
+    private final Map<String, SourceObject> name2Source  = new HashMap<>();
 
     /**
      * Mapping between already existing compiled ESJP class name and the
@@ -97,7 +97,7 @@ public class ESJPCompiler
      *
      * @see #readESJPClasses()
      */
-    private final Map<String, Long> class2id = new HashMap<String, Long>();
+    private final Map<String, Long> class2id = new HashMap<>();
 
     /**
      * Mapping between the class name and the related ESJP class which must be
@@ -106,7 +106,7 @@ public class ESJPCompiler
      * @see StoreObject
      */
     private final Map<String, ESJPCompiler.StoreObject> classFiles
-        = new HashMap<String, ESJPCompiler.StoreObject>();
+        = new HashMap<>();
 
     /**
      * Stores the list of class path needed to compile (if needed).
@@ -171,7 +171,7 @@ public class ESJPCompiler
             }
 
             // options for the compiler
-            final List<String> optionList = new ArrayList<String>();
+            final List<String> optionList = new ArrayList<>();
 
             // set classpath!
             // (the list of programs to compile is given to the javac as
@@ -203,7 +203,7 @@ public class ESJPCompiler
 
             // logging of compiling classes
             if (ESJPCompiler.LOG.isInfoEnabled()) {
-                final List<SourceObject> ls = new ArrayList<SourceObject>(this.name2Source.values());
+                final List<SourceObject> ls = new ArrayList<>(this.name2Source.values());
                 Collections.sort(ls, new Comparator<SourceObject>()
                 {
 
@@ -488,7 +488,7 @@ public class ESJPCompiler
             final Iterable<JavaFileObject> rt;
             if (StandardLocation.SOURCE_PATH.getName().equals(_location.getName())
                     && _kinds.contains(JavaFileObject.Kind.SOURCE))  {
-                final List<JavaFileObject> pckObjs = new ArrayList<JavaFileObject>();
+                final List<JavaFileObject> pckObjs = new ArrayList<>();
                 final int pckLength = _packageName.length();
                 for (final Map.Entry<String, ESJPCompiler.SourceObject> entry
                         : ESJPCompiler.this.name2Source.entrySet())  {
@@ -635,7 +635,7 @@ public class ESJPCompiler
             }
             try {
                 final Long id = ESJPCompiler.this.class2id.get(this.className);
-                Instance instance;
+                final Instance instance;
                 if (id == null) {
                     final String parent = this.className.replaceAll(".class$", "").replaceAll("\\$.*", "");
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -274,14 +274,14 @@ public final class AccessKey
         throws EFapsException
     {
         final Person person = Context.getThreadContext().getPerson();
-        long personIdTmp;
+        final long personIdTmp;
         if (person == null) {
             personIdTmp = 0;
         } else {
             personIdTmp = person.getId();
         }
         final Company company = Context.getThreadContext().getCompany();
-        long companyIdTmp;
+        final long companyIdTmp;
         if (company == null) {
             companyIdTmp = 0;
         } else {

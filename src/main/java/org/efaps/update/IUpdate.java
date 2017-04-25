@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,9 +43,9 @@ public interface IUpdate
      * @param _profiles     the Profiles that will be executed
      * @throws InstallationException from called update methods
      */
-    void updateInDB(final JexlContext _jexlContext,
-                    final UpdateLifecycle _step,
-                    final Set<Profile> _profiles)
+    void updateInDB(JexlContext _jexlContext,
+                    UpdateLifecycle _step,
+                    Set<Profile> _profiles)
         throws InstallationException;
 
     /**
@@ -63,9 +63,9 @@ public interface IUpdate
      * @throws SAXException on error
      * @throws EFapsException on error
      */
-    void readXML(final List<String> _tags,
-                 final Map<String, String> _attributes,
-                 final String _text)
+    void readXML(List<String> _tags,
+                 Map<String, String> _attributes,
+                 String _text)
         throws SAXException, EFapsException;
 
     /**

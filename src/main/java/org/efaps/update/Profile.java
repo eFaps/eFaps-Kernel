@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public final class Profile
     /**
      * The mapping of all names to their Profiles.
      */
-    private static final Map<String, Profile> NAME2PROFILE = new  HashMap<String, Profile>();
+    private static final Map<String, Profile> NAME2PROFILE = new  HashMap<>();
 
     /**
      * Name of the Profile.
@@ -80,7 +80,7 @@ public final class Profile
     @Override
     public boolean equals(final Object _object)
     {
-        boolean ret;
+        final boolean ret;
         if (_object instanceof Profile) {
             ret = this.name.equals(((Profile) _object).getName());
         } else {

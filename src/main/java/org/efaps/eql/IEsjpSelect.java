@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ public interface IEsjpSelect
      * @param _parameters array of parameters
      * @throws EFapsException on error
      */
-    void initialize(final List<Instance> _instances,
-                    final String... _parameters)
+    void initialize(List<Instance> _instances,
+                    String... _parameters)
         throws EFapsException;
 
     /**
@@ -46,7 +46,7 @@ public interface IEsjpSelect
      * @return the value for the given instance
      * @throws EFapsException on error
      */
-    Object getValue(final Instance _instance)
+    Object getValue(Instance _instance)
         throws EFapsException;
 
 }

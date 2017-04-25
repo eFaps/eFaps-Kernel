@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -184,26 +184,6 @@ public enum ChronologyType
     };
 
     /**
-     * The class is required because an enum definition does not allow to own
-     * and access directly static variables.
-     */
-    private static final class Mapper
-    {
-        /**
-         * Mapping between the key of a chronology type and the related
-         * enumeration instance.
-         */
-        private static final Map<String, ChronologyType> KEY2ENUM = new HashMap<String, ChronologyType>();
-
-        /**
-         * Private constructor so that no instance could be created.
-         */
-        private Mapper()
-        {
-        }
-    }
-
-    /**
      * Stores the key for the type.
      */
     private final String key;
@@ -213,7 +193,7 @@ public enum ChronologyType
      *
      * @param _key Key of the ChronologyType
      */
-    private ChronologyType(final String _key)
+    ChronologyType(final String _key)
     {
         this.key = _key;
         ChronologyType.Mapper.KEY2ENUM.put(this.key, this);
@@ -260,5 +240,26 @@ public enum ChronologyType
      * @param _timeZone   time zone the chronology must use
      * @return Chronology
      */
-    public abstract Chronology getInstance(final DateTimeZone _timeZone);
+    public abstract Chronology getInstance(DateTimeZone _timeZone);
+
+    /**
+     * The class is required because an enum definition does not allow to own
+     * and access directly static variables.
+     */
+    private static final class Mapper
+    {
+        /**
+         * Mapping between the key of a chronology type and the related
+         * enumeration instance.
+         */
+        private static final Map<String, ChronologyType> KEY2ENUM = new HashMap<>();
+
+        /**
+         * Private constructor so that no instance could be created.
+         */
+        private Mapper()
+        {
+        }
+    }
+
 }

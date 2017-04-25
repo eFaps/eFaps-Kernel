@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public final class Listener
     /**
      * Classes found by the scanner.
      */
-    private final Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
+    private final Set<Class<?>> classes = new LinkedHashSet<>();
 
     /**
      * Is the instance initialized.
@@ -85,7 +85,7 @@ public final class Listener
             @SuppressWarnings("unchecked")
             final AnnotationAcceptingListener asl = new AnnotationAcceptingListener(EFapsClassLoader.getInstance(),
                             EFapsListener.class);
-            try (final EFapsResourceFinder resourceFinder = new EFapsResourceConfig.EFapsResourceFinder()) {
+            try (EFapsResourceFinder resourceFinder = new EFapsResourceConfig.EFapsResourceFinder()) {
                 while (resourceFinder.hasNext()) {
                     final String next = resourceFinder.next();
                     if (asl.accept(next)) {
@@ -148,7 +148,7 @@ public final class Listener
         throws EFapsException
     {
         init();
-        final List<T> ret = new ArrayList<T>();
+        final List<T> ret = new ArrayList<>();
         for (final Class<?> clazz : this.classes) {
             if (_class.isAssignableFrom(clazz)) {
                 try {

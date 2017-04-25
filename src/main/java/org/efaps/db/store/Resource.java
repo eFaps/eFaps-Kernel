@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,9 +96,9 @@ public interface Resource
      * @return length of the file which is stored
      * @throws EFapsException if an error occurs
      */
-    long write(final InputStream _in,
-               final long _size,
-               final String _fileName)
+    long write(InputStream _in,
+               long _size,
+               String _fileName)
         throws EFapsException;
 
     /**
@@ -121,7 +121,7 @@ public interface Resource
      * @param _out    output stream where the file content must be written
      * @throws EFapsException if an error occurs
      */
-    void read(final OutputStream _out) throws EFapsException;
+    void read(OutputStream _out) throws EFapsException;
 
     /**
      * Get the name of the file.
@@ -146,8 +146,8 @@ public interface Resource
      * @param _store        Store this StoreResource belongs to
      * @throws EFapsException on error
      */
-    void initialize(final Instance _instance,
-                    final Store _store)
+    void initialize(Instance _instance,
+                    Store _store)
         throws EFapsException;
 
     /**

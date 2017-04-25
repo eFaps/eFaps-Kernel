@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ public class StatusValueSelect
         throws EFapsException
     {
         Object ret = null;
-        Status tempStatus;
+        final Status tempStatus;
         if (_currentObject != null) {
             // check is necessary because Oracle JDBC returns for getObject always a BigDecimal
             if (_currentObject instanceof BigDecimal) {

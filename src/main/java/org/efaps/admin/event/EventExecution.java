@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,6 @@ public interface EventExecution
      * @return returned values from the executed event
      * @throws EFapsException if execute failed
      */
-    Return execute(final Parameter _parameter)
+    Return execute(Parameter _parameter)
         throws EFapsException;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,9 @@ public interface ISelectPart
      * @return table index of the joint table
      * @throws EFapsException on error
      */
-    int join(final OneSelect _oneselect,
-             final SQLSelect _select,
-             final int _relIndex)
+    int join(OneSelect _oneselect,
+             SQLSelect _select,
+             int _relIndex)
         throws EFapsException;
 
     /**
@@ -60,7 +60,7 @@ public interface ISelectPart
      * @param _row values
      * @throws SQLException on error
      */
-    void addObject(final Object[] _row)
+    void addObject(Object[] _row)
         throws SQLException;
 
     /**
@@ -76,8 +76,8 @@ public interface ISelectPart
      * @param _select       SQL select statement wrapper
      * @throws EFapsException on error
      */
-    void add2Where(final OneSelect _oneselect,
-                   final SQLSelect _select)
+    void add2Where(OneSelect _oneselect,
+                   SQLSelect _select)
         throws EFapsException;
 
     /**

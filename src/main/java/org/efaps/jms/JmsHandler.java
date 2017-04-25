@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,17 +72,17 @@ public final class JmsHandler
     /**
      * Mapping of JNDI-Name of the ConnectionFactory to QueueConnection.
      */
-    private static final Map<String, QueueConnection> QUEUE2QUECONN = new HashMap<String, QueueConnection>();
+    private static final Map<String, QueueConnection> QUEUE2QUECONN = new HashMap<>();
 
     /**
      * Mapping of JNDI-Name of the ConnectionFactory to TopicConnection.
      */
-    private static final Map<String, TopicConnection> TOPIC2QUECONN = new HashMap<String, TopicConnection>();
+    private static final Map<String, TopicConnection> TOPIC2QUECONN = new HashMap<>();
 
     /**
      * Mapping of a name to a JmsDefinition.
      */
-    private static final Map<String, JmsDefinition> NAME2DEF = new HashMap<String, JmsDefinition>();
+    private static final Map<String, JmsDefinition> NAME2DEF = new HashMap<>();
 
 
     /**
@@ -140,7 +140,7 @@ public final class JmsHandler
                         final String name = multi.<String>getAttribute(CIAdminCommon.JmsAbstract.Name);
                         final String esjp = multi.<String>getSelect(sel);
 
-                        Session session;
+                        final Session session;
                         if (type.isKindOf(CIAdminCommon.JmsQueueAbstract.getType())) {
                             final QueueConnectionFactory queueConnectionFactory = (QueueConnectionFactory) ctx
                                             .lookup(connectionFactoryJNDI);

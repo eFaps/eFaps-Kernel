@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ public class DateTimeType
             chron = ISOChronology.getInstanceUTC();
         }
 
-        final List<DateTime> ret = new ArrayList<DateTime>();
+        final List<DateTime> ret = new ArrayList<>();
         for (final Object object : _objectList) {
             if (object instanceof Timestamp || object instanceof Date) {
                 // to avoid the automatic "correction" of the timezone first a local date must be made
@@ -168,7 +168,7 @@ public class DateTimeType
                          final String _pattern)
         throws EFapsException
     {
-        Object ret;
+        final Object ret;
         if (_object instanceof DateTime) {
             ret = ((DateTime) _object).toString(_pattern, Context.getThreadContext().getLocale());
         } else {

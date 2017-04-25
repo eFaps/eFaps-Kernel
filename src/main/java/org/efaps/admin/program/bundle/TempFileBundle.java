@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public class TempFileBundle
     static {
         File tmpfld = AppConfigHandler.get().getTempFolder();
         if (tmpfld == null) {
-            File temp;
+            final File temp;
             try {
                 temp = File.createTempFile("eFaps", ".tmp");
                 tmpfld = temp.getParentFile();

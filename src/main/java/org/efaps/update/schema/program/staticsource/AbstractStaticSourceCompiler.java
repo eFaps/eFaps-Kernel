@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,8 +153,8 @@ public abstract class AbstractStaticSourceCompiler<T extends AbstractSource>
      * @param _instance Instance of the source
      * @return AbstractSource
      */
-    protected abstract T getNewSource(final String _name,
-                                      final Instance _instance);
+    protected abstract T getNewSource(String _name,
+                                      Instance _instance);
 
     /**
      * Get the compiled String for the Instance with OID _oid.
@@ -163,7 +163,7 @@ public abstract class AbstractStaticSourceCompiler<T extends AbstractSource>
      * @return a compiled String of the Instance
      * @throws EFapsException on error
      */
-    protected abstract String getCompiledString(final Instance _instance)
+    protected abstract String getCompiledString(Instance _instance)
         throws EFapsException;
 
     /**
@@ -176,7 +176,7 @@ public abstract class AbstractStaticSourceCompiler<T extends AbstractSource>
     protected Map<String, String> readCompiledSources()
         throws EFapsException
     {
-        final Map<String, String> ret = new HashMap<String, String>();
+        final Map<String, String> ret = new HashMap<>();
         final QueryBuilder queryBldr = new QueryBuilder(getClassName4TypeCompiled());
         final MultiPrintQuery multi = queryBldr.getPrint();
         multi.addAttribute(CIAdminProgram.StaticCompiled.Name);
@@ -221,7 +221,7 @@ public abstract class AbstractStaticSourceCompiler<T extends AbstractSource>
     protected List<Instance> getSuper(final Instance _instance)
         throws EFapsException
     {
-        final List<Instance> ret = new ArrayList<Instance>();
+        final List<Instance> ret = new ArrayList<>();
         final QueryBuilder queryBldr = new QueryBuilder(getClassName4Type2Type());
         queryBldr.addWhereAttrEqValue(CIAdminProgram.Program2Program.From, _instance.getId());
         final MultiPrintQuery multi = queryBldr.getPrint();

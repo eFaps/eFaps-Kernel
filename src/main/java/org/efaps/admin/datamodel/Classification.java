@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,13 +51,13 @@ public class Classification
         /** key to the type {@link Classification#classifiesType}. */
         TYPE("type"),
         /** key to the relation type {@link Classification#classifyRelation}. */
-        RELTYPE ("relType"),
+        RELTYPE("relType"),
         /** key to attribute of the relation type {@link Classification#relLinkAttributeName}. */
-        RELLINKATTR ("relLinkAttribute"),
+        RELLINKATTR("relLinkAttribute"),
         /**  key to attribute of the relation type {@link Classification#relTypeAttributeName}. */
-        RELTYPEATTR ("relTypeAttribute"),
+        RELTYPEATTR("relTypeAttribute"),
         /** key to attribute of the type {@link Classification#linkAttributeName}. */
-        LINKATTR ("classLinkAttribute");
+        LINKATTR("classLinkAttribute");
 
         /** value. */
         private final String value;
@@ -66,7 +66,7 @@ public class Classification
          * Private constructor setting the instance variable.
          * @param _value  value
          */
-        private Keys(final String _value)
+        Keys(final String _value)
         {
             this.value = _value;
         }
@@ -96,7 +96,7 @@ public class Classification
     /**
      * Instance variable for all child classification of this classification.
      */
-    private final Set<Long> children = new HashSet<Long>();
+    private final Set<Long> children = new HashSet<>();
 
     /**
      * Type this Classification is classifying.
@@ -130,7 +130,7 @@ public class Classification
     /**
      * Companies this Classification is assigned to.
      */
-    private final Set<Company> companies = new HashSet<Company>();
+    private final Set<Company> companies = new HashSet<>();
 
     /**
      * @param _id       id of this Classification
@@ -177,7 +177,7 @@ public class Classification
     public Set<Classification> getChildClassifications()
         throws CacheReloadException
     {
-        final Set<Classification> ret = new HashSet<Classification>();
+        final Set<Classification> ret = new HashSet<>();
         for (final Long id : this.children) {
             final Classification child = Classification.get(id);
             ret.add(child);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO comment!
+ * Class to manage NumberGenerators.
  *
  * @author The eFaps Team
  */
@@ -358,7 +358,7 @@ public final class NumberGenerator
     public static NumberGenerator get(final String _name)
         throws CacheReloadException
     {
-        final Cache<Long, NumberGenerator> cache = InfinispanCache.get().<Long, NumberGenerator>getCache(
+        final Cache<String, NumberGenerator> cache = InfinispanCache.get().<String, NumberGenerator>getCache(
                         NumberGenerator.NAMECACHE);
         if (!cache.containsKey(_name)) {
             NumberGenerator.getNumberGeneratorFromDB(NumberGenerator.SQL_NAME, _name);

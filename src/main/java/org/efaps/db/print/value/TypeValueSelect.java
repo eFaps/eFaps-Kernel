@@ -73,7 +73,7 @@ public class TypeValueSelect
     public Object getValue(final Object _currentObject)
         throws EFapsException
     {
-        Type tempType;
+        final Type tempType;
         if (this.type.getMainTable().getSqlColType() == null) {
             tempType = this.type;
         } else if (_currentObject != null) {
@@ -106,7 +106,7 @@ public class TypeValueSelect
     protected Object analyzeChildValue(final AbstractValueSelect _currentSelect,
                                        final Type _tempType)
     {
-        Object ret;
+        final Object ret;
         if (_tempType != null && _currentSelect.getChildValueSelect() != null) {
             switch (_currentSelect.getChildValueSelect().getValueType()) {
                 case "label":

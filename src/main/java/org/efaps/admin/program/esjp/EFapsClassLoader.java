@@ -128,7 +128,7 @@ public final class EFapsClassLoader
                 }
                 ret = file.toURI().toURL();
             } catch (final IOException e) {
-                LOG.error("Could not geneate File for reading from URL: {}", name);
+                EFapsClassLoader.LOG.error("Could not geneate File for reading from URL: {}", name);
             }
         }
         return ret;
@@ -174,7 +174,7 @@ public final class EFapsClassLoader
                 is.close();
             }
         } catch (final EFapsException e) {
-            EFapsClassLoader.LOG.error("could not access the Database for reading '{}'", e , _resourceName);
+            EFapsClassLoader.LOG.error("could not access the Database for reading '{}'", e, _resourceName);
         } catch (final IOException e) {
             EFapsClassLoader.LOG.error("could not read the Javaclass '{}'", e, _resourceName);
         }
@@ -189,20 +189,20 @@ public final class EFapsClassLoader
         if (EFapsClassLoader.TMPFOLDER == null || !EFapsClassLoader.TMPFOLDER.exists()) {
             File tmpfld = AppConfigHandler.get().getTempFolder();
             if (tmpfld == null) {
-                File temp;
+                final File temp;
                 try {
                     temp = File.createTempFile("eFaps", ".tmp");
                     tmpfld = temp.getParentFile();
                     temp.delete();
                 } catch (final IOException e) {
-                    LOG.error("Cannot create temp file", e);
+                    EFapsClassLoader.LOG.error("Cannot create temp file", e);
                 }
             }
             EFapsClassLoader.TMPFOLDER = new File(tmpfld, "eFaps-ClassFiles");
             if (!EFapsClassLoader.TMPFOLDER.exists()) {
                 final boolean mkdir = EFapsClassLoader.TMPFOLDER.mkdir();
                 if (!mkdir) {
-                    LOG.error("Temp folder was not created");
+                    EFapsClassLoader.LOG.error("Temp folder was not created");
                 }
             }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public abstract class AbstractMenu
      * @see #getCommands
      * @add
      */
-    private final Map<Long, AbstractCommand> commands = new TreeMap<Long, AbstractCommand>();
+    private final Map<Long, AbstractCommand> commands = new TreeMap<>();
 
     /**
      * Constructor to set the id,uuid and name of the menu object.
@@ -74,8 +74,8 @@ public abstract class AbstractMenu
      * @param _id id of the sub command / menu to add
      * @throws CacheReloadException on error
      */
-    protected abstract void add(final long _sortId,
-                                final long _id)
+    protected abstract void add(long _sortId,
+                                long _id)
         throws CacheReloadException;
 
     /**
@@ -160,7 +160,7 @@ public abstract class AbstractMenu
      */
     public List<AbstractCommand> getCommands()
     {
-        return new ArrayList<AbstractCommand>(this.commands.values());
+        return new ArrayList<>(this.commands.values());
     }
 
     /**
@@ -209,7 +209,7 @@ public abstract class AbstractMenu
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof AbstractMenu) {
             ret = ((AbstractMenu) _obj).getId() == getId();
         } else {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public abstract class AbstractWithUoMType
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
     {
-        final List<Object[]> ret = new ArrayList<Object[]>();
+        final List<Object[]> ret = new ArrayList<>();
         for (final Object object : _objectList) {
             final Object[] temp = (Object[]) object;
             final Object value = readValue(temp[0]);
@@ -75,5 +75,5 @@ public abstract class AbstractWithUoMType
      * @param _object   Object to read
      * @return value as object
      */
-    protected abstract Object readValue(final Object _object);
+    protected abstract Object readValue(Object _object);
 }

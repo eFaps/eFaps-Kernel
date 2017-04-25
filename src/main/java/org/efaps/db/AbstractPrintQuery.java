@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -334,7 +334,8 @@ public abstract class AbstractPrintQuery
         final OneSelect oneselect = this.attr2OneSelect.get(_setName);
         Map<String, Object> ret = null;
         if (oneselect == null || oneselect.getFromSelect() == null) {
-            AbstractPrintQuery.LOG.error("Could not get an AttributeSet for the name: '{}' in PrintQuery '{]'", _setName, this);
+            AbstractPrintQuery.LOG.error("Could not get an AttributeSet for the name: '{}' in PrintQuery '{]'",
+                            _setName, this);
         } else if (oneselect.getFromSelect().hasResult()) {
             ret = new HashMap<>();
             // in an attributset the first one is fake

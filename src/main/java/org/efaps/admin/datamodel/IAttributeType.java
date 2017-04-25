@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,9 +45,9 @@ public interface IAttributeType
      *                      are coming from the user interface
      * @throws SQLException if preparation for the update failed
      */
-    void prepareUpdate(final SQLUpdate _update,
-                       final Attribute _attribute,
-                       final Object... _values)
+    void prepareUpdate(SQLUpdate _update,
+                       Attribute _attribute,
+                       Object... _values)
         throws SQLException;
 
     /**
@@ -59,9 +59,9 @@ public interface IAttributeType
      *                      are coming from the user interface
      * @throws SQLException if preparation for the insert failed
      */
-    void prepareInsert(final SQLInsert _insert,
-                       final Attribute _attribute,
-                       final Object... _values)
+    void prepareInsert(SQLInsert _insert,
+                       Attribute _attribute,
+                       Object... _values)
         throws SQLException;
 
     /**
@@ -78,8 +78,8 @@ public interface IAttributeType
      * @return Object as needed for eFaps
      * @throws EFapsException on error
      */
-    Object readValue(final Attribute _attribute,
-                     final List<Object> _objectList)
+    Object readValue(Attribute _attribute,
+                     List<Object> _objectList)
         throws EFapsException;
 
     /**
@@ -93,7 +93,7 @@ public interface IAttributeType
      * @return  string representation of the value
      * @throws EFapsException on error
      */
-    String toString4Where(final Object _value)
+    String toString4Where(Object _value)
         throws EFapsException;
 
     /**
@@ -106,9 +106,9 @@ public interface IAttributeType
      * @param _value        value that will be used for the update
      * @throws EFapsException if not valid
      */
-    void valiate4Update(final Attribute _attribute,
-                        final Instance _instance,
-                        final Object[] _value)
+    void valiate4Update(Attribute _attribute,
+                        Instance _instance,
+                        Object[] _value)
         throws EFapsException;
 
     /**
@@ -122,8 +122,8 @@ public interface IAttributeType
      * @param _value        value that will be used for the update
      * @throws EFapsException if not valid
      */
-    void valiate4Insert(final Attribute _attribute,
-                        final Instance _instance,
-                        final Object[] _value)
+    void valiate4Insert(Attribute _attribute,
+                        Instance _instance,
+                        Object[] _value)
         throws EFapsException;
 }

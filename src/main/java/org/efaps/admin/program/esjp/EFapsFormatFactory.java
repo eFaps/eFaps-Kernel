@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 12673 $
- * Last Changed:    $Date: 2014-05-09 15:18:54 -0500 (Fri, 09 May 2014) $
- * Last Changed By: $Author: jan@moxter.net $
  */
 
 
@@ -42,8 +39,11 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface EFapsFormatFactory
 {
+
     /**
      * Name.
+     *
+     * @return the string
      */
     String name();
 }

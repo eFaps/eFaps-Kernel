@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ public class RestContext
 
             ret = Response.ok().type(MediaType.APPLICATION_JSON).entity(getJSONReply(reply)).build();
         } catch (final Exception e) {
-            LOG.error("Error processing data.", e);
+            RestContext.LOG.error("Error processing data.", e);
             final ErrorReply reply = new ErrorReply()
                             .setError(e.getClass().getName())
                             .setMessage(e.getMessage())
@@ -98,7 +98,7 @@ public class RestContext
     public Response setCompany(@QueryParam("company") final String _companyStr)
     {
         try {
-            Company company;
+            final Company company;
             if (UUIDUtil.isUUID(_companyStr)) {
                 company = Company.get(UUID.fromString(_companyStr));
             } else if (StringUtils.isNumeric(_companyStr)) {
@@ -112,7 +112,7 @@ public class RestContext
                 Context.getThreadContext().setCompany(company);
             }
         } catch (final NumberFormatException | EFapsException e) {
-            LOG.error("Catched error", e);
+            RestContext.LOG.error("Catched error", e);
         }
         return confirm();
     }

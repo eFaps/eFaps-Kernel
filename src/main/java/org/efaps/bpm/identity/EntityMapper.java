@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ public final class EntityMapper
      */
     public static String getUserId(final UUID _uuid)
     {
-        String ret;
+        final String ret;
         if (KernelSettings.USER_PERSON_ADMINISTRATOR.equals(_uuid)) {
             ret = "Administrator";
         } else  if (KernelSettings.USER_ROLE_ADMINISTRATION.equals(_uuid)) {
@@ -61,7 +61,7 @@ public final class EntityMapper
      */
     public static String getEntityId(final String _targetEntityId)
     {
-        String ret;
+        final String ret;
         if (KernelSettings.USER_PERSON_ADMINISTRATOR.toString().equals(_targetEntityId)) {
             ret = "Administrator";
         } else  if (KernelSettings.USER_ROLE_ADMINISTRATION.toString().equals(_targetEntityId)) {
@@ -78,7 +78,7 @@ public final class EntityMapper
      */
     public static UUID getUUID(final String _userId)
     {
-        UUID ret;
+        final UUID ret;
         if ("Administrator".equals(_userId)) {
             ret = KernelSettings.USER_PERSON_ADMINISTRATOR;
         } else if ("Administration".equals(_userId)) {

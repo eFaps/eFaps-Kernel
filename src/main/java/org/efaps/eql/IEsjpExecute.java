@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public interface IEsjpExecute
      * @return a data list as result
      * @throws EFapsException on error
      */
-    List<Map<String, Object>> execute(final Map<String, String> _mapping,
-                                      final String... _parameters)
+    List<Map<String, Object>> execute(Map<String, String> _mapping,
+                                      String... _parameters)
         throws EFapsException;
 }

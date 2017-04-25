@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -192,7 +192,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @return true if this database is connected
      * @throws SQLException on error
      */
-    public abstract boolean isConnected(final Connection _connection)
+    public abstract boolean isConnected(Connection _connection)
         throws SQLException;
 
     /**
@@ -368,7 +368,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @param _dateString dateTime that will be casted to an timestamp
      * @return vendor specific implementation of timestamp
      */
-    public abstract String getTimestampValue(final String _dateString);
+    public abstract String getTimestampValue(String _dateString);
 
     /**
      * Method is used to generate the "dateString" used by the
@@ -389,7 +389,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @param _value boolean that will be casted to an number for oracle
      * @return vendor specific implementation of boolean
      */
-    public abstract Object getBooleanValue(final Boolean _value);
+    public abstract Object getBooleanValue(Boolean _value);
 
     /**
      * The method implements a delete all of database user specific objects
@@ -399,7 +399,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @param _con sql connection
      * @throws SQLException if delete of the SQL data model failed
      */
-    public abstract void deleteAll(final Connection _con)
+    public abstract void deleteAll(Connection _con)
         throws SQLException;
 
     /**
@@ -445,8 +445,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @return this instance
      * @throws SQLException if delete of the sequence failed
      */
-    public abstract T deleteView(final Connection _con,
-                                 final String _name)
+    public abstract T deleteView(Connection _con,
+                                 String _name)
         throws SQLException;
 
     /**
@@ -564,9 +564,9 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @return this instance
      * @throws SQLException on error
      */
-    public abstract T createSequence(final Connection _con,
-                                     final String _name,
-                                     final long _startValue)
+    public abstract T createSequence(Connection _con,
+                                     String _name,
+                                     long _startValue)
         throws SQLException;
 
     /**
@@ -577,8 +577,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @return this instance
      * @throws SQLException if delete of the sequence failed
      */
-    public abstract T deleteSequence(final Connection _con,
-                                     final String _name)
+    public abstract T deleteSequence(Connection _con,
+                                     String _name)
         throws SQLException;
 
     /**
@@ -589,8 +589,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @return true if exists, else false
      * @throws SQLException on error
      */
-    public abstract boolean existsSequence(final Connection _con,
-                                           final String _name)
+    public abstract boolean existsSequence(Connection _con,
+                                           String _name)
         throws SQLException;
 
     /**
@@ -630,8 +630,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @return name of the table as it is insert into the database
      * @throws SQLException if the create of the table failed
      */
-    public abstract T createTable(final Connection _con,
-                                  final String _table)
+    public abstract T createTable(Connection _con,
+                                  String _table)
         throws SQLException;
 
     /**
@@ -660,8 +660,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @return this instance
      * @throws SQLException if the update of the table failed
      */
-    public abstract T defineTableAutoIncrement(final Connection _con,
-                                               final String _table)
+    public abstract T defineTableAutoIncrement(Connection _con,
+                                               String _table)
         throws SQLException;
 
     /**
@@ -767,7 +767,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @param _isNotNull is the column not null
      * @return sql snipplet
      */
-    protected abstract StringBuilder getAlterColumnIsNotNull(final String _columnName,
+    protected abstract StringBuilder getAlterColumnIsNotNull(String _columnName,
                                                              boolean _isNotNull);
 
     /**
@@ -778,9 +778,9 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @return true if the column contains nulls, else false
      * @throws SQLException on error
      */
-    protected abstract boolean check4NullValues(final Connection _con,
-                                                final String _tableName,
-                                                final String _columnName)
+    protected abstract boolean check4NullValues(Connection _con,
+                                                String _tableName,
+                                                String _columnName)
         throws SQLException;
 
     /**
@@ -831,8 +831,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @param _columnType type of column to update
      * @return sql snipplet
      */
-    protected abstract StringBuilder getAlterColumn(final String _columnName,
-                                                    final ColumnType _columnType);
+    protected abstract StringBuilder getAlterColumn(String _columnName,
+                                                    ColumnType _columnType);
 
     /**
      * Adds a new unique key to given table name.

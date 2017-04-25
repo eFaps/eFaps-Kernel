@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -143,7 +143,6 @@ public class Checkout
         } catch (final EFapsException e) {
             Checkout.LOG.error("could not checkout " + super.getInstance(), e);
             throw e;
-        } finally {
         }
     }
 
@@ -217,7 +216,6 @@ public class Checkout
         } catch (final EFapsException e) {
             Checkout.LOG.error("could not checkout " + super.getInstance(), e);
             throw e;
-        } finally {
         }
         return in;
     }

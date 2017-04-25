@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ public interface IAsyncListener
      * @param _taskData data from the task
      * @throws EFapsException on error
      */
-    void onAfterExecute(final Map<String, Object> _eFapsValues,
-                        final Object _taskData)
+    void onAfterExecute(Map<String, Object> _eFapsValues,
+                        Object _taskData)
         throws EFapsException;
 
 }

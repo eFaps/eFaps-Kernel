@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,7 +111,7 @@ public final class BundleMaker
         throws EFapsException
     {
         BundleMaker.mergeList(_names);
-        String key;
+        final String key;
         final Cache<List<String>, String> cache = InfinispanCache.get()
                         .<List<String>, String>getCache(BundleMaker.CACHE4BUNDLEMAP);
         final Cache<String, BundleInterface> cache4bundle = InfinispanCache.get()
@@ -163,7 +163,7 @@ public final class BundleMaker
     private static void mergeList(final List<String> _names)
     {
         Collections.sort(_names);
-        final Set<String> compare = new HashSet<String>();
+        final Set<String> compare = new HashSet<>();
         for (int i = _names.size() - 1; i > -1; i--) {
             if (compare.contains(_names.get(i))) {
                 _names.remove(i);
@@ -187,7 +187,7 @@ public final class BundleMaker
     {
 
         final StringBuilder builder = new StringBuilder();
-        final List<String> oids = new ArrayList<String>();
+        final List<String> oids = new ArrayList<>();
         String ret = null;
         try {
             for (final String name : _names) {
@@ -258,8 +258,8 @@ public final class BundleMaker
          * @param _oid oid of the source
          * @param _name name of the source
          */
-        public StaticCompiledSource(final String _oid,
-                                    final String _name)
+        StaticCompiledSource(final String _oid,
+                             final String _name)
         {
             this.name = _name;
             this.oid = _oid;
@@ -270,6 +270,7 @@ public final class BundleMaker
          *
          * @return 0
          */
+        @Override
         public long getId()
         {
             // not needed here
@@ -281,6 +282,7 @@ public final class BundleMaker
          *
          * @return value of instance variable {@link #name}
          */
+        @Override
         public String getName()
         {
             return this.name;
@@ -291,6 +293,7 @@ public final class BundleMaker
          *
          * @return null
          */
+        @Override
         public UUID getUUID()
         {
             // not needed here

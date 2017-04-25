@@ -124,7 +124,7 @@ public class Image
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof Image) {
             ret = ((Image) _obj).getId() == getId();
         } else {

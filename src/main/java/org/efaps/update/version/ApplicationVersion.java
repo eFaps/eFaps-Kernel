@@ -17,10 +17,6 @@
 
 package org.efaps.update.version;
 
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
-import groovy.lang.Script;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -49,6 +45,10 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
+import groovy.lang.Script;
 
 /**
  * Defines one version of the application to install.
@@ -109,7 +109,7 @@ public class ApplicationVersion
      *
      * @see #addScript(String, String, String, String)
      */
-    private final List<AbstractScript> scripts = new ArrayList<AbstractScript>();
+    private final List<AbstractScript> scripts = new ArrayList<>();
 
     /**
      * Description of this version.
@@ -124,7 +124,7 @@ public class ApplicationVersion
      *
      * @see #addIgnoredStep(String)
      */
-    private final Set<UpdateLifecycle> ignoredSteps = new HashSet<UpdateLifecycle>();
+    private final Set<UpdateLifecycle> ignoredSteps = new HashSet<>();
 
     /**
      * Application this version belongs to.
@@ -266,6 +266,7 @@ public class ApplicationVersion
      * @see java.lang.Long#compareTo
      * @see java.lang.Comparable#compareTo
      */
+    @Override
     public int compareTo(final ApplicationVersion _compareTo)
     {
         return new Long(this.number).compareTo(_compareTo.number);
@@ -416,8 +417,8 @@ public class ApplicationVersion
          * @param _password password of logged in user
          * @throws InstallationException on error
          */
-        public abstract void execute(final String _userName,
-                                     final String _password)
+        public abstract void execute(String _userName,
+                                     String _password)
             throws InstallationException;
 
         /**

@@ -462,7 +462,6 @@ public class Update
             } catch (final SQLException e) {
                 Update.LOG.error("Update of '" + this.instance + "' not possible", e);
                 throw new EFapsException(getClass(), "executeWithoutTrigger.SQLException", e, this.instance);
-            } finally {
             }
         } else {
             throw new EFapsException(getClass(), "executeWithout.StatusInvalid", Update.STATUSOK.getStati());

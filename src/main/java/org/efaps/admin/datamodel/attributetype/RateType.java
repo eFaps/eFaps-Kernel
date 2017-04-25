@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public class RateType
     protected BigDecimal evalObject(final Object _value)
         throws SQLException
     {
-        BigDecimal ret;
+        final BigDecimal ret;
         if ((_value instanceof String) && (((String) _value).length() > 0)) {
             try {
                 ret = DecimalType.parseLocalized((String) _value);
@@ -118,7 +118,7 @@ public class RateType
                             final List<Object> _objectList)
         throws EFapsException
     {
-        final List<Object[]> ret = new ArrayList<Object[]>();
+        final List<Object[]> ret = new ArrayList<>();
         for (final Object object : _objectList) {
             final Object[] temp = (Object[]) object;
             final Object numerator = readValue(temp[0]);

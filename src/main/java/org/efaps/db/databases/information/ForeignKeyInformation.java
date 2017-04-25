@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,5 +93,55 @@ public class ForeignKeyInformation
     public String toString()
     {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * Getter method for the instance variable {@link #fkName}.
+     *
+     * @return value of instance variable {@link #fkName}
+     */
+    public String getFkName()
+    {
+        return this.fkName;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #colName}.
+     *
+     * @return value of instance variable {@link #colName}
+     */
+    public String getColName()
+    {
+        return this.colName;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #refTableName}.
+     *
+     * @return value of instance variable {@link #refTableName}
+     */
+    public String getRefTableName()
+    {
+        return this.refTableName;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #refColName}.
+     *
+     * @return value of instance variable {@link #refColName}
+     */
+    public String getRefColName()
+    {
+        return this.refColName;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #cascadeDelete}.
+     *
+     * @return value of instance variable {@link #cascadeDelete}
+     */
+    public boolean isCascadeDelete()
+    {
+        return this.cascadeDelete;
     }
 }

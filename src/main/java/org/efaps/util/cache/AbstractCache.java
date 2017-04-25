@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -258,9 +258,9 @@ public abstract class AbstractCache<T extends CacheObjectInterface>
      * @param _newCache4UUID    cache for UUID
      * @throws CacheReloadException on error during reading
      */
-    protected abstract void readCache(final Map<Long, T> _newCache4Id,
-                                      final Map<String, T> _newCache4Name,
-                                      final Map<UUID, T> _newCache4UUID)
+    protected abstract void readCache(Map<Long, T> _newCache4Id,
+                                      Map<String, T> _newCache4Name,
+                                      Map<UUID, T> _newCache4UUID)
         throws CacheReloadException;
 
     /**
@@ -272,7 +272,7 @@ public abstract class AbstractCache<T extends CacheObjectInterface>
      */
     protected Map<Long, T> getNewCache4Id()
     {
-        return new HashMap<Long, T>();
+        return new HashMap<>();
     }
 
     /**
@@ -284,7 +284,7 @@ public abstract class AbstractCache<T extends CacheObjectInterface>
      */
     protected Map<String, T> getNewCache4Name()
     {
-        return new HashMap<String, T>();
+        return new HashMap<>();
     }
 
     /**
@@ -296,7 +296,7 @@ public abstract class AbstractCache<T extends CacheObjectInterface>
      */
     protected Map<UUID, T> getNewCache4UUID()
     {
-        return new HashMap<UUID, T>();
+        return new HashMap<>();
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public final class JmsResourceConfig
     /**
      * Classes found by the scanner.
      */
-    private final Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
+    private final Set<Class<?>> classes = new LinkedHashSet<>();
 
     /**
      * Constructor.
@@ -95,30 +95,31 @@ public final class JmsResourceConfig
                         XmlElementRef.class,
                         XmlRootElement.class,
                         XmlAttribute.class);
-        final EFapsResourceFinder resourceFinder = new EFapsResourceConfig.EFapsResourceFinder();
-        while (resourceFinder.hasNext()) {
-            final String next = resourceFinder.next();
-            if (asl.accept(next)) {
-                final InputStream in = resourceFinder.open();
-                try {
-                    JmsResourceConfig.LOG.debug("Scanning '{}' for annotations.", next);
-                    asl.process(next, in);
-                } catch (final IOException e) {
-                    JmsResourceConfig.LOG.warn("Cannot process '{}'", next);
-                } finally {
+        try (EFapsResourceFinder resourceFinder = new EFapsResourceConfig.EFapsResourceFinder()) {
+            while (resourceFinder.hasNext()) {
+                final String next = resourceFinder.next();
+                if (asl.accept(next)) {
+                    final InputStream in = resourceFinder.open();
                     try {
-                        in.close();
-                    } catch (final IOException ex) {
-                        JmsResourceConfig.LOG.trace("Error closing resource stream.", ex);
+                        JmsResourceConfig.LOG.debug("Scanning '{}' for annotations.", next);
+                        asl.process(next, in);
+                    } catch (final IOException e) {
+                        JmsResourceConfig.LOG.warn("Cannot process '{}'", next);
+                    } finally {
+                        try {
+                            in.close();
+                        } catch (final IOException ex) {
+                            JmsResourceConfig.LOG.trace("Error closing resource stream.", ex);
+                        }
                     }
                 }
             }
-        }
-        this.classes.clear();
-        this.classes.addAll(asl.getAnnotatedClasses());
+            this.classes.clear();
+            this.classes.addAll(asl.getAnnotatedClasses());
 
-        if (JmsResourceConfig.LOG.isInfoEnabled() && !getClasses().isEmpty()) {
-            logClasses("Jms classes found:", getClasses());
+            if (JmsResourceConfig.LOG.isInfoEnabled() && !getClasses().isEmpty()) {
+                logClasses("Jms classes found:", getClasses());
+            }
         }
     }
 

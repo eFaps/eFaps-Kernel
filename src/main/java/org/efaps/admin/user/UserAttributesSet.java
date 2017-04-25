@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -364,9 +364,9 @@ public class UserAttributesSet
          * @param _value value of this user attribute set
          * @param _update <i>true</i> if the attribute must be updated in eFaps
          */
-        public UserAttribute(final String _type,
-                             final String _value,
-                             final boolean _update)
+        UserAttribute(final String _type,
+                      final String _value,
+                      final boolean _update)
         {
             this.type = _type;
             this.value = _value;
