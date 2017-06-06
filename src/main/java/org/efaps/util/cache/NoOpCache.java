@@ -17,16 +17,17 @@
 
 package org.efaps.util.cache;
 
+import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.infinispan.AdvancedCache;
 import org.infinispan.Cache;
 import org.infinispan.CacheCollection;
 import org.infinispan.CacheSet;
-import org.infinispan.commons.util.concurrent.NotifyingFuture;
 import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.filter.KeyFilter;
 import org.infinispan.lifecycle.ComponentStatus;
@@ -53,14 +54,14 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public NotifyingFuture<V> putAsync(final K _key,
+    public CompletableFuture<V> putAsync(final K _key,
                                        final V _value)
     {
         return null;
     }
 
     @Override
-    public NotifyingFuture<V> putAsync(final K _key,
+    public CompletableFuture<V> putAsync(final K _key,
                                        final V _value,
                                        final long _lifespan,
                                        final TimeUnit _unit)
@@ -69,7 +70,7 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public NotifyingFuture<V> putAsync(final K _key,
+    public CompletableFuture<V> putAsync(final K _key,
                                        final V _value,
                                        final long _lifespan,
                                        final TimeUnit _lifespanUnit,
@@ -80,13 +81,13 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public NotifyingFuture<Void> putAllAsync(final Map<? extends K, ? extends V> _data)
+    public CompletableFuture<Void> putAllAsync(final Map<? extends K, ? extends V> _data)
     {
         return null;
     }
 
     @Override
-    public NotifyingFuture<Void> putAllAsync(final Map<? extends K, ? extends V> _data,
+    public CompletableFuture<Void> putAllAsync(final Map<? extends K, ? extends V> _data,
                                              final long _lifespan,
                                              final TimeUnit _unit)
     {
@@ -94,7 +95,7 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public NotifyingFuture<Void> putAllAsync(final Map<? extends K, ? extends V> _data,
+    public CompletableFuture<Void> putAllAsync(final Map<? extends K, ? extends V> _data,
                                              final long _lifespan,
                                              final TimeUnit _lifespanUnit,
                                              final long _maxIdle,
@@ -104,20 +105,20 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public NotifyingFuture<Void> clearAsync()
+    public CompletableFuture<Void> clearAsync()
     {
         return null;
     }
 
     @Override
-    public NotifyingFuture<V> putIfAbsentAsync(final K _key,
+    public CompletableFuture<V> putIfAbsentAsync(final K _key,
                                                final V _value)
     {
         return null;
     }
 
     @Override
-    public NotifyingFuture<V> putIfAbsentAsync(final K _key,
+    public CompletableFuture<V> putIfAbsentAsync(final K _key,
                                                final V _value,
                                                final long _lifespan,
                                                final TimeUnit _unit)
@@ -126,7 +127,7 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public NotifyingFuture<V> putIfAbsentAsync(final K _key,
+    public CompletableFuture<V> putIfAbsentAsync(final K _key,
                                                final V _value,
                                                final long _lifespan,
                                                final TimeUnit _lifespanUnit,
@@ -137,27 +138,27 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public NotifyingFuture<V> removeAsync(final Object _key)
+    public CompletableFuture<V> removeAsync(final Object _key)
     {
         return null;
     }
 
     @Override
-    public NotifyingFuture<Boolean> removeAsync(final Object _key,
+    public CompletableFuture<Boolean> removeAsync(final Object _key,
                                                 final Object _value)
     {
         return null;
     }
 
     @Override
-    public NotifyingFuture<V> replaceAsync(final K _key,
+    public CompletableFuture<V> replaceAsync(final K _key,
                                            final V _value)
     {
         return null;
     }
 
     @Override
-    public NotifyingFuture<V> replaceAsync(final K _key,
+    public CompletableFuture<V> replaceAsync(final K _key,
                                            final V _value,
                                            final long _lifespan,
                                            final TimeUnit _unit)
@@ -166,7 +167,7 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public NotifyingFuture<V> replaceAsync(final K _key,
+    public CompletableFuture<V> replaceAsync(final K _key,
                                            final V _value,
                                            final long _lifespan,
                                            final TimeUnit _lifespanUnit,
@@ -177,7 +178,7 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public NotifyingFuture<Boolean> replaceAsync(final K _key,
+    public CompletableFuture<Boolean> replaceAsync(final K _key,
                                                  final V _oldValue,
                                                  final V _newValue)
     {
@@ -185,7 +186,7 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public NotifyingFuture<Boolean> replaceAsync(final K _key,
+    public CompletableFuture<Boolean> replaceAsync(final K _key,
                                                  final V _oldValue,
                                                  final V _newValue,
                                                  final long _lifespan,
@@ -195,7 +196,7 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public NotifyingFuture<Boolean> replaceAsync(final K _key,
+    public CompletableFuture<Boolean> replaceAsync(final K _key,
                                                  final V _oldValue,
                                                  final V _newValue,
                                                  final long _lifespan,
@@ -207,7 +208,7 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public NotifyingFuture<V> getAsync(final K _key)
+    public CompletableFuture<V> getAsync(final K _key)
     {
         return null;
     }
@@ -524,6 +525,14 @@ public class NoOpCache<K, V>
 
     @Override
     public void clear()
+    {
+    }
+
+    @Override
+    public <C> void addFilteredListener(final Object _listener,
+                                        final CacheEventFilter<? super K, ? super V> _filter,
+                                        final CacheEventConverter<? super K, ? super V, C> _converter,
+                                        final Set<Class<? extends Annotation>> _filterAnnotations)
     {
     }
 }

@@ -26,6 +26,7 @@ import javax.xml.stream.FactoryConfigurationError;
 import org.efaps.init.INamingBinds;
 import org.infinispan.AdvancedCache;
 import org.infinispan.Cache;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.context.Flag;
 import org.infinispan.lifecycle.ComponentStatus;
 import org.infinispan.manager.CacheContainer;
@@ -68,7 +69,7 @@ public final class InfinispanCache
     /**
      * The manager for Infinspan.
      */
-    private CacheContainer container;
+    private EmbeddedCacheManager container;
 
     /**
      * Singelton is wanted.
@@ -88,7 +89,7 @@ public final class InfinispanCache
                 this.container = new DefaultCacheManager(this.getClass().getResourceAsStream(
                                 "/org/efaps/util/cache/infinispan-config.xml"));
                 if (this.container instanceof EmbeddedCacheManager) {
-                    ((EmbeddedCacheManager) this.container).addListener(new CacheLogListener(InfinispanCache.LOG));
+                    this.container.addListener(new CacheLogListener(InfinispanCache.LOG));
                 }
                 InfinispanCache.bindCacheContainer(this.container);
                 final Cache<String, Integer> cache = this.container
@@ -138,7 +139,7 @@ public final class InfinispanCache
      */
     public <K, V> Cache<K, V> getCache(final String _cacheName)
     {
-        return this.container.getCache(_cacheName);
+        return this.container.getCache(_cacheName, true);
     }
 
     /**
@@ -162,8 +163,25 @@ public final class InfinispanCache
      */
     public <K, V> AdvancedCache<K, V> getIgnReCache(final String _cacheName)
     {
-        return this.container.<K, V>getCache(_cacheName).getAdvancedCache()
+        return this.container.<K, V>getCache(_cacheName, true).getAdvancedCache()
                         .withFlags(Flag.IGNORE_RETURN_VALUES, Flag.SKIP_REMOTE_LOOKUP, Flag.SKIP_CACHE_LOAD);
+    }
+
+    /**
+     * Method to init a Cache using the default definitions.
+     * @param _cacheName cache wanted
+     * @param <K> Key
+     * @param <V> Value
+     * @return a cache from Infinspan
+     */
+    public <K, V> Cache<K, V> initCache(final String _cacheName)
+    {
+        if (!exists(_cacheName)
+                        &&  ((EmbeddedCacheManager) getContainer()).getCacheConfiguration(_cacheName) == null) {
+            ((EmbeddedCacheManager) getContainer()).defineConfiguration(_cacheName, "eFaps-Default",
+                            new ConfigurationBuilder().build());
+        }
+        return this.container.getCache(_cacheName, true);
     }
 
     /**
@@ -174,7 +192,7 @@ public final class InfinispanCache
     {
         final boolean ret;
         if (this.container instanceof EmbeddedCacheManager) {
-            ret = ((EmbeddedCacheManager) this.container).cacheExists(_cacheName);
+            ret = this.container.cacheExists(_cacheName);
         } else {
             ret = this.container.getCache(_cacheName) != null;
         }
@@ -227,9 +245,9 @@ public final class InfinispanCache
     /**
      * @return the CacheContainer
      */
-    private static CacheContainer findCacheContainer()
+    private static EmbeddedCacheManager findCacheContainer()
     {
-        CacheContainer ret = null;
+        EmbeddedCacheManager ret = null;
         InitialContext context = null;
         try {
             context = new InitialContext();
@@ -239,7 +257,7 @@ public final class InfinispanCache
         for (final String lookup : InfinispanCache.KNOWN_JNDI_KEYS) {
             if (lookup != null) {
                 try {
-                    ret = (CacheContainer) context.lookup(lookup);
+                    ret = (EmbeddedCacheManager) context.lookup(lookup);
                     InfinispanCache.LOG.info("CacheContainer found in JNDI under '{}'", lookup);
                 } catch (final NamingException e) {
                     InfinispanCache.LOG.debug("CacheContainer not found in JNDI under '{}'", lookup);

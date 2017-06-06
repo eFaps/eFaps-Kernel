@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
-     Copyright 2003 - 2016 The eFaps Team
+     Copyright 2003 - 2017 The eFaps Team
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -16,17 +16,20 @@
  -->
 
 <infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="urn:infinispan:config:8.2 http://www.infinispan.org/schemas/infinispan-config-8.2.xsd"
-    xmlns="urn:infinispan:config:8.2">
+    xsi:schemaLocation="urn:infinispan:config:9.0 http://www.infinispan.org/schemas/infinispan-config-9.0.xsd"
+    xmlns="urn:infinispan:config:9.0">
 
-    <cache-container default-cache="eFaps-Cache" name="eFaps-Cache-Container" >
+    <cache-container default-cache="eFaps-Default" name="eFaps-Cache-Container"
+        statistics="true">
+        <local-cache-configuration name="eFaps-Default">
+        </local-cache-configuration>
 
         <!-- the Access cache -->
         <local-cache name="org.efaps.admin.access.AccessCache.Index">
-            <eviction size="50000" strategy="LIRS"/>
+            <eviction size="50000" strategy="LIRS" />
             <!--10 minutes, 5 minutes (miliseconds) -->
             <expiration lifespan="600000" max-idle="300000" />
-            <indexing index="ALL" >
+            <indexing index="ALL">
                 <indexed-entities>
                     <indexed-entity>org.efaps.admin.access.AccessKey</indexed-entity>
                 </indexed-entities>
@@ -38,19 +41,60 @@
                 <property name="hibernate.search.default.data_cachename">org.efaps.admin.access.AccessCache.LuceneIndexesData</property>
                 <property name="hibernate.search.default.metadata_cachename">org.efaps.admin.access.AccessCache.LuceneIndexesMetadata</property>
                 <property name="hibernate.search.default.reader.strategy">shared</property>
-           </indexing>
+            </indexing>
+        </local-cache>
+
+        <local-cache name="org.efaps.util.cache.InfinispanCache.InternalCounter">
+            <indexing index="NONE" />
+        </local-cache>
+        <local-cache name="org.efaps.admin.ui.Search.UUID">
+            <indexing index="NONE" />
+        </local-cache>
+        <local-cache name="org.efaps.admin.ui.Search.ID">
+            <indexing index="NONE" />
+        </local-cache>
+        <local-cache name="org.efaps.admin.ui.Search.Name">
+            <indexing index="NONE" />
+        </local-cache>
+
+        <local-cache name="org.efaps.admin.ui.Form.UUID">
+            <indexing index="NONE" />
+        </local-cache>
+        <local-cache name="org.efaps.admin.ui.Form.ID">
+            <indexing index="NONE" />
+        </local-cache>
+        <local-cache name="org.efaps.admin.ui.Form.Name">
+            <indexing index="NONE" />
+        </local-cache>
+
+        <local-cache name="org.efaps.admin.ui.Table.UUID">
+            <indexing index="NONE" />
+        </local-cache>
+        <local-cache name="org.efaps.admin.ui.Table.ID">
+            <indexing index="NONE" />
+        </local-cache>
+        <local-cache name="org.efaps.admin.ui.Table.Name">
+            <indexing index="NONE" />
+        </local-cache>
+
+        <local-cache name="org.efaps.admin.index.Queue.Cache">
+            <indexing index="NONE" />
+        </local-cache>
+
+        <local-cache name="org.efaps.admin.index.IndexDefinition.UUID">
+            <indexing index="NONE" />
         </local-cache>
 
         <local-cache name="org.efaps.admin.access.AccessCache.LuceneIndexesMetadata">
-            <indexing index="NONE"/>
+            <indexing index="NONE" />
         </local-cache>
 
         <local-cache name="org.efaps.admin.access.AccessCache.LuceneIndexesData">
-            <indexing index="NONE"/>
+            <indexing index="NONE" />
         </local-cache>
 
         <local-cache name="org.efaps.admin.access.AccessCache.LuceneIndexesLocking">
-            <indexing index="NONE"/>
+            <indexing index="NONE" />
         </local-cache>
 
         <local-cache name="org.efaps.admin.access.AccessCache.AccessKey">
@@ -82,16 +126,16 @@
             </indexing>
         </local-cache>
 
-         <local-cache name="org.efaps.db.QueryCache.LuceneIndexesMetadata">
-            <indexing index="NONE"/>
+        <local-cache name="org.efaps.db.QueryCache.LuceneIndexesMetadata">
+            <indexing index="NONE" />
         </local-cache>
 
         <local-cache name="org.efaps.db.QueryCache.LuceneIndexesData">
-            <indexing index="NONE"/>
+            <indexing index="NONE" />
         </local-cache>
 
         <local-cache name="org.efaps.db.QueryCache.LuceneIndexesLocking">
-            <indexing index="NONE"/>
+            <indexing index="NONE" />
         </local-cache>
 
 
@@ -286,6 +330,9 @@
             <eviction size="300" strategy="LIRS" />
         </local-cache>
 
+        <local-cache name="org.efaps.admin.user.Consortium.UUID">
+            <eviction size="200" strategy="LIRS" />
+        </local-cache>
         <local-cache name="org.efaps.admin.user.Consortium.ID">
             <eviction size="200" strategy="LIRS" />
         </local-cache>
@@ -341,7 +388,12 @@
             <eviction size="500" strategy="LRU" />
         </local-cache>
 
-        <local-cache name="org.efaps.ui.wicket.connectionregistry.RegistryManager.Session">
+        <local-cache name="org.efaps.ui.servlet.ImageServlet.Cache">
+
+        </local-cache>
+
+        <local-cache-configuration
+            name="org.efaps.ui.wicket.connectionregistry.RegistryManager.Session">
             <eviction size="5000" strategy="LIRS" />
             <indexing index="ALL">
                 <!-- the entity will be added during webapp loading
@@ -358,7 +410,7 @@
                 <property name="hibernate.search.default.metadata_cachename">org.efaps.db.QueryCache.LuceneIndexesMetadata</property>
                 <property name="hibernate.search.default.reader.strategy">shared</property>
             </indexing>
-        </local-cache>
+        </local-cache-configuration>
     </cache-container>
 </infinispan>
 
