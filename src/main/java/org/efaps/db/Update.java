@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ import java.util.Set;
 
 import org.apache.commons.collections4.iterators.ReverseListIterator;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.efaps.admin.access.AccessCache;
 import org.efaps.admin.access.AccessTypeEnums;
+import org.efaps.admin.access.user.AccessCache;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.Dimension.UoM;

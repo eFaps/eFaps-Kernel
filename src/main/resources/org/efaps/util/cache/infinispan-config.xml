@@ -25,23 +25,37 @@
         </local-cache-configuration>
 
         <!-- the Access cache -->
-        <local-cache name="org.efaps.admin.access.AccessCache.Index">
-            <eviction size="50000" strategy="LIRS" />
+        <local-cache name="org.efaps.admin.access.user.AccessCache.PermissionCache">
+            <memory>
+                <object size="50000"/>
+            </memory>
             <!--10 minutes, 5 minutes (miliseconds) -->
             <expiration lifespan="600000" max-idle="300000" />
             <indexing index="ALL">
                 <indexed-entities>
-                    <indexed-entity>org.efaps.admin.access.AccessKey</indexed-entity>
+                    <indexed-entity>org.efaps.admin.access.user.Evaluation</indexed-entity>
                 </indexed-entities>
                 <property name="hibernate.search.lucene_version">LUCENE_CURRENT</property>
                 <property name="hibernate.search.default.indexmanager">org.infinispan.query.indexmanager.InfinispanIndexManager</property>
                 <property name="hibernate.search.default.directory_provider">infinispan</property>
                 <property name="hibernate.search.default.exclusive_index_use">true</property>
-                <property name="hibernate.search.default.locking_cachename">org.efaps.admin.access.AccessCache.LuceneIndexesLocking</property>
-                <property name="hibernate.search.default.data_cachename">org.efaps.admin.access.AccessCache.LuceneIndexesData</property>
-                <property name="hibernate.search.default.metadata_cachename">org.efaps.admin.access.AccessCache.LuceneIndexesMetadata</property>
+                <property name="hibernate.search.default.locking_cachename">org.efaps.admin.access.user.AccessCache.LuceneIndexesLocking</property>
+                <property name="hibernate.search.default.data_cachename">org.efaps.admin.access.user.AccessCache.LuceneIndexesData</property>
+                <property name="hibernate.search.default.metadata_cachename">org.efaps.admin.access.user.AccessCache.LuceneIndexesMetadata</property>
                 <property name="hibernate.search.default.reader.strategy">shared</property>
             </indexing>
+        </local-cache>
+        <local-cache name="org.efaps.admin.access.user.AccessCache.StatusCache">
+            <indexing index="NONE" />
+        </local-cache>
+        <local-cache name="org.efaps.admin.access.AccessCache.LuceneIndexesMetadata">
+            <indexing index="NONE" />
+        </local-cache>
+        <local-cache name="org.efaps.admin.access.AccessCache.LuceneIndexesData">
+            <indexing index="NONE" />
+        </local-cache>
+        <local-cache name="org.efaps.admin.access.AccessCache.LuceneIndexesLocking">
+            <indexing index="NONE" />
         </local-cache>
 
         <local-cache name="org.efaps.util.cache.InfinispanCache.InternalCounter">
@@ -85,24 +99,6 @@
             <indexing index="NONE" />
         </local-cache>
 
-        <local-cache name="org.efaps.admin.access.AccessCache.LuceneIndexesMetadata">
-            <indexing index="NONE" />
-        </local-cache>
-
-        <local-cache name="org.efaps.admin.access.AccessCache.LuceneIndexesData">
-            <indexing index="NONE" />
-        </local-cache>
-
-        <local-cache name="org.efaps.admin.access.AccessCache.LuceneIndexesLocking">
-            <indexing index="NONE" />
-        </local-cache>
-
-        <local-cache name="org.efaps.admin.access.AccessCache.AccessKey">
-            <eviction size="50000" strategy="LIRS" />
-            <!--10 minutes, 5 minutes (miliseconds) -->
-            <expiration lifespan="600000" max-idle="300000" />
-        </local-cache>
-
         <!-- the Sql Query cache -->
         <local-cache name="org.efaps.db.QueryCache.Sql">
             <!--Only experation no eviction 10 minutes, 5 minutes (miliseconds) -->
@@ -138,259 +134,113 @@
             <indexing index="NONE" />
         </local-cache>
 
-
-        <local-cache name="org.efaps.admin.dbproperty.DBProperties">
-            <eviction size="5000" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.dbproperty.DBProperties"/>
 
         <!-- UserInterface -->
-        <local-cache name="org.efaps.admin.ui.field.Field">
-            <eviction size="5000" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.ui.field.Field"/>
 
-        <local-cache name="org.efaps.admin.ui.Command.UUID">
-            <eviction size="5000" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.ui.Command.ID">
-            <eviction size="5000" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.ui.Command.Name">
-            <eviction size="5000" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.ui.Command.UUID" />
+        <local-cache name="org.efaps.admin.ui.Command.ID" />
+        <local-cache name="org.efaps.admin.ui.Command.Name" />
 
-        <local-cache name="org.efaps.admin.ui.Menu.UUID">
-            <eviction size="5000" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.ui.Menu.ID">
-            <eviction size="5000" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.ui.Menu.Name">
-            <eviction size="5000" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.ui.Menu.UUID" />
+        <local-cache name="org.efaps.admin.ui.Menu.ID" />
+        <local-cache name="org.efaps.admin.ui.Menu.Name" />
 
-        <local-cache name="org.efaps.admin.ui.Image.UUID">
-            <eviction size="5000" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.ui.Image.ID">
-            <eviction size="5000" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.ui.Image.Name">
-            <eviction size="5000" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.ui.Image.UUID" />
+        <local-cache name="org.efaps.admin.ui.Image.ID" />
+        <local-cache name="org.efaps.admin.ui.Image.Name" />
 
+            <!-- DateModel -->
+        <local-cache name="org.efaps.admin.datamodel.AttributeType.ID" />
+        <local-cache name="org.efaps.admin.datamodel.AttributeType.Name" />
 
-        <!-- DateModel -->
-        <local-cache name="org.efaps.admin.datamodel.AttributeType.ID">
-            <eviction size="50" strategy="LRU" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.datamodel.AttributeType.Name">
-            <eviction size="50" strategy="LRU" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.datamodel.SQLTable.UUID" />
+        <local-cache name="org.efaps.admin.datamodel.SQLTable.ID" />
+        <local-cache name="org.efaps.admin.datamodel.SQLTable.Name" />
 
-        <local-cache name="org.efaps.admin.datamodel.SQLTable.UUID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.datamodel.SQLTable.ID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.datamodel.SQLTable.Name">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.access.AccessType.UUID" />
+        <local-cache name="org.efaps.admin.access.AccessType.ID" />
+        <local-cache name="org.efaps.admin.access.AccessType.Name" />
 
-        <local-cache name="org.efaps.admin.access.AccessType.UUID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.access.AccessType.ID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.access.AccessType.Name">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.datamodel.Type.UUID" />
+        <local-cache name="org.efaps.admin.datamodel.Type.ID" />
+        <local-cache name="org.efaps.admin.datamodel.Type.Name" />
 
-        <local-cache name="org.efaps.admin.datamodel.Type.UUID">
-            <eviction size="1500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.datamodel.Type.ID">
-            <eviction size="1500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.datamodel.Type.Name">
-            <eviction size="1500" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.datamodel.Attribute.Name" />
+        <local-cache name="org.efaps.admin.datamodel.Attribute.ID" />
 
-        <local-cache name="org.efaps.admin.datamodel.Attribute.Name">
-            <eviction size="5000" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.datamodel.Attribute.ID">
-            <eviction size="5000" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.datamodel.Dimension.UUID" />
+        <local-cache name="org.efaps.admin.datamodel.Dimension.ID" />
+        <local-cache name="org.efaps.admin.datamodel.Dimension.Name" />
+        <local-cache name="org.efaps.admin.datamodel.Dimension.UoM4ID" />
 
-        <local-cache name="org.efaps.admin.datamodel.Dimension.UUID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.datamodel.Dimension.ID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.datamodel.Dimension.Name">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.datamodel.Dimension.UoM4ID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.common.NumberGenerator.UUID" />
+        <local-cache name="org.efaps.admin.common.NumberGenerator.ID" />
+        <local-cache name="org.efaps.admin.common.NumberGenerator.Name" />
 
-        <local-cache name="org.efaps.admin.common.NumberGenerator.UUID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.common.NumberGenerator.ID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.common.NumberGenerator.Name">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.common.SystemConfiguration.UUID" />
+        <local-cache name="org.efaps.admin.common.SystemConfiguration.ID" />
+        <local-cache name="org.efaps.admin.common.SystemConfiguration.Name" />
 
-        <local-cache name="org.efaps.admin.common.SystemConfiguration.UUID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.common.SystemConfiguration.ID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.common.SystemConfiguration.Name">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.datamodel.Status.Group4UUID" />
+        <local-cache name="org.efaps.admin.datamodel.Status.Group4Name" />
+        <local-cache name="org.efaps.admin.datamodel.Status.ID" />
 
-        <local-cache name="org.efaps.admin.datamodel.Status.Group4UUID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.datamodel.Status.Group4Name">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.datamodel.Status.ID">
-            <eviction size="5000" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.datamodel.attributetype.EnumType.Object" />
 
-        <local-cache name="org.efaps.admin.datamodel.attributetype.EnumType.Object">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.access.AccessSet.UUID" />
+        <local-cache name="org.efaps.admin.access.AccessSet.ID" />
+        <local-cache name="org.efaps.admin.access.AccessSet.Name" />
 
-        <local-cache name="org.efaps.admin.access.AccessSet.UUID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.access.AccessSet.ID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.access.AccessSet.Name">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.common.MsgPhrase.UUID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.common.MsgPhrase.ID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.common.MsgPhrase.Name">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.common.MsgPhrase.Argument">
-            <eviction size="5000" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.common.MsgPhrase.Label">
-            <eviction size="5000" strategy="LIRS" />
-        </local-cache>
-
+        <local-cache name="org.efaps.admin.common.MsgPhrase.UUID" />
+        <local-cache name="org.efaps.admin.common.MsgPhrase.ID" />
+        <local-cache name="org.efaps.admin.common.MsgPhrase.Name" />
+        <local-cache name="org.efaps.admin.common.MsgPhrase.Argument" />
+        <local-cache name="org.efaps.admin.common.MsgPhrase.Label" />
 
         <!-- User Caches This Caches are accessed in the given sequence during
             the search for a UserObject. That means that for e.g. RoleCache null-Values
             for ids will be cached that are not a Role -->
-        <local-cache name="org.efaps.admin.user.Role.UUID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.user.Role.ID">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.user.Role.Name">
-            <eviction size="500" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.user.Role.UUID" />
+        <local-cache name="org.efaps.admin.user.Role.ID" />
+        <local-cache name="org.efaps.admin.user.Role.Name" />
 
-        <local-cache name="org.efaps.admin.user.Group.ID">
-            <eviction size="400" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.user.Group.Name">
-            <eviction size="400" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.user.Group.UUID">
-            <eviction size="400" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.user.Group.ID" />
+        <local-cache name="org.efaps.admin.user.Group.Name" />
+        <local-cache name="org.efaps.admin.user.Group.UUID" />
 
-        <local-cache name="org.efaps.admin.user.Company.UUID">
-            <eviction size="300" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.user.Company.ID">
-            <eviction size="300" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.user.Company.Name">
-            <eviction size="300" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.user.Company.UUID" />
+        <local-cache name="org.efaps.admin.user.Company.ID" />
+        <local-cache name="org.efaps.admin.user.Company.Name" />
 
-        <local-cache name="org.efaps.admin.user.Consortium.UUID">
-            <eviction size="200" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.user.Consortium.ID">
-            <eviction size="200" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.user.Consortium.Name">
-            <eviction size="200" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.user.Consortium.UUID" />
+        <local-cache name="org.efaps.admin.user.Consortium.ID" />
+        <local-cache name="org.efaps.admin.user.Consortium.Name" />
 
-        <local-cache name="org.efaps.admin.user.Person.UUID">
-            <eviction size="100" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.user.Person.ID">
-            <eviction size="100" strategy="LIRS" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.user.Person.Name">
-            <eviction size="100" strategy="LIRS" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.user.Person.UUID" />
+        <local-cache name="org.efaps.admin.user.Person.ID" />
+        <local-cache name="org.efaps.admin.user.Person.Name" />
 
         <!-- JAASSystme is not clusterable due to use of java.lang.reflect.Method
             instance variables -->
-        <local-cache name="org.efaps.admin.user.JAASSystem.ID">
-            <eviction size="5" strategy="LRU" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.user.JAASSystem.Name">
-            <eviction size="5" strategy="LRU" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.user.JAASSystem.ID" />
+        <local-cache name="org.efaps.admin.user.JAASSystem.Name" />
 
-        <local-cache name="org.efaps.admin.user.Association.ID">
-            <eviction size="50" strategy="LRU" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.user.Association.ID" />
 
         <!-- Stores are not clusterable. Where to store if they are clustered? -->
-        <local-cache name="org.efaps.db.store.Store.UUID">
-            <eviction size="50" strategy="LRU" />
-        </local-cache>
-        <local-cache name="org.efaps.db.store.Store.ID">
-            <eviction size="50" strategy="LRU" />
-        </local-cache>
-        <local-cache name="org.efaps.db.store.Store.Name">
-            <eviction size="50" strategy="LRU" />
-        </local-cache>
+        <local-cache name="org.efaps.db.store.Store.UUID" />
+        <local-cache name="org.efaps.db.store.Store.ID" />
+        <local-cache name="org.efaps.db.store.Store.Name" />
 
-        <local-cache name="org.efaps.admin.program.bundle.BundleMaker.Name">
-            <eviction size="150" strategy="LRU" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.program.bundle.BundleMaker.BundleMapper">
-            <eviction size="150" strategy="LRU" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.program.bundle.BundleMaker.Bundles">
-            <eviction size="150" strategy="LRU" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.program.bundle.BundleMaker.Name" />
+        <local-cache name="org.efaps.admin.program.bundle.BundleMaker.BundleMapper" />
+        <local-cache name="org.efaps.admin.program.bundle.BundleMaker.Bundles" />
 
-        <local-cache name="org.efaps.ui.servlet.StaticContentServlet.Cache">
-            <eviction size="500" strategy="LRU" />
-        </local-cache>
+        <local-cache name="org.efaps.ui.servlet.StaticContentServlet.Cache" />
 
-        <local-cache name="org.efaps.ui.servlet.ImageServlet.Cache">
-
-        </local-cache>
+        <local-cache name="org.efaps.ui.servlet.ImageServlet.Cache" />
 
         <local-cache-configuration
             name="org.efaps.ui.wicket.connectionregistry.RegistryManager.Session">

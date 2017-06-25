@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          tmo
  */
 
 package org.efaps.db;
 import java.io.InputStream;
 
-import org.efaps.admin.access.AccessCache;
 import org.efaps.admin.access.AccessTypeEnums;
+import org.efaps.admin.access.user.AccessCache;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.store.Resource;
 import org.efaps.util.EFapsException;

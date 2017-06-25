@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 import org.efaps.admin.AbstractAdminObject;
+import org.efaps.admin.access.user.AccessCache;
 import org.efaps.db.Context;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
