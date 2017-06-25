@@ -34,10 +34,11 @@ import javax.transaction.xa.Xid;
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FilesCache;
+import org.apache.commons.vfs2.cache.LRUFilesCache;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs2.provider.FileProvider;
 import org.efaps.db.Instance;
-import org.efaps.db.store.Resource.Compress;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -105,6 +106,11 @@ public class VFSStoreResource
      * Property Name for the class name of the Provider.
      */
     private static final String PROPERTY_PROVIDER = "VFSProvider";
+
+    /**
+     * Property Name for the class name of the Provider.
+     */
+    private static final String PROPERTY_FILESCACHE = "VFSFilesCache";
 
     /**
      * Logging instance used in this class.
@@ -212,7 +218,15 @@ public class VFSStoreResource
 
         final String baseName =  getProperties().get(VFSStoreResource.PROPERTY_BASENAME);
         final String provider =  getProperties().get(VFSStoreResource.PROPERTY_PROVIDER);
+        final String filesCacheName;
+        if (getProperties().containsKey(VFSStoreResource.PROPERTY_FILESCACHE)) {
+            filesCacheName = getProperties().get(VFSStoreResource.PROPERTY_FILESCACHE);
+        } else {
+            filesCacheName = LRUFilesCache.class.getName();
+        }
         try {
+            final FilesCache filesCache = (FilesCache) Class.forName(filesCacheName).newInstance();
+            ret.setFilesCache(filesCache);
             ret.init();
             final FileProvider fileProvider = (FileProvider) Class.forName(provider).newInstance();
             ret.addProvider(baseName, fileProvider);
