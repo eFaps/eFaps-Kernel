@@ -416,6 +416,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <artifactId>jersey-server</artifactId>
             <version>${jersey.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
 
         <!-- timer for background prozesses -->
         <dependency>
