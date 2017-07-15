@@ -482,6 +482,10 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     <artifactId>jta</artifactId>
                     <groupId>javax.transaction</groupId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.zaxxer</groupId>
+                    <artifactId>HikariCP-java6</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
