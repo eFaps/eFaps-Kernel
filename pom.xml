@@ -361,12 +361,54 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--  to be able to export to excel formats/ Jasperreport 6.2.2 needs 3.14 -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>6.4.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-analyzers-common</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-queryparser</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!--  replacing the lucene from jasperreport with the one used by infinispan-->
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queryparser</artifactId>
+            <version>5.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-common</artifactId>
+            <version>5.5.4</version>
+        </dependency>
+
+        <!--  to be able to export to excel formats/ Jasperreport 6.4.1 needs 3.15 -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.16</version>
+            <version>3.15</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.15</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.15</version>
+        </dependency>
+
         <!-- used to read the jrxml definitions used by jasper -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -467,6 +509,10 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                 <exclusion>
                     <artifactId>hibernate-jpa-2.0-api</artifactId>
                     <groupId>org.hibernate.javax.persistence</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-analyzers-common</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -641,11 +687,6 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     <artifactId>mail</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-queryparser</artifactId>
-            <version>5.5.0</version>
         </dependency>
        <dependency>
             <groupId>org.eclipse.jetty</groupId>
