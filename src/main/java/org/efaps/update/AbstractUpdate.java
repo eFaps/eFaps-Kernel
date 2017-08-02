@@ -19,7 +19,6 @@ package org.efaps.update;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -288,7 +287,7 @@ public abstract class AbstractUpdate
                         appRevInst = multi.getCurrentInstance();
                         if (_installFile.getDate().isAfter(multi.<DateTime>getAttribute(
                                         CIAdminCommon.ApplicationRevision.Date))) {
-                            LOG.debug("Updated Revision {} - {} with Date {] ", _installFile.getRevision(),
+                            AbstractUpdate.LOG.debug("Updated Revision {} - {} with Date {] ", _installFile.getRevision(),
                                             _application, _installFile.getDate());
                             final Update update = new Update(appRevInst);
                             update.add(CIAdminCommon.ApplicationRevision.Date, _installFile.getDate());
@@ -809,10 +808,10 @@ public abstract class AbstractUpdate
             final boolean exec;
             try {
                 if (this.expression == null) {
-                    final Expression jexlExpr = JEXL.createExpression("version==latest");
+                    final Expression jexlExpr = AbstractUpdate.JEXL.createExpression("version==latest");
                     exec = Boolean.parseBoolean(jexlExpr.evaluate(_jexlContext).toString());
                 } else {
-                    final Expression jexlExpr = JEXL.createExpression(this.expression);
+                    final Expression jexlExpr = AbstractUpdate.JEXL.createExpression(this.expression);
                     exec = Boolean.parseBoolean(jexlExpr.evaluate(_jexlContext).toString());
                 }
                 //CHECKSTYLE:OFF
@@ -901,7 +900,7 @@ public abstract class AbstractUpdate
                     final Insert insert;
                     try {
                         insert = new Insert(getDataModelTypeName());
-                        insert.add("UUID", AbstractUpdate.this.getUUID());
+                        insert.add("UUID", getUUID());
                     } catch (final EFapsException e) {
                         throw new InstallationException("Initialize for the insert of '"
                                         + getDataModelTypeName() + "' with UUID '"
@@ -952,7 +951,8 @@ public abstract class AbstractUpdate
             throws EFapsException
         {
             // check it not first install and only for the objects that are inside the "t_cmabstract" sql table
-            if (CIAdminEvent.Definition.getType().getMainTable() != null
+            if (CIAdminEvent.Definition.getType() != null
+                            && CIAdminEvent.Definition.getType().getMainTable() != null
                             && CIAdmin.Abstract.getType().getMainTable() != null
                             && CIAdmin.Abstract.getType().getMainTable().equals(_instance.getType().getMainTable())) {
                 final QueryBuilder queryBldr = new QueryBuilder(CIAdminEvent.Definition);
@@ -1166,15 +1166,8 @@ public abstract class AbstractUpdate
                         childOrder.add(oneLink.getChildInstance());
                     }
                     final ArrayList<LinkInstance> linkOrder = new ArrayList<>(_links);
-                    Collections.sort(linkOrder, new Comparator<LinkInstance>()
-                    {
-                        @Override
-                        public int compare(final LinkInstance _o1,
-                                           final LinkInstance _o2)
-                        {
-                            return Long.compare(_o1.getInstance().getId(), _o2.getInstance().getId());
-                        }
-                    });
+                    Collections.sort(linkOrder, (_o1,
+                     _o2) -> Long.compare(_o1.getInstance().getId(), _o2.getInstance().getId()));
 
                     final Iterator<LinkInstance> sortedIter = linkOrder.iterator();
                     final Iterator<Instance> childIter = childOrder.iterator();
@@ -1225,7 +1218,7 @@ public abstract class AbstractUpdate
                 print2.executeWithoutAccessCheck();
 
                 final Instance childInst = print2.getSelect(selInst);
-                LOG.info("Deleting '{} 'relation between '{}' '{}' '{}' and '{}' '{}' '{}'",
+                AbstractUpdate.LOG.info("Deleting '{} 'relation between '{}' '{}' '{}' and '{}' '{}' '{}'",
                                 _linktype.getLinkType().getName(),
                                 getInstance().getType().getName(),
                                 print.getAttribute("UUID"), getValue("Name"),

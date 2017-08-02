@@ -58,7 +58,8 @@ public class DateTimeType
         throws EFapsException
     {
         // reads the Value from "Admin_Common_DataBaseTimeZone"
-        final String timezoneID = EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DBTIMEZONE);
+        final String timezoneID = EFapsSystemConfiguration.get() == null ? DateTimeZone.getDefault().getID()
+                : EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DBTIMEZONE);
         final ISOChronology chron;
         if (timezoneID != null) {
             final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
