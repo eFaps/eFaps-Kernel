@@ -38,6 +38,7 @@ import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 import javax.transaction.TransactionSynchronizationRegistry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.transaction.DelegatingUserTransaction;
 import org.slf4j.Logger;
@@ -225,7 +226,7 @@ public final class StartupDatabaseConnection
             eFapsProps = StartupDatabaseConnection.convertToMap(props
                             .getProperty(StartupDatabaseConnection.PROP_CONFIGPROP));
         } else {
-            eFapsProps = new HashMap<String, String>();
+            eFapsProps = new HashMap<>();
         }
         StartupDatabaseConnection.startup(props.getProperty(StartupDatabaseConnection.PROP_DBTYPE_CLASS),
                         props.getProperty(StartupDatabaseConnection.PROP_DBFACTORY_CLASS),
@@ -521,24 +522,25 @@ public final class StartupDatabaseConnection
      */
     public static Map<String, String> convertToMap(final String _text)
     {
-        final Map<String, String> properties = new HashMap<String, String>();
+        final Map<String, String> properties = new HashMap<>();
+        if (StringUtils.isNotEmpty(_text)) {
+            // separated all key / value pairs
+            final Pattern pattern = Pattern.compile("(([^\\\\,])|(\\\\,)|(\\\\))*");
+            final Matcher matcher = pattern.matcher(_text);
 
-        // separated all key / value pairs
-        final Pattern pattern = Pattern.compile("(([^\\\\,])|(\\\\,)|(\\\\))*");
-        final Matcher matcher = pattern.matcher(_text);
-
-        while (matcher.find()) {
-            final String group = matcher.group().trim();
-            if (group.length() > 0) {
-                // separated key from value
-                final int index = group.indexOf('=');
-                final String key = (index > 0)
-                                ? group.substring(0, index).trim()
-                                : group.trim();
-                final String value = (index > 0)
-                                ? group.substring(index + 1).trim()
-                                : "";
-                properties.put(key, value);
+            while (matcher.find()) {
+                final String group = matcher.group().trim();
+                if (group.length() > 0) {
+                    // separated key from value
+                    final int index = group.indexOf('=');
+                    final String key = (index > 0)
+                                  ? group.substring(0, index).trim()
+                                  : group.trim();
+                    final String value = (index > 0)
+                                  ? group.substring(index + 1).trim()
+                                  : "";
+                    properties.put(key, value);
+                }
             }
         }
         return properties;
