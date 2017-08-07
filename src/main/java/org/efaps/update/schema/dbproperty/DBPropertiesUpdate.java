@@ -17,7 +17,6 @@
 
 package org.efaps.update.schema.dbproperty;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -107,11 +106,6 @@ public class DBPropertiesUpdate
     private boolean cacheOnStart;
 
     /**
-     * root of the XML-file to be imported.
-     */
-    private final String root;
-
-    /**
      * List of all Resources in this Properties.
      */
     private final List<Resource> resources = new ArrayList<>();
@@ -135,9 +129,6 @@ public class DBPropertiesUpdate
     public DBPropertiesUpdate(final InstallFile _installFile)
     {
         super(_installFile, null);
-        final String urlStr = getInstallFile().getUrl().toString();
-        this.root = urlStr.substring(0, urlStr.lastIndexOf(File.separator) + 1);
-
     }
 
     /**
@@ -474,9 +465,10 @@ public class DBPropertiesUpdate
                 for (final Resource resource : this.resources) {
                     if ("Properties".equals(resource.type)) {
                         if (resource.language == null || resource.language.length() < 1) {
-                            importFromProperties(new URL(this.root + resource.filename));
+                            importFromProperties(new URL(getInstallFile().getUrl(), resource.filename));
                         } else {
-                            importFromProperties(new URL(this.root + resource.filename), resource.language);
+                            importFromProperties(new URL(getInstallFile().getUrl(), resource.filename),
+                                    resource.language);
                         }
                     }
                 }
