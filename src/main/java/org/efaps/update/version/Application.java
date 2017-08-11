@@ -25,7 +25,6 @@ import java.net.URLClassLoader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -245,16 +244,8 @@ public final class Application
                 appl.install.addFile(installFile.setURL(new URL(_rootUrl, installFile.getName())));
             }
             appl.tmpElements = null;
-            Collections.sort(appl.dependencies, new Comparator<Dependency>()
-            {
-
-                @Override
-                public int compare(final Dependency _dependency0,
-                                   final Dependency _dependency1)
-                {
-                    return _dependency0.getOrder().compareTo(_dependency1.getOrder());
-                }
-            });
+            Collections.sort(appl.dependencies, (_dependency0,
+             _dependency1) -> _dependency0.getOrder().compareTo(_dependency1.getOrder()));
             for (final ApplicationVersion applVers : appl.getVersions()) {
                 applVers.setApplication(appl);
                 appl.setMaxVersion(applVers.getNumber());
@@ -483,7 +474,7 @@ public final class Application
             try {
                 new ESJPCompiler(getClassPathElements()).compile(null, _addRuntimeClassPath);
             } catch (final InstallationException e) {
-                Application.LOG.error(" error during compilation of ESJP.");
+                Application.LOG.error(" error during compilation of ESJP.", e);
             }
             try {
                 AbstractStaticSourceCompiler.compileAll(this.classpathElements);

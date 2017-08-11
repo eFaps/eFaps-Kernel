@@ -19,7 +19,6 @@ package org.efaps.update.schema.program.esjp;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,7 +28,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -204,16 +202,8 @@ public class ESJPCompiler
             // logging of compiling classes
             if (ESJPCompiler.LOG.isInfoEnabled()) {
                 final List<SourceObject> ls = new ArrayList<>(this.name2Source.values());
-                Collections.sort(ls, new Comparator<SourceObject>()
-                {
-
-                    @Override
-                    public int compare(final SourceObject _arg0,
-                                       final SourceObject _arg1)
-                    {
-                        return _arg0.getJavaName().compareTo(_arg1.getJavaName());
-                    }
-                });
+                Collections.sort(ls, (_arg0,
+                 _arg1) -> _arg0.getJavaName().compareTo(_arg1.getJavaName()));
                 for (final SourceObject obj : ls) {
                     ESJPCompiler.LOG.info("    Compiling ESJP '{}'", obj.getJavaName());
                 }
@@ -266,14 +256,13 @@ public class ESJPCompiler
             while (multi.next()) {
                 final String name = multi.<String>getAttribute("Name");
                 final Long id = multi.getCurrentInstance().getId();
-                final File file = new File(File.separator,
-                                           name.replaceAll("\\.", Matcher.quoteReplacement(File.separator))
-                                                   + JavaFileObject.Kind.SOURCE.extension);
+                final String path = "/" + name.replaceAll("\\.", Matcher.quoteReplacement("/"))
+                      + JavaFileObject.Kind.SOURCE.extension;
                 final URI uri;
                 try {
-                    uri = new URI("efaps", null, file.getAbsolutePath(), null, null);
+                    uri = new URI("efaps", null, path, null, null);
                 } catch (final URISyntaxException e) {
-                    throw new InstallationException("Could not create an URI for " + file, e);
+                    throw new InstallationException("Could not create an URI for " + path, e);
                 }
                 this.name2Source.put(name, new SourceObject(uri, name, id));
             }
