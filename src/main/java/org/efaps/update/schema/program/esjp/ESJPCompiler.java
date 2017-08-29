@@ -44,6 +44,7 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.Checkin;
@@ -164,9 +165,7 @@ public class ESJPCompiler
             ESJPCompiler.LOG.error("no compiler found for compiler !");
         } else  {
             // output of used compiler
-            if (ESJPCompiler.LOG.isInfoEnabled()) {
-                ESJPCompiler.LOG.info("    Using compiler " + compiler.toString());
-            }
+            ESJPCompiler.LOG.info("    Using compiler {}", compiler.getClass().getName());
 
             // options for the compiler
             final List<String> optionList = new ArrayList<>();
@@ -177,7 +176,7 @@ public class ESJPCompiler
             // programs to compile)
             if (this.classPathElements != null)  {
                 // different class path separators depending on the OS
-                final String sep = System.getProperty("os.name").startsWith("Windows") ? ";" : ":";
+                final String sep = SystemUtils.IS_OS_WINDOWS ? ";" : ":";
 
                 final StringBuilder classPath = new StringBuilder();
                 for (final String classPathElement : this.classPathElements)  {
@@ -202,8 +201,7 @@ public class ESJPCompiler
             // logging of compiling classes
             if (ESJPCompiler.LOG.isInfoEnabled()) {
                 final List<SourceObject> ls = new ArrayList<>(this.name2Source.values());
-                Collections.sort(ls, (_arg0,
-                 _arg1) -> _arg0.getJavaName().compareTo(_arg1.getJavaName()));
+                Collections.sort(ls, (_arg0, _arg1) -> _arg0.getJavaName().compareTo(_arg1.getJavaName()));
                 for (final SourceObject obj : ls) {
                     ESJPCompiler.LOG.info("    Compiling ESJP '{}'", obj.getJavaName());
                 }
@@ -619,9 +617,7 @@ public class ESJPCompiler
          */
         public void write()
         {
-            if (ESJPCompiler.LOG.isDebugEnabled()) {
-                ESJPCompiler.LOG.debug("write '" + this.className + "'");
-            }
+            ESJPCompiler.LOG.debug("write '{}'", this.className);
             try {
                 final Long id = ESJPCompiler.this.class2id.get(this.className);
                 final Instance instance;
