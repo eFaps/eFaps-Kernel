@@ -322,9 +322,7 @@ public final class Context
     @Override
     public void finalize()
     {
-        if (Context.LOG.isDebugEnabled()) {
-            Context.LOG.debug("finalize context for " + this.person);
-        }
+        Context.LOG.debug("finalize context for {}", this.person);
     }
 
     /**
@@ -335,9 +333,7 @@ public final class Context
      */
     public void close()
     {
-        if (Context.LOG.isDebugEnabled()) {
-            Context.LOG.debug("close context for " + this.person);
-        }
+        Context.LOG.debug("close context for {}", this.person);
         QueryCache.cleanByKey(getRequestId());
         if (getThreadLocal().get() != null && getThreadLocal().get() == this) {
             getThreadLocal().set(null);
@@ -1008,7 +1004,8 @@ public final class Context
 
         if (_user != null) {
             context.person = UUIDUtil.isUUID(_user) ? Person.get(UUID.fromString(_user)) : Person.get(_user);
-            MDC.put("person", context.person.getName());
+            MDC.put("person", String.format("'%s' (%s %s)", context.person.getName(),
+                            context.person.getFirstName(), context.person.getLastName()));
             context.locale = context.person.getLocale();
             context.timezone = context.person.getTimeZone();
             context.chronology = context.person.getChronology();
