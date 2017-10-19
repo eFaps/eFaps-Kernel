@@ -18,6 +18,7 @@
 package org.efaps.admin.access.user;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -114,7 +115,7 @@ public final class Evaluation
     {
         Evaluation.LOG.debug("Evaluating PermissionSet {}", _permissionSet);
         final Person person = Person.get(_permissionSet.getPersonId());
-        final Set<Long> ids = person.getRoles();
+        final Set<Long> ids = new HashSet<>(person.getRoles());
         ids.addAll(person.getGroups());
         ids.add(person.getId());
 

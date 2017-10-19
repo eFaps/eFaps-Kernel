@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1420,7 +1421,7 @@ public final class Person
      */
     public Set<Long> getRoles()
     {
-        return this.roles;
+        return Collections.unmodifiableSet(this.roles);
     }
 
     /**
@@ -1431,7 +1432,7 @@ public final class Person
      */
     public Set<Long> getGroups()
     {
-        return this.groups;
+        return Collections.unmodifiableSet(this.groups);
     }
 
     /**
@@ -1441,7 +1442,7 @@ public final class Person
      */
     public Set<Long> getCompanies()
     {
-        return this.companies;
+        return Collections.unmodifiableSet(this.companies);
     }
 
     /**
@@ -1451,7 +1452,7 @@ public final class Person
      */
     public Set<Long> getAssociations()
     {
-        return this.associations;
+        return Collections.unmodifiableSet(this.associations);
     }
 
     @Override
