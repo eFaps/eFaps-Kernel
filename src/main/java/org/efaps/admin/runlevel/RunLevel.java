@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.efaps.admin.common.Quartz;
+import org.efaps.admin.program.esjp.Listener;
 import org.efaps.db.Context;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
@@ -125,7 +126,9 @@ public final class RunLevel
         throws EFapsException
     {
         this.name = _name;
-        initialize(RunLevel.SELECT_RUNLEVEL.getCopy().addPart(SQLPart.WHERE).addColumnPart(0, "RUNLEVEL")
+        initialize(RunLevel.SELECT_RUNLEVEL.getCopy()
+                        .addPart(SQLPart.WHERE)
+                        .addColumnPart(0, "RUNLEVEL")
                         .addPart(SQLPart.EQUAL).addEscapedValuePart(_name).getSQL());
     }
 
@@ -211,7 +214,9 @@ public final class RunLevel
                 cache.clear();
             }
         }
-        //Bpm.initialize();
+        for (final IRunLevelListener listener : Listener.get().<IRunLevelListener>invoke(IRunLevelListener.class)) {
+            listener.onExecute(RunLevel.RUNLEVEL.name);
+        }
     }
 
     /**

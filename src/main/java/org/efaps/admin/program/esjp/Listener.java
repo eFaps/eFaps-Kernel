@@ -24,7 +24,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -82,6 +81,7 @@ public final class Listener
         throws EFapsException
     {
         if (!this.initialized) {
+            Listener.LOG.info("Scanning for Listsner classes....");
             @SuppressWarnings("unchecked")
             final AnnotationAcceptingListener asl = new AnnotationAcceptingListener(EFapsClassLoader.getInstance(),
                             EFapsListener.class);
@@ -183,15 +183,8 @@ public final class Listener
                 }
             }
         }
-        Collections.sort(ret, new Comparator<IEsjpListener>()
-        {
-            @Override
-            public int compare(final IEsjpListener _o1,
-                               final IEsjpListener _o2)
-            {
-                return Integer.compare(_o1.getWeight(), _o2.getWeight());
-            }
-        });
+        Collections.sort(ret, (_o1,
+         _o2) -> Integer.compare(_o1.getWeight(), _o2.getWeight()));
         return Collections.unmodifiableList(ret);
     }
 }
