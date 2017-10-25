@@ -81,7 +81,7 @@ public final class Listener
         throws EFapsException
     {
         if (!this.initialized) {
-            Listener.LOG.info("Scanning for Listsner classes....");
+            Listener.LOG.info("Scanning for Listener classes....");
             @SuppressWarnings("unchecked")
             final AnnotationAcceptingListener asl = new AnnotationAcceptingListener(EFapsClassLoader.getInstance(),
                             EFapsListener.class);
@@ -183,8 +183,7 @@ public final class Listener
                 }
             }
         }
-        Collections.sort(ret, (_o1,
-         _o2) -> Integer.compare(_o1.getWeight(), _o2.getWeight()));
+        Collections.sort(ret, (_o1, _o2) -> Integer.compare(_o1.getWeight(), _o2.getWeight()));
         return Collections.unmodifiableList(ret);
     }
 }
