@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-  Copyright 2003 - 2016 The eFaps Team
+  Copyright 2003 - 2017 The eFaps Team
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -167,7 +167,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.1.1</version>
+            <version>42.1.4</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -185,7 +185,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>commons-dbutils</groupId>
             <artifactId>commons-dbutils</artifactId>
-            <version>1.6</version>
+            <version>1.7</version>
         </dependency>
 
         <dependency>
@@ -276,7 +276,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-vfs2</artifactId>
-            <version>2.1</version>
+            <version>2.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -364,7 +364,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.4.1</version>
+            <version>6.4.3</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.lucene</groupId>
@@ -408,17 +408,12 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.15</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>3.15</version>
+            <version>3.17</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>3.15</version>
+            <version>3.17</version>
         </dependency>
 
         <!-- used to read the jrxml definitions used by jasper -->
@@ -456,7 +451,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-email</artifactId>
-            <version>1.4</version>
+            <version>1.5</version>
         </dependency>
 
         <!-- dependencies for REST-->
@@ -524,7 +519,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-rmi</artifactId>
-            <version>2.15.2</version>
+            <version>2.15.6</version>
         </dependency>
         <dependency>
             <groupId>javax.jms</groupId>
@@ -622,7 +617,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-xjc</artifactId>
-            <version>2.2.11</version>
+            <version>2.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
