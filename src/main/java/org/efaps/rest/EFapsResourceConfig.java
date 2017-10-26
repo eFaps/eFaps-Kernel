@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ public class EFapsResourceConfig
     /**
      * Cached classes.
      */
-    private final Set<Class<?>> cachedClasses = new HashSet<Class<?>>();
+    private final Set<Class<?>> cachedClasses = new HashSet<>();
 
     /**
      * Constructor.
@@ -135,7 +135,7 @@ public class EFapsResourceConfig
      */
     private Set<Class<?>> get(final Class<? extends Annotation> _annoclass)
     {
-        final Set<Class<?>> s = new HashSet<Class<?>>();
+        final Set<Class<?>> s = new HashSet<>();
         for (final Class<?> c : getClasses()) {
             if (c.isAnnotationPresent(_annoclass)) {
                 s.add(c);
@@ -165,8 +165,8 @@ public class EFapsResourceConfig
      */
     public void onReload(final Container _container)
     {
-        final Set<Class<?>> classesToRemove = new HashSet<Class<?>>();
-        final Set<Class<?>> classesToAdd = new HashSet<Class<?>>();
+        final Set<Class<?>> classesToRemove = new HashSet<>();
+        final Set<Class<?>> classesToAdd = new HashSet<>();
 
         for (final Class<?> c : getClasses()) {
             if (!this.cachedClasses.contains(c)) {
@@ -209,7 +209,7 @@ public class EFapsResourceConfig
          */
         private void init()
         {
-            final List<Instance> instances = new ArrayList<Instance>();
+            final List<Instance> instances = new ArrayList<>();
             try {
                 // in case of jboss the transaction filter is not executed
                 // before the
@@ -219,11 +219,13 @@ public class EFapsResourceConfig
                     Context.begin(null, Context.Inheritance.Local);
                     contextStarted = true;
                 }
-                final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.JavaClass);
-                final InstanceQuery query = queryBldr.getQuery();
-                query.executeWithoutAccessCheck();
-                while (query.next()) {
-                    instances.add(query.getCurrentValue());
+                if (CIAdminProgram.JavaClass.getType() != null) {
+                    final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.JavaClass);
+                    final InstanceQuery query = queryBldr.getQuery();
+                    query.executeWithoutAccessCheck();
+                    while (query.next()) {
+                        instances.add(query.getCurrentValue());
+                    }
                 }
                 if (contextStarted) {
                     Context.rollback();

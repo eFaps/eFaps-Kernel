@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -234,7 +234,7 @@ public abstract class AbstractUpdate
         for (final AbstractDefinition def : this.definitions) {
             // only execute if
             // 1. valid version
-            // 2. application dependcies are met
+            // 2. application dependencies are met
             // 3. profiles is empty or the profile list contains the profile of the definition
             //    or the default profile must be applied
             if (def.isValidVersion(_jexlContext) && def.appDependenciesMet()
@@ -287,8 +287,8 @@ public abstract class AbstractUpdate
                         appRevInst = multi.getCurrentInstance();
                         if (_installFile.getDate().isAfter(multi.<DateTime>getAttribute(
                                         CIAdminCommon.ApplicationRevision.Date))) {
-                            AbstractUpdate.LOG.debug("Updated Revision {} - {} with Date {] ", _installFile.getRevision(),
-                                            _application, _installFile.getDate());
+                            AbstractUpdate.LOG.debug("Updated Revision {} - {} with Date {] ",
+                                            _installFile.getRevision(), _application, _installFile.getDate());
                             final Update update = new Update(appRevInst);
                             update.add(CIAdminCommon.ApplicationRevision.Date, _installFile.getDate());
                             update.executeWithoutTrigger();

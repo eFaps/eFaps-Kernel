@@ -744,12 +744,13 @@ public final class Application
         throws InstallationException
     {
         try {
+            LOG.info("Reloading Cache");
             Context.begin();
             if (RunLevel.isInitialisable()) {
                 RunLevel.init("shell");
                 RunLevel.execute();
             }
-            Context.rollback();
+            Context.commit();
         } catch (final EFapsException e) {
             throw new InstallationException("Reload cache failed", e);
         }

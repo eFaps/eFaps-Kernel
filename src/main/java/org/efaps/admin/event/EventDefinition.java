@@ -151,11 +151,13 @@ public final class EventDefinition
             if (EventDefinition.LOG.isDebugEnabled()) {
                 EventDefinition.LOG.debug("checking Instance: {} - {}", this.resourceName, this.methodName);
             }
-            final Class<?> cls = Class.forName(this.resourceName, true, EFapsClassLoader.getInstance());
-            final Method method = cls.getMethod(this.methodName, new Class[] { Parameter.class });
-            final Object progInstance = cls.newInstance();
-            if (EventDefinition.LOG.isDebugEnabled()) {
-                EventDefinition.LOG.debug("found Class: {} and method {}", progInstance, method);
+            if (!EFapsClassLoader.getInstance().isOffline()) {
+                final Class<?> cls = Class.forName(this.resourceName, true, EFapsClassLoader.getInstance());
+                final Method method = cls.getMethod(this.methodName, new Class[] { Parameter.class });
+                final Object progInstance = cls.newInstance();
+                if (EventDefinition.LOG.isDebugEnabled()) {
+                    EventDefinition.LOG.debug("found Class: {} and method {}", progInstance, method);
+                }
             }
         } catch (final ClassNotFoundException e) {
             EventDefinition.LOG.error("could not find Class: '{}'", this.resourceName, e);
