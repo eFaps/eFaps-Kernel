@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class Phrase
     /**
      * Mapping of Select statements to OneSelect.
      */
-    private final Map<String, OneSelect> selectStmt2OneSelect = new HashMap<String, OneSelect>();
+    private final Map<String, OneSelect> selectStmt2OneSelect = new HashMap<>();
 
     /**
      * ValueList to access the parser.
@@ -80,6 +80,7 @@ public class Phrase
         throws EFapsException
     {
         final StringBuilder buf = new StringBuilder();
+        boolean added = false;
         for (final Token token : this.valueList.getTokens()) {
             switch (token.getType()) {
                 case EXPRESSION:
@@ -87,8 +88,13 @@ public class Phrase
                     final Object value = oneselect.getObject();
                     if (oneselect.getAttribute() != null) {
                         final UIValue uiValue = UIValue.get(null, oneselect.getAttribute(), value);
-                        buf.append(uiValue.getUIProvider().getStringValue(uiValue));
+                        final String val = uiValue.getUIProvider().getStringValue(uiValue);
+                        if (val != null) {
+                            added = true;
+                            buf.append(uiValue.getUIProvider().getStringValue(uiValue));
+                        }
                     } else if (value != null) {
+                        added = true;
                         buf.append(value);
                     }
                     break;
@@ -99,7 +105,7 @@ public class Phrase
                     break;
             }
         }
-        return buf.toString();
+        return added ? buf.toString() : "";
     }
 
     /**
