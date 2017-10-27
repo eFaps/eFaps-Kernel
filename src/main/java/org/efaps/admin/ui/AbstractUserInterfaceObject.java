@@ -260,11 +260,9 @@ public abstract class AbstractUserInterfaceObject
             if (!company && !checked || company && checked) {
                 for (final Long userId : getAccess()) {
                     final AbstractUserObject userObject = AbstractUserObject.getUserObject(userId);
-                    if (!(userObject instanceof Company)) {
-                        if (userObject.isAssigned()) {
-                            ret = true;
-                            break;
-                        }
+                    if (!(userObject instanceof Company) && userObject.isAssigned()) {
+                        ret = true;
+                        break;
                     }
                 }
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -192,8 +192,7 @@ public final class SQLTable
      * @param _sqlColType name of column for the type within SQL table
      * @throws SQLException on error
      */
-    private SQLTable(final Connection _con,
-                     final long _id,
+    private SQLTable(final long _id,
                      final String _uuid,
                      final String _name,
                      final String _sqlTable,
@@ -234,7 +233,7 @@ public final class SQLTable
                                final String _value)
         throws CacheReloadException
     {
-        if (_name.equals("ReadOnly")) {
+        if ("ReadOnly".equals(_name)) {
             this.readOnly = "true".equalsIgnoreCase("true");
         }
     }
@@ -474,8 +473,7 @@ public final class SQLTable
                 if (rs.next()) {
                     final long id = rs.getLong(1);
                     final String name = rs.getString(3).trim();
-                    table = new SQLTable(con,
-                                    id,
+                    table = new SQLTable(id,
                                     rs.getString(2),
                                     name,
                                     rs.getString(4),

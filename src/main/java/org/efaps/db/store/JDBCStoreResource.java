@@ -168,6 +168,7 @@ public class JDBCStoreResource
     @Override
     public void delete()
     {
+        // not needed here
     }
 
     /**

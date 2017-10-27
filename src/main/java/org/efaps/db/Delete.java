@@ -169,7 +169,7 @@ public class Delete
             defs.addAll(GeneralInstance.getDeleteDefintion(getInstance(), con));
             final SQLTable mainTable = getInstance().getType().getMainTable();
             for (final SQLTable curTable : getInstance().getType().getTables()) {
-                if (curTable != mainTable && !curTable.isReadOnly()) {
+                if (!curTable.equals(mainTable) && !curTable.isReadOnly()) {
                     defs.add(new DeleteDefintion(curTable.getSqlTable(),
                                     curTable.getSqlColId(), getInstance().getId()));
                 }
