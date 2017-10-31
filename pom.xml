@@ -303,6 +303,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <artifactId>commons-collections4</artifactId>
             <version>${commons.collections.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>${commons.text.version}</version>
+        </dependency>
 
         <!--
             Joda Time is used to have a quality replacement for Java date and
@@ -483,6 +488,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     <artifactId>jackson-databind</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>${jersey.version}</version>
         </dependency>
 
         <!-- timer for background prozesses -->
