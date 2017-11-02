@@ -366,10 +366,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- from 6.4.3 on it does not work with dynamicreport any more -->
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.4.3</version>
+            <version>6.4.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.lucene</groupId>
