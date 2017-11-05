@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@
 
 package org.efaps.admin.index;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
+import org.efaps.util.RandomUtil;
 import org.efaps.util.cache.InfinispanCache;
 import org.infinispan.AdvancedCache;
 
@@ -61,7 +61,7 @@ public final class Queue
                             && IndexDefinition.get(_instance.getType().getUUID()) != null) {
                 final AdvancedCache<String, String> cache = InfinispanCache.get()
                                 .<String, String>getIgnReCache(CACHENAME);
-                cache.put(RandomStringUtils.random(12), _instance.getOid());
+                cache.put(RandomUtil.random(12), _instance.getOid());
             }
         }
     }

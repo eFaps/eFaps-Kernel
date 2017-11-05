@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import javax.transaction.xa.Xid;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.databases.AbstractDatabase;
-import org.efaps.db.store.Resource.Compress;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
@@ -413,19 +412,13 @@ public class JDBCStoreResource
         }
     }
 
-
     /**
-     * Extdens super class.
+     * Extends super class.
      *
      */
     private class JDBCStoreResourceInputStream
         extends StoreResourceInputStream
     {
-        /**
-         * The connection resource.
-         */
-        private final ConnectionResource res;
-
         /**
          * @param _storeRe  store resource itself
          * @param _res      connection resource
@@ -438,11 +431,9 @@ public class JDBCStoreResource
                                                final Blob _blob)
             throws IOException, SQLException
         {
-            super(_storeRe,
-                  Context.getDbType().supportsBlobInputStreamAvailable()
+            super(_storeRe, Context.getDbType().supportsBlobInputStreamAvailable()
                           ? _blob.getBinaryStream()
                           : new BlobInputStream(_blob));
-            this.res = _res;
         }
 
         /**
@@ -457,7 +448,6 @@ public class JDBCStoreResource
             throws IOException
         {
             super(_storeRes, _in);
-            this.res = _res;
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,18 @@ import java.io.InputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.jasperreports.engine.DefaultJasperReportsContext;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
-
 import org.efaps.db.Checkout;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 /**
  * Util class used for jaspereport and dynamic jasper due to massive problems
@@ -71,8 +71,9 @@ public final class JasperUtil
         JasperDesign jasperDesign = null;
         try {
             JasperUtil.LOG.debug("Loading JasperDesign for :{}", _instance);
-            final JRXmlLoader loader = new JRXmlLoader(DefaultJasperReportsContext.getInstance(),
-                            JRXmlDigesterFactory.createDigester());
+            final DefaultJasperReportsContext reportContext = DefaultJasperReportsContext.getInstance();
+            final JRXmlLoader loader = new JRXmlLoader(reportContext,
+                            JRXmlDigesterFactory.createDigester(reportContext));
             jasperDesign = loader.loadXML(source);
         } catch (final ParserConfigurationException e) {
             throw new EFapsException(JasperUtil.class, "getJasperDesign", e);

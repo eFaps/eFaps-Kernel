@@ -153,7 +153,6 @@ public class MessageStatusHolder
         public void update()
         {
             Connection con = null;
-            boolean abort = true;
             try {
                 con = Context.getConnection();
 
@@ -185,7 +184,6 @@ public class MessageStatusHolder
                 con.commit();
                 this.userID2UnRead = unread;
                 this.userID2Read = read;
-                abort = false;
             } catch (final EFapsException e) {
                 MessageStatusHolder.LOG.error("EFapsException");
             } catch (final IllegalStateException e) {

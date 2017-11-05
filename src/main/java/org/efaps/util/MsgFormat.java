@@ -24,8 +24,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.text.ExtendedMessageFormat;
-import org.apache.commons.lang3.text.FormatFactory;
+import org.apache.commons.text.ExtendedMessageFormat;
+import org.apache.commons.text.FormatFactory;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.admin.program.esjp.EFapsFormatFactory;
 import org.efaps.db.Context;

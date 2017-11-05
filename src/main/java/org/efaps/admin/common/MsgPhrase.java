@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang3.text.ExtendedMessageFormat;
+import org.apache.commons.text.ExtendedMessageFormat;
 import org.efaps.admin.user.Company;
 import org.efaps.ci.CIAdmin;
 import org.efaps.ci.CIAdminCommon;
@@ -702,6 +702,5 @@ public final class MsgPhrase
         {
             this.index = _index;
         }
-
     }
 }

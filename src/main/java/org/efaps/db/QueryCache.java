@@ -117,7 +117,7 @@ public final class QueryCache
                 final Term term = new Term("key", _key);
                 final org.apache.lucene.search.Query termQuery =  new TermQuery(term);
 
-                final CacheQuery query = searchManager.getQuery(termQuery, QueryKey.class);
+                final CacheQuery<?> query = searchManager.getQuery(termQuery, QueryKey.class);
                 final List<?> result = query.list();
                 if (result != null) {
                     for (final Object key : result) {

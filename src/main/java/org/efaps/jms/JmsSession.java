@@ -25,12 +25,12 @@ import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
 import org.efaps.util.EFapsException;
+import org.efaps.util.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +96,7 @@ public final class JmsSession
     private JmsSession(final String _userName)
         throws EFapsException
     {
-        this.sessionKey = RandomStringUtils.randomAlphanumeric(15);
+        this.sessionKey = RandomUtil.randomAlphanumeric(15);
         this.timeStamp = new Date();
         this.userName = _userName;
     }
