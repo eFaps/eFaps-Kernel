@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.jexl2.JexlContext;
 import org.efaps.update.Install.InstallFile;
 import org.efaps.update.util.InstallationException;
@@ -35,15 +36,17 @@ import org.xml.sax.SAXException;
  */
 public interface IUpdate
 {
+
     /**
      * Runs the update for given eFaps configuration item.
      *
      * @param _jexlContext  context used to evaluate JEXL expressions
      * @param _step         current step of the update life cycle
      * @param _profiles     the Profiles that will be executed
+     * @return the multi valued map
      * @throws InstallationException from called update methods
      */
-    void updateInDB(JexlContext _jexlContext,
+    MultiValuedMap<String, String> updateInDB(JexlContext _jexlContext,
                     UpdateLifecycle _step,
                     Set<Profile> _profiles)
         throws InstallationException;

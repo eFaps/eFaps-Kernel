@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.event.EventType;
 import org.efaps.ci.CIAdminCommon;
@@ -55,15 +56,15 @@ public abstract class AbstractCollectionUpdate
 
     /** Link from field to icon. */
     private static final Link LINKFIELD2ICON = new Link("Admin_UI_LinkIcon", "From", "Admin_UI_Image", "To")
-                    .setLogDelete(false);
+                    .setRegisterUpdatable(false);
 
     /** Link from field to table as target. */
     private static final Link LINK2TARGETTABLE = new Link("Admin_UI_LinkTargetTable", "From", "Admin_UI_Table", "To")
-                    .setLogDelete(false);
+                    .setRegisterUpdatable(false);
 
     /** Link from field to command as picker. */
     private static final Link LINK2PICKER = new Link("Admin_UI_LinkField2Command", "FromLink",
-                    "Admin_UI_Command", "ToLink") .setLogDelete(false);
+                    "Admin_UI_Command", "ToLink") .setRegisterUpdatable(false);
 
     /**
      * @param _url URL of the file
@@ -244,18 +245,19 @@ public abstract class AbstractCollectionUpdate
          * @see #setFieldsInDB
          */
         @Override
-        public void updateInDB(final UpdateLifecycle _step,
-                               final Set<Link> _allLinkTypes)
+        public MultiValuedMap<String, String> updateInDB(final UpdateLifecycle _step,
+                                                         final Set<Link> _allLinkTypes)
             throws InstallationException
         {
-            super.updateInDB(_step, _allLinkTypes);
+            final MultiValuedMap<String, String> ret = super.updateInDB(_step, _allLinkTypes);
             if (_step == UpdateLifecycle.EFAPS_UPDATE) {
                 try {
-                    setFieldsInDB();
+                    setFieldsInDB(ret);
                 } catch (final EFapsException e) {
                     throw new InstallationException("error in setFieldsInDB", e);
                 }
             }
+            return ret;
         }
 
         /**
@@ -264,9 +266,10 @@ public abstract class AbstractCollectionUpdate
          * TODO the deletion of existing fields is nested! Thats not
          * the best idea.
          *
+         * @param _updateable the updateable
          * @throws EFapsException on error
          */
-        protected void setFieldsInDB()
+        protected void setFieldsInDB(final MultiValuedMap<String, String> _updateable)
             throws EFapsException
         {
             // cleanup fields (remove all fields from table)
@@ -277,9 +280,9 @@ public abstract class AbstractCollectionUpdate
             while (query.next()) {
                 final Instance instField = query.getCurrentValue();
                 setPropertiesInDb(instField, null);
-                removeLinksInDB(instField, AbstractCollectionUpdate.LINKFIELD2ICON);
-                removeLinksInDB(instField, AbstractCollectionUpdate.LINK2TARGETTABLE);
-                removeLinksInDB(instField, AbstractCollectionUpdate.LINK2PICKER);
+                removeLinksInDB(_updateable, instField, AbstractCollectionUpdate.LINKFIELD2ICON);
+                removeLinksInDB(_updateable, instField, AbstractCollectionUpdate.LINK2TARGETTABLE);
+                removeLinksInDB(_updateable, instField, AbstractCollectionUpdate.LINK2PICKER);
                 // remove events
                 final QueryBuilder eventQueryBldr = new QueryBuilder(CIAdminEvent.Definition);
                 eventQueryBldr.addWhereAttrEqValue(CIAdminEvent.Definition.Abstract, instField.getId());
@@ -328,15 +331,15 @@ public abstract class AbstractCollectionUpdate
                 if (field.icon != null) {
                     final Set<LinkInstance> iconset = new HashSet<>();
                     iconset.add(new LinkInstance(field.icon));
-                    setLinksInDB(insert.getInstance(), AbstractCollectionUpdate.LINKFIELD2ICON, iconset);
+                    setLinksInDB(_updateable, insert.getInstance(), AbstractCollectionUpdate.LINKFIELD2ICON, iconset);
                 }
 
                 // link to table
-                setLinksInDB(insert.getInstance(), AbstractCollectionUpdate.LINK2TARGETTABLE,
+                setLinksInDB(_updateable, insert.getInstance(), AbstractCollectionUpdate.LINK2TARGETTABLE,
                                 field.getLinks(AbstractCollectionUpdate.LINK2TARGETTABLE));
 
                 // link to picker
-                setLinksInDB(insert.getInstance(), AbstractCollectionUpdate.LINK2PICKER,
+                setLinksInDB(_updateable, insert.getInstance(), AbstractCollectionUpdate.LINK2PICKER,
                                 field.getLinks(AbstractCollectionUpdate.LINK2PICKER));
 
                 // append events

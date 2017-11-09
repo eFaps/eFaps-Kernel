@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.MultiValuedMap;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
 import org.efaps.update.AbstractUpdate;
@@ -65,7 +66,7 @@ public class AccessSetUpdate
     /**
      * Map of all links.
      */
-    private static final Set<Link> ALLLINKS = new HashSet<Link>();
+    private static final Set<Link> ALLLINKS = new HashSet<>();
     static {
         AccessSetUpdate.ALLLINKS.add(AccessSetUpdate.LINK2ACCESSTYPE);
         AccessSetUpdate.ALLLINKS.add(AccessSetUpdate.LINK2DATAMODELTYPE);
@@ -145,7 +146,8 @@ public class AccessSetUpdate
          * {@inheritDoc}
          */
         @Override
-        protected void setLinksInDB(final Instance _instance,
+        protected void setLinksInDB(final MultiValuedMap<String, String> _updateables,
+                                    final Instance _instance,
                                     final Link _linktype,
                                     final Set<LinkInstance> _links)
             throws EFapsException
@@ -158,7 +160,7 @@ public class AccessSetUpdate
                     }
                 }
             }
-            super.setLinksInDB(_instance, _linktype, _links);
+            super.setLinksInDB(_updateables, _instance, _linktype, _links);
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +33,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.collections4.MultiMapUtils;
+import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.MapContext;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -91,6 +92,9 @@ public class Install
      */
     private final boolean evaluateProfiles;
 
+    /** The updateables. */
+    private final MultiValuedMap<String, String> updateables = MultiMapUtils.newSetValuedHashMap();
+
     /**
      * Standard Constructor.
      */
@@ -122,13 +126,14 @@ public class Install
      * @param _profiles         profiles to be applied
      * @param _ignoredSteps     set of ignored life cycle steps which are not
      *                          executed
+     * @return the multi valued map
      * @throws InstallationException on error
      * @see org.efaps.db.databases.AbstractDatabase#supportsBigTransactions()
      */
-    public void install(final Long _number,
-                        final Long _latestNumber,
-                        final Set<Profile> _profiles,
-                        final Set<UpdateLifecycle> _ignoredSteps)
+    public MultiValuedMap<String, String> install(final Long _number,
+                                                  final Long _latestNumber,
+                                                  final Set<Profile> _profiles,
+                                                  final Set<UpdateLifecycle> _ignoredSteps)
         throws InstallationException
     {
         final boolean bigTrans = Context.getDbType().supportsBigTransactions();
@@ -161,20 +166,13 @@ public class Install
                 }
                 for (final Map.Entry<String, List<IUpdate>> entry : this.cache.entrySet()) {
                     final List<IUpdate> updates = entry.getValue();
-                    Collections.sort(updates, new Comparator<IUpdate>()
-                    {
-                        @Override
-                        public int compare(final IUpdate _update0,
-                                           final IUpdate _update1)
-                        {
-                            return String.valueOf(_update0.getInstallFile().getUrl()).compareTo(
-                                            String.valueOf(_update1.getInstallFile().getUrl()));
-                        }
-                    });
+                    Collections.sort(updates, (_update0, _update1)
+                        -> String.valueOf(_update0.getInstallFile().getUrl()).compareTo(
+                                    String.valueOf(_update1.getInstallFile().getUrl())));
                     for (final IUpdate update : updates) {
                         try {
-                            update.updateInDB(jexlContext, step,
-                                            evaluateProfiles(update.getFileApplication(), _profiles));
+                            this.updateables.putAll(update.updateInDB(jexlContext, step,
+                                            evaluateProfiles(update.getFileApplication(), _profiles)));
                             if (!bigTrans) {
                                 Context.commit();
                                 Context.begin(user);
@@ -189,6 +187,7 @@ public class Install
                 Install.LOG.info("..Skipped Lifecycle step " + step);
             }
         }
+        return this.updateables;
     }
 
     /**
@@ -201,16 +200,7 @@ public class Install
         for (final UpdateLifecycle cycle : UpdateLifecycle.values()) {
             ret.add(cycle);
         }
-        Collections.sort(ret, new Comparator<UpdateLifecycle>() {
-
-            @Override
-            public int compare(final UpdateLifecycle _cycle1,
-                               final UpdateLifecycle _cycle2)
-            {
-                return _cycle1.getOrder().compareTo(_cycle2.getOrder());
-            }
-        });
-
+        Collections.sort(ret, (_cycle1, _cycle2) -> _cycle1.getOrder().compareTo(_cycle2.getOrder()));
         return ret;
     }
 
@@ -222,7 +212,7 @@ public class Install
      * @param _profiles set of profiles to be used
      * @throws InstallationException if update failed
      */
-    public void updateLatest(final Set<Profile> _profiles)
+    public MultiValuedMap<String, String> updateLatest(final Set<Profile> _profiles)
         throws InstallationException
     {
         final boolean bigTrans = Context.getDbType().supportsBigTransactions();
@@ -265,7 +255,8 @@ public class Install
                     }
                     try {
                         // and create
-                        update.updateInDB(jexlContext, step, evaluateProfiles(update.getFileApplication(), _profiles));
+                        this.updateables.putAll(update.updateInDB(jexlContext, step,
+                                        evaluateProfiles(update.getFileApplication(), _profiles)));
                         if (!bigTrans) {
                             Context.commit();
                             Context.begin(user);
@@ -276,6 +267,7 @@ public class Install
                 }
             }
         }
+        return this.updateables;
     }
 
     /**
@@ -319,8 +311,7 @@ public class Install
                     con.close();
                 }
             } catch (final SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.error("Catched", e);
             }
         }
         return versions;

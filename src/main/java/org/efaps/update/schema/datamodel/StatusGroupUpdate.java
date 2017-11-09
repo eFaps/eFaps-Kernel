@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.MultiMapUtils;
+import org.apache.commons.collections4.MultiValuedMap;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Dimension;
 import org.efaps.admin.datamodel.Type;
@@ -188,13 +190,14 @@ public class StatusGroupUpdate
          * @see #attributes
          */
         @Override
-        public void updateInDB(final UpdateLifecycle _step,
-                               final Set<Link> _allLinkTypes)
+        public MultiValuedMap<String, String>  updateInDB(final UpdateLifecycle _step,
+                                                          final Set<Link> _allLinkTypes)
             throws InstallationException
         {
+            MultiValuedMap<String, String> ret = MultiMapUtils.newSetValuedHashMap();
             try {
                 if (_step == UpdateLifecycle.STATUSGROUP_CREATE) {
-                    super.updateInDB(UpdateLifecycle.EFAPS_CREATE, _allLinkTypes);
+                    ret = super.updateInDB(UpdateLifecycle.EFAPS_CREATE, _allLinkTypes);
                 }
 
                 if (_step == UpdateLifecycle.STATUSGROUP_UPDATE) {
@@ -212,7 +215,7 @@ public class StatusGroupUpdate
                     } else {
                         addValue("ParentType", null);
                     }
-                    super.updateInDB(UpdateLifecycle.EFAPS_UPDATE, _allLinkTypes);
+                    ret = super.updateInDB(UpdateLifecycle.EFAPS_UPDATE, _allLinkTypes);
                 }
 
                 if (_step == UpdateLifecycle.STATUS_CREATE) {
@@ -232,6 +235,7 @@ public class StatusGroupUpdate
             } catch (final EFapsException e) {
                 throw new InstallationException(" SQLTable can not be updated", e);
             }
+            return ret;
         }
     }
 }

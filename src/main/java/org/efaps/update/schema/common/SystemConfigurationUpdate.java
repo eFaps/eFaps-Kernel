@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.lang3.EnumUtils;
 import org.efaps.admin.user.Company;
 import org.efaps.ci.CIAdminCommon;
@@ -231,7 +232,7 @@ public class SystemConfigurationUpdate
          * @see #readXML(List, Map, String)
          */
         private final List<SystemConfigurationUpdate.AttributeDefinition> attributes
-            = new ArrayList<SystemConfigurationUpdate.AttributeDefinition>();
+            = new ArrayList<>();
 
         /**
          * Read xml.
@@ -271,15 +272,16 @@ public class SystemConfigurationUpdate
          *
          * @param _step             current life cycle update step
          * @param _allLinkTypes     all link types to update
+         * @return the multi valued map
          * @throws InstallationException if update failed
          * @see #attributes
          */
         @Override
-        public void updateInDB(final UpdateLifecycle _step,
-                               final Set<Link> _allLinkTypes)
+        public MultiValuedMap<String, String> updateInDB(final UpdateLifecycle _step,
+                                                         final Set<Link> _allLinkTypes)
             throws InstallationException
         {
-            super.updateInDB(_step, _allLinkTypes);
+            final MultiValuedMap<String, String> ret = super.updateInDB(_step, _allLinkTypes);
             try {
                 if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
                     for (final AttributeDefinition attr : this.attributes) {
@@ -289,8 +291,7 @@ public class SystemConfigurationUpdate
             } catch (final EFapsException e) {
                 throw new InstallationException(" Type can not be updated", e);
             }
+            return ret;
         }
     }
-
-
 }

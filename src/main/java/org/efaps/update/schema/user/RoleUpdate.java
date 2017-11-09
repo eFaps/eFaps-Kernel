@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.MultiValuedMap;
 import org.efaps.db.Instance;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.Install.InstallFile;
@@ -134,13 +135,14 @@ public class RoleUpdate
         }
 
         @Override
-        protected void setLinksInDB(final Instance _instance,
+        protected void setLinksInDB(final MultiValuedMap<String, String> _updateable,
+                                    final Instance _instance,
                                     final Link _linktype,
                                     final Set<LinkInstance> _links)
             throws EFapsException
         {
             if (this.setAccess) {
-                super.setLinksInDB(_instance, _linktype, _links);
+                super.setLinksInDB(_updateable, _instance, _linktype, _links);
             }
         }
     }

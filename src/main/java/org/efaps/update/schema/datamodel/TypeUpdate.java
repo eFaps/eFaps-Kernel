@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MultiMapUtils;
+import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.AttributeSet;
@@ -816,10 +818,10 @@ public class TypeUpdate
                 execute = !this.key.equals(multi.getAttribute(CIAdminIndex.IndexField.Key))
                             || !this.select.equals(multi.getAttribute(CIAdminIndex.IndexField.Select))
                             || !this.fieldType.equals(multi.getAttribute(CIAdminIndex.IndexField.FieldType))
-                            || (transformId == null
-                                && multi.getAttribute(CIAdminIndex.IndexField.TransformerLink) != null)
-                            || (transformId != null
-                                && !transformId.equals(multi.getAttribute(CIAdminIndex.IndexField.TransformerLink)));
+                            || transformId == null
+                                && multi.getAttribute(CIAdminIndex.IndexField.TransformerLink) != null
+                            || transformId != null
+                                && !transformId.equals(multi.getAttribute(CIAdminIndex.IndexField.TransformerLink));
             } else {
                 execute = true;
                 update = new Insert(CIAdminIndex.IndexField);
@@ -1038,16 +1040,15 @@ public class TypeUpdate
          *
          * @param _step lifecycle step
          * @param _allLinkTypes set of all links
+         * @return the multi valued map
          * @throws InstallationException on error
-         *
-         * @see #parentType
-         * @see #attributes
          */
         @Override
-        public void updateInDB(final UpdateLifecycle _step,
-                               final Set<Link> _allLinkTypes)
+        public MultiValuedMap<String, String> updateInDB(final UpdateLifecycle _step,
+                                                         final Set<Link> _allLinkTypes)
             throws InstallationException
         {
+            MultiValuedMap<String, String> ret = MultiMapUtils.newSetValuedHashMap();
             try {
                 if (_step == UpdateLifecycle.EFAPS_UPDATE) {
                     // set the id of the parent type (if defined)
@@ -1081,7 +1082,7 @@ public class TypeUpdate
                     }
                 }
 
-                super.updateInDB(_step, _allLinkTypes);
+                ret = super.updateInDB(_step, _allLinkTypes);
 
                 if (_step == UpdateLifecycle.EFAPS_UPDATE) {
                     for (final AttributeDefinition attr : this.attributes) {
@@ -1113,6 +1114,7 @@ public class TypeUpdate
             } catch (final EFapsException e) {
                 throw new InstallationException(" Type can not be updated", e);
             }
+            return ret;
         }
 
         /**

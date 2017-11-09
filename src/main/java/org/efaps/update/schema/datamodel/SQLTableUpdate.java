@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.MultiMapUtils;
+import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.ci.CIAdminDataModel;
 import org.efaps.db.Context;
@@ -488,25 +490,26 @@ public class SQLTableUpdate
          * @see #executeSQLs()
          */
         @Override
-        public void updateInDB(final UpdateLifecycle _step,
-                               final Set<Link> _allLinkTypes)
+        public final MultiValuedMap<String, String> updateInDB(final UpdateLifecycle _step,
+                                                               final Set<Link> _allLinkTypes)
             throws InstallationException
         {
+            MultiValuedMap<String, String> ret = MultiMapUtils.newSetValuedHashMap();
             try {
                 if (_step == UpdateLifecycle.SQL_CREATE_TABLE)  {
                     if (!this.view) {
                         createSQLTable();
                     }
-                    super.updateInDB(_step, _allLinkTypes);
+                    ret = super.updateInDB(_step, _allLinkTypes);
                 } else if (_step == UpdateLifecycle.SQL_UPDATE_ID && !this.view)  {
                     updateColIdSQLTable();
-                    super.updateInDB(_step, _allLinkTypes);
+                    ret = super.updateInDB(_step, _allLinkTypes);
                 } else if (_step == UpdateLifecycle.SQL_UPDATE_TABLE && !this.view)  {
                     updateSQLTable();
-                    super.updateInDB(_step, _allLinkTypes);
+                    ret = super.updateInDB(_step, _allLinkTypes);
                 } else if (_step == UpdateLifecycle.SQL_RUN_SCRIPT)  {
                     executeSQLs();
-                    super.updateInDB(_step, _allLinkTypes);
+                    ret = super.updateInDB(_step, _allLinkTypes);
                 } else if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
                     if (getValue("Name") != null) {
                         // search for the parent SQL table name instance (if defined)
@@ -520,14 +523,15 @@ public class SQLTableUpdate
                                 addValue(CIAdminDataModel.SQLTable.DMTableMain.name, "" + instance.getId());
                             }
                         }
-                        super.updateInDB(_step, _allLinkTypes);
+                        ret = super.updateInDB(_step, _allLinkTypes);
                     }
                 } else  {
-                    super.updateInDB(_step, _allLinkTypes);
+                    ret = super.updateInDB(_step, _allLinkTypes);
                 }
             } catch (final EFapsException e) {
                 throw new InstallationException(" SQLTable can not be updated", e);
             }
+            return ret;
         }
 
         @Override

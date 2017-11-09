@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.db.Checkin;
 import org.efaps.update.AbstractUpdate;
@@ -119,15 +120,15 @@ public abstract class AbstractFileUpdate
          *
          * @param _step             current update step
          * @param _allLinkTypes     set of all type of links
+         * @return the multi valued map
          * @throws InstallationException if update failed
          */
         @Override
-        protected void updateInDB(final UpdateLifecycle _step,
-                                  final Set<Link> _allLinkTypes)
+        protected MultiValuedMap<String, String> updateInDB(final UpdateLifecycle _step,
+                                                            final Set<Link> _allLinkTypes)
             throws InstallationException
         {
-            super.updateInDB(_step, _allLinkTypes);
-
+            final MultiValuedMap<String, String> ret = super.updateInDB(_step, _allLinkTypes);
             if (_step == UpdateLifecycle.EFAPS_UPDATE && this.file != null)  {
                 try  {
                     final InputStream in = new URL(AbstractFileUpdate.this.root + this.file).openStream();
@@ -145,6 +146,7 @@ public abstract class AbstractFileUpdate
                             + "' does not exists or is not accessable.", e);
                 }
             }
+            return ret;
         }
 
         /**

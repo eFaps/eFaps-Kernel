@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.collections4.MultiMapUtils;
+import org.apache.commons.collections4.MultiValuedMap;
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.common.MsgPhrase.Argument;
 import org.efaps.admin.common.MsgPhrase.Label;
@@ -219,10 +221,11 @@ public class MsgPhraseUpdate
          * @see #attributes
          */
         @Override
-        public void updateInDB(final UpdateLifecycle _step,
-                               final Set<Link> _allLinkTypes)
+        public final MultiValuedMap<String, String> updateInDB(final UpdateLifecycle _step,
+                                                               final Set<Link> _allLinkTypes)
             throws InstallationException
         {
+            MultiValuedMap<String, String> ret = MultiMapUtils.newSetValuedHashMap();
             try {
                 if (_step == UpdateLifecycle.EFAPS_UPDATE) {
                     // set the id of the parent (if defined)
@@ -242,7 +245,7 @@ public class MsgPhraseUpdate
                     }
                 }
 
-                super.updateInDB(_step, _allLinkTypes);
+                ret = super.updateInDB(_step, _allLinkTypes);
 
                 if (_step == UpdateLifecycle.EFAPS_UPDATE && getInstance() != null && getInstance().isValid()) {
                     final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.MsgPhraseConfigAbstract);
@@ -275,6 +278,7 @@ public class MsgPhraseUpdate
             } catch (final EFapsException e) {
                 throw new InstallationException("update did not work", e);
             }
+            return ret;
         }
     }
 }

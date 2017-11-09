@@ -29,6 +29,8 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.collections4.MultiMapUtils;
+import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.lang3.BooleanUtils;
 import org.efaps.admin.datamodel.Type;
@@ -442,9 +444,9 @@ public class DBPropertiesUpdate
      * {@inheritDoc}
      */
     @Override
-    public void updateInDB(final JexlContext _jexlContext,
-                           final UpdateLifecycle _step,
-                           final Set<Profile> _profile)
+    public MultiValuedMap<String, String> updateInDB(final JexlContext _jexlContext,
+                                                     final UpdateLifecycle _step,
+                                                     final Set<Profile> _profile)
         throws InstallationException
     {
         if (_step == UpdateLifecycle.DBPROPERTIES_UPDATE) {
@@ -476,6 +478,7 @@ public class DBPropertiesUpdate
                 DBPropertiesUpdate.LOG.error("The URL given for one File of the DBProperties is invalid", e);
             }
         }
+        return MultiMapUtils.emptyMultiValuedMap();
     }
 
     /**

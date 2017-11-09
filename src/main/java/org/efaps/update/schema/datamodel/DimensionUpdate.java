@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.MultiValuedMap;
 import org.efaps.ci.CIAdminDataModel;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -256,25 +257,27 @@ public class DimensionUpdate
          *
          * @param _step         current step of the update life cycle
          * @param _allLinkTypes set of all links
+         * @return the multi valued map
          * @throws InstallationException on error
          * @see #uoms
          */
         @Override
-        public void updateInDB(final UpdateLifecycle _step,
-                               final Set<Link> _allLinkTypes)
+        public final MultiValuedMap<String, String> updateInDB(final UpdateLifecycle _step,
+                                                               final Set<Link> _allLinkTypes)
             throws InstallationException
         {
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
                 addValue(CIAdminDataModel.Dimension.Description.name, this.description);
             }
 
-            super.updateInDB(_step, _allLinkTypes);
+            final MultiValuedMap<String, String> ret = super.updateInDB(_step, _allLinkTypes);
 
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
                 for (final UoMDefinition uom : this.uoms) {
                     uom.updateInDB(getInstance());
                 }
             }
+            return ret;
         }
     }
 }

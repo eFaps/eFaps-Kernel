@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
 
+import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -122,15 +123,15 @@ public abstract class AbstractSourceUpdate
          *
          * @param _step             current update step
          * @param _allLinkTypes     set of links
+         * @return the multi valued map
          * @throws InstallationException on error
-         *
          */
         @Override
-        public void updateInDB(final UpdateLifecycle _step,
-                               final Set<Link> _allLinkTypes)
+        public MultiValuedMap<String, String>  updateInDB(final UpdateLifecycle _step,
+                                                          final Set<Link> _allLinkTypes)
             throws InstallationException
         {
-            super.updateInDB(_step, _allLinkTypes);
+            final MultiValuedMap<String, String> ret = super.updateInDB(_step, _allLinkTypes);
             if (_step == UpdateLifecycle.EFAPS_UPDATE && getValue("Name") != null)  {
                 final Checkin checkin = new Checkin(getInstance());
                 try {
@@ -146,6 +147,7 @@ public abstract class AbstractSourceUpdate
                     throw new InstallationException("EFapsException", e);
                 }
             }
+            return ret;
         }
 
         /**

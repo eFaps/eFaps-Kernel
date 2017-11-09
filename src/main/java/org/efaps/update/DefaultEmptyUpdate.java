@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.MultiMapUtils;
+import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.jexl2.JexlContext;
 import org.efaps.update.Install.InstallFile;
 import org.efaps.update.util.InstallationException;
@@ -59,12 +61,13 @@ public class DefaultEmptyUpdate
     }
 
     @Override
-    public void updateInDB(final JexlContext _jexlContext,
+    public MultiValuedMap<String, String> updateInDB(final JexlContext _jexlContext,
                            final UpdateLifecycle _step,
                            final Set<Profile> _profiles)
         throws InstallationException
     {
         // nothing will be done at all
+        return MultiMapUtils.emptyMultiValuedMap();
     }
 
     @Override

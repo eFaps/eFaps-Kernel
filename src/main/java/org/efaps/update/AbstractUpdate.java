@@ -30,6 +30,8 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.collections4.MultiMapUtils;
+import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
@@ -223,14 +225,16 @@ public abstract class AbstractUpdate
      * @param _jexlContext  context used to evaluate JEXL expressions
      * @param _step         current step of the update life cycle
      * @param _profiles     the Profiles assigned
+     * @return the multi valued map
      * @throws InstallationException from called update methods
      */
     @Override
-    public void updateInDB(final JexlContext _jexlContext,
-                           final UpdateLifecycle _step,
-                           final Set<Profile> _profiles)
+    public MultiValuedMap<String, String> updateInDB(final JexlContext _jexlContext,
+                                                     final UpdateLifecycle _step,
+                                                     final Set<Profile> _profiles)
         throws InstallationException
     {
+        final MultiValuedMap<String, String> ret = MultiMapUtils.newSetValuedHashMap();
         for (final AbstractDefinition def : this.definitions) {
             // only execute if
             // 1. valid version
@@ -244,13 +248,14 @@ public abstract class AbstractUpdate
                 if (this.installFile != null && AbstractUpdate.LOG.isDebugEnabled()) {
                     AbstractUpdate.LOG.debug("Executing '" + this.installFile.getUrl().toString() + "'");
                 }
-                def.updateInDB(_step, this.allLinkTypes);
+                ret.putAll(def.updateInDB(_step, this.allLinkTypes));
                 if (def.getInstance() != null && def.getInstance().isValid()
                                 && UpdateLifecycle.EFAPS_UPDATE.equals(_step)) {
                     registerRevision(getFileApplication(), getInstallFile(), def.getInstance());
                 }
             }
         }
+        return ret;
     }
 
     /**
@@ -471,8 +476,8 @@ public abstract class AbstractUpdate
          */
         private boolean includeChildTypes = false;
 
-        /** The log delete. */
-        private boolean logDelete = true;
+        /** The register updatable. */
+        private boolean registerUpdatable = true;
 
         /**
          * Constructor used to initialize the instance variables.
@@ -568,20 +573,20 @@ public abstract class AbstractUpdate
          *
          * @return the log delete
          */
-        public boolean isLogDelete()
+        public boolean isRegisterUpdatable()
         {
-            return this.logDelete;
+            return this.registerUpdatable;
         }
 
         /**
          * Sets the log delete.
          *
-         * @param _logDelete the new log delete
+         * @param _registerUpdatable the new log delete
          * @return the link
          */
-        public Link setLogDelete(final boolean _logDelete)
+        public Link setRegisterUpdatable(final boolean _registerUpdatable)
         {
-            this.logDelete = _logDelete;
+            this.registerUpdatable = _registerUpdatable;
             return this;
         }
 
@@ -884,14 +889,18 @@ public abstract class AbstractUpdate
         }
 
         /**
+         * Update in DB.
+         *
          * @param _step current update step
          * @param _allLinkTypes set of all type of links
+         * @return the multi valued map
          * @throws InstallationException if update failed
          */
-        protected void updateInDB(final UpdateLifecycle _step,
-                                  final Set<AbstractUpdate.Link> _allLinkTypes)
+        protected MultiValuedMap<String, String> updateInDB(final UpdateLifecycle _step,
+                                                            final Set<AbstractUpdate.Link> _allLinkTypes)
             throws InstallationException
         {
+            final MultiValuedMap<String, String> ret = MultiMapUtils.newSetValuedHashMap();
             if (_step == UpdateLifecycle.EFAPS_CREATE) {
                 searchInstance();
 
@@ -924,7 +933,7 @@ public abstract class AbstractUpdate
 
                     if (_allLinkTypes != null) {
                         for (final Link linkType : _allLinkTypes) {
-                            setLinksInDB(this.instance, linkType, this.links.get(linkType));
+                            setLinksInDB(ret, this.instance, linkType, this.links.get(linkType));
                         }
                     }
                     setPropertiesInDb(this.instance, this.properties);
@@ -939,6 +948,7 @@ public abstract class AbstractUpdate
                     throw new InstallationException("update did not work", e);
                 }
             }
+            return ret;
         }
 
         /**
@@ -1036,6 +1046,7 @@ public abstract class AbstractUpdate
          * Remove all links  of a specific type from a
          * given object (defined by the instance).
          *
+         * @param _updateables the updateables
          * @param _instance instance for which all links must be removed
          * @param _linkType type of link which must be removed
          * @throws EFapsException if existing links could not be removed
@@ -1043,24 +1054,27 @@ public abstract class AbstractUpdate
          * @see #setLinksInDB used to remove all links for given instance with a
          *      zero length set of link instances
          */
-        protected void removeLinksInDB(final Instance _instance,
+        protected void removeLinksInDB(final MultiValuedMap<String, String> _updateables,
+                                       final Instance _instance,
                                        final Link _linkType)
             throws EFapsException
         {
-            setLinksInDB(_instance, _linkType, new HashSet<LinkInstance>());
+            setLinksInDB(_updateables, _instance, _linkType, new HashSet<LinkInstance>());
         }
 
         /**
          * Sets the links from this object to the given list of objects (with
          * the object name) in the eFaps database.
          *
+         * @param _updateables the updateables
          * @param _instance instance for which the links must be defined
          * @param _linktype type of the link to be updated
          * @param _links all links of the type _linktype which will be connected
          *            to this instance
          * @throws EFapsException if links could not be defined
          */
-        protected void setLinksInDB(final Instance _instance,
+        protected void setLinksInDB(final MultiValuedMap<String, String> _updateables,
+                                    final Instance _instance,
                                     final Link _linktype,
                                     final Set<LinkInstance> _links)
             throws EFapsException
@@ -1116,7 +1130,7 @@ public abstract class AbstractUpdate
                 final InstanceQuery query = queryBldr.getQuery();
                 query.executeWithoutAccessCheck();
                 while (query.next()) {
-                    removeRelation(_linktype, query.getCurrentValue());
+                    removeRelation(_updateables, _linktype, query.getCurrentValue());
                 }
 
                 // 4. check if the link must be unique and remove existing links
@@ -1132,7 +1146,7 @@ public abstract class AbstractUpdate
                         final InstanceQuery unGrpQuery = unGrpQueryBldr.getQuery();
                         unGrpQuery.executeWithoutAccessCheck();
                         while (unGrpQuery.next()) {
-                            removeRelation(checkLink, unGrpQuery.getCurrentValue());
+                            removeRelation(_updateables, checkLink, unGrpQuery.getCurrentValue());
                         }
                     }
                 }
@@ -1187,15 +1201,17 @@ public abstract class AbstractUpdate
         /**
          * Removes the relation.
          *
+         * @param _updateables the updateables
          * @param _linktype the linktype
          * @param _relInst the rel inst
          * @throws EFapsException on error
          */
-        protected void removeRelation(final Link _linktype,
+        protected void removeRelation(final MultiValuedMap<String, String> _updateables,
+                                      final Link _linktype,
                                       final Instance _relInst)
             throws EFapsException
         {
-            if (_linktype.isLogDelete()) {
+            if (_linktype.isRegisterUpdatable()) {
                 final PrintQuery print = new PrintQuery(getInstance());
                 if (getInstance().getType().getAttributes().containsKey("UUID")) {
                     print.addAttribute("UUID");
@@ -1213,20 +1229,24 @@ public abstract class AbstractUpdate
                 if (_linktype.getChildType().getAttributes().containsKey("Name")) {
                     print2.addSelect(selName);
                 }
-
                 print2.addSelect(selInst);
                 print2.executeWithoutAccessCheck();
 
+                final String obj2uuid = print2.getSelect(selUUID);
+                final String obj2name = print2.getSelect(selName);
                 final Instance childInst = print2.getSelect(selInst);
+                _updateables.put(childInst.getType().getUUID().toString(), obj2uuid == null ? obj2name : obj2uuid);
+
                 AbstractUpdate.LOG.info("Deleting '{} 'relation between '{}' '{}' '{}' and '{}' '{}' '{}'",
                                 _linktype.getLinkType().getName(),
                                 getInstance().getType().getName(),
                                 print.getAttribute("UUID"), getValue("Name"),
                                 childInst.getType().getName(),
-                                print2.getSelect(selUUID),
-                                print2.getSelect(selName));
+                                obj2uuid,
+                                obj2name);
+
+                new Delete(_relInst).executeWithoutTrigger();
             }
-            new Delete(_relInst).executeWithoutTrigger();
         }
 
         /**

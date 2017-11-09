@@ -19,6 +19,8 @@ package org.efaps.update.schema.program;
 
 import java.util.Set;
 
+import org.apache.commons.collections4.MultiMapUtils;
+import org.apache.commons.collections4.MultiValuedMap;
 import org.efaps.db.Instance;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.Install.InstallFile;
@@ -133,10 +135,11 @@ public class JavaUpdate
          * @throws InstallationException on error
          */
         @Override
-        public void updateInDB(final UpdateLifecycle _step,
-                               final Set<Link> _allLinkTypes)
+        public MultiValuedMap<String, String>  updateInDB(final UpdateLifecycle _step,
+                                                          final Set<Link> _allLinkTypes)
             throws InstallationException
         {
+            final MultiValuedMap<String, String> ret = MultiMapUtils.newSetValuedHashMap();
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
                 if (this.updateAllowed) {
                     AbstractUpdate.LOG.info("    Update {} '{}'", getInstance().getType().getName(),
@@ -147,8 +150,9 @@ public class JavaUpdate
                     AbstractUpdate.LOG.info("    No Update set for esjp: {}", this.importer.getProgramName());
                 }
             } else  {
-                super.updateInDB(_step, _allLinkTypes);
+                ret.putAll(super.updateInDB(_step, _allLinkTypes));
             }
+            return ret;
         }
     }
 }
