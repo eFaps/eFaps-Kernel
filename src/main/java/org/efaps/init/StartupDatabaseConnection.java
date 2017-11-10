@@ -338,8 +338,6 @@ public final class StartupDatabaseConnection
         } catch (final NamingException e) {
             throw new StartupException("Could not initialize JNDI", e);
         }
-        // and reset eFaps context (to be sure..)
-        org.efaps.db.Context.reset();
     }
 
     /**
@@ -408,7 +406,7 @@ public final class StartupDatabaseConnection
         throws StartupException
     {
         try {
-            final AbstractDatabase<?> dbType = (AbstractDatabase<?>) (Class.forName(_classDBType)).newInstance();
+            final AbstractDatabase<?> dbType = (AbstractDatabase<?>) Class.forName(_classDBType).newInstance();
             if (dbType == null) {
                 throw new StartupException("could not initaliase database type '" + _classDBType + "'");
             } else {
@@ -439,7 +437,7 @@ public final class StartupDatabaseConnection
         throws StartupException
     {
         try {
-            final Object tm = (Class.forName(_classTM)).newInstance();
+            final Object tm = Class.forName(_classTM).newInstance();
             if (tm == null) {
                 throw new StartupException("could not initialise TransactionManager ");
             } else {
@@ -478,7 +476,7 @@ public final class StartupDatabaseConnection
     {
         try {
 
-            final Object clzz = (Class.forName(_classTSR)).newInstance();
+            final Object clzz = Class.forName(_classTSR).newInstance();
             if (clzz == null) {
                 throw new StartupException("could not initaliase database type");
             } else {
@@ -533,10 +531,10 @@ public final class StartupDatabaseConnection
                 if (group.length() > 0) {
                     // separated key from value
                     final int index = group.indexOf('=');
-                    final String key = (index > 0)
+                    final String key = index > 0
                                   ? group.substring(0, index).trim()
                                   : group.trim();
-                    final String value = (index > 0)
+                    final String value = index > 0
                                   ? group.substring(index + 1).trim()
                                   : "";
                     properties.put(key, value);
