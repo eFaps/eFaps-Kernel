@@ -27,16 +27,18 @@ public final class RandomUtil
 {
 
     /** The alphanumeric. */
-    private static RandomStringGenerator ALPHANUMERIC = new RandomStringGenerator.Builder().filteredBy(
-                    CharacterPredicates.LETTERS, CharacterPredicates.DIGITS).build();
+    private static RandomStringGenerator ALPHANUMERIC = new RandomStringGenerator.Builder()
+                    .withinRange('0', 'z')
+                    .filteredBy(CharacterPredicates.LETTERS, CharacterPredicates.DIGITS).build();
 
     /** The Alphabetic. */
-    private static RandomStringGenerator ALPHABETIC = new RandomStringGenerator.Builder().filteredBy(
-                    CharacterPredicates.LETTERS).build();
+    private static RandomStringGenerator ALPHABETIC = new RandomStringGenerator.Builder()
+                    .withinRange('A', 'z')
+                    .filteredBy(CharacterPredicates.LETTERS).build();
 
     /** The Alphabetic. */
-    private static RandomStringGenerator NUMERIC = new RandomStringGenerator.Builder().filteredBy(
-                    CharacterPredicates.DIGITS).build();
+    private static RandomStringGenerator NUMERIC = new RandomStringGenerator.Builder()
+                    .filteredBy(CharacterPredicates.DIGITS).build();
 
     /** The Alphabetic. */
     private static RandomStringGenerator ALL = new RandomStringGenerator.Builder().build();
