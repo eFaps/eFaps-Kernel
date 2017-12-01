@@ -18,6 +18,7 @@ package org.efaps.mock.datamodel;
 
 import java.util.List;
 
+import org.efaps.test.AbstractTest;
 import org.efaps.test.EFapsQueryHandler;
 
 import acolyte.jdbc.QueryResult;
@@ -43,6 +44,8 @@ public class Attribute extends AbstractType
     /** The attribute type id. */
     private final Long attributeTypeId;
 
+    /** The attribute type id. */
+    private final Long typeId;
     /**
      * Instantiates a new attribute.
      *
@@ -53,13 +56,14 @@ public class Attribute extends AbstractType
         this.dataModelTypeId = _builder.dataModelTypeId;
         this.sqlTableId = _builder.sqlTableId;
         this.attributeTypeId = _builder.attributeTypeId;
+        this.typeId = _builder.typeId;
     }
 
     @Override
     public QueryResult getResult() {
         return RowLists.rowList11(Long.class, String.class, Long.class, Long.class, Long.class, Long.class, Long.class,
-                        String.class, String.class,Long.class, String.class)
-                        .append(getId(), getName(), Long.valueOf(123), this.sqlTableId, this.attributeTypeId,
+                        String.class, String.class, Long.class, String.class)
+                        .append(getId(), getName(), this.typeId, this.sqlTableId, this.attributeTypeId,
                                         Long.valueOf(123), null, "column", null, null, null)
                         .asResult();
     }
@@ -104,6 +108,9 @@ public class Attribute extends AbstractType
         /** The attribute type id. */
         private Long attributeTypeId;
 
+        /** The type id. */
+        private Long typeId = AbstractTest.TYPE_Attribute.getId();
+
         /**
          * With data model type id.
          *
@@ -137,6 +144,18 @@ public class Attribute extends AbstractType
         public AttributeBuilder withAttributeTypeId(final Long _attributeTypeId)
         {
             this.attributeTypeId = _attributeTypeId;
+            return this;
+        }
+
+        /**
+         * With attribute type id.
+         *
+         * @param _attributeTypeId the attribute type id
+         * @return the attribute builder
+         */
+        public AttributeBuilder withTypeId(final Long _typeId)
+        {
+            this.typeId = _typeId;
             return this;
         }
 

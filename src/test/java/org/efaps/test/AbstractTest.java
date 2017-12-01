@@ -24,7 +24,10 @@ import com.zaxxer.hikari.HikariJNDIFactory;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
+import org.apache.commons.lang3.RandomUtils;
+import org.efaps.ci.CIAdminDataModel;
 import org.efaps.db.Context;
 import org.efaps.init.StartupDatabaseConnection;
 import org.efaps.init.StartupException;
@@ -36,7 +39,7 @@ import org.efaps.mock.datamodel.SQLTable;
 import org.efaps.mock.datamodel.Type;
 import org.efaps.mock.db.MockDatabase;
 import org.efaps.util.EFapsException;
-import org.jgroups.util.UUID;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 
@@ -54,23 +57,36 @@ public abstract class AbstractTest
     /** The Constant JDBCURL. */
     public static final String JDBCURL = "jdbc:acolyte:anything-you-want?handler=my-handler-id";
 
+    /** The Constant DemoType. */
+    public static final Type DemoType = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("DemoType")
+                    .build();
+
+    public static final Type TYPE_AttributeSet = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withUuid(CIAdminDataModel.AttributeSet.uuid)
+                    .withName("AttributeSet")
+                    .build();
+
+    public static final Type TYPE_Attribute = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withUuid(CIAdminDataModel.Attribute.uuid)
+                    .withName("Attribute")
+                    .build();
+
     /**
-     * Prepare JNDI.
+     * Prepare the Test Suite.
      *
      * @throws StartupException the startup exception
      */
     @BeforeSuite
-    public void prepareJNDI()
+    public void prepareSuite()
         throws StartupException
     {
         Person.builder()
             .withId(1L)
             .withName("Administrator")
-            .build();
-
-        final Type type = Type.builder()
-            .withId(Long.valueOf(123))
-            .withName("DemoType")
             .build();
 
         final SQLTable sqlTable = SQLTable.builder()
@@ -86,7 +102,7 @@ public abstract class AbstractTest
 
         Attribute.builder()
             .withName("TestAttribute")
-            .withDataModelTypeId(type.getId())
+            .withDataModelTypeId(DemoType.getId())
             .withSqlTableId(sqlTable.getId())
             .withAttributeTypeId(stringAttrType.getId())
             .build();
@@ -115,5 +131,17 @@ public abstract class AbstractTest
         throws EFapsException
     {
         Context.begin("Administrator");
+    }
+
+    /**
+     * Close context.
+     *
+     * @throws EFapsException the eFaps exception
+     */
+    @AfterMethod
+    public void closeContext()
+        throws EFapsException
+    {
+        Context.commit();
     }
 }

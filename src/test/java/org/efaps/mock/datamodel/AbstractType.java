@@ -16,11 +16,12 @@
 
 package org.efaps.mock.datamodel;
 
+import java.util.UUID;
+
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.efaps.test.IResult;
-import org.jgroups.util.UUID;
 
 /**
  * The Class AbstractType.
