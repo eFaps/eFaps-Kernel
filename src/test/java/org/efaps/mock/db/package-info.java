@@ -16,7 +16,7 @@
  */
 
 /**
- * base package for tests.
+ * Mocks used to simulate the DataBase information.
  */
-package org.efaps.test;
+package org.efaps.mock.db;
 
