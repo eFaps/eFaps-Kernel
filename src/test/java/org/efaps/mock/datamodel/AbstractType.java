@@ -96,7 +96,7 @@ public abstract class AbstractType
     {
 
         /** The id. */
-        private long id = RandomUtils.nextLong();
+        protected long id = RandomUtils.nextLong();
 
         /** The name. */
         private String name;

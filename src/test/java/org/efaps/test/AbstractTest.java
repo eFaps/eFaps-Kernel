@@ -63,6 +63,10 @@ public abstract class AbstractTest
                     .withName("DemoType")
                     .build();
 
+    public static final SQLTable DemoTypeSQLTable = SQLTable.builder()
+                    .withName("DemoTypeSQLTable")
+                    .build();
+
     public static final Type TYPE_AttributeSet = Type.builder()
                     .withId(RandomUtils.nextLong())
                     .withUuid(CIAdminDataModel.AttributeSet.uuid)
@@ -73,6 +77,20 @@ public abstract class AbstractTest
                     .withId(RandomUtils.nextLong())
                     .withUuid(CIAdminDataModel.Attribute.uuid)
                     .withName("Attribute")
+                    .build();
+
+    public static final AttributeType StringAttrType = AttributeType.builder()
+                    .withName("String")
+                    .withUuid(UUID.fromString("72221a59-df5d-4c56-9bec-c9167de80f2b"))
+                    .withClassName("org.efaps.admin.datamodel.attributetype.StringType")
+                    .withClassNameUI("org.efaps.admin.datamodel.ui.StringUI")
+                    .build();
+
+    public static final Attribute TestAttribute = Attribute.builder()
+                    .withName("TestAttribute")
+                    .withDataModelTypeId(DemoType.getId())
+                    .withSqlTableId(DemoTypeSQLTable.getId())
+                    .withAttributeTypeId(StringAttrType.getId())
                     .build();
 
     /**
@@ -87,24 +105,6 @@ public abstract class AbstractTest
         Person.builder()
             .withId(1L)
             .withName("Administrator")
-            .build();
-
-        final SQLTable sqlTable = SQLTable.builder()
-            .withName("DemoTypeSQLTable")
-            .build();
-
-        final AttributeType stringAttrType = AttributeType.builder()
-            .withName("String")
-            .withUuid(UUID.fromString("72221a59-df5d-4c56-9bec-c9167de80f2b"))
-            .withClassName("org.efaps.admin.datamodel.attributetype.StringType")
-            .withClassNameUI("org.efaps.admin.datamodel.ui.StringUI")
-            .build();
-
-        Attribute.builder()
-            .withName("TestAttribute")
-            .withDataModelTypeId(DemoType.getId())
-            .withSqlTableId(sqlTable.getId())
-            .withAttributeTypeId(stringAttrType.getId())
             .build();
 
         final StatementHandler handler = new CompositeHandler().withQueryDetection("^ select ")

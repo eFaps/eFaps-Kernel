@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.efaps.test.AbstractTest;
 import org.efaps.test.EFapsQueryHandler;
+import org.efaps.test.IResult;
 
 import acolyte.jdbc.QueryResult;
 import acolyte.jdbc.RowLists;
@@ -28,12 +29,14 @@ import acolyte.jdbc.StatementHandler.Parameter;
 /**
  * The Class Attribute.
  */
-public class Attribute extends AbstractType
+public class Attribute
+    extends AbstractType
 {
-
     /** The Constant SQL. */
     private static final String SQL = "select ID,NAME,TYPEID,DMTABLE,DMATTRIBUTETYPE,DMTYPELINK,PARENTSET,SQLCOLUMN,"
                     + "DEFAULTVAL,DIMENSION,CLASSNAME from V_ADMINATTRIBUTE T0 where T0.DMTYPE = ?";
+
+    private static final String SQL4ATTR2TYPE = "select DMTYPE from V_ADMINATTRIBUTE T0 where T0.ID = ?";
 
     /** The data model type id. */
     private final Long dataModelTypeId;
@@ -85,6 +88,11 @@ public class Attribute extends AbstractType
         return ret;
     }
 
+    public Long getDataModelTypeId()
+    {
+        return this.dataModelTypeId;
+    }
+
     /**
      * Builder.
      *
@@ -97,7 +105,9 @@ public class Attribute extends AbstractType
     /**
      * The Class AttributeBuilder.
      */
-    public static class AttributeBuilder extends AbstractBuilder<AttributeBuilder> {
+    public static class AttributeBuilder
+        extends AbstractBuilder<AttributeBuilder>
+    {
 
         /** The data model type id. */
         private Long dataModelTypeId;
@@ -167,7 +177,58 @@ public class Attribute extends AbstractType
         public Attribute build() {
             final Attribute ret = new Attribute(this);
             EFapsQueryHandler.get().register(ret);
+            final Attribute2Type attr2Type = new Attribute2Type(this);
+            EFapsQueryHandler.get().register(attr2Type);
             return ret;
+        }
+    }
+
+    /**
+     * The Class Attribute2Type.
+     */
+    private static class Attribute2Type
+        implements IResult
+    {
+
+        /** The id. */
+        private final Long id;
+
+        /** The data model type id. */
+        private final Long dataModelTypeId;
+
+        /**
+         * Instantiates a new attribute two type.
+         *
+         * @param _builder the builder
+         */
+        private Attribute2Type(final AttributeBuilder _builder) {
+            this.id = _builder.id;
+            this.dataModelTypeId = _builder.dataModelTypeId;
+        }
+
+        @Override
+        public String getSql()
+        {
+            return SQL4ATTR2TYPE;
+        }
+
+        @Override
+        public boolean applies(final List<Parameter> _parameters)
+        {
+            boolean ret = false;
+            if (_parameters.size() == 1) {
+                final Parameter parameter = _parameters.get(0);
+                ret = this.id.equals(parameter.right);
+            }
+            return ret;
+        }
+
+        @Override
+        public QueryResult getResult()
+        {
+            return RowLists.rowList1(Long.class)
+                            .append(this.dataModelTypeId)
+                            .asResult();
         }
     }
 }
