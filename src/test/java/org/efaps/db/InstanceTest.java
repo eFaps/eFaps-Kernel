@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+
 package org.efaps.db;
 
 import static org.testng.Assert.assertEquals;
@@ -21,6 +22,9 @@ import static org.testng.Assert.assertEquals;
 import org.efaps.test.AbstractTest;
 import org.testng.annotations.Test;
 
+/**
+ * The Class InstanceTest.
+ */
 public class InstanceTest
     extends AbstractTest
 {
@@ -28,7 +32,9 @@ public class InstanceTest
     @Test
     public void getInstance4String()
     {
-        final Instance instance = Instance.get(String.format("%s.1", DemoType.getId()));
+        final String oid = String.format("%s.1", DemoType.getId());
+        final Instance instance = Instance.get(oid);
+        assertEquals(instance.getOid(), oid);
         assertEquals(instance.getType().getName(), "DemoType");
         assertEquals(instance.getId(), 1L);
     }
@@ -38,6 +44,7 @@ public class InstanceTest
     {
         final Instance instance = Instance.get(DemoType.getUuid(), 1L);
         assertEquals(instance.getType().getName(), "DemoType");
+        assertEquals(instance.getTypeUUID(), DemoType.getUuid());
         assertEquals(Long.valueOf(instance.getType().getId()), DemoType.getId());
         assertEquals(instance.getId(), 1L);
     }
