@@ -56,9 +56,10 @@ public class EFapsQueryHandler
         throws SQLException
     {
         QueryResult ret = QueryResult.Nil;
-        if (this.sql2results.containsKey(_sql.trim())) {
-           for (final IResult result : this.sql2results.get(_sql.trim())) {
-               if (result.applies(_parameters)) {
+        final String sql = _sql.trim();
+        if (this.sql2results.containsKey(sql)) {
+           for (final IResult result : this.sql2results.get(sql)) {
+               if (result.applies(sql, _parameters)) {
                    ret = result.getResult();
                    break;
                }
@@ -83,7 +84,9 @@ public class EFapsQueryHandler
      * @param _result the result
      */
     public void register(final IResult _result) {
-        this.sql2results.put(_result.getSql(), _result);
+        for (final String sql : _result.getSqls()) {
+            this.sql2results.put(sql, _result);
+        }
         LOG.info("Added Result '{}'", _result);
     }
 

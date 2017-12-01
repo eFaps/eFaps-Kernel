@@ -54,9 +54,6 @@ public class AttributeType
         this.classNameUI = _builder.classNameUI;
     }
 
-    /* (non-Javadoc)
-     * @see org.efaps.test.IResult#getResult()
-     */
     @Override
     public QueryResult getResult()
     {
@@ -65,20 +62,14 @@ public class AttributeType
                                         this.classNameUI, false, false).asResult();
     }
 
-    /* (non-Javadoc)
-     * @see org.efaps.test.IResult#getSql()
-     */
     @Override
-    public String getSql()
+    public String[] getSqls()
     {
-        return SQL;
+        return new String[] { SQL };
     }
 
-    /* (non-Javadoc)
-     * @see org.efaps.test.IResult#applies(java.util.List)
-     */
     @Override
-    public boolean applies(final List<Parameter> _parameters)
+    public boolean applies(final String _sql, final List<Parameter> _parameters)
     {
         boolean ret = false;
         if (_parameters.size() == 1) {

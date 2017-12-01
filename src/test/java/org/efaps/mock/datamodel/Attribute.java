@@ -72,13 +72,13 @@ public class Attribute
     }
 
     @Override
-    public String getSql()
+    public String[] getSqls()
     {
-        return SQL;
+        return new String[] { SQL };
     }
 
     @Override
-    public boolean applies(final List<Parameter> _parameters)
+    public boolean applies(final String _sql, final List<Parameter> _parameters)
     {
         boolean ret = false;
         if (_parameters.size() == 1) {
@@ -207,13 +207,13 @@ public class Attribute
         }
 
         @Override
-        public String getSql()
+        public String[] getSqls()
         {
-            return SQL4ATTR2TYPE;
+            return new String[] { SQL4ATTR2TYPE };
         }
 
         @Override
-        public boolean applies(final List<Parameter> _parameters)
+        public boolean applies(final String _sql, final List<Parameter> _parameters)
         {
             boolean ret = false;
             if (_parameters.size() == 1) {

@@ -32,15 +32,16 @@ public interface IResult
      *
      * @return the sql
      */
-    String getSql();
+    String[] getSqls();
 
     /**
      * Applies.
      *
+     * @param _sql the sql
      * @param _parameters the parameters
      * @return true, if successful
      */
-    boolean applies(final List<Parameter> _parameters);
+    boolean applies(String _sql, final List<Parameter> _parameters);
 
     /**
      * Gets the result.

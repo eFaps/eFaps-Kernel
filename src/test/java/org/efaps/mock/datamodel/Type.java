@@ -35,6 +35,10 @@ public class Type
     private static final String SQL = "select ID,UUID,NAME,PURPOSE,PARENTDMTYPE,PARENTCLASSDMTYPE "
                     + "from V_ADMINTYPE T0 where T0.ID = ?";
 
+    /** The Constant SQL. */
+    private static final String SQLUUID = "select ID,UUID,NAME,PURPOSE,PARENTDMTYPE,PARENTCLASSDMTYPE "
+                    + "from V_ADMINTYPE T0 where T0.UUID = ?";
+
     /**
      * Instantiates a new type.
      *
@@ -48,23 +52,27 @@ public class Type
     @Override
     public QueryResult getResult()
     {
-        return RowLists.rowList6(Long.class, String.class, String.class, Integer.class, Long.class, Long.class).append(
-                        getId(), getUuid().toString(), getName(), 0, null, null).asResult();
+        return RowLists.rowList6(Long.class, String.class, String.class, Integer.class, Long.class, Long.class)
+                        .append(getId(), getUuid().toString(), getName(), 0, null, null).asResult();
     }
 
     @Override
-    public String getSql()
+    public String[] getSqls()
     {
-        return SQL;
+        return new String[] { SQL, SQLUUID };
     }
 
     @Override
-    public boolean applies(final List<Parameter> _parameters)
+    public boolean applies(final String _sql, final List<Parameter> _parameters)
     {
         boolean ret = false;
         if (_parameters.size() == 1) {
             final Parameter parameter = _parameters.get(0);
-            ret = getId().equals(parameter.right);
+            if (SQL.equals(_sql)) {
+                ret = getId().equals(parameter.right);
+            } else {
+                ret = getUuid().toString().equals(parameter.right);
+            }
         }
         return ret;
     }

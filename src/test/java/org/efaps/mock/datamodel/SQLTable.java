@@ -49,18 +49,18 @@ public class SQLTable
     public QueryResult getResult()
     {
         return RowLists.rowList7(Long.class, String.class, String.class, String.class, String.class, String.class,
-                        Long.class).append(getId(), getUuid().toString(), getName(), "T_DEMO", "ID", "TYPE", null)
+                        Long.class).append(getId(), getUuid().toString(), getName(), "T_DEMO", "ID", null, null)
                         .asResult();
     }
 
     @Override
-    public String getSql()
+    public String[] getSqls()
     {
-        return SQL;
+        return new String[] { SQL };
     }
 
     @Override
-    public boolean applies(final List<Parameter> _parameters)
+    public boolean applies(final String _sql, final List<Parameter> _parameters)
     {
         boolean ret = false;
         if (_parameters.size() == 1) {

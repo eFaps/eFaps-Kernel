@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
@@ -1522,13 +1523,13 @@ public class Type
     }
 
     /**
-     * Compares a given id and uuid of a type to evaluate if they are from the
-     * same Type. In case that they are not cached (during initialize) teh
+     * Compares a given id and UUID of a type to evaluate if they are from the
+     * same Type. In case that they are not cached (during initialize) the
      * database is requested.
      *
      * @param _typeId Id of the type to be checked
      * @param _typeUUID uuid of the type to be checked
-     * @return true if the id and the uuid belong to the same type
+     * @return true if the id and the UUID belong to the same type
      * @throws CacheReloadException on error
      */
     protected static boolean check4Type(final long _typeId,
@@ -1573,7 +1574,7 @@ public class Type
                     throw new CacheReloadException("could not read child type ids", e);
                 }
             }
-            ret = UUID.fromString(uuidTmp).equals(_typeUUID);
+            ret = StringUtils.isNotEmpty(uuidTmp) && UUID.fromString(uuidTmp).equals(_typeUUID);
         }
         return ret;
     }
