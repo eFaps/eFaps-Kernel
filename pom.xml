@@ -749,10 +749,50 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <scope>test</scope>
         </dependency>
         <!-- connection Pooling, used as J2EE resource -->
+         <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-testng-agent</artifactId>
+            <version>1.7.1</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
-            <version>${commons.dbcp.version}</version>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-easymock</artifactId>
+            <version>1.7.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.5.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.jbossts.jta</groupId>
+            <artifactId>narayana-jta</artifactId>
+            <version>${jboss.jta.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jfreechart</artifactId>
+                    <groupId>jfree</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>hornetq-core</artifactId>
+                    <groupId>org.hornetq</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>${hikaricp.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eu.acolyte</groupId>
+            <artifactId>jdbc-java8</artifactId>
+            <version>1.0.47</version>
             <scope>test</scope>
         </dependency>
    </dependencies>
