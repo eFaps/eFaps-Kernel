@@ -17,7 +17,9 @@
 package org.efaps.test;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.MultiMapUtils;
 import org.apache.commons.collections4.SetValuedMap;
@@ -44,6 +46,8 @@ public class EFapsQueryHandler
     /** The sql 2 results. */
     private final SetValuedMap<String, IResult> sql2results = MultiMapUtils.newSetValuedHashMap();
 
+    private final Map<String, IVerify> sql2verify = new HashMap<>();
+
     /**
      * Instantiates a new e faps query handler.
      */
@@ -57,7 +61,9 @@ public class EFapsQueryHandler
     {
         QueryResult ret = QueryResult.Nil;
         final String sql = _sql.trim();
-        if (this.sql2results.containsKey(sql)) {
+        if (this.sql2verify.containsKey(sql)) {
+            this.sql2verify.get(sql).execute();
+        } else if (this.sql2results.containsKey(sql)) {
            for (final IResult result : this.sql2results.get(sql)) {
                if (result.applies(sql, _parameters)) {
                    ret = result.getResult();
@@ -88,6 +94,26 @@ public class EFapsQueryHandler
             this.sql2results.put(sql, _result);
         }
         LOG.info("Added Result '{}'", _result);
+    }
+
+    /**
+     * Register.
+     *
+     * @param _result the result
+     */
+    public void register(final IVerify _verify) {
+        this.sql2verify.put(_verify.getSql(), _verify);
+        LOG.info("Added Verify '{}'", _verify);
+    }
+
+    /**
+     * Unregister.
+     *
+     * @param _sql the sql
+     */
+    public void unregister(final String _sql)
+    {
+        this.sql2verify.remove(_sql);
     }
 
     /**
