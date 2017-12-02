@@ -21,13 +21,13 @@ import java.util.UUID;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.efaps.test.IResult;
+import org.efaps.test.IMockResult;
 
 /**
  * The Class AbstractType.
  */
 public abstract class AbstractType
-    implements IResult
+    implements IMockResult
 {
 
     /** The id. */

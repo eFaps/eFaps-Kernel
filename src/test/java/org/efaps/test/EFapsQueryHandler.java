@@ -44,7 +44,7 @@ public class EFapsQueryHandler
     private static EFapsQueryHandler INSTANCE;
 
     /** The sql 2 results. */
-    private final SetValuedMap<String, IResult> sql2results = MultiMapUtils.newSetValuedHashMap();
+    private final SetValuedMap<String, IMockResult> sql2results = MultiMapUtils.newSetValuedHashMap();
 
     private final Map<String, IVerify> sql2verify = new HashMap<>();
 
@@ -64,7 +64,7 @@ public class EFapsQueryHandler
         if (this.sql2verify.containsKey(sql)) {
             this.sql2verify.get(sql).execute();
         } else if (this.sql2results.containsKey(sql)) {
-           for (final IResult result : this.sql2results.get(sql)) {
+           for (final IMockResult result : this.sql2results.get(sql)) {
                if (result.applies(sql, _parameters)) {
                    ret = result.getResult();
                    break;
@@ -79,7 +79,7 @@ public class EFapsQueryHandler
      *
      * @return the sql two results
      */
-    public SetValuedMap<String, IResult> getSql2Results()
+    public SetValuedMap<String, IMockResult> getSql2Results()
     {
         return this.sql2results;
     }
@@ -89,7 +89,7 @@ public class EFapsQueryHandler
      *
      * @param _result the result
      */
-    public void register(final IResult _result) {
+    public void register(final IMockResult _result) {
         for (final String sql : _result.getSqls()) {
             this.sql2results.put(sql, _result);
         }

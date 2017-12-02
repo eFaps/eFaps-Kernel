@@ -24,7 +24,7 @@ import acolyte.jdbc.StatementHandler.Parameter;
 /**
  * The Interface IResult.
  */
-public interface IResult
+public interface IMockResult
 {
 
     /**

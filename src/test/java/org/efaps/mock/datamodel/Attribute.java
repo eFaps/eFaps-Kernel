@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.efaps.test.AbstractTest;
 import org.efaps.test.EFapsQueryHandler;
-import org.efaps.test.IResult;
+import org.efaps.test.IMockResult;
 
 import acolyte.jdbc.QueryResult;
 import acolyte.jdbc.RowLists;
@@ -187,7 +187,7 @@ public class Attribute
      * The Class Attribute2Type.
      */
     private static class Attribute2Type
-        implements IResult
+        implements IMockResult
     {
 
         /** The id. */
