@@ -35,8 +35,8 @@ public class QueryBuilderTest
     public void testInit()
         throws EFapsException
     {
-        final QueryBuilder queryBldr = new QueryBuilder(AbstractTest.DemoType.getUuid());
-        assertEquals(queryBldr.getType().getUUID(), AbstractTest.DemoType.getUuid());
+        final QueryBuilder queryBldr = new QueryBuilder(AbstractTest.SimpleType.getUuid());
+        assertEquals(queryBldr.getType().getUUID(), AbstractTest.SimpleType.getUuid());
         queryBldr.addWhereAttrEqValue(AbstractTest.TestAttribute.getName(), "Test");
         final InstanceQuery query = queryBldr.getQuery();
         assertTrue(query.execute().isEmpty());

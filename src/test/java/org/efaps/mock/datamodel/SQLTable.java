@@ -35,6 +35,9 @@ public class SQLTable
     private static final String SQL = "select ID,UUID,NAME,SQLTABLE,SQLCOLUMNID,SQLCOLUMNTYPE,DMTABLEMAIN "
                     + "from V_ADMINSQLTABLE T0 where T0.ID = ?";
 
+    /** The type column. */
+    private final String typeColumn;
+
     /**
      * Instantiates a new SQL table.
      *
@@ -43,14 +46,16 @@ public class SQLTable
     private SQLTable(final SQLTableBuilder _builder)
     {
         super(_builder);
+        this.typeColumn = _builder.typeColumn;
     }
 
     @Override
     public QueryResult getResult()
     {
         return RowLists.rowList7(Long.class, String.class, String.class, String.class, String.class, String.class,
-                        Long.class).append(getId(), getUuid().toString(), getName(), "T_DEMO", "ID", null, null)
-                        .asResult();
+                        Long.class)
+                    .append(getId(), getUuid().toString(), getName(), "T_DEMO", "ID", this.typeColumn, null)
+                    .asResult();
     }
 
     @Override
@@ -86,6 +91,20 @@ public class SQLTable
     public static class SQLTableBuilder
         extends AbstractBuilder<SQLTableBuilder>
     {
+
+        /** The type column. */
+        private String typeColumn;
+
+        /**
+         * With type column.
+         *
+         * @param _typeColumn the type column
+         * @return the SQL table builder
+         */
+        public SQLTableBuilder withTypeColumn(final String _typeColumn) {
+            this.typeColumn = _typeColumn;
+            return this;
+        }
 
         /**
          * Builds the.

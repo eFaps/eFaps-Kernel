@@ -58,13 +58,24 @@ public abstract class AbstractTest
     public static final String JDBCURL = "jdbc:acolyte:anything-you-want?handler=my-handler-id";
 
     /** The Constant DemoType. */
-    public static final Type DemoType = Type.builder()
+    public static final Type SimpleType = Type.builder()
                     .withId(RandomUtils.nextLong())
-                    .withName("DemoType")
+                    .withName("SimpleType")
                     .build();
 
-    public static final SQLTable DemoTypeSQLTable = SQLTable.builder()
-                    .withName("DemoTypeSQLTable")
+    public static final SQLTable SimpleTypeSQLTable = SQLTable.builder()
+                    .withName("SimpleTypeSQLTable")
+                    .build();
+
+    /** The Constant DemoType. */
+    public static final Type TypedType = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("TypedType")
+                    .build();
+
+    public static final SQLTable TypedTypeSQLTable = SQLTable.builder()
+                    .withName("TypedTypeSQLTable")
+                    .withTypeColumn("TYPE")
                     .build();
 
     public static final Type TYPE_AttributeSet = Type.builder()
@@ -86,11 +97,32 @@ public abstract class AbstractTest
                     .withClassNameUI("org.efaps.admin.datamodel.ui.StringUI")
                     .build();
 
+    public static final AttributeType TypeAttrType = AttributeType.builder()
+                    .withName("String")
+                    .withUuid(UUID.fromString("acfb7dd8-71e9-43c0-9f22-8d98190f7290"))
+                    .withClassName("org.efaps.admin.datamodel.attributetype.TypeType")
+                    .withClassNameUI("org.efaps.admin.datamodel.ui.TypeUI")
+                    .build();
+
     public static final Attribute TestAttribute = Attribute.builder()
                     .withName("TestAttribute")
-                    .withDataModelTypeId(DemoType.getId())
-                    .withSqlTableId(DemoTypeSQLTable.getId())
+                    .withDataModelTypeId(SimpleType.getId())
+                    .withSqlTableId(SimpleTypeSQLTable.getId())
                     .withAttributeTypeId(StringAttrType.getId())
+                    .build();
+
+    public static final Attribute TypedTypeTestAttr = Attribute.builder()
+                    .withName("TestAttr")
+                    .withDataModelTypeId(TypedType.getId())
+                    .withSqlTableId(TypedTypeSQLTable.getId())
+                    .withAttributeTypeId(StringAttrType.getId())
+                    .build();
+
+    public static final Attribute TypedTypeTypeAttr = Attribute.builder()
+                    .withName("TypeAttr")
+                    .withDataModelTypeId(TypedType.getId())
+                    .withSqlTableId(TypedTypeSQLTable.getId())
+                    .withAttributeTypeId(TypeAttrType.getId())
                     .build();
 
     /**

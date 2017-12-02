@@ -67,7 +67,7 @@ public class Attribute
         return RowLists.rowList11(Long.class, String.class, Long.class, Long.class, Long.class, Long.class, Long.class,
                         String.class, String.class, Long.class, String.class)
                         .append(getId(), getName(), this.typeId, this.sqlTableId, this.attributeTypeId,
-                                        Long.valueOf(123), null, "column", null, null, null)
+                                        Long.valueOf(123), null, getName() + "_SQLColumn", null, null, null)
                         .asResult();
     }
 

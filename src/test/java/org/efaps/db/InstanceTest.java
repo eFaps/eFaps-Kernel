@@ -32,20 +32,20 @@ public class InstanceTest
     @Test
     public void getInstance4String()
     {
-        final String oid = String.format("%s.1", DemoType.getId());
+        final String oid = String.format("%s.1", SimpleType.getId());
         final Instance instance = Instance.get(oid);
         assertEquals(instance.getOid(), oid);
-        assertEquals(instance.getType().getName(), "DemoType");
+        assertEquals(instance.getType().getName(), "SimpleType");
         assertEquals(instance.getId(), 1L);
     }
 
     @Test
     public void getInstance4UUID()
     {
-        final Instance instance = Instance.get(DemoType.getUuid(), 1L);
-        assertEquals(instance.getType().getName(), "DemoType");
-        assertEquals(instance.getTypeUUID(), DemoType.getUuid());
-        assertEquals(Long.valueOf(instance.getType().getId()), DemoType.getId());
+        final Instance instance = Instance.get(SimpleType.getUuid(), 1L);
+        assertEquals(instance.getType().getName(), "SimpleType");
+        assertEquals(instance.getTypeUUID(), SimpleType.getUuid());
+        assertEquals(Long.valueOf(instance.getType().getId()), SimpleType.getId());
         assertEquals(instance.getId(), 1L);
     }
 }
