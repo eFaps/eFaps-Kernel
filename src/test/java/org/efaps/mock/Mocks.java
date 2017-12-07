@@ -71,6 +71,13 @@ public interface Mocks
                     .withClassNameUI("org.efaps.admin.datamodel.ui.TypeUI")
                     .build();
 
+    AttributeType LinkAttrType = AttributeType.builder()
+                    .withName("Link")
+                    .withUuid(UUID.fromString("440f472f-7be2-41d3-baec-4a2f0e4e5b31"))
+                    .withClassName("org.efaps.admin.datamodel.attributetype.LinkType")
+                    .withClassNameUI("org.efaps.admin.datamodel.ui.StringUI")
+                    .build();
+
     Type TypedType = Type.builder().withId(RandomUtils.nextLong()).withName("TypedType").build();
 
     SQLTable TypedTypeSQLTable = SQLTable.builder().withName("TypedTypeSQLTable").withTypeColumn("TYPE").build();
@@ -96,6 +103,13 @@ public interface Mocks
 
     SQLTable SimpleTypeSQLTable = SQLTable.builder()
                     .withName("SimpleTypeSQLTable")
+                    .build();
+
+    Attribute IDAttribute = Attribute.builder()
+                    .withName("ID")
+                    .withDataModelTypeId(SimpleType.getId())
+                    .withSqlTableId(SimpleTypeSQLTable.getId())
+                    .withAttributeTypeId(Mocks.LongAttrType.getId())
                     .build();
 
     Attribute TestAttribute = Attribute.builder()
@@ -134,5 +148,13 @@ public interface Mocks
                     .withDataModelTypeId(AllAttrType.getId())
                     .withSqlTableId(AllAttrTypeSQLTable.getId())
                     .withAttributeTypeId(Mocks.IntegerAttrType.getId())
+                    .build();
+
+    Attribute AllAttrLinkAttribute = Attribute.builder()
+                    .withName("AllAttrLinkAttribute")
+                    .withDataModelTypeId(AllAttrType.getId())
+                    .withSqlTableId(AllAttrTypeSQLTable.getId())
+                    .withAttributeTypeId(Mocks.LinkAttrType.getId())
+                    .withLinkTypeId(SimpleType.getId())
                     .build();
 }

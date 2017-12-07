@@ -56,6 +56,7 @@ public final class SelectionEvaluator
      * @param _idx the idx
      * @return the t
      */
+    @SuppressWarnings("unchecked")
     public <T> T get(final int _idx)
     {
         Object ret = null;

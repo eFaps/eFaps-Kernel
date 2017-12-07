@@ -1,3 +1,20 @@
+/*
+ * Copyright 2003 - 2017 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package org.efaps.db.stmt.selection.elements;
 
 import org.efaps.admin.datamodel.Attribute;
@@ -14,8 +31,14 @@ public class LinktoElement
     extends AbstractElement<LinktoElement>
 {
 
+    /** The attribute. */
     private Attribute attribute;
 
+    /**
+     * Gets the attribute.
+     *
+     * @return the attribute
+     */
     public Attribute getAttribute()
     {
         return this.attribute;
@@ -24,13 +47,13 @@ public class LinktoElement
     /**
      * Sets the attribute.
      *
-     * @param attribute the attribute
+     * @param _attribute the attribute
      * @return the attribute element
      */
-    public LinktoElement setAttribute(final Attribute attribute)
+    public LinktoElement setAttribute(final Attribute _attribute)
     {
-        this.attribute = attribute;
-        this.setDBTable(attribute.getTable());
+        this.attribute = _attribute;
+        setDBTable(this.attribute.getTable());
         return this;
     }
 
@@ -44,11 +67,11 @@ public class LinktoElement
     public void append2SQLSelect(final SQLSelect _sqlSelect)
         throws CacheReloadException
     {
-        if (this.getTable() instanceof SQLTable) {
-            final String tableName = ((SQLTable) this.getTable()).getSqlTable();
+        if (getTable() instanceof SQLTable) {
+            final String tableName = ((SQLTable) getTable()).getSqlTable();
             final String key;
-            if (this.getPrevious() != null && this.getPrevious() instanceof LinktoElement) {
-                key = ((SQLTable) ((LinktoElement) this.getPrevious()).getTable()).getSqlTable() + "--" + tableName;
+            if (getPrevious() != null && getPrevious() instanceof LinktoElement) {
+                key = ((SQLTable) ((LinktoElement) getPrevious()).getTable()).getSqlTable() + "--" + tableName;
             } else {
                 key = tableName;
             }
@@ -70,6 +93,6 @@ public class LinktoElement
     public Object getObject(final Object[] _row)
         throws EFapsException
     {
-        return this.getNext().getObject(_row);
+        return getNext().getObject(_row);
     }
 }

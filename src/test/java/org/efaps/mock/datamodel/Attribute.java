@@ -50,6 +50,9 @@ public final class Attribute
     /** The attribute type id. */
     private final Long typeId;
 
+    /** The link type id. */
+    private final Long linkTypeId;
+
     /**
      * Instantiates a new attribute.
      *
@@ -62,6 +65,7 @@ public final class Attribute
         this.sqlTableId = _builder.sqlTableId;
         this.attributeTypeId = _builder.attributeTypeId;
         this.typeId = _builder.typeId;
+        this.linkTypeId = _builder.linkTypeId;
     }
 
     @Override
@@ -69,8 +73,8 @@ public final class Attribute
     {
         return RowLists.rowList11(Long.class, String.class, Long.class, Long.class, Long.class, Long.class, Long.class,
                         String.class, String.class, Long.class, String.class)
-                        .append(getId(), getName(), this.typeId, this.sqlTableId, this.attributeTypeId,
-                                        Long.valueOf(123), null, getSQLColumnName(), null, null, null)
+                        .append(getId(), getName(), this.typeId, this.sqlTableId, this.attributeTypeId, this.linkTypeId,
+                                        null, getSQLColumnName(), null, null, null)
                         .asResult();
     }
 
@@ -140,6 +144,9 @@ public final class Attribute
         /** The type id. */
         private Long typeId;
 
+        /** The link type id. */
+        private Long linkTypeId;
+
         /**
          * With data model type id.
          *
@@ -185,6 +192,18 @@ public final class Attribute
         public AttributeBuilder withTypeId(final Long _typeId)
         {
             this.typeId = _typeId;
+            return this;
+        }
+
+        /**
+         * With link type id.
+         *
+         * @param _linkTypeId the link type id
+         * @return the attribute builder
+         */
+        public AttributeBuilder withLinkTypeId(final Long _linkTypeId)
+        {
+            this.linkTypeId = _linkTypeId;
             return this;
         }
 

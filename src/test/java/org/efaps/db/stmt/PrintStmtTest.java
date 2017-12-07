@@ -165,4 +165,21 @@ public class PrintStmtTest
                         .evaluator();
         assertEquals(evaluator.get(1), Integer.valueOf(101));
     }
+
+    @Test
+    public void testLinkto()
+        throws EFapsException
+    {
+        //"select T1.TestAttribute_COL from left join T_DEMO T1 on T0.AllAttrLinkAttribute_COL=T1.ID where T0.ID = 4"
+
+        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select linkto[%s].attribute[%s]",
+                    Mocks.AllAttrType.getId(), Mocks.AllAttrLinkAttribute.getName(), Mocks.TestAttribute.getName()));
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+               .execute()
+               .evaluator();
+        assertEquals(evaluator.get(1), Integer.valueOf(101));
+    }
 }
+
