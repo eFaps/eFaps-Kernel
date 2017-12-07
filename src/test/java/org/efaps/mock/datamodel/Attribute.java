@@ -49,6 +49,7 @@ public final class Attribute
 
     /** The attribute type id. */
     private final Long typeId;
+
     /**
      * Instantiates a new attribute.
      *
@@ -69,7 +70,7 @@ public final class Attribute
         return RowLists.rowList11(Long.class, String.class, Long.class, Long.class, Long.class, Long.class, Long.class,
                         String.class, String.class, Long.class, String.class)
                         .append(getId(), getName(), this.typeId, this.sqlTableId, this.attributeTypeId,
-                                        Long.valueOf(123), null, getName() + "_SQLColumn", null, null, null)
+                                        Long.valueOf(123), null, getSQLColumnName(), null, null, null)
                         .asResult();
     }
 
@@ -98,6 +99,16 @@ public final class Attribute
     public Long getDataModelTypeId()
     {
         return this.dataModelTypeId;
+    }
+
+    /**
+     * Gets the SQL column name.
+     *
+     * @return the SQL column name
+     */
+    public String getSQLColumnName()
+    {
+        return getName() + "_COL";
     }
 
     /**

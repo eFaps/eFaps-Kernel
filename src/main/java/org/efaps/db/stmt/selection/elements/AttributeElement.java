@@ -16,6 +16,8 @@
  */
 package org.efaps.db.stmt.selection.elements;
 
+import java.util.Collections;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.SQLTable;
@@ -104,7 +106,7 @@ public class AttributeElement
     public Object getObject(final Object[] _row)
         throws EFapsException
     {
-        Object ret;
+        final Object ret;
         if (this.colIdxs.length == 1) {
             ret = _row[this.colIdxs[0]];
         } else {
@@ -113,6 +115,6 @@ public class AttributeElement
                 ((Object[]) ret)[i] = this.colIdxs[i];
             }
         }
-        return ret;
+        return this.attribute.readDBValue(Collections.singletonList(ret));
     }
 }

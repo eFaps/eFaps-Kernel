@@ -18,7 +18,7 @@
 
 -->
 
-<suite name="eFaps Kernel Tests" verbose="1">
+<suite name="eFaps Kernel Tests" verbose="1" parallel="none">
     <test name="All">
         <packages>
             <package name="org.efaps.*"></package>

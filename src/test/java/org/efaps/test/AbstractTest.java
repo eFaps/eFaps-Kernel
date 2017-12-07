@@ -21,6 +21,8 @@ import com.arjuna.ats.internal.jta.transaction.arjunacore.TransactionManagerImpl
 import com.arjuna.ats.internal.jta.transaction.arjunacore.TransactionSynchronizationRegistryImple;
 import com.zaxxer.hikari.HikariJNDIFactory;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +31,7 @@ import org.efaps.db.Context;
 import org.efaps.init.StartupDatabaseConnection;
 import org.efaps.init.StartupException;
 import org.efaps.jaas.AppAccessHandler;
+import org.efaps.mock.Mocks;
 import org.efaps.mock.datamodel.Person;
 import org.efaps.mock.db.MockDatabase;
 import org.efaps.util.EFapsException;
@@ -63,6 +66,15 @@ public abstract class AbstractTest
             .withId(1L)
             .withName("Administrator")
             .build();
+        final Field[] fields = Mocks.class.getDeclaredFields();
+        for (final Field f : fields) {
+            if (Modifier.isStatic(f.getModifiers())) {
+                try {
+                    f.get(null);
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                }
+            }
+        }
 
         final StatementHandler handler = new CompositeHandler().withQueryDetection("^ select ")
                         .withQueryHandler(EFapsQueryHandler.get());

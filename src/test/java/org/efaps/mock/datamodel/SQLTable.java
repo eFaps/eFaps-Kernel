@@ -31,12 +31,16 @@ public final class SQLTable
     extends AbstractType
 {
 
+
     /** The Constant SQL. */
     private static final String SQL = "select ID,UUID,NAME,SQLTABLE,SQLCOLUMNID,SQLCOLUMNTYPE,DMTABLEMAIN "
                     + "from V_ADMINSQLTABLE T0 where T0.ID = ?";
 
     /** The type column. */
     private final String typeColumn;
+
+    /** The sql table name. */
+    private final String sqlTableName;
 
     /**
      * Instantiates a new SQL table.
@@ -47,6 +51,7 @@ public final class SQLTable
     {
         super(_builder);
         this.typeColumn = _builder.typeColumn;
+        this.sqlTableName = _builder.sqlTableName;
     }
 
     @Override
@@ -54,7 +59,7 @@ public final class SQLTable
     {
         return RowLists.rowList7(Long.class, String.class, String.class, String.class, String.class, String.class,
                         Long.class)
-                    .append(getId(), getUuid().toString(), getName(), "T_DEMO", "ID", this.typeColumn, null)
+                    .append(getId(), getUuid().toString(), getName(), this.sqlTableName, "ID", this.typeColumn, null)
                     .asResult();
     }
 
@@ -73,6 +78,16 @@ public final class SQLTable
             ret = getId().equals(parameter.right);
         }
         return ret;
+    }
+
+    /**
+     * Gets the sql table name.
+     *
+     * @return the sql table name
+     */
+    public String getSqlTableName()
+    {
+        return this.sqlTableName;
     }
 
     /**
@@ -95,6 +110,9 @@ public final class SQLTable
         /** The type column. */
         private String typeColumn;
 
+        /** The sql table name. */
+        private String sqlTableName = "T_DEMO";
+
         /**
          * With type column.
          *
@@ -104,6 +122,18 @@ public final class SQLTable
         public SQLTableBuilder withTypeColumn(final String _typeColumn)
         {
             this.typeColumn = _typeColumn;
+            return this;
+        }
+
+        /**
+         * With type column.
+         *
+         * @param _typeColumn the type column
+         * @return the SQL table builder
+         */
+        public SQLTableBuilder withSqlTableName(final String _sqlTableName)
+        {
+            this.sqlTableName = _sqlTableName;
             return this;
         }
 

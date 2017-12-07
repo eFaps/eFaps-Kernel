@@ -38,7 +38,7 @@ public class PrintQueryTest
         throws EFapsException
     {
         MockResult.builder()
-            .withSql("select T0.ID,T0.TestAttribute_SQLColumn from T_DEMO T0 where T0.ID in ( 1 )")
+            .withSql("select T0.ID,T0.TestAttribute_COL from T_DEMO T0 where T0.ID in ( 1 )")
             .withResult(RowLists.rowList2(Long.class, String.class)
                     .append(1L, "A Value")
                     .asResult())
@@ -56,7 +56,9 @@ public class PrintQueryTest
         throws EFapsException
     {
         MockResult.builder()
-            .withSql("select T0.ID,T0.TYPE,T0.TestAttr_SQLColumn from T_DEMO T0 where T0.ID in ( 1 )")
+            .withSql(String.format("select T0.ID,T0.TYPE,T0.%s from %s T0 where T0.ID in ( 1 )",
+                            Mocks.TypedTypeTestAttr.getSQLColumnName(),
+                            Mocks.TypedTypeSQLTable.getSqlTableName()))
             .withResult(RowLists.rowList3(Long.class, Long.class, String.class)
                     .append(1L, Mocks.TypedType.getId(), "This is a Value")
                     .asResult())
