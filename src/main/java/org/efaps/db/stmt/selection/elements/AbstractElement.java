@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.efaps.util.EFapsException;
  * The Class AbstractElement.
  *
  * @author The eFaps Team
+ * @param <T> the generic type
  */
 public abstract class AbstractElement<T>
 {
@@ -31,29 +32,51 @@ public abstract class AbstractElement<T>
     /** The table. */
     private DBTable table;
 
+    /** The previous. */
     private AbstractElement<?> previous;
 
+    /** The next. */
     private AbstractElement<?> next;
 
+    /**
+     * Gets the previous.
+     *
+     * @return the previous
+     */
     public AbstractElement<?> getPrevious()
     {
         return this.previous;
     }
 
+    /**
+     * Sets the previous.
+     *
+     * @param _previous the new previous
+     */
     public void setPrevious(final AbstractElement<?> _previous)
     {
         this.previous = _previous;
         _previous.setNext(this);
     }
 
+    /**
+     * Gets the next.
+     *
+     * @return the next
+     */
     public AbstractElement<?> getNext()
     {
         return this.next;
     }
 
-    public void setNext(final AbstractElement<?> next)
+    /**
+     * Sets the next.
+     *
+     * @param _next the new next
+     */
+    public void setNext(final AbstractElement<?> _next)
     {
-        this.next = next;
+        this.next = _next;
     }
 
     /**
@@ -85,8 +108,21 @@ public abstract class AbstractElement<T>
      */
     public abstract T getThis();
 
-    public abstract void append2SQLSelect(final SQLSelect _sqlSelect)
-        throws EFapsException;
-
+    /**
+     * Gets the object.
+     *
+     * @param _row the row
+     * @return the object
+     * @throws EFapsException the e faps exception
+     */
     public abstract Object getObject(Object[] _row)throws EFapsException;
+
+    /**
+     * Append two SQL select.
+     *
+     * @param _sqlSelect the sql select
+     * @throws EFapsException the e faps exception
+     */
+    public abstract void append2SQLSelect(SQLSelect _sqlSelect)
+        throws EFapsException;
 }

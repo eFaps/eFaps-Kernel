@@ -17,32 +17,31 @@
 
 package org.efaps.db.stmt.runner;
 
-import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.stmt.print.ObjectPrint;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 
 /**
  * The Interface ISQLProvider.
  *
  * @author The eFaps Team
  */
-public interface ISQLProvider
+public interface IEQLRunner
 {
 
     /**
      * Prepare.
      *
-     * @throws CacheReloadException the cache reload exception
+     * @param _print the print
+     * @throws EFapsException on errors
      */
-    void prepare()
-        throws CacheReloadException;
+    void prepare(ObjectPrint _print)
+        throws EFapsException;
 
     /**
-     * Append to the given SQL select.
+     * Execute.
      *
-     * @param _sqlSelect the sql select
-     * @throws EFapsException on error
+     * @throws EFapsException the e faps exception
      */
-    void append2SQLSelect(SQLSelect _sqlSelect)
+    void execute()
         throws EFapsException;
 }

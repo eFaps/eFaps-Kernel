@@ -92,7 +92,7 @@ public abstract class AbstractType
      *
      * @param <T> the generic type
      */
-    public static abstract class AbstractBuilder<T extends AbstractBuilder<T>>
+    public abstract static class AbstractBuilder<T extends AbstractBuilder<T>>
     {
 
         /** The id. */

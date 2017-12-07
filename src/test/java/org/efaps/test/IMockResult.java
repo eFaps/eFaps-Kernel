@@ -41,7 +41,7 @@ public interface IMockResult
      * @param _parameters the parameters
      * @return true, if successful
      */
-    boolean applies(String _sql, final List<Parameter> _parameters);
+    boolean applies(String _sql, List<Parameter> _parameters);
 
     /**
      * Gets the result.

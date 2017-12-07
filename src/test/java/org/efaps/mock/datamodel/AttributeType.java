@@ -24,11 +24,10 @@ import acolyte.jdbc.QueryResult;
 import acolyte.jdbc.RowLists;
 import acolyte.jdbc.StatementHandler.Parameter;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class AttributeType.
  */
-public class AttributeType
+public final class AttributeType
     extends AbstractType
 {
 
@@ -97,10 +96,10 @@ public class AttributeType
     {
 
         /** The class name. */
-        String className;
+        private String className;
 
         /** The class name UI. */
-        String classNameUI;
+        private String classNameUI;
 
         /**
          * With class name.

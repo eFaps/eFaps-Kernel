@@ -20,6 +20,7 @@ package org.efaps.db;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import org.efaps.mock.Mocks;
 import org.efaps.test.AbstractTest;
 import org.efaps.util.EFapsException;
 import org.testng.annotations.Test;
@@ -35,9 +36,9 @@ public class QueryBuilderTest
     public void testInit()
         throws EFapsException
     {
-        final QueryBuilder queryBldr = new QueryBuilder(AbstractTest.SimpleType.getUuid());
-        assertEquals(queryBldr.getType().getUUID(), AbstractTest.SimpleType.getUuid());
-        queryBldr.addWhereAttrEqValue(AbstractTest.TestAttribute.getName(), "Test");
+        final QueryBuilder queryBldr = new QueryBuilder(Mocks.SimpleType.getUuid());
+        assertEquals(queryBldr.getType().getUUID(), Mocks.SimpleType.getUuid());
+        queryBldr.addWhereAttrEqValue(Mocks.TestAttribute.getName(), "Test");
         final InstanceQuery query = queryBldr.getQuery();
         assertTrue(query.execute().isEmpty());
     }

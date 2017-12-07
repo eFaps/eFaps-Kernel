@@ -27,7 +27,7 @@ import acolyte.jdbc.StatementHandler.Parameter;
 /**
  * The Class SQLTable.
  */
-public class SQLTable
+public final class SQLTable
     extends AbstractType
 {
 
@@ -101,7 +101,8 @@ public class SQLTable
          * @param _typeColumn the type column
          * @return the SQL table builder
          */
-        public SQLTableBuilder withTypeColumn(final String _typeColumn) {
+        public SQLTableBuilder withTypeColumn(final String _typeColumn)
+        {
             this.typeColumn = _typeColumn;
             return this;
         }

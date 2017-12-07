@@ -18,13 +18,7 @@
 package org.efaps.db.stmt.print;
 
 import org.efaps.db.Instance;
-import org.efaps.db.stmt.runner.ISQLProvider;
-import  org.efaps.db.stmt.selection.Select;
 import org.efaps.db.stmt.selection.Selection;
-import org.efaps.db.stmt.selection.elements.AbstractElement;
-import org.efaps.db.wrapper.SQLPart;
-import org.efaps.db.wrapper.SQLSelect;
-import org.efaps.db.wrapper.TableIndexer.Tableidx;
 import org.efaps.eql2.IPrintObjectStatement;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -36,7 +30,6 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public class ObjectPrint
     extends AbstractPrint
-    implements ISQLProvider
 {
 
     /** The instance. */
@@ -58,33 +51,25 @@ public class ObjectPrint
         this.eqlStmt = _eqlStmt;
     }
 
-    @Override
-    public void prepare()
-        throws CacheReloadException
+    /**
+     * Gets the instance.
+     *
+     * @return the instance
+     */
+    public Instance getInstance()
     {
-        setSelection(Selection.get(this.eqlStmt.getSelection(), this.instance.getType()));
+        return this.instance;
     }
 
     @Override
-    public void append2SQLSelect(final SQLSelect _sqlSelect) throws EFapsException
+    public Selection getSelection()
+        throws EFapsException
     {
-        for (final Select select : getSelection().getSelects()) {
-            for (final AbstractElement<?> element : select.getElements()) {
-                element.append2SQLSelect(_sqlSelect);
-            }
+        Selection ret = super.getSelection();
+        if (ret == null) {
+            setSelection(Selection.get(this.eqlStmt.getSelection(), this.instance.getType()));
+            ret = super.getSelection();
         }
-        final String tableName = this.instance.getType().getMainTable().getSqlTable();
-        final Tableidx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName, tableName);
-        if (tableidx.isCreated()) {
-            _sqlSelect.from(tableidx.getTable(), tableidx.getIdx());
-        }
-
-        _sqlSelect.addPart(SQLPart.WHERE)
-            .addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart(this.instance.getId());
-
-        if (this.instance.getType().getMainTable().getSqlColType() != null) {
-            _sqlSelect.addPart(SQLPart.AND).addColumnPart(0, this.instance.getType().getMainTable().getSqlColType())
-                .addPart(SQLPart.EQUAL).addValuePart(this.instance.getType().getId());
-        }
+        return ret;
     }
 }

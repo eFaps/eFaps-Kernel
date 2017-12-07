@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,11 +41,11 @@ import org.slf4j.LoggerFactory;
  */
 public final class Selection
 {
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(Selection.class);
 
     /** The elements. */
     private final List<Select> selects = new ArrayList<>();
-
 
     /**
      * Gets the elements.

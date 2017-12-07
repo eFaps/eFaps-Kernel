@@ -33,7 +33,7 @@ import acolyte.jdbc.StatementHandler.Parameter;
 /**
  * The Class EFapsQueryHandler.
  */
-public class EFapsQueryHandler
+public final class EFapsQueryHandler
     implements QueryHandler
 {
 
@@ -46,17 +46,18 @@ public class EFapsQueryHandler
     /** The sql 2 results. */
     private final SetValuedMap<String, IMockResult> sql2results = MultiMapUtils.newSetValuedHashMap();
 
+    /** The sql 2 verify. */
     private final Map<String, IVerify> sql2verify = new HashMap<>();
 
     /**
      * Instantiates a new e faps query handler.
      */
-    private EFapsQueryHandler() {
+    private EFapsQueryHandler()
+    {
     }
 
     @Override
-    public QueryResult apply(final String _sql,
-                             final List<Parameter> _parameters)
+    public QueryResult apply(final String _sql, final List<Parameter> _parameters)
         throws SQLException
     {
         QueryResult ret = QueryResult.Nil;
@@ -64,12 +65,12 @@ public class EFapsQueryHandler
         if (this.sql2verify.containsKey(sql)) {
             this.sql2verify.get(sql).execute();
         } else if (this.sql2results.containsKey(sql)) {
-           for (final IMockResult result : this.sql2results.get(sql)) {
-               if (result.applies(sql, _parameters)) {
-                   ret = result.getResult();
-                   break;
-               }
-           }
+            for (final IMockResult result : this.sql2results.get(sql)) {
+                if (result.applies(sql, _parameters)) {
+                    ret = result.getResult();
+                    break;
+                }
+            }
         }
         return ret;
     }
@@ -89,7 +90,8 @@ public class EFapsQueryHandler
      *
      * @param _result the result
      */
-    public void register(final IMockResult _result) {
+    public void register(final IMockResult _result)
+    {
         for (final String sql : _result.getSqls()) {
             this.sql2results.put(sql, _result);
         }
@@ -99,9 +101,10 @@ public class EFapsQueryHandler
     /**
      * Register.
      *
-     * @param _result the result
+     * @param _verify the verify
      */
-    public void register(final IVerify _verify) {
+    public void register(final IVerify _verify)
+    {
         this.sql2verify.put(_verify.getSql(), _verify);
         LOG.info("Added Verify '{}'", _verify);
     }
@@ -121,7 +124,8 @@ public class EFapsQueryHandler
      *
      * @return the e faps query handler
      */
-    public static EFapsQueryHandler get() {
+    public static EFapsQueryHandler get()
+    {
         if (INSTANCE == null) {
             INSTANCE = new EFapsQueryHandler();
         }

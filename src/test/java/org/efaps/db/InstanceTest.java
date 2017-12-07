@@ -19,6 +19,7 @@ package org.efaps.db;
 
 import static org.testng.Assert.assertEquals;
 
+import org.efaps.mock.Mocks;
 import org.efaps.test.AbstractTest;
 import org.testng.annotations.Test;
 
@@ -30,9 +31,9 @@ public class InstanceTest
 {
 
     @Test
-    public void getInstance4String()
+    public void testGetInstance4String()
     {
-        final String oid = String.format("%s.1", SimpleType.getId());
+        final String oid = String.format("%s.1", Mocks.SimpleType.getId());
         final Instance instance = Instance.get(oid);
         assertEquals(instance.getOid(), oid);
         assertEquals(instance.getType().getName(), "SimpleType");
@@ -40,12 +41,12 @@ public class InstanceTest
     }
 
     @Test
-    public void getInstance4UUID()
+    public void testGetInstance4UUID()
     {
-        final Instance instance = Instance.get(SimpleType.getUuid(), 1L);
+        final Instance instance = Instance.get(Mocks.SimpleType.getUuid(), 1L);
         assertEquals(instance.getType().getName(), "SimpleType");
-        assertEquals(instance.getTypeUUID(), SimpleType.getUuid());
-        assertEquals(Long.valueOf(instance.getType().getId()), SimpleType.getId());
+        assertEquals(instance.getTypeUUID(), Mocks.SimpleType.getUuid());
+        assertEquals(Long.valueOf(instance.getType().getId()), Mocks.SimpleType.getId());
         assertEquals(instance.getId(), 1L);
     }
 }

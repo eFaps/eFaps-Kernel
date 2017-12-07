@@ -17,13 +17,17 @@
 
 package org.efaps.db.stmt;
 
+import static org.testng.Assert.assertEquals;
+
 import com.google.inject.Inject;
 
 import org.eclipse.xtext.parser.IParseResult;
+import org.efaps.db.stmt.selection.SelectionEvaluator;
 import org.efaps.eql2.EQLStandaloneSetup;
 import org.efaps.eql2.IPrintObjectStatement;
 import org.efaps.eql2.parser.antlr.EQLParser;
 import org.efaps.mock.MockResult;
+import org.efaps.mock.Mocks;
 import org.efaps.test.AbstractTest;
 import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
@@ -56,8 +60,8 @@ public class PrintStmtTest
     public void testSimplePrintObject()
         throws EFapsException
     {
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[TestAttribute]",
-                        AbstractTest.SimpleType.getId()));
+        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+                        Mocks.SimpleType.getId(), Mocks.TestAttribute.getName()));
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
         final PrintStmt printStmt = PrintStmt.get(stmt);
         final SQLVerify verify = SQLVerify.builder()
@@ -71,9 +75,8 @@ public class PrintStmtTest
     public void testSimplePrintObjectValue()
         throws EFapsException
     {
-        final String sql = String.format("select T0.TestAttribute_SQLColumn from T_DEMO T0 where T0.ID = 4 "
-                        + "and T0.TYPE = %s",
-                        AbstractTest.TypedType.getId());
+        final String sql = String.format("select T0.TestAttr_SQLColumn from T_DEMO T0 where T0.ID = 4 "
+                        + "and T0.TYPE = %s", Mocks.TypedType.getId());
 
         MockResult.builder()
             .withSql(sql)
@@ -83,9 +86,11 @@ public class PrintStmtTest
             .build();
 
         final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
-                        AbstractTest.TypedType.getId(), TypedTypeTestAttr.getName()));
+                        Mocks.TypedType.getId(), Mocks.TypedTypeTestAttr.getName()));
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final PrintStmt printStmt = PrintStmt.get(stmt);
-        printStmt.execute();
+        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluator();
+        assertEquals(evaluator.get(1), "A Value");
     }
 }

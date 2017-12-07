@@ -19,6 +19,7 @@ package org.efaps.db;
 import static org.testng.Assert.assertEquals;
 
 import org.efaps.mock.MockResult;
+import org.efaps.mock.Mocks;
 import org.efaps.test.AbstractTest;
 import org.efaps.util.EFapsException;
 import org.testng.annotations.Test;
@@ -33,7 +34,7 @@ public class PrintQueryTest
 {
 
     @Test
-    public void simpleType()
+    public void testSimpleType()
         throws EFapsException
     {
         MockResult.builder()
@@ -43,28 +44,28 @@ public class PrintQueryTest
                     .asResult())
             .build();
 
-        final String oid = String.format("%s.1", SimpleType.getId());
+        final String oid = String.format("%s.1", Mocks.SimpleType.getId());
         final PrintQuery print = new PrintQuery(Instance.get(oid));
-        print.addAttribute(TestAttribute.getName());
+        print.addAttribute(Mocks.TestAttribute.getName());
         print.execute();
-        assertEquals(print.getAttribute(TestAttribute.getName()), "A Value");
+        assertEquals(print.getAttribute(Mocks.TestAttribute.getName()), "A Value");
     }
 
     //@Test
-    public void typedType()
+    public void testTypedType()
         throws EFapsException
     {
         MockResult.builder()
             .withSql("select T0.ID,T0.TYPE,T0.TestAttr_SQLColumn from T_DEMO T0 where T0.ID in ( 1 )")
             .withResult(RowLists.rowList3(Long.class, Long.class, String.class)
-                    .append(1L, TypedType.getId(), "This is a Value")
+                    .append(1L, Mocks.TypedType.getId(), "This is a Value")
                     .asResult())
             .build();
 
-        final String oid = String.format("%s.1", TypedType.getId());
+        final String oid = String.format("%s.1", Mocks.TypedType.getId());
         final PrintQuery print = new PrintQuery(Instance.get(oid));
-        print.addAttribute(TypedTypeTestAttr.getName());
+        print.addAttribute(Mocks.TypedTypeTestAttr.getName());
         print.execute();
-        assertEquals(print.getAttribute(TypedTypeTestAttr.getName()), "This is a Value");
+        assertEquals(print.getAttribute(Mocks.TypedTypeTestAttr.getName()), "This is a Value");
     }
 }

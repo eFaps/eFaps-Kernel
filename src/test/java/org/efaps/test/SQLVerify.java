@@ -85,7 +85,8 @@ public class SQLVerify
          * @param _sql the sql
          * @return the SQL verify builder
          */
-        public SQLVerifyBuilder withSql(final String _sql) {
+        public SQLVerifyBuilder withSql(final String _sql)
+        {
             this.sql = _sql;
             return this;
         }

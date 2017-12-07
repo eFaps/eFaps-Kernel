@@ -15,9 +15,9 @@
  *
  */
 
-
 package org.efaps.db.stmt.selection;
 
+import org.efaps.util.EFapsException;
 
 /**
  * The Interface ISelectionProvider.
@@ -31,7 +31,9 @@ public interface ISelectionProvider
      * Gets the selection.
      *
      * @return the selection
+     * @throws EFapsException on errors
      */
-    Selection getSelection();
+    Selection getSelection()
+        throws EFapsException;
 
 }

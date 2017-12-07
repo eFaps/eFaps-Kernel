@@ -24,19 +24,12 @@ import com.zaxxer.hikari.HikariJNDIFactory;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
-import org.apache.commons.lang3.RandomUtils;
-import org.efaps.ci.CIAdminDataModel;
 import org.efaps.db.Context;
 import org.efaps.init.StartupDatabaseConnection;
 import org.efaps.init.StartupException;
 import org.efaps.jaas.AppAccessHandler;
-import org.efaps.mock.datamodel.Attribute;
-import org.efaps.mock.datamodel.AttributeType;
 import org.efaps.mock.datamodel.Person;
-import org.efaps.mock.datamodel.SQLTable;
-import org.efaps.mock.datamodel.Type;
 import org.efaps.mock.db.MockDatabase;
 import org.efaps.util.EFapsException;
 import org.testng.annotations.AfterMethod;
@@ -56,74 +49,6 @@ public abstract class AbstractTest
 
     /** The Constant JDBCURL. */
     public static final String JDBCURL = "jdbc:acolyte:anything-you-want?handler=my-handler-id";
-
-    /** The Constant DemoType. */
-    public static final Type SimpleType = Type.builder()
-                    .withId(RandomUtils.nextLong())
-                    .withName("SimpleType")
-                    .build();
-
-    public static final SQLTable SimpleTypeSQLTable = SQLTable.builder()
-                    .withName("SimpleTypeSQLTable")
-                    .build();
-
-    /** The Constant DemoType. */
-    public static final Type TypedType = Type.builder()
-                    .withId(RandomUtils.nextLong())
-                    .withName("TypedType")
-                    .build();
-
-    public static final SQLTable TypedTypeSQLTable = SQLTable.builder()
-                    .withName("TypedTypeSQLTable")
-                    .withTypeColumn("TYPE")
-                    .build();
-
-    public static final Type TYPE_AttributeSet = Type.builder()
-                    .withId(RandomUtils.nextLong())
-                    .withUuid(CIAdminDataModel.AttributeSet.uuid)
-                    .withName("AttributeSet")
-                    .build();
-
-    public static final Type TYPE_Attribute = Type.builder()
-                    .withId(RandomUtils.nextLong())
-                    .withUuid(CIAdminDataModel.Attribute.uuid)
-                    .withName("Attribute")
-                    .build();
-
-    public static final AttributeType StringAttrType = AttributeType.builder()
-                    .withName("String")
-                    .withUuid(UUID.fromString("72221a59-df5d-4c56-9bec-c9167de80f2b"))
-                    .withClassName("org.efaps.admin.datamodel.attributetype.StringType")
-                    .withClassNameUI("org.efaps.admin.datamodel.ui.StringUI")
-                    .build();
-
-    public static final AttributeType TypeAttrType = AttributeType.builder()
-                    .withName("String")
-                    .withUuid(UUID.fromString("acfb7dd8-71e9-43c0-9f22-8d98190f7290"))
-                    .withClassName("org.efaps.admin.datamodel.attributetype.TypeType")
-                    .withClassNameUI("org.efaps.admin.datamodel.ui.TypeUI")
-                    .build();
-
-    public static final Attribute TestAttribute = Attribute.builder()
-                    .withName("TestAttribute")
-                    .withDataModelTypeId(SimpleType.getId())
-                    .withSqlTableId(SimpleTypeSQLTable.getId())
-                    .withAttributeTypeId(StringAttrType.getId())
-                    .build();
-
-    public static final Attribute TypedTypeTestAttr = Attribute.builder()
-                    .withName("TestAttr")
-                    .withDataModelTypeId(TypedType.getId())
-                    .withSqlTableId(TypedTypeSQLTable.getId())
-                    .withAttributeTypeId(StringAttrType.getId())
-                    .build();
-
-    public static final Attribute TypedTypeTypeAttr = Attribute.builder()
-                    .withName("TypeAttr")
-                    .withDataModelTypeId(TypedType.getId())
-                    .withSqlTableId(TypedTypeSQLTable.getId())
-                    .withAttributeTypeId(TypeAttrType.getId())
-                    .build();
 
     /**
      * Prepare the Test Suite.

@@ -22,6 +22,7 @@ import java.util.UUID;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.stmt.print.ObjectPrint;
 import org.efaps.db.stmt.runner.StmtRunner;
+import org.efaps.db.stmt.selection.SelectionEvaluator;
 import org.efaps.eql2.IPrintListStatement;
 import org.efaps.eql2.IPrintObjectStatement;
 import org.efaps.eql2.IPrintQueryStatement;
@@ -51,9 +52,11 @@ public final class PrintStmt
 
     /**
      * Execute.
+     *
+     * @return the prints the stmt
      * @throws EFapsException on error
      */
-    public void execute()
+    public PrintStmt execute()
         throws EFapsException
     {
         if (getEQLStmt() instanceof IPrintObjectStatement) {
@@ -71,6 +74,19 @@ public final class PrintStmt
                 }
             }
         }
+        return this;
+    }
+
+    /**
+     * Evaluator.
+     *
+     * @return the selection evaluator
+     * @throws EFapsException the e faps exception
+     */
+    public SelectionEvaluator evaluator()
+        throws EFapsException
+    {
+        return SelectionEvaluator.get(this.print.getSelection());
     }
 
     /**

@@ -17,6 +17,9 @@
 
 package org.efaps.db.stmt.runner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.efaps.db.stmt.print.ObjectPrint;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -27,14 +30,14 @@ import org.slf4j.LoggerFactory;
  */
 public final class StmtRunner
 {
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(StmtRunner.class);
+
+    /** The eqlrunners. */
+    private static List<Class<? extends IEQLRunner>> EQLRUNNERS = new ArrayList<>();
 
     /** The instance. */
     private static StmtRunner RUNNER;
-
-    /**
-     * Logging instance used in this class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(StmtRunner.class);
 
     /**
      * Instantiates a new stmt runner.
@@ -52,6 +55,7 @@ public final class StmtRunner
     {
         if (StmtRunner.RUNNER == null) {
             StmtRunner.RUNNER = new StmtRunner();
+            EQLRUNNERS.add(SQLRunner.class);
         }
         return StmtRunner.RUNNER;
     }
@@ -65,83 +69,18 @@ public final class StmtRunner
     public void execute(final ObjectPrint _print)
         throws EFapsException
     {
-        final SQLRunner runner = new SQLRunner();
-        runner.execute(_print);
+        try {
+            final List<IEQLRunner> instances = new ArrayList<>();
+            for (final Class<? extends IEQLRunner> clazz : EQLRUNNERS) {
+                final IEQLRunner runner = clazz.newInstance();
+                instances.add(runner);
+                runner.prepare(_print);
+            }
+            for (final IEQLRunner runner : instances) {
+                runner.execute();
+            }
+        } catch (InstantiationException | IllegalAccessException e) {
+            LOG.error("Problems while instantiating", e);
+        }
     }
-
-    /**
-     * public void execute(final DataPrint _print)
-     * throws EFapsException
-     * {
-     * this.executeSQL(_print);
-     * this.executeNOSQL(_print);
-     * }
-     *
-     * protected void executeSQL(final DataPrint _print)
-     * throws EFapsException
-     * {
-     * new SQLRunner().execute(_print);
-     * }
-     *
-     * protected void executeNOSQL(final DataPrint _print)
-     * {
-     *
-     * }
-     *
-     * private static class SQLRunner
-     * {
-     *
-     * public void execute(final DataPrint _print)
-     * throws EFapsException
-     * {
-     * final String sql = this.createSQLStatement(_print);
-     * this.executeOneCompleteStmt(_print, sql);
-     * }
-     *
-     * protected String createSQLStatement(final DataPrint _print)
-     * throws EFapsException
-     * {
-     * final SQLSelect sqlSelect = new SQLSelect();
-     * for (final Select select : _print.getSelection().getSelects()) {
-     * for (final AbstractElement<?> element : select.getElements()) {
-     * element.append2SQLSelect(sqlSelect);
-     * }
-     * }
-     * return sqlSelect.getSQL();
-     * }
-     *
-     * protected boolean executeOneCompleteStmt(final DataPrint _print,
-     * final String _complStmt)
-     * throws EFapsException
-     * {
-     * boolean ret = false;
-     * ConnectionResource con = null;
-     * try {
-     * StmtRunner.LOG.debug("Executing SQL: {}", _complStmt);
-     *
-     * con = Context.getThreadContext().getConnectionResource();
-     * final Statement stmt = con.createStatement();
-     * final ResultSet rs = stmt.executeQuery(_complStmt);
-     * final ArrayListHandler handler = new
-     * ArrayListHandler(Context.getDbType().getRowProcessor());
-     * final List<Object[]> rows = handler.handle(rs);
-     * rs.close();
-     * stmt.close();
-     *
-     * for (final Object[] row : rows) {
-     * for (final Select select : _print.getSelection().getSelects()) {
-     * select.addObject(row);
-     * }
-     * ret = true;
-     * }
-     * } catch (final SQLException e) {
-     * throw new EFapsException(InstanceQuery.class, "executeOneCompleteStmt",
-     * e);
-     * } finally {
-     *
-     * }
-     * return ret;
-     * }
-     * }
-     */
 }

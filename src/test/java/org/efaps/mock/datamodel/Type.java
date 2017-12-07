@@ -27,7 +27,7 @@ import acolyte.jdbc.StatementHandler.Parameter;
 /**
  * The Class Type.
  */
-public class Type
+public final class Type
     extends AbstractType
 {
 

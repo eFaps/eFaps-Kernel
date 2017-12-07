@@ -23,11 +23,16 @@ import java.sql.Statement;
 import java.util.List;
 
 import org.apache.commons.dbutils.handlers.ArrayListHandler;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
+import org.efaps.db.stmt.print.ObjectPrint;
 import org.efaps.db.stmt.selection.ISelectionProvider;
 import org.efaps.db.stmt.selection.Select;
+import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.TableIndexer.Tableidx;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,39 +43,62 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  */
 public class SQLRunner
+    implements IEQLRunner
 {
 
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(SQLRunner.class);
 
-    /**
-     * Creates the SQL statement.
-     *
-     * @param _sqlProvider the sql provider
-     * @return the string
-     * @throws EFapsException the e faps exception
-     */
-    protected String createSQLStatement(final ISQLProvider _sqlProvider)
+    /** The print. */
+    private ObjectPrint print;
+
+    /** The sql select. */
+    private SQLSelect sqlSelect;
+
+    @Override
+    public void prepare(final ObjectPrint _print)
         throws EFapsException
     {
-        _sqlProvider.prepare();
-        final SQLSelect sqlSelect = new SQLSelect();
-        _sqlProvider.append2SQLSelect(sqlSelect);
-        return sqlSelect.getSQL();
+        this.print = _print;
+        this.sqlSelect = new SQLSelect();
+
+        for (final Select select : this.print.getSelection().getSelects()) {
+            for (final AbstractElement<?> element : select.getElements()) {
+                element.append2SQLSelect(this.sqlSelect);
+            }
+        }
+        if (this.sqlSelect.getColumns().size() > 0) {
+            addWhere();
+        }
     }
 
     /**
-     * Execute.
-     *
-     * @param _sqlProvider the sql provider
-     * @throws EFapsException the e faps exception
+     * Adds the where.
      */
-    protected void execute(final ISQLProvider _sqlProvider)
+    private void addWhere()
+    {
+        final Type type = this.print.getInstance().getType();
+        final String tableName = type.getMainTable().getSqlTable();
+        final Tableidx tableidx = this.sqlSelect.getIndexer().getTableIdx(tableName, tableName);
+        if (tableidx.isCreated()) {
+            this.sqlSelect.from(tableidx.getTable(), tableidx.getIdx());
+        }
+
+        this.sqlSelect.addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart(this.print
+                        .getInstance().getId());
+
+        if (type.getMainTable().getSqlColType() != null) {
+            this.sqlSelect.addPart(SQLPart.AND)
+                .addColumnPart(0, type.getMainTable().getSqlColType())
+                .addPart(SQLPart.EQUAL).addValuePart(type.getId());
+        }
+    }
+
+    @Override
+    public void execute()
         throws EFapsException
     {
-        final String sql = createSQLStatement(_sqlProvider);
-        SQLRunner.LOG.debug("SQL-Statement: {}", sql);
-        executeSQLStmt((ISelectionProvider) _sqlProvider, sql);
+        executeSQLStmt(this.print, this.sqlSelect.getSQL());
     }
 
     /**
@@ -81,14 +109,13 @@ public class SQLRunner
      * @return true, if successful
      * @throws EFapsException the e faps exception
      */
-    protected boolean executeSQLStmt(final ISelectionProvider _sqlProvider,
-                                     final String _complStmt)
+    protected boolean executeSQLStmt(final ISelectionProvider _sqlProvider, final String _complStmt)
         throws EFapsException
     {
+        SQLRunner.LOG.debug("SQL-Statement: {}", _complStmt);
         boolean ret = false;
         ConnectionResource con = null;
         try {
-
             con = Context.getThreadContext().getConnectionResource();
             final Statement stmt = con.createStatement();
             final ResultSet rs = stmt.executeQuery(_complStmt);
@@ -105,8 +132,6 @@ public class SQLRunner
             }
         } catch (final SQLException e) {
             throw new EFapsException(SQLRunner.class, "executeOneCompleteStmt", e);
-        } finally {
-
         }
         return ret;
     }

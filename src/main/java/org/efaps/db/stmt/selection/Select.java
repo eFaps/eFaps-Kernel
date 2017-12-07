@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.efaps.db.stmt.selection;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.efaps.db.stmt.selection.elements.AbstractElement;
@@ -30,16 +31,12 @@ import org.efaps.util.EFapsException;
 public final class Select
 {
 
+
     /** The objects. */
     private final List<Object> objects = new ArrayList<>();
 
     /** The elements. */
     private final List<AbstractElement<?>> elements = new ArrayList<>();
-
-    public List<AbstractElement<?>> getElements()
-    {
-        return this.elements;
-    }
 
     /**
      * Instantiates a new select.
@@ -58,6 +55,12 @@ public final class Select
         return new Select();
     }
 
+    /**
+     * Adds the element.
+     *
+     * @param _element the element
+     * @return the select
+     */
     protected Select addElement(final AbstractElement<?> _element)
     {
         if (!this.elements.isEmpty()) {
@@ -68,9 +71,35 @@ public final class Select
         return this;
     }
 
+    /**
+     * Adds the object.
+     *
+     * @param _row the row
+     * @throws EFapsException the e faps exception
+     */
     public void addObject(final Object[] _row)
         throws EFapsException
     {
         this.objects.add(this.elements.get(0).getObject(_row));
+    }
+
+    /**
+     * Gets the objects.
+     *
+     * @return the objects
+     */
+    public List<Object> getObjects()
+    {
+        return Collections.unmodifiableList(this.objects);
+    }
+
+    /**
+     * Gets the elements.
+     *
+     * @return the elements
+     */
+    public List<AbstractElement<?>> getElements()
+    {
+        return this.elements;
     }
 }

@@ -18,7 +18,7 @@ package org.efaps.mock.datamodel;
 
 import java.util.List;
 
-import org.efaps.test.AbstractTest;
+import org.efaps.mock.Mocks;
 import org.efaps.test.EFapsQueryHandler;
 import org.efaps.test.IMockResult;
 
@@ -29,13 +29,14 @@ import acolyte.jdbc.StatementHandler.Parameter;
 /**
  * The Class Attribute.
  */
-public class Attribute
+public final class Attribute
     extends AbstractType
 {
     /** The Constant SQL. */
     private static final String SQL = "select ID,NAME,TYPEID,DMTABLE,DMATTRIBUTETYPE,DMTYPELINK,PARENTSET,SQLCOLUMN,"
                     + "DEFAULTVAL,DIMENSION,CLASSNAME from V_ADMINATTRIBUTE T0 where T0.DMTYPE = ?";
 
+    /** The Constant SQL4ATTR2TYPE. */
     private static final String SQL4ATTR2TYPE = "select DMTYPE from V_ADMINATTRIBUTE T0 where T0.ID = ?";
 
     /** The data model type id. */
@@ -54,7 +55,8 @@ public class Attribute
      *
      * @param _builder the builder
      */
-    private Attribute(final AttributeBuilder _builder) {
+    private Attribute(final AttributeBuilder _builder)
+    {
         super(_builder);
         this.dataModelTypeId = _builder.dataModelTypeId;
         this.sqlTableId = _builder.sqlTableId;
@@ -63,7 +65,8 @@ public class Attribute
     }
 
     @Override
-    public QueryResult getResult() {
+    public QueryResult getResult()
+    {
         return RowLists.rowList11(Long.class, String.class, Long.class, Long.class, Long.class, Long.class, Long.class,
                         String.class, String.class, Long.class, String.class)
                         .append(getId(), getName(), this.typeId, this.sqlTableId, this.attributeTypeId,
@@ -88,6 +91,11 @@ public class Attribute
         return ret;
     }
 
+    /**
+     * Gets the data model type id.
+     *
+     * @return the data model type id
+     */
     public Long getDataModelTypeId()
     {
         return this.dataModelTypeId;
@@ -98,7 +106,8 @@ public class Attribute
      *
      * @return the attribute builder
      */
-    public static AttributeBuilder builder() {
+    public static AttributeBuilder builder()
+    {
         return new AttributeBuilder();
     }
 
@@ -119,7 +128,7 @@ public class Attribute
         private Long attributeTypeId;
 
         /** The type id. */
-        private Long typeId = AbstractTest.TYPE_Attribute.getId();
+        private Long typeId = Mocks.TYPE_Attribute.getId();
 
         /**
          * With data model type id.
@@ -160,7 +169,7 @@ public class Attribute
         /**
          * With attribute type id.
          *
-         * @param _attributeTypeId the attribute type id
+         * @param _typeId the type id
          * @return the attribute builder
          */
         public AttributeBuilder withTypeId(final Long _typeId)
@@ -186,7 +195,7 @@ public class Attribute
     /**
      * The Class Attribute2Type.
      */
-    private static class Attribute2Type
+    private final static class Attribute2Type
         implements IMockResult
     {
 
@@ -201,7 +210,8 @@ public class Attribute
          *
          * @param _builder the builder
          */
-        private Attribute2Type(final AttributeBuilder _builder) {
+        private Attribute2Type(final AttributeBuilder _builder)
+        {
             this.id = _builder.id;
             this.dataModelTypeId = _builder.dataModelTypeId;
         }

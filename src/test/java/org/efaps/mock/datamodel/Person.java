@@ -24,11 +24,10 @@ import acolyte.jdbc.QueryResult;
 import acolyte.jdbc.RowLists;
 import acolyte.jdbc.StatementHandler.Parameter;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Person.
  */
-public class Person
+public final class Person
     extends AbstractType
 {
 
@@ -75,7 +74,8 @@ public class Person
      *
      * @return the person builder
      */
-    public static PersonBuilder builder() {
+    public static PersonBuilder builder()
+    {
         return new PersonBuilder();
     }
 

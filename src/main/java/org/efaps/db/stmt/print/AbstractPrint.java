@@ -19,6 +19,7 @@ package org.efaps.db.stmt.print;
 
 import org.efaps.db.stmt.selection.ISelectionProvider;
 import org.efaps.db.stmt.selection.Selection;
+import org.efaps.util.EFapsException;
 
 /**
  * The Class AbstractPrint.
@@ -36,9 +37,11 @@ public abstract class AbstractPrint
      * Gets the selection.
      *
      * @return the selection
+     * @throws EFapsException on error
      */
     @Override
     public Selection getSelection()
+        throws EFapsException
     {
         return this.selection;
     }

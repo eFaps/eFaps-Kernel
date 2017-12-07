@@ -52,13 +52,13 @@ public class AttributeElement
     /**
      * Sets the attribute.
      *
-     * @param attribute the attribute
+     * @param _attribute the attribute
      * @return the attribute element
      */
-    public AttributeElement setAttribute(final Attribute attribute)
+    public AttributeElement setAttribute(final Attribute _attribute)
     {
-        this.attribute = attribute;
-        setDBTable(attribute.getTable());
+        this.attribute = _attribute;
+        setDBTable(this.attribute.getTable());
         return this;
     }
 
