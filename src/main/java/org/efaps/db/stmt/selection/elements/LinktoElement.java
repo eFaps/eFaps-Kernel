@@ -75,6 +75,13 @@ public class LinktoElement
             } else {
                 key = tableName;
             }
+            if (_sqlSelect.getFromTables().isEmpty()) {
+                final Tableidx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName, tableName);
+                if (tableidx.isCreated()) {
+                    _sqlSelect.from(tableidx.getTable(), tableidx.getIdx());
+                }
+            }
+
             final Tableidx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName, key);
 
             final Attribute joinAttr = this.attribute.getLink().getAttribute("ID");
