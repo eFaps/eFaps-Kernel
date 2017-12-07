@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public final class SQLTable
     extends AbstractDataModelObject
+    implements DBTable
 {
     /**
      * Needed for serialization.

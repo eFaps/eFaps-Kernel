@@ -205,6 +205,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <artifactId>efaps-eql</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+             <groupId>org.efaps</groupId>
+            <artifactId>efaps-eql2</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- easy XML reader
             using version 2.XX leads to problems on creation of the FactoryParser if different
