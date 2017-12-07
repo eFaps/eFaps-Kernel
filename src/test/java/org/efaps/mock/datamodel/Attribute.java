@@ -18,7 +18,6 @@ package org.efaps.mock.datamodel;
 
 import java.util.List;
 
-import org.efaps.mock.Mocks;
 import org.efaps.test.EFapsQueryHandler;
 import org.efaps.test.IMockResult;
 
@@ -128,7 +127,7 @@ public final class Attribute
         private Long attributeTypeId;
 
         /** The type id. */
-        private Long typeId = Mocks.TYPE_Attribute.getId();
+        private Long typeId;
 
         /**
          * With data model type id.
@@ -183,7 +182,8 @@ public final class Attribute
          *
          * @return the attribute
          */
-        public Attribute build() {
+        public Attribute build()
+        {
             final Attribute ret = new Attribute(this);
             EFapsQueryHandler.get().register(ret);
             final Attribute2Type attr2Type = new Attribute2Type(this);
@@ -195,7 +195,7 @@ public final class Attribute
     /**
      * The Class Attribute2Type.
      */
-    private final static class Attribute2Type
+    private static final class Attribute2Type
         implements IMockResult
     {
 

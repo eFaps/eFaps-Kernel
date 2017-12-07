@@ -51,7 +51,7 @@ public interface Mocks
                     .build();
 
     AttributeType TypeAttrType = AttributeType.builder()
-                    .withName("String")
+                    .withName("Type")
                     .withUuid(UUID.fromString("acfb7dd8-71e9-43c0-9f22-8d98190f7290"))
                     .withClassName("org.efaps.admin.datamodel.attributetype.TypeType")
                     .withClassNameUI("org.efaps.admin.datamodel.ui.TypeUI")
