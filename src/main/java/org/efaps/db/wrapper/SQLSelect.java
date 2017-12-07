@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,21 +34,21 @@ public class SQLSelect
     /**
      * Parts that will be added to the created SQL Statement.
      */
-    private final List<SQLSelectPart> parts = new ArrayList<SQLSelectPart>();
+    private final List<SQLSelectPart> parts = new ArrayList<>();
 
     /**
      * Selected columns.
      *
      * @see #column(String)
      */
-    private final List<Column> columns = new ArrayList<Column>();
+    private final List<Column> columns = new ArrayList<>();
 
     /**
      * Selected tables.
      *
      * @see #from(String)
      */
-    private final List<FromTable> fromTables = new ArrayList<FromTable>();
+    private final List<FromTable> fromTables = new ArrayList<>();
 
     /**
      * Must the select be distinct.
@@ -58,6 +58,9 @@ public class SQLSelect
 
     /** The table prefix. */
     private final String tablePrefix;
+
+    /** The indexer. */
+    private final TableIndexer indexer = new TableIndexer();
 
     /**
      * Instantiates a new SQL select.
@@ -75,6 +78,16 @@ public class SQLSelect
     public SQLSelect(final String _prefix)
     {
         this.tablePrefix = _prefix;
+    }
+
+    /**
+     * Gets the indexer.
+     *
+     * @return the indexer
+     */
+    public TableIndexer getIndexer()
+    {
+        return this.indexer;
     }
 
     /**
@@ -114,6 +127,16 @@ public class SQLSelect
     public List<Column> getColumns()
     {
         return this.columns;
+    }
+
+    /**
+     * Gets the column idx.
+     *
+     * @return the column idx
+     */
+    public int getColumnIdx()
+    {
+        return getColumns().size() - 1;
     }
 
     /**
@@ -475,7 +498,7 @@ public class SQLSelect
         @Override
         public void appendSQL(final StringBuilder _cmd)
         {
-            appendSQL(true, _cmd);
+            this.appendSQL(true, _cmd);
         }
 
         /**
