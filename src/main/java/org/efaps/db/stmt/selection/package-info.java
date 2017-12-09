@@ -14,15 +14,9 @@
  * limitations under the License.
  *
  */
-package org.efaps.db.stmt.selection;
-
 
 /**
- * The Interface ISelect.
- *
- * @author The eFaps Team
+ * Class that convert a EQL-Statement in Statements for the database.
  */
-public interface ISelect
-{
+package org.efaps.db.stmt.selection;
 
-}

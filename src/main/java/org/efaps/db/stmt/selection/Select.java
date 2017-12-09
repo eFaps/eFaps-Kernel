@@ -31,28 +31,23 @@ import org.efaps.util.EFapsException;
 public final class Select
 {
 
-
     /** The objects. */
     private final List<Object> objects = new ArrayList<>();
 
     /** The elements. */
     private final List<AbstractElement<?>> elements = new ArrayList<>();
 
-    /**
-     * Instantiates a new select.
-     */
-    private Select()
-    {
-    }
+    /** The alias. */
+    private final String alias;
 
     /**
-     * Gets the.
+     * Instantiates a new select.
      *
-     * @return the select
+     * @param _alias the alias
      */
-    public static Select get()
+    private Select(final String _alias)
     {
-        return new Select();
+        this.alias = _alias;
     }
 
     /**
@@ -101,5 +96,36 @@ public final class Select
     public List<AbstractElement<?>> getElements()
     {
         return this.elements;
+    }
+
+    /**
+     * Gets the alias.
+     *
+     * @return the alias
+     */
+    public String getAlias()
+    {
+        return this.alias;
+    }
+
+    /**
+     * Gets the.
+     *
+     * @return the select
+     */
+    public static Select get()
+    {
+        return new Select(null);
+    }
+
+    /**
+     * Gets the.
+     *
+     * @param _alias the alias
+     * @return the select
+     */
+    public static Select get(final String _alias)
+    {
+        return new Select(_alias);
     }
 }

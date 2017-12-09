@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 package org.efaps.db.stmt.selection;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The Class SelectionEvaluator.
@@ -64,6 +65,29 @@ public final class SelectionEvaluator
         if (this.selection.getSelects().size() > idx) {
             final Select select = this.selection.getSelects().get(idx);
             final List<Object> objects = select.getObjects();
+            if (objects.size() == 1) {
+                ret = objects.get(0);
+            }
+        }
+        return (T) ret;
+    }
+
+    /**
+     * Gets the.
+     *
+     * @param <T> the generic type
+     * @param _alias the alias
+     * @return the t
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T get(final String _alias)
+    {
+        Object ret = null;
+        final Optional<Select> selectOpt = this.selection.getSelects().stream()
+                        .filter(select ->_alias.equals(select.getAlias()))
+                        .findFirst();
+        if (selectOpt.isPresent()) {
+            final List<Object> objects = selectOpt.get().getObjects();
             if (objects.size() == 1) {
                 ret = objects.get(0);
             }

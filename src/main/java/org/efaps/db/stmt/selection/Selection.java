@@ -48,16 +48,6 @@ public final class Selection
     private final List<Select> selects = new ArrayList<>();
 
     /**
-     * Gets the elements.
-     *
-     * @return the elements
-     */
-    public List<Select> getSelects()
-    {
-        return this.selects;
-    }
-
-    /**
      * Analyze.
      *
      * @param _baseTypes the base types
@@ -71,7 +61,7 @@ public final class Selection
         throws CacheReloadException
     {
         for (final ISelect sel : _sel.getSelects()) {
-            final Select select = Select.get();
+            final Select select = Select.get(sel.getAlias());
             this.selects.add(select);
             Collection<Type> currentTypes = _baseTypes;
             for (final ISelectElement ele : sel.getElements()) {
@@ -99,6 +89,16 @@ public final class Selection
             }
         }
         return this;
+    }
+
+    /**
+     * Gets the elements.
+     *
+     * @return the elements
+     */
+    public List<Select> getSelects()
+    {
+        return this.selects;
     }
 
     /**

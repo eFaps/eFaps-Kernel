@@ -344,5 +344,30 @@ public class PrintStmtTest
                .evaluator();
         assertEquals(evaluator.get(1), strValue);
     }
+
+    @Test(description = "read a value using an Alias")
+    public void testAttributeWithAliase()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+                        Mocks.AllAttrStringAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(String.class)
+                        .append("A Value")
+                        .asResult())
+            .build();
+        final String alias = "AliasName";
+
+        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s] as %s",
+                        Mocks.AllAttrType.getId(), Mocks.AllAttrStringAttribute.getName(), alias));
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluator();
+        assertEquals(evaluator.get(alias), "A Value");
+    }
 }
 
