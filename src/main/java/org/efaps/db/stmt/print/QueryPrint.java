@@ -20,8 +20,10 @@ package org.efaps.db.stmt.print;
 import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.stmt.filter.Filter;
 import org.efaps.db.stmt.selection.Selection;
 import org.efaps.eql2.IPrintQueryStatement;
+import org.efaps.eql2.IWhere;
 import org.efaps.eql2.impl.PrintQueryStatement;
 import org.efaps.util.EFapsException;
 import org.efaps.util.UUIDUtil;
@@ -33,7 +35,6 @@ import org.efaps.util.cache.CacheReloadException;
 public class QueryPrint
     extends AbstractPrint
 {
-
 
     /** The eql stmt. */
     private final IPrintQueryStatement eqlStmt;
@@ -71,4 +72,10 @@ public class QueryPrint
         return ret;
     }
 
+    public Filter getFilter()
+        throws CacheReloadException
+    {
+        final IWhere where = this.eqlStmt.getQuery().getWhere();
+        return Filter.get(where, getTypes().toArray(new Type[getTypes().size()]));
+    }
 }

@@ -32,6 +32,7 @@ import org.efaps.util.EFapsException;
  */
 public class SQLSelect
 {
+
     /**
      * Parts that will be added to the created SQL Statement.
      */
@@ -62,6 +63,9 @@ public class SQLSelect
 
     /** The indexer. */
     private final TableIndexer indexer = new TableIndexer();
+
+    /** The where. */
+    private SQLWhere where;
 
     /**
      * Instantiates a new SQL select.
@@ -464,6 +468,17 @@ public class SQLSelect
     public SQLSelectPart getCurrentPart()
     {
         return this.parts.isEmpty() ? null : this.parts.get(this.parts.size() - 1);
+    }
+
+    /**
+     * Where.
+     *
+     * @param _where the where
+     * @return the SQL select part
+     */
+    public SQLSelect where(final SQLWhere _where) {
+        this.where = _where;
+        return this;
     }
 
     @Override

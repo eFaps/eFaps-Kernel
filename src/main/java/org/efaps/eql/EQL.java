@@ -19,6 +19,7 @@ package org.efaps.eql;
 
 import org.efaps.eql.builder.Print;
 import org.efaps.eql.builder.Query;
+import org.efaps.eql.builder.Where;
 import org.efaps.eql2.bldr.AbstractInsertEQLBuilder;
 import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
 import org.efaps.eql2.bldr.AbstractQueryEQLBuilder;
@@ -60,7 +61,7 @@ public final class EQL
     @Override
     protected AbstractWhereBuilder<?> getWhere()
     {
-        return null;
+        return new Where();
     }
 
     /**
@@ -88,7 +89,7 @@ public final class EQL
     /**
      * Prints the.
      *
-     * @param _oid the oid
+     * @param _types the types
      * @return the abstract print EQL builder<?>
      */
     public static Query query(final String... _types)

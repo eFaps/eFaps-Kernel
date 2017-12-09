@@ -29,6 +29,7 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.dbutils.handlers.ArrayListHandler;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
+import org.efaps.db.stmt.filter.Filter;
 import org.efaps.db.stmt.print.AbstractPrint;
 import org.efaps.db.stmt.print.ObjectPrint;
 import org.efaps.db.stmt.print.QueryPrint;
@@ -41,6 +42,7 @@ import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLSelect.SQLSelectPart;
 import org.efaps.db.wrapper.TableIndexer.Tableidx;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,13 +127,14 @@ public class SQLRunner
 
     /**
      * Adds the where.
+     * @throws CacheReloadException
      */
-    private void addWhere4QueryPrint()
+    private void addWhere4QueryPrint() throws CacheReloadException
     {
         final QueryPrint queryPrint = (QueryPrint) this.print;
-
+        final Filter filter = queryPrint.getFilter();
+        filter.append2SQLSelect(this.sqlSelect);
     }
-
 
     /**
      * Adds the where.

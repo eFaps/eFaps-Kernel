@@ -21,6 +21,7 @@ import org.efaps.mock.Mocks;
 import org.efaps.test.AbstractTest;
 import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
+import org.efaps.util.RandomUtil;
 import org.testng.annotations.Test;
 
 /**
@@ -75,6 +76,28 @@ public class QueryTest
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
         EQL.print(EQL.query(Mocks.TypedType.getName(), Mocks.TypedType2.getName()))
             .attribute(Mocks.TypedTypeTestAttr.getName())
+            .stmt()
+            .execute();
+        verify.verify();
+    }
+
+    @Test
+    public void testQueryWhere()
+        throws EFapsException
+    {
+        final String strCriteria = RandomUtil.randomAlphanumeric(8);
+        final String sql = String.format("select T0.%s from %s T0 where T0.%s = '%s'",
+                        Mocks.TestAttribute.getSQLColumnName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.TestAttribute.getSQLColumnName(),
+                        strCriteria);
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(EQL.query(Mocks.SimpleType.getName()).where(
+                        EQL.where()
+                        .attribute(Mocks.TestAttribute.getName())
+                        .eq(strCriteria)))
+            .attribute(Mocks.TestAttribute.getName())
             .stmt()
             .execute();
         verify.verify();

@@ -63,11 +63,21 @@ public abstract class AbstractPrint
         this.selection = _selection;
     }
 
+    /**
+     * Adds the type.
+     *
+     * @param _type the type
+     */
     protected void addType(final Type _type)
     {
         this.types.add(_type);
     }
 
+    /**
+     * Gets the types.
+     *
+     * @return the types
+     */
     public Set<Type> getTypes()
     {
         return this.types;
