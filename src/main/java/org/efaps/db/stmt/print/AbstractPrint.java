@@ -17,7 +17,7 @@
 
 package org.efaps.db.stmt.print;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.efaps.admin.datamodel.Type;
@@ -38,7 +38,7 @@ public abstract class AbstractPrint
     private Selection selection;
 
     /** The types. */
-    private final Set<Type> types = new HashSet<>();
+    private final Set<Type> types = new LinkedHashSet<>();
 
     /**
      * Gets the selection.

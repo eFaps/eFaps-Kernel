@@ -127,9 +127,10 @@ public class SQLRunner
 
     /**
      * Adds the where.
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
-    private void addWhere4QueryPrint() throws CacheReloadException
+    private void addWhere4QueryPrint()
+        throws CacheReloadException
     {
         final QueryPrint queryPrint = (QueryPrint) this.print;
         final Filter filter = queryPrint.getFilter();
@@ -170,7 +171,7 @@ public class SQLRunner
     protected boolean executeSQLStmt(final ISelectionProvider _sqlProvider, final String _complStmt)
         throws EFapsException
     {
-        SQLRunner.LOG.debug("SQL-Statement: {}", _complStmt);
+        SQLRunner.LOG.info("SQL-Statement: {}", _complStmt);
         boolean ret = false;
         ConnectionResource con = null;
         try {
