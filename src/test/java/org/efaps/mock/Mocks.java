@@ -207,7 +207,7 @@ public interface Mocks
                     .build();
 
     Attribute AllAttrTimeAttribute = Attribute.builder()
-                    .withName("AllAttrDateAttribute")
+                    .withName("AllAttrTimeAttribute")
                     .withDataModelTypeId(AllAttrType.getId())
                     .withSqlTableId(AllAttrTypeSQLTable.getId())
                     .withAttributeTypeId(Mocks.TimeAttrType.getId())

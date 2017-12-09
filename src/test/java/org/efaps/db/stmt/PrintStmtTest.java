@@ -97,7 +97,7 @@ public class PrintStmtTest
         assertEquals(evaluator.get(1), "A Value");
     }
 
-    @Test
+    @Test(description = "read a String Attribute")
     public void testStringAttribute()
         throws EFapsException
     {
@@ -240,7 +240,7 @@ public class PrintStmtTest
         final SelectionEvaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluator();
-        assertEquals(evaluator.get(1), date);
+        assertEquals(evaluator.get(1), date.toLocalTime());
     }
 
     @Test
