@@ -63,4 +63,78 @@ public class PrintTest
             .execute();
         verify.verify();
     }
+
+    @Test
+    public void testObjPrintVariousAttributes2()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T0.%s from %s T0 where T0.ID = 4",
+                        Mocks.AllAttrBooleanAttribute.getSQLColumnName(),
+                        Mocks.AllAttrStringAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(Mocks.AllAttrType.getId() + ".4")
+            .attribute(Mocks.AllAttrBooleanAttribute.getName())
+            .attribute(Mocks.AllAttrStringAttribute.getName())
+            .stmt()
+            .execute();
+        verify.verify();
+    }
+
+    @Test
+    public void testObjPrintAttributeWithAlias()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+                        Mocks.AllAttrBooleanAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(Mocks.AllAttrType.getId() + ".4")
+            .attribute(Mocks.AllAttrBooleanAttribute.getName())
+            .as("BlaBla")
+            .stmt()
+            .execute();
+        verify.verify();
+    }
+
+    @Test
+    public void testObjPrintAttributesWithAlias()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T0.%s from %s T0 where T0.ID = 4",
+                        Mocks.AllAttrBooleanAttribute.getSQLColumnName(),
+                        Mocks.AllAttrStringAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(Mocks.AllAttrType.getId() + ".4")
+            .attribute(Mocks.AllAttrBooleanAttribute.getName())
+            .as("BlaBla")
+            .attribute(Mocks.AllAttrStringAttribute.getName())
+            .as("BlaBla2")
+            .stmt()
+            .execute();
+        verify.verify();
+    }
+
+    @Test
+    public void testLinkto()
+        throws EFapsException
+    {
+        final String sql = String.format("select T1.%s from %s T0 left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
+                        Mocks.TestAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.AllAttrLinkAttribute.getSQLColumnName());
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+
+        EQL.print(Mocks.AllAttrType.getId() + ".4")
+            .linkto(Mocks.AllAttrLinkAttribute.getName())
+            .attribute(Mocks.TestAttribute.getName())
+            .stmt()
+            .execute();
+        verify.verify();
+    }
 }
