@@ -138,6 +138,24 @@ public interface Mocks
                     .withAttributeTypeId(TypeAttrType.getId())
                     .build();
 
+    Type TypedType2 = Type.builder().withId(RandomUtils.nextLong()).withName("TypedType2").build();
+
+    SQLTable TypedType2SQLTable = SQLTable.builder().withName("TypedType2SQLTable").withTypeColumn("TYPE").build();
+
+    Attribute TypedType2TestAttr = Attribute.builder()
+                    .withName("TestAttr")
+                    .withDataModelTypeId(TypedType2.getId())
+                    .withSqlTableId(TypedType2SQLTable.getId())
+                    .withAttributeTypeId(StringAttrType.getId())
+                    .build();
+
+    Attribute TypedType2TypeAttr = Attribute.builder()
+                    .withName("TypeAttr")
+                    .withDataModelTypeId(TypedType2.getId())
+                    .withSqlTableId(TypedType2SQLTable.getId())
+                    .withAttributeTypeId(TypeAttrType.getId())
+                    .build();
+
     Type SimpleType = Type.builder()
                     .withId(RandomUtils.nextLong())
                     .withName("SimpleType")

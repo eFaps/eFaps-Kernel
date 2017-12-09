@@ -85,8 +85,7 @@ public class AttributeElement
             final Tableidx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName, key);
 
             for (final String colName : this.attribute.getSqlColNames()) {
-                this.colIdxs = ArrayUtils.add(this.colIdxs,
-                                _sqlSelect.column(tableidx.getIdx(), colName).getColumnIdx());
+                this.colIdxs = ArrayUtils.add(this.colIdxs, _sqlSelect.columnIndex(tableidx.getIdx(), colName));
             }
             if (tableidx.isCreated()) {
                 _sqlSelect.from(tableidx.getTable(), tableidx.getIdx());

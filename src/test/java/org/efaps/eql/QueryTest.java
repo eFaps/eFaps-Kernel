@@ -61,4 +61,22 @@ public class QueryTest
             .execute();
         verify.verify();
     }
+
+    @Test
+    public void test2TypedQuery()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0 where T0.TYPE in ( %s , %s )",
+                        Mocks.TypedTypeTestAttr.getSQLColumnName(),
+                        Mocks.TypedTypeSQLTable.getSqlTableName(),
+                        Mocks.TypedType.getId(),
+                        Mocks.TypedType2.getId());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(EQL.query(Mocks.TypedType.getName(), Mocks.TypedType2.getName()))
+            .attribute(Mocks.TypedTypeTestAttr.getName())
+            .stmt()
+            .execute();
+        verify.verify();
+    }
 }

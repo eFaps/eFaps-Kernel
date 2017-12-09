@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections4.MultiMapUtils;
@@ -103,12 +104,20 @@ public class SQLRunner
             if (currentPart == null) {
                 this.sqlSelect.addPart(SQLPart.WHERE);
             }
-            for (final Tableidx tableidx : typeCriterias.keys()) {
+            for (final Tableidx tableidx : typeCriterias.keySet()) {
                 final Collection<TypeCriteria> criterias = typeCriterias.get(tableidx);
+                final Iterator<TypeCriteria> iter = criterias.iterator();
+                final TypeCriteria criteria = iter.next();
+                this.sqlSelect.addColumnPart(tableidx.getIdx(), criteria.sqlColType);
                 if (criterias.size() == 1) {
-                    final TypeCriteria criteria = criterias.iterator().next();
-                    this.sqlSelect.addColumnPart(tableidx.getIdx(), criteria.sqlColType)
-                        .addPart(SQLPart.EQUAL).addValuePart(criteria.id);
+                    this.sqlSelect .addPart(SQLPart.EQUAL).addValuePart(criteria.id);
+                } else {
+                    this.sqlSelect.addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
+                    this.sqlSelect.addValuePart(criteria.id);
+                    while (iter.hasNext()) {
+                        this.sqlSelect.addPart(SQLPart.COMMA).addValuePart(iter.next().id);
+                    }
+                    this.sqlSelect.addPart(SQLPart.PARENTHESIS_CLOSE);
                 }
             }
         }

@@ -19,6 +19,7 @@ package org.efaps.db.wrapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.efaps.db.Context;
 import org.efaps.db.search.section.AbstractQSection;
@@ -117,6 +118,28 @@ public class SQLSelect
     {
         this.columns.add(new Column(this.tablePrefix, _tableIndex, _columnName));
         return this;
+    }
+
+    /**
+     * Column index.
+     *
+     * @param _tableIndex the table index
+     * @param _columnName the column name
+     * @return the int
+     */
+    public int columnIndex(final int _tableIndex, final String _columnName)
+    {
+        final Optional<Column> colOpt = getColumns().stream()
+                        .filter(column -> column.tableIndex == _tableIndex && column.columnName.equals(_columnName))
+                        .findFirst();
+        final int ret;
+        if (colOpt.isPresent()) {
+            ret = getColumns().indexOf(colOpt.get());
+        } else {
+            this.columns.add(new Column(this.tablePrefix, _tableIndex, _columnName));
+            ret = getColumnIdx();
+        }
+        return ret;
     }
 
     /**
