@@ -51,8 +51,7 @@ public class Filter
      * @param _types the types
      * @return the filter
      */
-    private Filter analyze(final IWhere _where,
-                           final List<Type> _types)
+    private Filter analyze(final IWhere _where, final List<Type> _types)
     {
         this.iWhere = _where;
         this.types = _types;
@@ -66,20 +65,22 @@ public class Filter
      */
     public void append2SQLSelect(final SQLSelect _sqlSelect)
     {
-        final SQLWhere sqlWhere = new SQLWhere();
-        for (final IWhereTerm<?> term : this.iWhere.getTerms()) {
-            if (term instanceof IWhereElementTerm) {
-                final IWhereElement element = ((IWhereElementTerm) term).getElement();
-                final String attrName = element.getAttribute();
-                if (attrName != null) {
-                    for (final Type type : this.types) {
-                        final Attribute attr = type.getAttribute(attrName);
-                        if (attr != null) {
-                            final SQLTable table = attr.getTable();
-                            final String tableName = table.getSqlTable();
-                            final Tableidx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName, tableName);
-                            attr.getSqlColNames();
+        if (this.iWhere != null) {
+            final SQLWhere sqlWhere = new SQLWhere();
+            for (final IWhereTerm<?> term : this.iWhere.getTerms()) {
+                if (term instanceof IWhereElementTerm) {
+                    final IWhereElement element = ((IWhereElementTerm) term).getElement();
+                    final String attrName = element.getAttribute();
+                    if (attrName != null) {
+                        for (final Type type : this.types) {
+                            final Attribute attr = type.getAttribute(attrName);
+                            if (attr != null) {
+                                final SQLTable table = attr.getTable();
+                                final String tableName = table.getSqlTable();
+                                final Tableidx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName, tableName);
+                                attr.getSqlColNames();
 
+                            }
                         }
                     }
                 }
@@ -95,8 +96,7 @@ public class Filter
      * @return the selection
      * @throws CacheReloadException the cache reload exception
      */
-    public static Filter get(final IWhere _where,
-                             final Type... _baseTypes)
+    public static Filter get(final IWhere _where, final Type... _baseTypes)
         throws CacheReloadException
     {
         return new Filter().analyze(_where, Arrays.asList(_baseTypes));
