@@ -32,12 +32,16 @@ public final class Type
 {
 
     /** The Constant SQL. */
-    private static final String SQL = "select ID,UUID,NAME,PURPOSE,PARENTDMTYPE,PARENTCLASSDMTYPE "
+    private static final String SQLID = "select ID,UUID,NAME,PURPOSE,PARENTDMTYPE,PARENTCLASSDMTYPE "
                     + "from V_ADMINTYPE T0 where T0.ID = ?";
 
     /** The Constant SQL. */
     private static final String SQLUUID = "select ID,UUID,NAME,PURPOSE,PARENTDMTYPE,PARENTCLASSDMTYPE "
                     + "from V_ADMINTYPE T0 where T0.UUID = ?";
+
+    /** The Constant SQL. */
+    private static final String SQLNAME = "select ID,UUID,NAME,PURPOSE,PARENTDMTYPE,PARENTCLASSDMTYPE "
+                    + "from V_ADMINTYPE T0 where T0.NAME = ?";
 
     /**
      * Instantiates a new type.
@@ -59,7 +63,7 @@ public final class Type
     @Override
     public String[] getSqls()
     {
-        return new String[] { SQL, SQLUUID };
+        return new String[] { SQLID, SQLUUID, SQLNAME };
     }
 
     @Override
@@ -68,10 +72,12 @@ public final class Type
         boolean ret = false;
         if (_parameters.size() == 1) {
             final Parameter parameter = _parameters.get(0);
-            if (SQL.equals(_sql)) {
+            if (SQLID.equals(_sql)) {
                 ret = getId().equals(parameter.right);
-            } else {
+            } else if (SQLUUID.equals(_sql)) {
                 ret = getUuid().toString().equals(parameter.right);
+            } else {
+                ret = getName().toString().equals(parameter.right);
             }
         }
         return ret;

@@ -17,26 +17,26 @@
 
 package org.efaps.db.stmt.print;
 
-import org.efaps.db.Instance;
+import java.util.UUID;
+
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.stmt.selection.Selection;
-import org.efaps.eql2.IPrintObjectStatement;
+import org.efaps.eql2.IPrintQueryStatement;
+import org.efaps.eql2.impl.PrintQueryStatement;
 import org.efaps.util.EFapsException;
+import org.efaps.util.UUIDUtil;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
- * The Class ObjectPrint.
- *
- * @author The eFaps Team
+ * The Class QueryPrint.
  */
-public class ObjectPrint
+public class QueryPrint
     extends AbstractPrint
 {
 
-    /** The instance. */
-    private final Instance instance;
 
     /** The eql stmt. */
-    private final IPrintObjectStatement eqlStmt;
+    private final IPrintQueryStatement eqlStmt;
 
     /**
      * Instantiates a new object print.
@@ -44,22 +44,19 @@ public class ObjectPrint
      * @param _eqlStmt the eql stmt
      * @throws CacheReloadException on error
      */
-    public ObjectPrint(final IPrintObjectStatement _eqlStmt)
+    public QueryPrint(final IPrintQueryStatement _eqlStmt)
         throws CacheReloadException
     {
-        this.instance = Instance.get(_eqlStmt.getOid());
         this.eqlStmt = _eqlStmt;
-        addType(this.instance.getType());
-    }
-
-    /**
-     * Gets the instance.
-     *
-     * @return the instance
-     */
-    public Instance getInstance()
-    {
-        return this.instance;
+        for (final String typeStr : ((PrintQueryStatement) this.eqlStmt).getQuery().getTypes()) {
+            final Type type;
+            if (UUIDUtil.isUUID(typeStr)) {
+                type = Type.get(UUID.fromString(typeStr));
+            } else {
+                type = Type.get(typeStr);
+            }
+            addType(type);
+        }
     }
 
     @Override
@@ -68,9 +65,10 @@ public class ObjectPrint
     {
         Selection ret = super.getSelection();
         if (ret == null) {
-            setSelection(Selection.get(this.eqlStmt.getSelection(), this.instance.getType()));
+            setSelection(Selection.get(this.eqlStmt.getSelection(), getTypes().toArray(new Type[getTypes().size()])));
             ret = super.getSelection();
         }
         return ret;
     }
+
 }

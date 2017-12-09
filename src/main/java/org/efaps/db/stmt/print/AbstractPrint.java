@@ -17,6 +17,10 @@
 
 package org.efaps.db.stmt.print;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.stmt.selection.ISelectionProvider;
 import org.efaps.db.stmt.selection.Selection;
 import org.efaps.util.EFapsException;
@@ -32,6 +36,9 @@ public abstract class AbstractPrint
 
     /** The selection. */
     private Selection selection;
+
+    /** The types. */
+    private final Set<Type> types = new HashSet<>();
 
     /**
      * Gets the selection.
@@ -54,5 +61,15 @@ public abstract class AbstractPrint
     protected void setSelection(final Selection _selection)
     {
         this.selection = _selection;
+    }
+
+    protected void addType(final Type _type)
+    {
+        this.types.add(_type);
+    }
+
+    public Set<Type> getTypes()
+    {
+        return this.types;
     }
 }

@@ -433,6 +433,16 @@ public class SQLSelect
         return select;
     }
 
+    /**
+     * Gets the current.
+     *
+     * @return the current
+     */
+    public SQLSelectPart getCurrentPart()
+    {
+        return this.parts.isEmpty() ? null : this.parts.get(this.parts.size() - 1);
+    }
+
     @Override
     public String toString()
     {

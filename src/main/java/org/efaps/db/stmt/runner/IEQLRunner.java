@@ -17,7 +17,7 @@
 
 package org.efaps.db.stmt.runner;
 
-import org.efaps.db.stmt.print.ObjectPrint;
+import org.efaps.db.stmt.print.AbstractPrint;
 import org.efaps.util.EFapsException;
 
 /**
@@ -34,7 +34,7 @@ public interface IEQLRunner
      * @param _print the print
      * @throws EFapsException on errors
      */
-    void prepare(ObjectPrint _print)
+    void prepare(AbstractPrint _print)
         throws EFapsException;
 
     /**

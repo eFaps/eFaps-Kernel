@@ -17,19 +17,16 @@
 
 package org.efaps.db.stmt;
 
-import java.util.UUID;
-
-import org.efaps.admin.datamodel.Type;
+import org.efaps.db.stmt.print.AbstractPrint;
 import org.efaps.db.stmt.print.ObjectPrint;
+import org.efaps.db.stmt.print.QueryPrint;
 import org.efaps.db.stmt.runner.StmtRunner;
 import org.efaps.db.stmt.selection.SelectionEvaluator;
 import org.efaps.eql2.IPrintListStatement;
 import org.efaps.eql2.IPrintObjectStatement;
 import org.efaps.eql2.IPrintQueryStatement;
 import org.efaps.eql2.IPrintStatement;
-import org.efaps.eql2.impl.PrintQueryStatement;
 import org.efaps.util.EFapsException;
-import org.efaps.util.UUIDUtil;
 
 /**
  * PrintStatement wrapper and execute class.
@@ -41,7 +38,7 @@ public final class PrintStmt
 {
 
     /** The print. */
-    private ObjectPrint print;
+    private AbstractPrint print;
 
     /**
      * Instantiates a new prints the stmt.
@@ -61,19 +58,12 @@ public final class PrintStmt
     {
         if (getEQLStmt() instanceof IPrintObjectStatement) {
             this.print = new ObjectPrint((IPrintObjectStatement) getEQLStmt());
-            StmtRunner.get().execute(this.print);
         } else if (getEQLStmt() instanceof IPrintListStatement) {
 
         } else if (getEQLStmt() instanceof IPrintQueryStatement) {
-            for (final String typeStr : ((PrintQueryStatement) getEQLStmt()).getQuery().getTypes()) {
-                final Type type;
-                if (UUIDUtil.isUUID(typeStr)) {
-                    type = Type.get(UUID.fromString(typeStr));
-                } else {
-                    type = Type.get(typeStr);
-                }
-            }
+            this.print = new QueryPrint((IPrintQueryStatement) getEQLStmt());
         }
+        StmtRunner.get().execute(this.print);
         return this;
     }
 

@@ -18,9 +18,10 @@
 package org.efaps.eql;
 
 import org.efaps.eql.builder.Print;
-import org.efaps.eql2.bldr.AbstractEQLBuilder;
+import org.efaps.eql.builder.Query;
 import org.efaps.eql2.bldr.AbstractInsertEQLBuilder;
 import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
+import org.efaps.eql2.bldr.AbstractQueryEQLBuilder;
 import org.efaps.eql2.bldr.AbstractUpdateEQLBuilder;
 import org.efaps.eql2.bldr.AbstractWhereBuilder;
 
@@ -51,13 +52,47 @@ public final class EQL
     }
 
     @Override
-    protected AbstractWhereBuilder<?> getWhere(final AbstractEQLBuilder<?> _parent)
+    protected AbstractQueryEQLBuilder<?> getQuery()
+    {
+        return new Query();
+    }
+
+    @Override
+    protected AbstractWhereBuilder<?> getWhere()
     {
         return null;
     }
 
+    /**
+     * Prints the.
+     *
+     * @param _oid the oid
+     * @return the prints the
+     */
     public static Print print(final String... _oid)
     {
         return (Print) org.efaps.eql2.EQL.print(_oid);
+    }
+
+    /**
+     * Prints the.
+     *
+     * @param _queryBuilder the query builder
+     * @return the prints the
+     */
+    public static Print print(final Query  _queryBuilder)
+    {
+        return (Print) org.efaps.eql2.EQL.print(_queryBuilder);
+    }
+
+    /**
+     * Prints the.
+     *
+     * @param _oid the oid
+     * @return the abstract print EQL builder<?>
+     */
+    public static Query query(final String... _types)
+    {
+        return (Query) org.efaps.eql2.EQL.query(_types);
     }
 }

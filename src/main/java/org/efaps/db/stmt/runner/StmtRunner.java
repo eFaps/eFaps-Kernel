@@ -20,7 +20,7 @@ package org.efaps.db.stmt.runner;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.efaps.db.stmt.print.ObjectPrint;
+import org.efaps.db.stmt.print.AbstractPrint;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +66,7 @@ public final class StmtRunner
      * @param _print the print
      * @throws EFapsException the e faps exception
      */
-    public void execute(final ObjectPrint _print)
+    public void execute(final AbstractPrint _print)
         throws EFapsException
     {
         try {

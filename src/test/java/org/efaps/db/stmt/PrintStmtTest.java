@@ -78,8 +78,8 @@ public class PrintStmtTest
     public void testSimplePrintObjectValue()
         throws EFapsException
     {
-        final String sql = String.format("select T0.TestAttr_COL from T_DEMO T0 where T0.ID = 4 "
-                        + "and T0.TYPE = %s", Mocks.TypedType.getId());
+        final String sql = String.format("select T0.TestAttr_COL from T_DEMO T0 where T0.TYPE = %s and T0.ID = 4",
+                        Mocks.TypedType.getId());
 
         MockResult.builder()
             .withSql(sql)

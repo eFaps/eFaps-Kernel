@@ -17,30 +17,13 @@
 
 package org.efaps.eql.builder;
 
-import org.efaps.db.stmt.PrintStmt;
-import org.efaps.eql2.IPrintStatement;
-import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
+import org.efaps.eql2.bldr.AbstractQueryEQLBuilder;
 
 /**
- * The Class Print.
+ * The Class Query.
  */
-public class Print
-    extends AbstractPrintEQLBuilder<Print>
+public class Query
+    extends AbstractQueryEQLBuilder<Query>
 {
 
-    /**
-     * Stmt.
-     *
-     * @return the prints the stmt
-     */
-    public PrintStmt stmt()
-    {
-        return PrintStmt.get((IPrintStatement<?>) getStmt());
-    }
-
-    @Override
-    protected Print getThis()
-    {
-        return this;
-    }
 }
