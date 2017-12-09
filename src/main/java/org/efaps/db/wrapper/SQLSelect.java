@@ -326,9 +326,19 @@ public class SQLSelect
             }
         }
         cmd.append(" ");
+        boolean whereAdded = false;
         for (final SQLSelectPart part : this.parts) {
             part.appendSQL(cmd);
             cmd.append(" ");
+            whereAdded = whereAdded || !whereAdded && part.sqlpart.equals(SQLPart.WHERE);
+        }
+
+        if (this.where != null) {
+            if (!whereAdded) {
+                new SQLSelectPart(SQLPart.WHERE).appendSQL(cmd);
+                new SQLSelectPart(SQLPart.SPACE).appendSQL(cmd);
+            }
+            this.where.appendSQL(this.tablePrefix, cmd);
         }
         return cmd.toString();
     }
@@ -476,7 +486,8 @@ public class SQLSelect
      * @param _where the where
      * @return the SQL select part
      */
-    public SQLSelect where(final SQLWhere _where) {
+    public SQLSelect where(final SQLWhere _where)
+    {
         this.where = _where;
         return this;
     }
@@ -798,7 +809,7 @@ public class SQLSelect
     /**
      * Value .
      */
-    protected static class Value
+    public static class Value
         extends SQLSelectPart
     {
 
@@ -831,7 +842,7 @@ public class SQLSelect
     /**
      * Value to be escaped.
      */
-    protected static class EscapedValue
+    public static class EscapedValue
         extends SQLSelectPart
     {
 
@@ -940,7 +951,7 @@ public class SQLSelect
     /**
      * Column.
      */
-    protected static class Column
+    public static class Column
         extends SQLSelect.SQLSelectPart
     {
         /**

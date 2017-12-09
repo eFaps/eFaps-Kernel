@@ -100,6 +100,6 @@ public class QueryTest
             .attribute(Mocks.TestAttribute.getName())
             .stmt()
             .execute();
-        //verify.verify();
+        verify.verify();
     }
 }

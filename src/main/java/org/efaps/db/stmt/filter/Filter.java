@@ -21,8 +21,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.IAttributeType;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.attributetype.LongType;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLWhere;
 import org.efaps.db.wrapper.TableIndexer.Tableidx;
@@ -78,13 +80,16 @@ public class Filter
                                 final SQLTable table = attr.getTable();
                                 final String tableName = table.getSqlTable();
                                 final Tableidx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName, tableName);
-                                attr.getSqlColNames();
-
+                                final IAttributeType attrType = attr.getAttributeType().getDbAttrType();
+                                final boolean noEscape = attrType instanceof LongType;
+                                sqlWhere.addCriteria(tableidx.getIdx(), attr.getSqlColNames(), element.getComparison(),
+                                                element.getValues(), !noEscape);
                             }
                         }
                     }
                 }
             }
+            _sqlSelect.where(sqlWhere);
         }
     }
 
