@@ -64,6 +64,48 @@ public interface Mocks
                     .withClassNameUI("org.efaps.admin.datamodel.ui.NumberUI")
                     .build();
 
+    AttributeType BooleanAttrType = AttributeType.builder()
+                    .withName("Boolean")
+                    .withUuid(UUID.fromString("7fb3799d-4e31-45a3-8c5e-4fbf445ec3c1"))
+                    .withClassName("org.efaps.admin.datamodel.attributetype.BooleanType")
+                    .withClassNameUI("org.efaps.admin.datamodel.ui.BooleanUI")
+                    .build();
+
+    AttributeType DateAttrType = AttributeType.builder()
+                    .withName("Date")
+                    .withUuid(UUID.fromString("68ce3aa6-e3e8-40bb-b48f-2a67948c2e7e"))
+                    .withClassName("org.efaps.admin.datamodel.attributetype.DateType")
+                    .withClassNameUI("org.efaps.admin.datamodel.ui.DateUI")
+                    .build();
+
+    AttributeType TimeAttrType = AttributeType.builder()
+                    .withName("Time")
+                    .withUuid(UUID.fromString("d8ddc848-115e-4abf-be66-0856ac64b21a"))
+                    .withClassName("org.efaps.admin.datamodel.attributetype.TimeType")
+                    .withClassNameUI("org.efaps.admin.datamodel.ui.StringUI")
+                    .build();
+
+    AttributeType DateTimeAttrType = AttributeType.builder()
+                    .withName("DateTime")
+                    .withUuid(UUID.fromString("e764db0f-70f2-4cd4-b2fe-d23d3da72f78"))
+                    .withClassName("org.efaps.admin.datamodel.attributetype.DateTimeType")
+                    .withClassNameUI("org.efaps.admin.datamodel.ui.DateTimeUI")
+                    .build();
+
+    AttributeType CreatedAttrType = AttributeType.builder()
+                    .withName("Created")
+                    .withUuid(UUID.fromString("513d35f5-58e2-4243-acd2-5fec5359778a"))
+                    .withClassName("org.efaps.admin.datamodel.attributetype.CreatedType")
+                    .withClassNameUI("org.efaps.admin.datamodel.ui.DateTimeUI")
+                    .build();
+
+    AttributeType ModifiedAttrType = AttributeType.builder()
+                    .withName("Modified")
+                    .withUuid(UUID.fromString("a8556408-a15d-4f4f-b740-6824f774dc1d"))
+                    .withClassName("org.efaps.admin.datamodel.attributetype.ModifiedType")
+                    .withClassNameUI("org.efaps.admin.datamodel.ui.DateTimeUI")
+                    .build();
+
     AttributeType TypeAttrType = AttributeType.builder()
                     .withName("Type")
                     .withUuid(UUID.fromString("acfb7dd8-71e9-43c0-9f22-8d98190f7290"))
@@ -148,6 +190,48 @@ public interface Mocks
                     .withDataModelTypeId(AllAttrType.getId())
                     .withSqlTableId(AllAttrTypeSQLTable.getId())
                     .withAttributeTypeId(Mocks.IntegerAttrType.getId())
+                    .build();
+
+    Attribute AllAttrBooleanAttribute = Attribute.builder()
+                    .withName("AllAttrBooleanAttribute")
+                    .withDataModelTypeId(AllAttrType.getId())
+                    .withSqlTableId(AllAttrTypeSQLTable.getId())
+                    .withAttributeTypeId(Mocks.BooleanAttrType.getId())
+                    .build();
+
+    Attribute AllAttrDateAttribute = Attribute.builder()
+                    .withName("AllAttrDateAttribute")
+                    .withDataModelTypeId(AllAttrType.getId())
+                    .withSqlTableId(AllAttrTypeSQLTable.getId())
+                    .withAttributeTypeId(Mocks.DateAttrType.getId())
+                    .build();
+
+    Attribute AllAttrTimeAttribute = Attribute.builder()
+                    .withName("AllAttrDateAttribute")
+                    .withDataModelTypeId(AllAttrType.getId())
+                    .withSqlTableId(AllAttrTypeSQLTable.getId())
+                    .withAttributeTypeId(Mocks.TimeAttrType.getId())
+                    .build();
+
+    Attribute AllAttrDateTimeAttribute = Attribute.builder()
+                    .withName("AllAttrDateTimeAttribute")
+                    .withDataModelTypeId(AllAttrType.getId())
+                    .withSqlTableId(AllAttrTypeSQLTable.getId())
+                    .withAttributeTypeId(Mocks.DateTimeAttrType.getId())
+                    .build();
+
+    Attribute AllAttrCreatedAttribute = Attribute.builder()
+                    .withName("AllAttrCreatedAttribute")
+                    .withDataModelTypeId(AllAttrType.getId())
+                    .withSqlTableId(AllAttrTypeSQLTable.getId())
+                    .withAttributeTypeId(Mocks.CreatedAttrType.getId())
+                    .build();
+
+    Attribute AllAttrModifiedAttribute = Attribute.builder()
+                    .withName("AllAttrModifiedAttribute")
+                    .withDataModelTypeId(AllAttrType.getId())
+                    .withSqlTableId(AllAttrTypeSQLTable.getId())
+                    .withAttributeTypeId(Mocks.ModifiedAttrType.getId())
                     .build();
 
     Attribute AllAttrLinkAttribute = Attribute.builder()

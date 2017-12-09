@@ -18,6 +18,7 @@
 package org.efaps.db.stmt;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import com.google.inject.Inject;
 
@@ -31,6 +32,8 @@ import org.efaps.mock.Mocks;
 import org.efaps.test.AbstractTest;
 import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
+import org.efaps.util.RandomUtil;
+import org.joda.time.DateTime;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -167,10 +170,170 @@ public class PrintStmtTest
     }
 
     @Test
+    public void testBooleanAttribute()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+                        Mocks.AllAttrBooleanAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Object.class)
+                        .append(true)
+                        .asResult())
+            .build();
+
+        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+                        Mocks.AllAttrType.getId(), Mocks.AllAttrBooleanAttribute.getName()));
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluator();
+        assertTrue(evaluator.get(1));
+    }
+
+    @Test
+    public void testDateAttribute()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+                        Mocks.AllAttrDateAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        final DateTime date = new DateTime();
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Object.class)
+                        .append(date.toDate())
+                        .asResult())
+            .build();
+
+        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+                        Mocks.AllAttrType.getId(), Mocks.AllAttrDateAttribute.getName()));
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluator();
+        assertEquals(evaluator.get(1), date);
+    }
+
+    @Test
+    public void testTimeAttribute()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+                        Mocks.AllAttrTimeAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        final DateTime date = new DateTime();
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Object.class)
+                        .append(date.toDate())
+                        .asResult())
+            .build();
+
+        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+                        Mocks.AllAttrType.getId(), Mocks.AllAttrTimeAttribute.getName()));
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluator();
+        assertEquals(evaluator.get(1), date);
+    }
+
+    @Test
+    public void testDateTimeAttribute()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+                        Mocks.AllAttrDateTimeAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        final DateTime date = new DateTime();
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Object.class)
+                        .append(date.toDate())
+                        .asResult())
+            .build();
+
+        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+                        Mocks.AllAttrType.getId(), Mocks.AllAttrDateTimeAttribute.getName()));
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluator();
+        assertEquals(evaluator.get(1), date);
+    }
+
+    @Test
+    public void testCreatedAttribute()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+                        Mocks.AllAttrCreatedAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        final DateTime date = new DateTime();
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Object.class)
+                        .append(date.toDate())
+                        .asResult())
+            .build();
+
+        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+                        Mocks.AllAttrType.getId(), Mocks.AllAttrCreatedAttribute.getName()));
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluator();
+        assertEquals(evaluator.get(1), date);
+    }
+
+    @Test
+    public void testModifiedAttribute()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+                        Mocks.AllAttrModifiedAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        final DateTime date = new DateTime();
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Object.class)
+                        .append(date.toDate())
+                        .asResult())
+            .build();
+
+        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+                        Mocks.AllAttrType.getId(), Mocks.AllAttrModifiedAttribute.getName()));
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluator();
+        assertEquals(evaluator.get(1), date);
+    }
+
+    @Test
     public void testLinkto()
         throws EFapsException
     {
-        //"select T1.TestAttribute_COL from JUSTANAME T0 left join T_DEMO T1 on T0.AllAttrLinkAttribute_COL=T1.ID where T0.ID = 4 "
+        final String sql = String.format("select T1.%s from %s T0 left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
+                        Mocks.TestAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.AllAttrLinkAttribute.getSQLColumnName());
+        final String strValue = RandomUtil.random(8);
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Object.class)
+                    .append(strValue)
+                    .asResult())
+            .build();
 
         final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select linkto[%s].attribute[%s]",
                     Mocks.AllAttrType.getId(), Mocks.AllAttrLinkAttribute.getName(), Mocks.TestAttribute.getName()));
@@ -179,7 +342,7 @@ public class PrintStmtTest
         final SelectionEvaluator evaluator = PrintStmt.get(stmt)
                .execute()
                .evaluator();
-        assertEquals(evaluator.get(1), Integer.valueOf(101));
+        assertEquals(evaluator.get(1), strValue);
     }
 }
 
