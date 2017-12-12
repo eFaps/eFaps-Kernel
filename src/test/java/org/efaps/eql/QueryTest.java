@@ -17,12 +17,22 @@
 
 package org.efaps.eql;
 
+import static org.testng.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.efaps.db.stmt.selection.SelectionEvaluator;
+import org.efaps.mock.MockResult;
 import org.efaps.mock.Mocks;
 import org.efaps.test.AbstractTest;
 import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
 import org.efaps.util.RandomUtil;
 import org.testng.annotations.Test;
+
+import acolyte.jdbc.RowLists;
 
 /**
  * The Class QueryTest.
@@ -101,5 +111,67 @@ public class QueryTest
             .stmt()
             .execute();
         verify.verify();
+    }
+
+    @Test
+    public void testQueryValue()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0",
+                        Mocks.TestAttribute.getSQLColumnName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Object.class)
+                .append("StringValue1")
+                .append("StringValue2")
+                .append("StringValue3")
+                .asResult())
+            .build();
+
+        final List<String> values = new ArrayList<>();
+        final SelectionEvaluator eval = EQL.print(EQL.query(Mocks.SimpleType.getName()))
+            .attribute(Mocks.TestAttribute.getName())
+            .stmt()
+            .execute()
+            .evaluator();
+        while (eval.next()) {
+            values.add(eval.get(1));
+        }
+        assertEquals(values, Arrays.asList("StringValue1", "StringValue2", "StringValue3"));
+    }
+
+    @Test
+    public void testQueryValues()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T0.%s from %s T0",
+                        Mocks.AllAttrStringAttribute.getSQLColumnName(),
+                        Mocks.AllAttrLongAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(Object.class, Object.class)
+                .append("StringValue1", 1L)
+                .append("StringValue2", 2L)
+                .append("StringValue3", 3L)
+                .asResult())
+            .build();
+
+        final List<String> values1 = new ArrayList<>();
+        final List<Long> values2 = new ArrayList<>();
+        final SelectionEvaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+            .attribute(Mocks.AllAttrStringAttribute.getName(), Mocks.AllAttrLongAttribute.getName())
+            .stmt()
+            .execute()
+            .evaluator();
+        while (eval.next()) {
+            values1.add(eval.get(1));
+            values2.add(eval.get(2));
+        }
+        assertEquals(values1, Arrays.asList("StringValue1", "StringValue2", "StringValue3"));
+        assertEquals(values2, Arrays.asList(1L, 2L, 3L));
     }
 }

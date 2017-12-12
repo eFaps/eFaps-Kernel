@@ -112,5 +112,6 @@ public abstract class AbstractTest
         throws EFapsException
     {
         Context.commit();
+        EFapsQueryHandler.get().cleanUp();
     }
 }

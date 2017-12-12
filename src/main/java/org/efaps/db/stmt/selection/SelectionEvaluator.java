@@ -17,7 +17,6 @@
 
 package org.efaps.db.stmt.selection;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -25,6 +24,9 @@ import java.util.Optional;
  */
 public final class SelectionEvaluator
 {
+
+    /** The init. */
+    private boolean init;
 
     /** The selection. */
     private final Selection selection;
@@ -40,14 +42,13 @@ public final class SelectionEvaluator
     }
 
     /**
-     * Gets the.
-     *
-     * @param _selection the selection
-     * @return the selection evaluator
+     * Initialize.
      */
-    public static SelectionEvaluator get(final Selection _selection)
+    private void initialize()
     {
-        return new SelectionEvaluator(_selection);
+        if (!this.init) {
+            next();
+        }
     }
 
     /**
@@ -60,14 +61,12 @@ public final class SelectionEvaluator
     @SuppressWarnings("unchecked")
     public <T> T get(final int _idx)
     {
+        initialize();
         Object ret = null;
         final int idx = _idx - 1;
         if (this.selection.getSelects().size() > idx) {
             final Select select = this.selection.getSelects().get(idx);
-            final List<Object> objects = select.getObjects();
-            if (objects.size() == 1) {
-                ret = objects.get(0);
-            }
+            ret = select.getCurrent();
         }
         return (T) ret;
     }
@@ -82,16 +81,40 @@ public final class SelectionEvaluator
     @SuppressWarnings("unchecked")
     public <T> T get(final String _alias)
     {
+        initialize();
         Object ret = null;
         final Optional<Select> selectOpt = this.selection.getSelects().stream()
                         .filter(select ->_alias.equals(select.getAlias()))
                         .findFirst();
         if (selectOpt.isPresent()) {
-            final List<Object> objects = selectOpt.get().getObjects();
-            if (objects.size() == 1) {
-                ret = objects.get(0);
-            }
+            ret = selectOpt.get().getCurrent();
         }
         return (T) ret;
+    }
+
+    /**
+     * Next.
+     *
+     * @return true, if successful
+     */
+    public boolean next()
+    {
+        this.init = true;
+        boolean ret = true;
+        for (final Select select : this.selection.getSelects()) {
+            ret = ret && select.next();
+        }
+        return ret;
+    }
+
+    /**
+     * Gets the.
+     *
+     * @param _selection the selection
+     * @return the selection evaluator
+     */
+    public static SelectionEvaluator get(final Selection _selection)
+    {
+        return new SelectionEvaluator(_selection);
     }
 }

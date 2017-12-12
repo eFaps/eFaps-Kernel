@@ -61,7 +61,8 @@ public class SQLVerify
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return new StringBuilder()
                         .append(SQLVerify.class.getSimpleName())
                         .append(" ")

@@ -18,6 +18,7 @@ package org.efaps.db.stmt.selection;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.efaps.db.stmt.selection.elements.AbstractElement;
@@ -39,6 +40,12 @@ public final class Select
 
     /** The alias. */
     private final String alias;
+
+    /** The iterator. */
+    private Iterator<Object> iterator;
+
+    /** The current. */
+    private Object current;
 
     /**
      * Instantiates a new select.
@@ -106,6 +113,34 @@ public final class Select
     public String getAlias()
     {
         return this.alias;
+    }
+
+    /**
+     * Gets the current.
+     *
+     * @return the current
+     */
+    public Object getCurrent()
+    {
+        return this.current;
+    }
+
+    /**
+     * Next.
+     *
+     * @return true, if successful
+     */
+    public boolean next()
+    {
+        boolean ret = false;
+        if (this.iterator == null) {
+            this.iterator = this.objects.iterator();
+        }
+        if (this.iterator.hasNext()) {
+            this.current = this.iterator.next();
+            ret = true;
+        }
+        return ret;
     }
 
     /**

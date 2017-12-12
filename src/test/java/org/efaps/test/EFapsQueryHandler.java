@@ -19,12 +19,15 @@ package org.efaps.test;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections4.MultiMapUtils;
 import org.apache.commons.collections4.SetValuedMap;
+import org.efaps.mock.MockResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +59,9 @@ public final class EFapsQueryHandler
     /** The sql 2 verify. */
     private final Map<String, IVerify> sql2verify = new HashMap<>();
 
+    /** The to be cleaned. */
+    private final Set<String> toBeUnregistered = new HashSet<>();
+
     /**
      * Instantiates a new e faps query handler.
      */
@@ -77,6 +83,9 @@ public final class EFapsQueryHandler
             for (final IMockResult result : this.sql2results.get(sql)) {
                 if (result.applies(sql, _parameters)) {
                     results.add(result.getResult());
+                    if (result instanceof MockResult) {
+                        this.toBeUnregistered.add(sql);
+                    }
                 }
             }
             final Iterator<QueryResult> iter = results.iterator();
@@ -160,6 +169,14 @@ public final class EFapsQueryHandler
     public void unregister(final String _sql)
     {
         this.sql2verify.remove(_sql);
+    }
+
+    /**
+     * Clean up.
+     */
+    public void cleanUp()
+    {
+        this.toBeUnregistered.forEach(this::unregister);
     }
 
     /**
