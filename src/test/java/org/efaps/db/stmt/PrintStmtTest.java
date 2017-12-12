@@ -23,6 +23,7 @@ import static org.testng.Assert.assertTrue;
 import com.google.inject.Inject;
 
 import org.eclipse.xtext.parser.IParseResult;
+import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.SelectionEvaluator;
 import org.efaps.eql2.EQLStandaloneSetup;
 import org.efaps.eql2.IPrintObjectStatement;
@@ -368,6 +369,110 @@ public class PrintStmtTest
                         .execute()
                         .evaluator();
         assertEquals(evaluator.get(alias), "A Value");
+    }
+
+    @Test
+    public void testInstanceSimpleType()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.ID from %s T0 where T0.ID = 4",
+                                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Object.class)
+                    .append(4)
+                    .asResult())
+            .build();
+
+        final Instance instance = Instance.get(Mocks.AllAttrType.getName(), "4");
+        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select instance",
+                        Mocks.AllAttrType.getId()));
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluator();
+        assertEquals(evaluator.get(1), instance);
+    }
+
+    @Test
+    public void testInstanceTypedType()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.ID,T0.TYPE from %s T0 where T0.TYPE = %s and T0.ID = 4",
+                                        Mocks.TypedTypeSQLTable.getSqlTableName(),
+                                        Mocks.TypedType.getId());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(Object.class, Object.class)
+                    .append(4, Mocks.TypedType.getId())
+                    .asResult())
+            .build();
+
+        final Instance instance = Instance.get(Mocks.TypedType.getName(), "4");
+        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select instance",
+                        Mocks.TypedType.getId()));
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluator();
+        assertEquals(evaluator.get(1), instance);
+    }
+
+    @Test
+    public void testLinktoInstanceSimpleType()
+        throws EFapsException
+    {
+        final String sql = String.format("select T1.ID from %s T0 left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.AllAttrLinkAttribute.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Object.class)
+                    .append(4)
+                    .asResult())
+            .build();
+
+        final Instance instance = Instance.get(Mocks.SimpleType.getName(), "4");
+        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select linkto[%s].instance",
+                    Mocks.AllAttrType.getId(), Mocks.AllAttrLinkAttribute.getName()));
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+               .execute()
+               .evaluator();
+        assertEquals(evaluator.get(1), instance);
+    }
+
+    @Test
+    public void testLinktoInstanceTypedType()
+        throws EFapsException
+    {
+        final String sql = String.format("select T1.ID,T1.TYPE from %s T0 left join %s T1 on T0.%s=T1.ID "
+                        + "where T0.ID = 4",
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName(),
+                        Mocks.TypedTypeSQLTable.getSqlTableName(),
+                        Mocks.AllAttrLinkAttributeTyped.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(Object.class, Object.class)
+                    .append(4, Mocks.TypedType.getId())
+                    .asResult())
+            .build();
+
+        final Instance instance = Instance.get(Mocks.TypedType.getName(), "4");
+        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select linkto[%s].instance",
+                    Mocks.AllAttrType.getId(), Mocks.AllAttrLinkAttributeTyped.getName()));
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+               .execute()
+               .evaluator();
+        assertEquals(evaluator.get(1), instance);
     }
 }
 

@@ -138,6 +138,13 @@ public interface Mocks
                     .withAttributeTypeId(TypeAttrType.getId())
                     .build();
 
+    Attribute TypedTypeIDAttribute = Attribute.builder()
+                    .withName("ID")
+                    .withDataModelTypeId(TypedType.getId())
+                    .withSqlTableId(TypedTypeSQLTable.getId())
+                    .withAttributeTypeId(Mocks.LongAttrType.getId())
+                    .build();
+
     Type TypedType2 = Type.builder().withId(RandomUtils.nextLong()).withName("TypedType2").build();
 
     SQLTable TypedType2SQLTable = SQLTable.builder().withName("TypedType2SQLTable").withTypeColumn("TYPE").build();
@@ -258,5 +265,13 @@ public interface Mocks
                     .withSqlTableId(AllAttrTypeSQLTable.getId())
                     .withAttributeTypeId(Mocks.LinkAttrType.getId())
                     .withLinkTypeId(SimpleType.getId())
+                    .build();
+
+    Attribute AllAttrLinkAttributeTyped = Attribute.builder()
+                    .withName("AllAttrLinkAttributeTyped")
+                    .withDataModelTypeId(AllAttrType.getId())
+                    .withSqlTableId(AllAttrTypeSQLTable.getId())
+                    .withAttributeTypeId(Mocks.LinkAttrType.getId())
+                    .withLinkTypeId(TypedType.getId())
                     .build();
 }

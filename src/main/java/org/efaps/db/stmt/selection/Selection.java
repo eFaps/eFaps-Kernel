@@ -24,8 +24,10 @@ import java.util.List;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.stmt.selection.elements.AttributeElement;
+import org.efaps.db.stmt.selection.elements.InstanceElement;
 import org.efaps.db.stmt.selection.elements.LinktoElement;
 import org.efaps.eql2.IAttributeSelectElement;
+import org.efaps.eql2.IBaseSelectElement;
 import org.efaps.eql2.ILinktoSelectElement;
 import org.efaps.eql2.ISelect;
 import org.efaps.eql2.ISelectElement;
@@ -85,6 +87,16 @@ public final class Selection
                         select.addElement(element);
                     }
                     currentTypes = linktoTypes;
+                } else if (ele instanceof IBaseSelectElement) {
+                    for (final Type type : currentTypes) {
+                        switch (((IBaseSelectElement) ele).getElement()) {
+                            case INSTANCE:
+                                select.addElement(new InstanceElement(type));
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 }
             }
         }

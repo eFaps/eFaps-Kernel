@@ -195,13 +195,26 @@ public class SQLRunner
         return ret;
     }
 
-    private static class TypeCriteria {
+    /**
+     * The Class TypeCriteria.
+     */
+    private static class TypeCriteria
+    {
 
+        /** The sql col type. */
         private final String sqlColType;
+
+        /** The id. */
         private final long id;
 
-        public TypeCriteria(final String _sqlColType,
-                            final long _id)
+        /**
+         * Instantiates a new type criteria.
+         *
+         * @param _sqlColType the sql col type
+         * @param _id the id
+         */
+        TypeCriteria(final String _sqlColType,
+                    final long _id)
         {
             this.sqlColType = _sqlColType;
             this.id = _id;
@@ -210,7 +223,7 @@ public class SQLRunner
         @Override
         public boolean equals(final Object _obj)
         {
-            boolean ret;
+            final boolean ret;
             if (_obj instanceof TypeCriteria) {
                 final TypeCriteria obj = (TypeCriteria) _obj;
                 ret = this.sqlColType.equals(obj.sqlColType) && this.id == obj.id;
