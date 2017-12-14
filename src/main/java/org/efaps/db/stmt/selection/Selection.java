@@ -19,7 +19,10 @@ package org.efaps.db.stmt.selection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -29,6 +32,7 @@ import org.efaps.db.stmt.selection.elements.LinktoElement;
 import org.efaps.eql2.IAttributeSelectElement;
 import org.efaps.eql2.IBaseSelectElement;
 import org.efaps.eql2.ILinktoSelectElement;
+import org.efaps.eql2.IPrintQueryStatement;
 import org.efaps.eql2.ISelect;
 import org.efaps.eql2.ISelectElement;
 import org.efaps.eql2.ISelection;
@@ -43,11 +47,15 @@ import org.slf4j.LoggerFactory;
  */
 public final class Selection
 {
+
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(Selection.class);
 
     /** The elements. */
     private final List<Select> selects = new ArrayList<>();
+
+    /** The inst selects. */
+    private final Map<String, Select> instSelects = new HashMap<>();
 
     /**
      * Analyze.
@@ -62,45 +70,60 @@ public final class Selection
 
         throws CacheReloadException
     {
+        final Type type = evalMainType(_baseTypes);
+        final boolean evalInst =  _sel.getPrintStatement() instanceof IPrintQueryStatement;
         for (final ISelect sel : _sel.getSelects()) {
             final Select select = Select.get(sel.getAlias());
+            if (evalInst && this.selects.isEmpty()) {
+                this.instSelects.put("", Select.get().addElement(new InstanceElement(type)));
+            }
             this.selects.add(select);
-            Collection<Type> currentTypes = _baseTypes;
+            Type currentType = type;
             for (final ISelectElement ele : sel.getElements()) {
                 if (ele instanceof IAttributeSelectElement) {
                     final String attrName = ((IAttributeSelectElement) ele).getName();
-                    for (final Type type : currentTypes) {
-                        final Attribute attr = type.getAttribute(attrName);
-                        if (attr == null) {
-                            LOG.error("Could not find Attribute '{}' on Type '{}'", attrName, type.getName());
-                        }
-                        final AttributeElement element = new AttributeElement().setAttribute(attr);
-                        select.addElement(element);
+                    final Attribute attr = currentType.getAttribute(attrName);
+                    if (attr == null) {
+                        LOG.error("Could not find Attribute '{}' on Type '{}'", attrName, currentType.getName());
                     }
+                    final AttributeElement element = new AttributeElement().setAttribute(attr);
+                    select.addElement(element);
                 } else if (ele instanceof ILinktoSelectElement) {
                     final String attrName = ((ILinktoSelectElement) ele).getName();
-                    final List<Type> linktoTypes = new ArrayList<>();
-                    for (final Type type : currentTypes) {
-                        final Attribute attr = type.getAttribute(attrName);
-                        linktoTypes.add(attr.getLink());
-                        final LinktoElement element = new LinktoElement().setAttribute(attr);
-                        select.addElement(element);
-                    }
-                    currentTypes = linktoTypes;
+                    final Attribute attr = currentType.getAttribute(attrName);
+                    final LinktoElement element = new LinktoElement().setAttribute(attr);
+                    select.addElement(element);
+                    currentType = attr.getLink();
                 } else if (ele instanceof IBaseSelectElement) {
-                    for (final Type type : currentTypes) {
-                        switch (((IBaseSelectElement) ele).getElement()) {
-                            case INSTANCE:
-                                select.addElement(new InstanceElement(type));
-                                break;
-                            default:
-                                break;
-                        }
+                    switch (((IBaseSelectElement) ele).getElement()) {
+                        case INSTANCE:
+                            select.addElement(new InstanceElement(type));
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
         }
         return this;
+    }
+
+    /**
+     * Gets the main type.
+     *
+     * @param _baseTypes the base types
+     * @return the main type
+     */
+    private Type evalMainType(final Collection<Type> _baseTypes)
+    {
+        final Type ret;
+        if (_baseTypes.size() == 1) {
+            ret = _baseTypes.iterator().next();
+        } else {
+            ret = null;
+            //TODO
+        }
+        return ret;
     }
 
     /**
@@ -111,6 +134,28 @@ public final class Selection
     public List<Select> getSelects()
     {
         return this.selects;
+    }
+
+    /**
+     * Gets the inst selects.
+     *
+     * @return the inst selects
+     */
+    public Map<String, Select> getInstSelects()
+    {
+        return this.instSelects;
+    }
+
+    /**
+     * Gets the all selects.
+     *
+     * @return the all selects
+     */
+    public Collection<Select> getAllSelects()
+    {
+        final List<Select> ret = new ArrayList<>(this.selects);
+        ret.addAll(this.instSelects.values());
+        return Collections.unmodifiableCollection(ret);
     }
 
     /**

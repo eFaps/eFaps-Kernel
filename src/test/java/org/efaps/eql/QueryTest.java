@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.SelectionEvaluator;
 import org.efaps.mock.MockResult;
 import org.efaps.mock.Mocks;
@@ -44,7 +45,7 @@ public class QueryTest
     public void testQuery()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0",
                         Mocks.TestAttribute.getSQLColumnName(),
                         Mocks.SimpleTypeSQLTable.getSqlTableName());
 
@@ -60,7 +61,7 @@ public class QueryTest
     public void testTypedQuery()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.TYPE = %s",
+        final String sql = String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE = %s",
                         Mocks.TypedTypeTestAttr.getSQLColumnName(),
                         Mocks.TypedTypeSQLTable.getSqlTableName(),
                         Mocks.TypedType.getId());
@@ -77,7 +78,7 @@ public class QueryTest
     public void test2TypedQuery()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.TYPE in ( %s , %s )",
+        final String sql = String.format("select T0.%sT0.ID,T0.TYPE from %s T0 where T0.TYPE in ( %s , %s )",
                         Mocks.TypedTypeTestAttr.getSQLColumnName(),
                         Mocks.TypedTypeSQLTable.getSqlTableName(),
                         Mocks.TypedType.getId(),
@@ -117,16 +118,16 @@ public class QueryTest
     public void testQueryValue()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0",
                         Mocks.TestAttribute.getSQLColumnName(),
                         Mocks.SimpleTypeSQLTable.getSqlTableName());
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(Object.class)
-                .append("StringValue1")
-                .append("StringValue2")
-                .append("StringValue3")
+            .withResult(RowLists.rowList2(Object.class, Object.class)
+                .append("StringValue1", 1L)
+                .append("StringValue2", 2L)
+                .append("StringValue3", 3L)
                 .asResult())
             .build();
 
@@ -146,22 +147,23 @@ public class QueryTest
     public void testQueryValues()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s,T0.%s from %s T0",
+        final String sql = String.format("select T0.%s,T0.%s,T0.ID from %s T0",
                         Mocks.AllAttrStringAttribute.getSQLColumnName(),
                         Mocks.AllAttrLongAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList2(Object.class, Object.class)
-                .append("StringValue1", 1L)
-                .append("StringValue2", 2L)
-                .append("StringValue3", 3L)
+            .withResult(RowLists.rowList3(Object.class, Object.class, Object.class)
+                .append("StringValue1", 1L, 234L)
+                .append("StringValue2", 2L, 334L)
+                .append("StringValue3", 3L, 434L)
                 .asResult())
             .build();
 
         final List<String> values1 = new ArrayList<>();
         final List<Long> values2 = new ArrayList<>();
+        final List<Instance> instances = new ArrayList<>();
         final SelectionEvaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
             .attribute(Mocks.AllAttrStringAttribute.getName(), Mocks.AllAttrLongAttribute.getName())
             .stmt()
@@ -170,6 +172,7 @@ public class QueryTest
         while (eval.next()) {
             values1.add(eval.get(1));
             values2.add(eval.get(2));
+            instances.add(eval.inst());
         }
         assertEquals(values1, Arrays.asList("StringValue1", "StringValue2", "StringValue3"));
         assertEquals(values2, Arrays.asList(1L, 2L, 3L));

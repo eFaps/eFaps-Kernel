@@ -110,10 +110,8 @@ public class PrintTest
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
         EQL.print(Mocks.AllAttrType.getId() + ".4")
-            .attribute(Mocks.AllAttrBooleanAttribute.getName())
-            .as("BlaBla")
-            .attribute(Mocks.AllAttrStringAttribute.getName())
-            .as("BlaBla2")
+            .attribute(Mocks.AllAttrBooleanAttribute.getName()).as("BlaBla")
+            .attribute(Mocks.AllAttrStringAttribute.getName()).as("BlaBla2")
             .stmt()
             .execute();
         verify.verify();
@@ -132,7 +130,7 @@ public class PrintTest
 
         EQL.print(Mocks.AllAttrType.getId() + ".4")
             .linkto(Mocks.AllAttrLinkAttribute.getName())
-            .attribute(Mocks.TestAttribute.getName())
+                .attribute(Mocks.TestAttribute.getName())
             .stmt()
             .execute();
         verify.verify();

@@ -19,6 +19,8 @@ package org.efaps.db.stmt.selection;
 
 import java.util.Optional;
 
+import org.efaps.db.Instance;
+
 /**
  * The Class SelectionEvaluator.
  */
@@ -93,6 +95,16 @@ public final class SelectionEvaluator
     }
 
     /**
+     * Inst.
+     *
+     * @return the instance
+     */
+    public Instance inst()
+    {
+        return (Instance) this.selection.getInstSelects().get("").getCurrent();
+    }
+
+    /**
      * Next.
      *
      * @return true, if successful
@@ -101,7 +113,7 @@ public final class SelectionEvaluator
     {
         this.init = true;
         boolean ret = true;
-        for (final Select select : this.selection.getSelects()) {
+        for (final Select select : this.selection.getAllSelects()) {
             ret = ret && select.next();
         }
         return ret;

@@ -70,7 +70,7 @@ public class SQLRunner
     {
         this.print = _print;
         this.sqlSelect = new SQLSelect();
-        for (final Select select : this.print.getSelection().getSelects()) {
+        for (final Select select : this.print.getSelection().getAllSelects()) {
             for (final AbstractElement<?> element : select.getElements()) {
                 element.append2SQLSelect(this.sqlSelect);
             }
@@ -184,7 +184,7 @@ public class SQLRunner
             stmt.close();
 
             for (final Object[] row : rows) {
-                for (final Select select : _sqlProvider.getSelection().getSelects()) {
+                for (final Select select : _sqlProvider.getSelection().getAllSelects()) {
                     select.addObject(row);
                 }
                 ret = true;
