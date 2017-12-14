@@ -50,7 +50,7 @@ public class PrintQueryTest
         assertEquals(print.getAttribute(TestAttribute.getName()), "A Value");
     }
 
-    @Test
+    //@Test
     public void typedType()
         throws EFapsException
     {
