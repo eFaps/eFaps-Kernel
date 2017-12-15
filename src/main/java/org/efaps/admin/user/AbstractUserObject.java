@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,15 +135,15 @@ public abstract class AbstractUserObject
             try {
                 long keyId = 0;
                 if (Context.getDbType().supportsGetGeneratedKeys()) {
-                    cmd.append("insert into ").append(keyType.getMainTable().getSqlTable()).append(
-                                    "(KEY,CREATOR,CREATED,MODIFIER,MODIFIED,").append("USERABSTRACT,USERJAASSYSTEM) ")
+                    cmd.append("insert into ").append(keyType.getMainTable().getSqlTable())
+                        .append("(JAASKEY,CREATOR,CREATED,MODIFIER,MODIFIED,").append("USERABSTRACT,USERJAASSYSTEM) ")
                                     .append("values (");
                 } else {
                     keyId = Context.getDbType().getNewId(new ConnectionResource(con),
                                     keyType.getMainTable().getSqlTable(),
                                     "ID");
                     cmd.append("insert into ").append(keyType.getMainTable().getSqlTable()).append(
-                                    "(ID,KEY,CREATOR,CREATED,MODIFIER,MODIFIED,").append(
+                                    "(ID,JAASKEY,CREATOR,CREATED,MODIFIER,MODIFIED,").append(
                                     "USERABSTRACT,USERJAASSYSTEM) ").append("values (").append(keyId).append(",");
                 }
                 cmd.append("'").append(_jaasKey).append("',").append(context.getPersonId()).append(",").append(

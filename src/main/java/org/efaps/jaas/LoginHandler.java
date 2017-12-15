@@ -204,7 +204,7 @@ public class LoginHandler
                     final String persName = (String) system.getPersonMethodName().invoke(persObj);
 
                     if (person == null) {
-                        person = Person.createPerson(system, persKey, persName);
+                        person = Person.createPerson(system, persKey, persName, null);
                     } else {
                         person.assignToJAASSystem(system, persKey);
                     }
@@ -278,7 +278,7 @@ public class LoginHandler
         for (final JAASSystem system : JAASSystem.getAllJAASSystems()) {
             if (system.getRoleJAASPrincipleClass() != null) {
                 final Set<?> rolesJaas = _login.getSubject().getPrincipals(system.getRoleJAASPrincipleClass());
-                final Set<Role> rolesEfaps = new HashSet<Role>();
+                final Set<Role> rolesEfaps = new HashSet<>();
                 for (final Object roleObj : rolesJaas) {
                     try {
                         final String roleKey = (String) system.getRoleMethodKey().invoke(roleObj);
@@ -316,7 +316,7 @@ public class LoginHandler
         for (final JAASSystem system : JAASSystem.getAllJAASSystems()) {
             if (system.getGroupJAASPrincipleClass() != null) {
                 final Set<?> groupsJaas = _login.getSubject().getPrincipals(system.getGroupJAASPrincipleClass());
-                final Set<Group> groupsEfaps = new HashSet<Group>();
+                final Set<Group> groupsEfaps = new HashSet<>();
                 for (final Object groupObj : groupsJaas) {
                     try {
                         final String groupKey = (String) system.getGroupMethodKey().invoke(groupObj);
@@ -422,6 +422,7 @@ public class LoginHandler
          *                  {@link PasswordCallback} or
          *                  {@link TextOutputCallback}
          */
+        @Override
         public void handle(final Callback[] _callbacks)
             throws UnsupportedCallbackException
         {

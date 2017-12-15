@@ -44,6 +44,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.Update;
 import org.efaps.db.Update.Status;
+import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.jaas.AppAccessHandler;
@@ -92,8 +93,8 @@ public final class Person
         TIMZONE("TIMZONE"),
         /** Attribute Name for the Locale of the person. */
         LOCALE("LOCALE"),
-         /** Attribute Name for the language of the person. */
-         LANGUAGE("LANG", true);
+        /** Attribute Name for the language of the person. */
+        LANGUAGE("LANG", true);
 
         /**
          * The name of the depending SQL column for an attribute in the table.
@@ -1745,17 +1746,21 @@ public final class Person
     }
 
     /**
+     * Creates the person.
+     *
      * @param _jaasSystem JAAS system which want to create a new person in eFaps
      * @param _jaasKey key of the person in the JAAS system
      * @param _userName name in the eFaps system (used as proposal, it's tested
      *            for uniqueness and changed if needed!)
+     * @param _uuid the uuid
      * @return new created person
      * @throws EFapsException if person could not be created in eFaps
      * @see #assignToJAASSystem
      */
     public static Person createPerson(final JAASSystem _jaasSystem,
                                       final String _jaasKey,
-                                      final String _userName)
+                                      final String _userName,
+                                      final String _uuid)
         throws EFapsException
     {
         long persId = 0;
@@ -1764,32 +1769,32 @@ public final class Person
         try {
             final Context context = Context.getThreadContext();
             con = Context.getConnection();
-
             PreparedStatement stmt = null;
             try {
                 StringBuilder cmd = new StringBuilder();
-
                 // TODO: check for uniqueness!
-                // TODO: hard coded mofifier and creator
                 if (Context.getDbType().supportsGetGeneratedKeys()) {
                     cmd.append("insert into ").append(persType.getMainTable().getSqlTable()).append(
-                                    "(TYPEID,NAME,CREATOR,CREATED,MODIFIER,MODIFIED) ").append("values (");
+                                    "(TYPEID,NAME,UUID,CREATOR,CREATED,MODIFIER,MODIFIED) ").append("values (");
                 } else {
-                    persId = Context.getDbType().getNewId(null, persType.getMainTable().getSqlTable(),
-                                    "ID");
-                    cmd.append("insert into ").append(persType.getMainTable().getSqlTable()).append(
-                                    "(ID,TYPEID,NAME,CREATOR,CREATED,MODIFIER,MODIFIED) ").append("values (").append(
-                                    persId).append(",");
+                    persId = Context.getDbType().getNewId(new ConnectionResource(con),
+                                    persType.getMainTable().getSqlTable(), "ID");
+                    cmd.append("insert into ").append(persType.getMainTable().getSqlTable())
+                        .append("(ID,TYPEID,NAME,UUID,CREATOR,CREATED,MODIFIER,MODIFIED) ")
+                        .append("values (").append(persId).append(",");
                 }
-                cmd.append(persType.getId()).append(",").append("'").append(_userName).append("',").append(
-                                context.getPersonId()).append(",").append(Context.getDbType().getCurrentTimeStamp())
-                                .append(",").append(context.getPersonId()).append(",").append(
-                                                Context.getDbType().getCurrentTimeStamp()).append(")");
+                cmd.append(persType.getId()).append(",")
+                    .append("'").append(_userName).append("',")
+                    .append("'").append(_uuid == null ? "" : _uuid).append("',")
+                    .append(context.getPersonId())
+                    .append(",").append(Context.getDbType().getCurrentTimeStamp()).append(",")
+                    .append(context.getPersonId()).append(",")
+                    .append(Context.getDbType().getCurrentTimeStamp()).append(")");
 
                 if (persId == 0) {
                     stmt = con.prepareStatement(cmd.toString(), new String[] { "ID" });
                 } else {
-                    con.prepareStatement(cmd.toString());
+                    stmt = con.prepareStatement(cmd.toString());
                 }
 
                 int rows = stmt.executeUpdate();
@@ -1810,8 +1815,8 @@ public final class Person
                 stmt.close();
 
                 cmd = new StringBuilder();
-                cmd.append("insert into T_USERPERSON").append("(ID,FIRSTNAME,LASTNAME,EMAIL) ").append("values (")
-                                .append(persId).append(",'-','-','-')");
+                cmd.append("insert into T_USERPERSON").append("(ID,FIRSTNAME,LASTNAME) ")
+                    .append("values (").append(persId).append(",'-','-')");
                 stmt = con.prepareStatement(cmd.toString());
                 rows = stmt.executeUpdate();
                 if (rows == 0) {
@@ -1821,7 +1826,11 @@ public final class Person
                     throw new EFapsException(Person.class, "createPerson.NotInserted", cmd.toString(), _jaasSystem
                                     .getName(), _jaasKey, _userName);
                 }
-
+                cmd = new StringBuilder();
+                cmd.append("insert into T_CMGENINST").append("(INSTTYPEID,INSTID,EXID,EXSYSID) ")
+                    .append("values (").append(persType.getId()).append(",").append(persId).append(",0,0)");
+                stmt = con.prepareStatement(cmd.toString());
+                stmt.executeUpdate();
             } catch (final SQLException e) {
                 Person.LOG.error("could not create for JAAS system '" + _jaasSystem.getName() + "' person with key '"
                                 + _jaasKey + "' and user name '" + _userName + "'", e);
