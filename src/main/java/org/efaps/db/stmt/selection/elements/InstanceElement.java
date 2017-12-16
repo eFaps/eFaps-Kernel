@@ -22,7 +22,7 @@ import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
 import org.efaps.db.wrapper.SQLSelect;
-import org.efaps.db.wrapper.TableIndexer.Tableidx;
+import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.util.EFapsException;
 
 /**
@@ -64,14 +64,13 @@ public class InstanceElement
     {
         if (getTable() instanceof SQLTable) {
             final SQLTable table = (SQLTable) getTable();
-            final String key;
+            final TableIdx tableidx;
             if (getPrevious() != null && getPrevious() instanceof LinktoElement) {
-                key = ((SQLTable) ((LinktoElement) getPrevious()).getTable()).getSqlTable() + "--" + table
-                                .getSqlTable();
+                tableidx = ((LinktoElement) getPrevious()).getJoinTableIdx(_sqlSelect.getIndexer());
             } else {
-                key = table.getSqlTable();
+                tableidx = _sqlSelect.getIndexer().getTableIdx(table.getSqlTable());
             }
-            final Tableidx tableidx = _sqlSelect.getIndexer().getTableIdx(table.getSqlTable(), key);
+
             this.idColIdxs = _sqlSelect.columnIndex(tableidx.getIdx(), table.getSqlColId());
             if (table.getSqlColType() != null) {
                 this.typeColIdxs = _sqlSelect.columnIndex(tableidx.getIdx(), table.getSqlColType());

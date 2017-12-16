@@ -20,9 +20,12 @@ package org.efaps.db.stmt.selection.elements;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.db.wrapper.SQLSelect;
-import org.efaps.db.wrapper.TableIndexer.Tableidx;
+import org.efaps.db.wrapper.TableIndexer;
+import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class LinktoElement.
@@ -30,6 +33,8 @@ import org.efaps.util.cache.CacheReloadException;
 public class LinktoElement
     extends AbstractElement<LinktoElement>
 {
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(LinktoElement.class);
 
     /** The attribute. */
     private Attribute attribute;
@@ -69,29 +74,54 @@ public class LinktoElement
     {
         if (getTable() instanceof SQLTable) {
             final String tableName = ((SQLTable) getTable()).getSqlTable();
-            final String key;
-            if (getPrevious() != null && getPrevious() instanceof LinktoElement) {
-                key = ((SQLTable) ((LinktoElement) getPrevious()).getTable()).getSqlTable() + "--" + tableName;
+            // evaluated if the attribute that is used as the base for the linkTo is inside a child table
+            if (this.attribute != null && !getTable().equals(this.attribute.getParent().getMainTable())) {
+                LOG.error("STILL MISSING");
             } else {
-                key = tableName;
-            }
-            if (_sqlSelect.getFromTables().isEmpty()) {
-                final Tableidx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName, tableName);
-                if (tableidx.isCreated()) {
-                    _sqlSelect.from(tableidx.getTable(), tableidx.getIdx());
-                }
+                appendBaseTable(_sqlSelect, (SQLTable) getTable());
             }
 
-            final Tableidx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName, key);
-
-            final Attribute joinAttr = this.attribute.getLink().getAttribute("ID");
-            final String joinTableName = joinAttr.getTable().getSqlTable();
-            final Tableidx joinTableidx = _sqlSelect.getIndexer().getTableIdx(joinTableName, tableName + "--"
-                            + joinTableName);
+            final TableIdx joinTableidx = getJoinTableIdx(_sqlSelect.getIndexer());
 
             if (joinTableidx.isCreated()) {
-                _sqlSelect.leftJoin(joinTableName, joinTableidx.getIdx(), "ID",
-                                tableidx.getIdx(), this.attribute.getSqlColNames().get(0));
+                final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName);
+                final Attribute joinAttr = this.attribute.getLink().getAttribute("ID");
+                final String joinTableName = joinAttr.getTable().getSqlTable();
+                final String linktoColName = this.attribute.getSqlColNames().get(0);
+                _sqlSelect.leftJoin(joinTableName, joinTableidx.getIdx(), "ID", tableidx.getIdx(), linktoColName);
+            }
+        }
+    }
+
+    /**
+     * Gets the join table idx.
+     *
+     * @param _tableIndexer the table indexer
+     * @return the join table idx
+     * @throws CacheReloadException the cache reload exception
+     */
+    protected TableIdx getJoinTableIdx(final TableIndexer _tableIndexer)
+        throws CacheReloadException
+    {
+        final String linktoColName = this.attribute.getSqlColNames().get(0);
+        final String tableName = ((SQLTable) getTable()).getSqlTable();
+        final Attribute joinAttr = this.attribute.getLink().getAttribute("ID");
+        final String joinTableName = joinAttr.getTable().getSqlTable();
+        return _tableIndexer.getTableIdx(joinTableName, tableName, linktoColName);
+    }
+
+    /**
+     * Append base table if not added already from other element.
+     *
+     * @param _sqlSelect the sql select
+     * @param _sqlTable the sql table
+     */
+    protected void appendBaseTable(final SQLSelect _sqlSelect, final SQLTable _sqlTable)
+    {
+        if (_sqlSelect.getFromTables().isEmpty()) {
+            final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(_sqlTable.getSqlTable());
+            if (tableidx.isCreated()) {
+                _sqlSelect.from(tableidx.getTable(), tableidx.getIdx());
             }
         }
     }

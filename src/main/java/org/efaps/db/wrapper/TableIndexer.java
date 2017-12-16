@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+
 
 /**
  * The Class TableIndexer.
@@ -32,27 +34,26 @@ public class TableIndexer
     private int currentIdx;
 
     /** The tableidxs. */
-    private final List<Tableidx> tableidxs = new ArrayList<>();
+    private final List<TableIdx> tableidxs = new ArrayList<>();
 
     /**
      * Gets the table idx.
      *
      * @param _tableName the table name
-     * @param _key the key
+     * @param _keys the key
      * @return the table idx
      */
-    public Tableidx getTableIdx(final String _tableName,
-                                final String _key)
+    public TableIdx getTableIdx(final String _tableName,
+                                final String... _keys)
     {
-        Tableidx ret = null;
-
-        final Optional<Tableidx> val = this.tableidxs.stream().filter(t -> t.getKey().equals(_key)).findFirst();
-
+        TableIdx ret = null;
+        final String key = StringUtils.join(_keys, "-");
+        final Optional<TableIdx> val = this.tableidxs.stream().filter(t -> t.getKey().equals(key)).findFirst();
         if (val.isPresent()) {
             ret = val.get();
             ret.setCreated(false);
         } else {
-            ret = new Tableidx().setCreated(true).setTable(_tableName).setIdx(this.currentIdx++).setKey(_key);
+            ret = new TableIdx().setCreated(true).setTable(_tableName).setIdx(this.currentIdx++).setKey(key);
             this.tableidxs.add(ret);
         }
         return ret;
@@ -61,7 +62,7 @@ public class TableIndexer
     /**
      * The Class Tableidx.
      */
-    public static class Tableidx
+    public static class TableIdx
     {
 
         /** The key. */
@@ -92,7 +93,7 @@ public class TableIndexer
          * @param _created the created
          * @return the tableidx
          */
-        private Tableidx setCreated(final boolean _created)
+        private TableIdx setCreated(final boolean _created)
         {
             this.created = _created;
             return this;
@@ -114,7 +115,7 @@ public class TableIndexer
          * @param _table the table
          * @return the tableidx
          */
-        private Tableidx setTable(final String _table)
+        private TableIdx setTable(final String _table)
         {
             this.table = _table;
             return this;
@@ -136,7 +137,7 @@ public class TableIndexer
          * @param _idx the idx
          * @return the tableidx
          */
-        private Tableidx setIdx(final int _idx)
+        private TableIdx setIdx(final int _idx)
         {
             this.idx = _idx;
             return this;
@@ -158,7 +159,7 @@ public class TableIndexer
          * @param _key the key
          * @return the tableidx
          */
-        private Tableidx setKey(final String _key)
+        private TableIdx setKey(final String _key)
         {
             this.key = _key;
             return this;

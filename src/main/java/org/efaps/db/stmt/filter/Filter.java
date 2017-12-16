@@ -27,7 +27,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.LongType;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLWhere;
-import org.efaps.db.wrapper.TableIndexer.Tableidx;
+import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.eql2.IWhere;
 import org.efaps.eql2.IWhereElement;
 import org.efaps.eql2.IWhereElementTerm;
@@ -79,7 +79,7 @@ public class Filter
                             if (attr != null) {
                                 final SQLTable table = attr.getTable();
                                 final String tableName = table.getSqlTable();
-                                final Tableidx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName, tableName);
+                                final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName);
                                 final IAttributeType attrType = attr.getAttributeType().getDbAttrType();
                                 final boolean noEscape = attrType instanceof LongType;
                                 sqlWhere.addCriteria(tableidx.getIdx(), attr.getSqlColNames(), element.getComparison(),

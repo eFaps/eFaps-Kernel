@@ -40,7 +40,7 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLSelect.SQLSelectPart;
-import org.efaps.db.wrapper.TableIndexer.Tableidx;
+import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -76,10 +76,10 @@ public class SQLRunner
             }
         }
         if (this.sqlSelect.getColumns().size() > 0) {
-            addTypeCriteria();
             if (this.print instanceof ObjectPrint) {
                 addWhere4ObjectPrint();
             } else {
+                addTypeCriteria();
                 addWhere4QueryPrint();
             }
         }
@@ -90,15 +90,15 @@ public class SQLRunner
      */
     private void addTypeCriteria()
     {
-        final MultiValuedMap<Tableidx, TypeCriteria> typeCriterias = MultiMapUtils.newListValuedHashMap();
+        final MultiValuedMap<TableIdx, TypeCriteria> typeCriterias = MultiMapUtils.newListValuedHashMap();
         for (final Type type : this.print.getTypes()) {
             final String tableName = type.getMainTable().getSqlTable();
-            final Tableidx tableidx = this.sqlSelect.getIndexer().getTableIdx(tableName, tableName);
-            if (tableidx.isCreated()) {
-                this.sqlSelect.from(tableidx.getTable(), tableidx.getIdx());
+            final TableIdx tableIdx = this.sqlSelect.getIndexer().getTableIdx(tableName);
+            if (tableIdx.isCreated()) {
+                this.sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
             }
             if (type.getMainTable().getSqlColType() != null) {
-                typeCriterias.put(tableidx, new TypeCriteria(type.getMainTable().getSqlColType(), type.getId()));
+                typeCriterias.put(tableIdx, new TypeCriteria(type.getMainTable().getSqlColType(), type.getId()));
             }
         }
         if (!typeCriterias.isEmpty()) {
@@ -106,11 +106,11 @@ public class SQLRunner
             if (currentPart == null) {
                 this.sqlSelect.addPart(SQLPart.WHERE);
             }
-            for (final Tableidx tableidx : typeCriterias.keySet()) {
-                final Collection<TypeCriteria> criterias = typeCriterias.get(tableidx);
+            for (final TableIdx tableIdx : typeCriterias.keySet()) {
+                final Collection<TypeCriteria> criterias = typeCriterias.get(tableIdx);
                 final Iterator<TypeCriteria> iter = criterias.iterator();
                 final TypeCriteria criteria = iter.next();
-                this.sqlSelect.addColumnPart(tableidx.getIdx(), criteria.sqlColType);
+                this.sqlSelect.addColumnPart(tableIdx.getIdx(), criteria.sqlColType);
                 if (criterias.size() == 1) {
                     this.sqlSelect .addPart(SQLPart.EQUAL).addValuePart(criteria.id);
                 } else {

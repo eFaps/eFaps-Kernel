@@ -97,7 +97,7 @@ public final class Selection
                 } else if (ele instanceof IBaseSelectElement) {
                     switch (((IBaseSelectElement) ele).getElement()) {
                         case INSTANCE:
-                            select.addElement(new InstanceElement(type));
+                            select.addElement(new InstanceElement(currentType));
                             break;
                         default:
                             break;

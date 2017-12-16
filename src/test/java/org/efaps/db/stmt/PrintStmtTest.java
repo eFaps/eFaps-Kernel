@@ -79,7 +79,7 @@ public class PrintStmtTest
     public void testSimplePrintObjectValue()
         throws EFapsException
     {
-        final String sql = String.format("select T0.TestAttr_COL from T_DEMO T0 where T0.TYPE = %s and T0.ID = 4",
+        final String sql = String.format("select T0.TestAttr_COL from T_DEMO T0 where T0.ID = 4",
                         Mocks.TypedType.getId());
 
         MockResult.builder()
@@ -399,7 +399,7 @@ public class PrintStmtTest
     public void testInstanceTypedType()
         throws EFapsException
     {
-        final String sql = String.format("select T0.ID,T0.TYPE from %s T0 where T0.TYPE = %s and T0.ID = 4",
+        final String sql = String.format("select T0.ID,T0.TYPE from %s T0 where T0.ID = 4",
                                         Mocks.TypedTypeSQLTable.getSqlTableName(),
                                         Mocks.TypedType.getId());
 

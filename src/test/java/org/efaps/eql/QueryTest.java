@@ -97,7 +97,7 @@ public class QueryTest
         throws EFapsException
     {
         final String strCriteria = RandomUtil.randomAlphanumeric(8);
-        final String sql = String.format("select T0.%s from %s T0 where T0.%s = '%s'",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.%s = '%s'",
                         Mocks.TestAttribute.getSQLColumnName(),
                         Mocks.SimpleTypeSQLTable.getSqlTableName(),
                         Mocks.TestAttribute.getSQLColumnName(),

@@ -22,7 +22,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.db.wrapper.SQLSelect;
-import org.efaps.db.wrapper.TableIndexer.Tableidx;
+import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -75,14 +75,13 @@ public class AttributeElement
         throws CacheReloadException
     {
         if (getTable() instanceof SQLTable) {
-            final String tableName = ((SQLTable) getTable()).getSqlTable();
-            final String key;
+            final TableIdx tableidx;
             if (getPrevious() != null && getPrevious() instanceof LinktoElement) {
-                key = ((SQLTable) ((LinktoElement) getPrevious()).getTable()).getSqlTable() + "--" + tableName;
+                tableidx = ((LinktoElement) getPrevious()).getJoinTableIdx(_sqlSelect.getIndexer());
             } else {
-                key = tableName;
+                final String tableName = ((SQLTable) getTable()).getSqlTable();
+                tableidx = _sqlSelect.getIndexer().getTableIdx(tableName);
             }
-            final Tableidx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName, key);
 
             for (final String colName : this.attribute.getSqlColNames()) {
                 this.colIdxs = ArrayUtils.add(this.colIdxs, _sqlSelect.columnIndex(tableidx.getIdx(), colName));
