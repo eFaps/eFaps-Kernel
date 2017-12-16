@@ -78,15 +78,15 @@ public class QueryTest
     public void test2TypedQuery()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%sT0.ID,T0.TYPE from %s T0 where T0.TYPE in ( %s , %s )",
-                        Mocks.TypedTypeTestAttr.getSQLColumnName(),
-                        Mocks.TypedTypeSQLTable.getSqlTableName(),
-                        Mocks.TypedType.getId(),
-                        Mocks.TypedType2.getId());
+        final String sql = String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE in ( %s , %s )",
+                        Mocks.AbstractTypeStringAttribute.getSQLColumnName(),
+                        Mocks.AbstractTypeSQLTable.getSqlTableName(),
+                        Mocks.ChildType1.getId(),
+                        Mocks.ChildType2.getId());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(EQL.query(Mocks.TypedType.getName(), Mocks.TypedType2.getName()))
-            .attribute(Mocks.TypedTypeTestAttr.getName())
+        EQL.print(EQL.query(Mocks.ChildType1.getName(), Mocks.ChildType2.getName()))
+            .attribute(Mocks.AbstractTypeStringAttribute.getName())
             .stmt()
             .execute();
         verify.verify();

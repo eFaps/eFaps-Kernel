@@ -43,6 +43,12 @@ public final class Type
     private static final String SQLNAME = "select ID,UUID,NAME,PURPOSE,PARENTDMTYPE,PARENTCLASSDMTYPE "
                     + "from V_ADMINTYPE T0 where T0.NAME = ?";
 
+    /** The purpose id. */
+    private final Integer purposeId;
+
+    /** The purpose type id. */
+    private final Long parentTypeId;
+
     /**
      * Instantiates a new type.
      *
@@ -51,13 +57,16 @@ public final class Type
     private Type(final TypeBuilder _builder)
     {
         super(_builder);
+        this.purposeId = _builder.purposeId;
+        this.parentTypeId = _builder.parentTypeId;
     }
 
     @Override
     public QueryResult getResult()
     {
         return RowLists.rowList6(Long.class, String.class, String.class, Integer.class, Long.class, Long.class)
-                        .append(getId(), getUuid().toString(), getName(), 0, null, null).asResult();
+                        .append(getId(), getUuid().toString(), getName(), this.purposeId, this.parentTypeId, null)
+                        .asResult();
     }
 
     @Override
@@ -99,6 +108,35 @@ public final class Type
     public static class TypeBuilder
         extends AbstractBuilder<TypeBuilder>
     {
+        /** The purpose id. */
+        private Integer purposeId = 0;
+
+        /** The purpose type id. */
+        private Long parentTypeId;
+
+        /**
+         * With sql table id.
+         *
+         * @param _purposeId the purpose id
+         * @return the attribute builder
+         */
+        public TypeBuilder withPurposeId(final Integer _purposeId)
+        {
+            this.purposeId = _purposeId;
+            return this;
+        }
+
+        /**
+         * With sql table id.
+         *
+         * @param _purposeId the purpose id
+         * @return the attribute builder
+         */
+        public TypeBuilder withParentTypeId(final Long _parentTypeId)
+        {
+            this.parentTypeId = _parentTypeId;
+            return this;
+        }
 
         /**
          * Builds the.

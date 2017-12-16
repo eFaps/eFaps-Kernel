@@ -19,6 +19,7 @@ package org.efaps.mock;
 import java.util.UUID;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.efaps.admin.datamodel.Type.Purpose;
 import org.efaps.ci.CIAdminDataModel;
 import org.efaps.mock.datamodel.Attribute;
 import org.efaps.mock.datamodel.AttributeType;
@@ -273,5 +274,46 @@ public interface Mocks
                     .withSqlTableId(AllAttrTypeSQLTable.getId())
                     .withAttributeTypeId(Mocks.LinkAttrType.getId())
                     .withLinkTypeId(TypedType.getId())
+                    .build();
+
+
+    Type AbstractType = Type.builder().withId(RandomUtils.nextLong())
+                    .withName("AbstractType")
+                    .withPurposeId(Purpose.ABSTRACT.getInt())
+                    .build();
+
+    SQLTable AbstractTypeSQLTable = SQLTable.builder().withName("AbstractTypeSQLTable")
+                    .withTypeColumn("TYPE")
+                    .build();
+
+    Attribute AbstractTypeTypeAttr = Attribute.builder()
+                    .withName("TypeAttr")
+                    .withDataModelTypeId(AbstractType.getId())
+                    .withSqlTableId(AbstractTypeSQLTable.getId())
+                    .withAttributeTypeId(TypeAttrType.getId())
+                    .build();
+
+    Attribute AbstractTypeStringAttribute = Attribute.builder()
+                    .withName("AbstractTypeStringAttribute")
+                    .withDataModelTypeId(AbstractType.getId())
+                    .withSqlTableId(AbstractTypeSQLTable.getId())
+                    .withAttributeTypeId(Mocks.StringAttrType.getId())
+                    .build();
+
+    Attribute AbstractTypeIDAttribute = Attribute.builder()
+                    .withName("ID")
+                    .withDataModelTypeId(AbstractType.getId())
+                    .withSqlTableId(AbstractTypeSQLTable.getId())
+                    .withAttributeTypeId(Mocks.LongAttrType.getId())
+                    .build();
+
+    Type ChildType1 = Type.builder().withId(RandomUtils.nextLong())
+                    .withName("ChildType1")
+                    .withParentTypeId(AbstractType.getId())
+                    .build();
+
+    Type ChildType2 = Type.builder().withId(RandomUtils.nextLong())
+                    .withName("ChildType2")
+                    .withParentTypeId(AbstractType.getId())
                     .build();
 }

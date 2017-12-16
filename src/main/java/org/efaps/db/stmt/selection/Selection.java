@@ -21,8 +21,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -36,7 +39,7 @@ import org.efaps.eql2.IPrintQueryStatement;
 import org.efaps.eql2.ISelect;
 import org.efaps.eql2.ISelectElement;
 import org.efaps.eql2.ISelection;
-import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,12 +66,12 @@ public final class Selection
      * @param _baseTypes the base types
      * @param _sel the sel
      * @return the selection
-     * @throws CacheReloadException the cache reload exception
+     * @throws EFapsException on error
      */
     private Selection analyze(final ISelection _sel,
                               final Collection<Type> _baseTypes)
 
-        throws CacheReloadException
+        throws EFapsException
     {
         final Type type = evalMainType(_baseTypes);
         final boolean evalInst =  _sel.getPrintStatement() instanceof IPrintQueryStatement;
@@ -113,15 +116,40 @@ public final class Selection
      *
      * @param _baseTypes the base types
      * @return the main type
+     * @throws EFapsException on error
      */
     private Type evalMainType(final Collection<Type> _baseTypes)
+        throws EFapsException
     {
         final Type ret;
         if (_baseTypes.size() == 1) {
             ret = _baseTypes.iterator().next();
         } else {
-            ret = null;
-            //TODO
+            final List<List<Type>> typeLists = new ArrayList<>();
+            for (final Type type : _baseTypes) {
+                final List<Type> typesTmp = new ArrayList<>();
+                typeLists.add(typesTmp);
+                Type tmpType = type;
+                while (tmpType != null) {
+                    typesTmp.add(tmpType);
+                    tmpType = tmpType.getParentType();
+                }
+            }
+
+            final Set<Type> common = new LinkedHashSet<>();
+            if (!typeLists.isEmpty()) {
+                final Iterator<List<Type>> iterator = typeLists.iterator();
+                common.addAll(iterator.next());
+                while (iterator.hasNext()) {
+                    common.retainAll(iterator.next());
+                }
+            }
+            if (common.isEmpty()) {
+                throw new EFapsException(Selection.class, "noCommon", _baseTypes);
+            } else {
+                // first common type
+                ret = common.iterator().next();
+            }
         }
         return ret;
     }
@@ -164,11 +192,11 @@ public final class Selection
      * @param _baseTypes the base types
      * @param _sel the sel
      * @return the selection
-     * @throws CacheReloadException the cache reload exception
+     * @throws EFapsException on error
      */
     public static Selection get(final ISelection _sel,
                                 final Type... _baseTypes)
-        throws CacheReloadException
+        throws EFapsException
     {
         return new Selection().analyze(_sel, Arrays.asList(_baseTypes));
     }
