@@ -1068,6 +1068,55 @@ public final class Person
         for (final Company company : _companies) {
             add(company);
         }
+
+        // current roles
+        final Set<Company> companiesInDb = getCompaniesFromDB(_jaasSystem);
+
+        // compare new Companies with current Companies (add missing Companies)
+        for (final Company company : _companies) {
+            if (!companiesInDb.contains(company)) {
+                assignCompanyInDb(_jaasSystem, company);
+            }
+        }
+
+        // compare current Companies with new Companies (remove Companies which are to much)
+        for (final Company company : companiesInDb) {
+            if (!_companies.contains(company)) {
+                unassignCompanyInDb(_jaasSystem, company);
+            }
+        }
+    }
+
+    /**
+     * For this person, a role is assigned for the given JAAS system.
+     *
+     * @param _jaasSystem JAAS system for which the role is assigned
+     * @param _company the company
+     * @throws EFapsException on error
+     * @see AbstractUserObject#assignToUserObjectInDb(Type, JAASSystem,
+     *      AbstractUserObject)
+     */
+    public void assignCompanyInDb(final JAASSystem _jaasSystem,
+                                  final Company _company)
+        throws EFapsException
+    {
+        assignToUserObjectInDb(CIAdminUser.Person2Company.getType(), _jaasSystem, _company);
+    }
+
+    /**
+     * The given role is unassigned for the given JAAS system from this person.
+     *
+     * @param _jaasSystem JAAS system for which the role is assigned
+     * @param _company the company
+     * @throws EFapsException on error
+     * @see AbstractUserObject#unassignFromUserObjectInDb(Type, JAASSystem,
+     *      AbstractUserObject)
+     */
+    public void unassignCompanyInDb(final JAASSystem _jaasSystem,
+                                    final Company _company)
+        throws EFapsException
+    {
+        unassignFromUserObjectInDb(CIAdminUser.Person2Company.getType(), _jaasSystem, _company);
     }
 
     /**
