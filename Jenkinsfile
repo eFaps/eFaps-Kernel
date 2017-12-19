@@ -25,13 +25,13 @@ pipeline {
         withMaven(maven: 'M3.5', mavenSettingsConfig: 'fb57b2b9-c2e4-4e05-955e-8688bc067515') {
           sh "mvn clean clover:setup test clover:aggregate clover:clover"
         }
+        step([
+          $class: 'CloverPublisher',
+          cloverReportDir: 'target/site',
+          cloverReportFileName: 'clover.xml',
+          healthyTarget: [methodCoverage: 5, conditionalCoverage: 5, statementCoverage: 5]  // optional, default is: method=70, conditional=80, statement=80
+        ])
       }
-      step([
-        $class: 'CloverPublisher',
-        cloverReportDir: 'target/site',
-        cloverReportFileName: 'clover.xml',
-        healthyTarget: [methodCoverage: 5, conditionalCoverage: 5, statementCoverage: 5]  // optional, default is: method=70, conditional=80, statement=80
-      ])
     }
   }
 }
