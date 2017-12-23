@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.drools.core.util.StringUtils;
+import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.util.EFapsException;
 
@@ -88,11 +90,34 @@ public final class Select
     /**
      * Gets the objects.
      *
+     * @param _evaluator the evaluator
      * @return the objects
+     * @throws EFapsException the e faps exception
      */
-    public List<Object> getObjects()
+    protected List<Object> getObjects(final Evaluator _evaluator)
+        throws EFapsException
     {
-        return Collections.unmodifiableList(this.objects);
+        final List<Object> result;
+        if (_evaluator == null) {
+            result = this.objects;
+        } else {
+            result = new ArrayList<>();
+            final AbstractElement<?> element = getElements().get(getElements().size() - 1);
+            final String path = element.getPath();
+            final Select instSelection = _evaluator.getSelection().getInstSelects().get(StringUtils.isEmpty(path)
+                            ? Selection.BASEPATH
+                            : path);
+            final List<Object> instObjs = instSelection.getObjects(null);
+            final Iterator<Object> objIter = this.objects.iterator();
+            for (final Object instObj : instObjs) {
+                if (_evaluator.getAccess().hasAccess((Instance) instObj)) {
+                    result.add(objIter.next());
+                } else {
+                    objIter.next();
+                }
+            }
+        }
+        return Collections.unmodifiableList(result);
     }
 
     /**

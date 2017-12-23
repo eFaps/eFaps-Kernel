@@ -51,6 +51,9 @@ import org.slf4j.LoggerFactory;
 public final class Selection
 {
 
+    /** The Constant BASE. */
+    protected static final String BASEPATH = "baseInstSelect";
+
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(Selection.class);
 
@@ -78,7 +81,7 @@ public final class Selection
         for (final ISelect sel : _sel.getSelects()) {
             final Select select = Select.get(sel.getAlias());
             if (evalInst && this.selects.isEmpty()) {
-                this.instSelects.put("", Select.get().addElement(new InstanceElement(type)));
+                this.instSelects.put(BASEPATH, Select.get().addElement(new InstanceElement(type)));
             }
             this.selects.add(select);
             Type currentType = type;

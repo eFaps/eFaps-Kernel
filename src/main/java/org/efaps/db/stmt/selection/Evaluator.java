@@ -24,7 +24,9 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.db.Instance;
+import org.efaps.util.EFapsException;
 
 /**
  * The Class SelectionEvaluator.
@@ -37,6 +39,9 @@ public final class Evaluator
 
     /** The selection. */
     private final Selection selection;
+
+    /** The Access. */
+    private Access access;
 
     /**
      * Instantiates a new selection evaluator.
@@ -52,8 +57,10 @@ public final class Evaluator
      * Initialize.
      *
      * @param _step the step
+     * @throws EFapsException on Error
      */
     private void initialize(final boolean _step)
+        throws EFapsException
     {
         if (!this.init) {
             evalAccess();
@@ -65,14 +72,30 @@ public final class Evaluator
     }
 
     /**
+     * Count.
+     *
+     * @return the int
+     * @throws EFapsException the e faps exception
+     */
+    public int count()
+        throws EFapsException
+    {
+        initialize(false);
+        final Select select = this.selection.getInstSelects().get(Selection.BASEPATH);
+        return select.getObjects(this).size();
+    }
+
+    /**
      * Gets the.
      *
      * @param <T> the generic type
      * @param _idx the idx
      * @return the t
+     * @throws EFapsException on error
      */
     @SuppressWarnings("unchecked")
     public <T> T get(final int _idx)
+        throws EFapsException
     {
         initialize(true);
         Object ret = null;
@@ -90,15 +113,16 @@ public final class Evaluator
      * @param <T> the generic type
      * @param _alias the alias
      * @return the t
+     * @throws EFapsException  on error
      */
     @SuppressWarnings("unchecked")
     public <T> T get(final String _alias)
+        throws EFapsException
     {
         initialize(true);
         Object ret = null;
-        final Optional<Select> selectOpt = this.selection.getSelects().stream()
-                        .filter(select ->_alias.equals(select.getAlias()))
-                        .findFirst();
+        final Optional<Select> selectOpt = this.selection.getSelects().stream().filter(select -> _alias.equals(select
+                        .getAlias())).findFirst();
         if (selectOpt.isPresent()) {
             ret = selectOpt.get().getCurrent();
         }
@@ -112,18 +136,40 @@ public final class Evaluator
      */
     public Instance inst()
     {
-        return (Instance) this.selection.getInstSelects().get("").getCurrent();
+        return (Instance) this.selection.getInstSelects().get(Selection.BASEPATH).getCurrent();
     }
 
     /**
      * Next.
      *
      * @return true, if successful
+     * @throws EFapsException on Error
      */
     public boolean next()
+        throws EFapsException
     {
         initialize(false);
         return step(this.selection.getAllSelects());
+    }
+
+    /**
+     * Gets the Access.
+     *
+     * @return the Access
+     */
+    protected Access getAccess()
+    {
+        return this.access;
+    }
+
+    /**
+     * Gets the selection.
+     *
+     * @return the selection
+     */
+    protected Selection getSelection()
+    {
+        return this.selection;
     }
 
     /**
@@ -132,7 +178,8 @@ public final class Evaluator
      * @param _selects the selects
      * @return true, if successful
      */
-    private boolean step(final Collection<Select> _selects) {
+    private boolean step(final Collection<Select> _selects)
+    {
         boolean ret = !CollectionUtils.isEmpty(_selects);
         for (final Select select : _selects) {
             ret = ret && select.next();
@@ -142,8 +189,11 @@ public final class Evaluator
 
     /**
      * Evaluate the access for the instances.
+     *
+     * @throws EFapsException on error
      */
     private void evalAccess()
+        throws EFapsException
     {
         final List<Instance> instances = new ArrayList<>();
         while (step(this.selection.getInstSelects().values())) {
@@ -154,10 +204,10 @@ public final class Evaluator
                 }
             }
         }
-        System.out.println(instances);
         for (final Entry<String, Select> entry : this.selection.getInstSelects().entrySet()) {
             entry.getValue().reset();
         }
+        this.access = Access.get(AccessTypeEnums.READ.getAccessType(), instances);
     }
 
     /**

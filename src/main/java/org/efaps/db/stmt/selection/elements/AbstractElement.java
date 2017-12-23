@@ -102,6 +102,21 @@ public abstract class AbstractElement<T>
     }
 
     /**
+     * Gets the path.
+     *
+     * @return the path
+     * @throws EFapsException the eFaps exception
+     */
+    public String getPath()
+    {
+        final StringBuilder path = new StringBuilder();
+        if (getNext() != null) {
+            path.append(getNext().getPath());
+        }
+        return path.toString();
+    }
+
+    /**
      * Gets the this.
      *
      * @return the this
@@ -113,15 +128,16 @@ public abstract class AbstractElement<T>
      *
      * @param _row the row
      * @return the object
-     * @throws EFapsException the e faps exception
+     * @throws EFapsException the eFaps exception
      */
-    public abstract Object getObject(Object[] _row)throws EFapsException;
+    public abstract Object getObject(Object[] _row)
+        throws EFapsException;
 
     /**
      * Append two SQL select.
      *
      * @param _sqlSelect the sql select
-     * @throws EFapsException the e faps exception
+     * @throws EFapsException the eFaps exception
      */
     public abstract void append2SQLSelect(SQLSelect _sqlSelect)
         throws EFapsException;
