@@ -24,7 +24,7 @@ import com.google.inject.Inject;
 
 import org.eclipse.xtext.parser.IParseResult;
 import org.efaps.db.Instance;
-import org.efaps.db.stmt.selection.SelectionEvaluator;
+import org.efaps.db.stmt.selection.Evaluator;
 import org.efaps.eql2.EQLStandaloneSetup;
 import org.efaps.eql2.IPrintObjectStatement;
 import org.efaps.eql2.parser.antlr.EQLParser;
@@ -92,7 +92,7 @@ public class PrintStmtTest
         final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
                         Mocks.TypedType.getId(), Mocks.TypedTypeTestAttr.getName()));
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+        final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluator();
         assertEquals(evaluator.get(1), "A Value");
@@ -116,7 +116,7 @@ public class PrintStmtTest
         final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrStringAttribute.getName()));
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+        final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluator();
         assertEquals(evaluator.get(1), "A Value");
@@ -140,7 +140,7 @@ public class PrintStmtTest
         final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrLongAttribute.getName()));
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+        final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluator();
         assertEquals(evaluator.get(1), Long.valueOf(100));
@@ -164,7 +164,7 @@ public class PrintStmtTest
         final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrIntegerAttribute.getName()));
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+        final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluator();
         assertEquals(evaluator.get(1), Integer.valueOf(101));
@@ -188,7 +188,7 @@ public class PrintStmtTest
         final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrBooleanAttribute.getName()));
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+        final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluator();
         assertTrue(evaluator.get(1));
@@ -213,7 +213,7 @@ public class PrintStmtTest
         final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrDateAttribute.getName()));
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+        final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluator();
         assertEquals(evaluator.get(1), date);
@@ -238,7 +238,7 @@ public class PrintStmtTest
         final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrTimeAttribute.getName()));
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+        final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluator();
         assertEquals(evaluator.get(1), date.toLocalTime());
@@ -263,7 +263,7 @@ public class PrintStmtTest
         final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrDateTimeAttribute.getName()));
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+        final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluator();
         assertEquals(evaluator.get(1), date);
@@ -288,7 +288,7 @@ public class PrintStmtTest
         final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrCreatedAttribute.getName()));
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+        final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluator();
         assertEquals(evaluator.get(1), date);
@@ -313,7 +313,7 @@ public class PrintStmtTest
         final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrModifiedAttribute.getName()));
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+        final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluator();
         assertEquals(evaluator.get(1), date);
@@ -340,7 +340,7 @@ public class PrintStmtTest
                     Mocks.AllAttrType.getId(), Mocks.AllAttrLinkAttribute.getName(), Mocks.TestAttribute.getName()));
 
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+        final Evaluator evaluator = PrintStmt.get(stmt)
                .execute()
                .evaluator();
         assertEquals(evaluator.get(1), strValue);
@@ -365,7 +365,7 @@ public class PrintStmtTest
         final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s] as %s",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrStringAttribute.getName(), alias));
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+        final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluator();
         assertEquals(evaluator.get(alias), "A Value");
@@ -389,7 +389,7 @@ public class PrintStmtTest
         final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select instance",
                         Mocks.AllAttrType.getId()));
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+        final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluator();
         assertEquals(evaluator.get(1), instance);
@@ -414,7 +414,7 @@ public class PrintStmtTest
         final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select instance",
                         Mocks.TypedType.getId()));
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+        final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluator();
         assertEquals(evaluator.get(1), instance);
@@ -441,7 +441,7 @@ public class PrintStmtTest
                     Mocks.AllAttrType.getId(), Mocks.AllAttrLinkAttribute.getName()));
 
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+        final Evaluator evaluator = PrintStmt.get(stmt)
                .execute()
                .evaluator();
         assertEquals(evaluator.get(1), instance);
@@ -469,7 +469,7 @@ public class PrintStmtTest
                     Mocks.AllAttrType.getId(), Mocks.AllAttrLinkAttributeTyped.getName()));
 
         final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
-        final SelectionEvaluator evaluator = PrintStmt.get(stmt)
+        final Evaluator evaluator = PrintStmt.get(stmt)
                .execute()
                .evaluator();
         assertEquals(evaluator.get(1), instance);

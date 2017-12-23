@@ -21,7 +21,7 @@ import org.efaps.db.stmt.print.AbstractPrint;
 import org.efaps.db.stmt.print.ObjectPrint;
 import org.efaps.db.stmt.print.QueryPrint;
 import org.efaps.db.stmt.runner.StmtRunner;
-import org.efaps.db.stmt.selection.SelectionEvaluator;
+import org.efaps.db.stmt.selection.Evaluator;
 import org.efaps.eql2.IPrintListStatement;
 import org.efaps.eql2.IPrintObjectStatement;
 import org.efaps.eql2.IPrintQueryStatement;
@@ -73,10 +73,10 @@ public final class PrintStmt
      * @return the selection evaluator
      * @throws EFapsException the e faps exception
      */
-    public SelectionEvaluator evaluator()
+    public Evaluator evaluator()
         throws EFapsException
     {
-        return SelectionEvaluator.get(this.print.getSelection());
+        return Evaluator.get(this.print.getSelection());
     }
 
     /**

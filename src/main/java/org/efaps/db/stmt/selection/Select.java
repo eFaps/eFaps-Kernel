@@ -144,6 +144,15 @@ public final class Select
     }
 
     /**
+     * Reset.
+     */
+    protected void reset()
+    {
+        this.iterator = null;
+        this.current = null;
+    }
+
+    /**
      * Gets the.
      *
      * @return the select

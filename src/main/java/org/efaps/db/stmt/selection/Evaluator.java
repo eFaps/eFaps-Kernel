@@ -17,14 +17,19 @@
 
 package org.efaps.db.stmt.selection;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.efaps.db.Instance;
 
 /**
  * The Class SelectionEvaluator.
  */
-public final class SelectionEvaluator
+public final class Evaluator
 {
 
     /** The init. */
@@ -38,18 +43,24 @@ public final class SelectionEvaluator
      *
      * @param _selection the selection
      */
-    private SelectionEvaluator(final Selection _selection)
+    private Evaluator(final Selection _selection)
     {
         this.selection = _selection;
     }
 
     /**
      * Initialize.
+     *
+     * @param _step the step
      */
-    private void initialize()
+    private void initialize(final boolean _step)
     {
         if (!this.init) {
-            next();
+            evalAccess();
+            this.init = true;
+            if (_step) {
+                step(this.selection.getAllSelects());
+            }
         }
     }
 
@@ -63,7 +74,7 @@ public final class SelectionEvaluator
     @SuppressWarnings("unchecked")
     public <T> T get(final int _idx)
     {
-        initialize();
+        initialize(true);
         Object ret = null;
         final int idx = _idx - 1;
         if (this.selection.getSelects().size() > idx) {
@@ -83,7 +94,7 @@ public final class SelectionEvaluator
     @SuppressWarnings("unchecked")
     public <T> T get(final String _alias)
     {
-        initialize();
+        initialize(true);
         Object ret = null;
         final Optional<Select> selectOpt = this.selection.getSelects().stream()
                         .filter(select ->_alias.equals(select.getAlias()))
@@ -111,12 +122,42 @@ public final class SelectionEvaluator
      */
     public boolean next()
     {
-        this.init = true;
-        boolean ret = true;
-        for (final Select select : this.selection.getAllSelects()) {
+        initialize(false);
+        return step(this.selection.getAllSelects());
+    }
+
+    /**
+     * Move the selects to the next value.
+     *
+     * @param _selects the selects
+     * @return true, if successful
+     */
+    private boolean step(final Collection<Select> _selects) {
+        boolean ret = !CollectionUtils.isEmpty(_selects);
+        for (final Select select : _selects) {
             ret = ret && select.next();
         }
         return ret;
+    }
+
+    /**
+     * Evaluate the access for the instances.
+     */
+    private void evalAccess()
+    {
+        final List<Instance> instances = new ArrayList<>();
+        while (step(this.selection.getInstSelects().values())) {
+            for (final Entry<String, Select> entry : this.selection.getInstSelects().entrySet()) {
+                final Instance inst = (Instance) entry.getValue().getCurrent();
+                if (inst != null) {
+                    instances.add(inst);
+                }
+            }
+        }
+        System.out.println(instances);
+        for (final Entry<String, Select> entry : this.selection.getInstSelects().entrySet()) {
+            entry.getValue().reset();
+        }
     }
 
     /**
@@ -125,8 +166,8 @@ public final class SelectionEvaluator
      * @param _selection the selection
      * @return the selection evaluator
      */
-    public static SelectionEvaluator get(final Selection _selection)
+    public static Evaluator get(final Selection _selection)
     {
-        return new SelectionEvaluator(_selection);
+        return new Evaluator(_selection);
     }
 }

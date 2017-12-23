@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.efaps.db.Instance;
-import org.efaps.db.stmt.selection.SelectionEvaluator;
+import org.efaps.db.stmt.selection.Evaluator;
 import org.efaps.mock.MockResult;
 import org.efaps.mock.Mocks;
 import org.efaps.test.AbstractTest;
@@ -132,7 +132,7 @@ public class QueryTest
             .build();
 
         final List<String> values = new ArrayList<>();
-        final SelectionEvaluator eval = EQL.print(EQL.query(Mocks.SimpleType.getName()))
+        final Evaluator eval = EQL.print(EQL.query(Mocks.SimpleType.getName()))
             .attribute(Mocks.TestAttribute.getName())
             .stmt()
             .execute()
@@ -164,7 +164,7 @@ public class QueryTest
         final List<String> values1 = new ArrayList<>();
         final List<Long> values2 = new ArrayList<>();
         final List<Instance> instances = new ArrayList<>();
-        final SelectionEvaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+        final Evaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
             .attribute(Mocks.AllAttrStringAttribute.getName(), Mocks.AllAttrLongAttribute.getName())
             .stmt()
             .execute()
@@ -176,5 +176,16 @@ public class QueryTest
         }
         assertEquals(values1, Arrays.asList("StringValue1", "StringValue2", "StringValue3"));
         assertEquals(values2, Arrays.asList(1L, 2L, 3L));
+    }
+
+    @Test
+    public void testQueryLinktoValue()
+        throws EFapsException
+    {
+        final Evaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+                        .linkto(Mocks.AllAttrLinkAttribute.getName()).attribute(Mocks.TestAttribute.getName())
+                        .stmt()
+                        .execute()
+                        .evaluator();
     }
 }
