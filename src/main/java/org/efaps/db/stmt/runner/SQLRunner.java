@@ -171,7 +171,7 @@ public class SQLRunner
     protected boolean executeSQLStmt(final ISelectionProvider _sqlProvider, final String _complStmt)
         throws EFapsException
     {
-        SQLRunner.LOG.info("SQL-Statement: {}", _complStmt);
+        SQLRunner.LOG.debug("SQL-Statement: {}", _complStmt);
         boolean ret = false;
         ConnectionResource con = null;
         try {
