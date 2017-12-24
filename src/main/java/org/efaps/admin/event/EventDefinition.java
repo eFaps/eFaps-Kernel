@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,12 +111,13 @@ public final class EventDefinition
         throws EFapsException
     {
         final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.Property);
-        queryBldr.addWhereAttrEqValue("Abstract", _instance.getId());
+        queryBldr.addWhereAttrEqValue(CIAdminCommon.Property.Abstract, _instance.getId());
         final MultiPrintQuery multi = queryBldr.getPrint();
-        multi.addAttribute("Name", "Value");
+        multi.addAttribute(CIAdminCommon.Property.Name, CIAdminCommon.Property.Value);
         multi.executeWithoutAccessCheck();
         while (multi.next()) {
-            super.setProperty(multi.<String>getAttribute("Name"), multi.<String>getAttribute("Value"));
+            super.setProperty(multi.<String>getAttribute(CIAdminCommon.Property.Name),
+                            multi.<String>getAttribute(CIAdminCommon.Property.Value));
         }
     }
 
@@ -231,7 +232,6 @@ public final class EventDefinition
     {
         return Long.valueOf(getId()).intValue();
     }
-
 
     /**
      * @param _adminObject Object the event is added to

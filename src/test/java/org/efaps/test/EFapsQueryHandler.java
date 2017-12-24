@@ -36,7 +36,7 @@ import acolyte.jdbc.QueryResult;
 import acolyte.jdbc.Row;
 import acolyte.jdbc.RowList;
 import acolyte.jdbc.RowList11;
-import acolyte.jdbc.RowList11.Impl;
+import acolyte.jdbc.RowList2;
 import acolyte.jdbc.RowLists;
 import acolyte.jdbc.StatementHandler.Parameter;
 
@@ -76,6 +76,8 @@ public final class EFapsQueryHandler
     {
         QueryResult ret = QueryResult.Nil;
         final String sql = _sql.trim();
+        LOG.info("Handle Query: '{}'", sql);
+
         if (this.sql2verify.containsKey(sql)) {
             this.sql2verify.get(sql).execute();
         } else if (this.sql2results.containsKey(sql)) {
@@ -97,7 +99,7 @@ public final class EFapsQueryHandler
                 final RowList<?> current = ret.getRowList();
                 final RowList<?> rowList = temp.getRowList();
                 if (rowList instanceof RowList11) {
-                    Impl rl = RowLists.rowList11(rowList.getColumnClasses().get(0),
+                    acolyte.jdbc.RowList11.Impl rl = RowLists.rowList11(rowList.getColumnClasses().get(0),
                                     rowList.getColumnClasses().get(1),
                                     rowList.getColumnClasses().get(2),
                                     rowList.getColumnClasses().get(3),
@@ -110,20 +112,33 @@ public final class EFapsQueryHandler
                                     rowList.getColumnClasses().get(10));
                     for (final Row row : rowList.getRows()) {
                         final List<Object> cells = row.cells();
-                        rl = (Impl) rl.append(cells.get(0), cells.get(1), cells.get(2), cells.get(3), cells.get(4),
-                                        cells.get(5), cells.get(6), cells.get(7), cells.get(8), cells.get(9),
-                                        cells.get(10));
+                        rl = (acolyte.jdbc.RowList11.Impl) rl.append(cells.get(0), cells.get(1), cells.get(2),
+                                        cells.get(3), cells.get(4), cells.get(5), cells.get(6), cells.get(7),
+                                        cells.get(8), cells.get(9), cells.get(10));
                     }
                     for (final Row row : current.getRows()) {
                         final List<Object> cells = row.cells();
-                        rl = (Impl) rl.append(cells.get(0), cells.get(1), cells.get(2), cells.get(3), cells.get(4),
-                                        cells.get(5), cells.get(6), cells.get(7), cells.get(8), cells.get(9),
-                                        cells.get(10));
+                        rl = (acolyte.jdbc.RowList11.Impl) rl.append(cells.get(0), cells.get(1), cells.get(2),
+                                        cells.get(3), cells.get(4), cells.get(5), cells.get(6), cells.get(7),
+                                        cells.get(8), cells.get(9), cells.get(10));
+                    }
+                    ret = rl.asResult();
+                } else if (rowList instanceof RowList2) {
+                    acolyte.jdbc.RowList2.Impl rl = RowLists.rowList2(rowList.getColumnClasses().get(0),
+                                    rowList.getColumnClasses().get(1));
+                    for (final Row row : rowList.getRows()) {
+                        final List<Object> cells = row.cells();
+                        rl = (acolyte.jdbc.RowList2.Impl) rl.append(cells.get(0), cells.get(1));
+                    }
+                    for (final Row row : current.getRows()) {
+                        final List<Object> cells = row.cells();
+                        rl = (acolyte.jdbc.RowList2.Impl) rl.append(cells.get(0), cells.get(1));
                     }
                     ret = rl.asResult();
                 }
             }
         }
+        LOG.info("found result: {}", ret.getRowList().getRows().size());
         return ret;
     }
 
@@ -169,6 +184,7 @@ public final class EFapsQueryHandler
     public void unregister(final String _sql)
     {
         this.sql2verify.remove(_sql);
+        this.sql2results.remove(_sql);
     }
 
     /**
@@ -177,6 +193,7 @@ public final class EFapsQueryHandler
     public void cleanUp()
     {
         this.toBeUnregistered.forEach(this::unregister);
+        this.toBeUnregistered.clear();
     }
 
     /**

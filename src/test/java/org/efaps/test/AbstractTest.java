@@ -27,14 +27,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.efaps.db.Context;
 import org.efaps.init.StartupDatabaseConnection;
 import org.efaps.init.StartupException;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.mock.Mocks;
+import org.efaps.mock.datamodel.IDataModel;
 import org.efaps.mock.datamodel.Person;
 import org.efaps.mock.db.MockDatabase;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
@@ -53,6 +57,9 @@ public abstract class AbstractTest
     /** The Constant JDBCURL. */
     public static final String JDBCURL = "jdbc:acolyte:anything-you-want?handler=my-handler-id";
 
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractTest.class);
+
     /**
      * Prepare the Test Suite.
      *
@@ -66,12 +73,15 @@ public abstract class AbstractTest
             .withId(1L)
             .withName("Administrator")
             .build();
-        final Field[] fields = Mocks.class.getDeclaredFields();
+
+        Field[] fields = IDataModel.class.getDeclaredFields();
+        fields = ArrayUtils.addAll(fields, Mocks.class.getDeclaredFields());
         for (final Field f : fields) {
             if (Modifier.isStatic(f.getModifiers())) {
                 try {
                     f.get(null);
                 } catch (IllegalArgumentException | IllegalAccessException e) {
+                    LOG.error("Catched", e);
                 }
             }
         }

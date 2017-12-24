@@ -128,7 +128,7 @@ public final class SQLTable
         /**
          * With type column.
          *
-         * @param _typeColumn the type column
+         * @param _sqlTableName the sql table name
          * @return the SQL table builder
          */
         public SQLTableBuilder withSqlTableName(final String _sqlTableName)

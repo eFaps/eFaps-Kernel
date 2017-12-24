@@ -43,11 +43,17 @@ public final class Type
     private static final String SQLNAME = "select ID,UUID,NAME,PURPOSE,PARENTDMTYPE,PARENTCLASSDMTYPE "
                     + "from V_ADMINTYPE T0 where T0.NAME = ?";
 
+    /** The Constant SQLCHILDREN. */
+    private static final String SQLCHILDREN = "select ID,PURPOSE from V_ADMINTYPE T0 where T0.PARENTDMTYPE = ?";
+
     /** The purpose id. */
     private final Integer purposeId;
 
     /** The purpose type id. */
     private final Long parentTypeId;
+
+    /** The children. */
+    private boolean children = false;
 
     /**
      * Instantiates a new type.
@@ -64,15 +70,23 @@ public final class Type
     @Override
     public QueryResult getResult()
     {
-        return RowLists.rowList6(Long.class, String.class, String.class, Integer.class, Long.class, Long.class)
+        final QueryResult ret;
+        if (this.children) {
+            ret = RowLists.rowList2(Long.class, Integer.class)
+                            .append(getId(), this.purposeId)
+                            .asResult();
+        } else {
+            ret =  RowLists.rowList6(Long.class, String.class, String.class, Integer.class, Long.class, Long.class)
                         .append(getId(), getUuid().toString(), getName(), this.purposeId, this.parentTypeId, null)
                         .asResult();
+        }
+        return ret;
     }
 
     @Override
     public String[] getSqls()
     {
-        return new String[] { SQLID, SQLUUID, SQLNAME };
+        return new String[] { SQLID, SQLUUID, SQLNAME, SQLCHILDREN };
     }
 
     @Override
@@ -81,10 +95,14 @@ public final class Type
         boolean ret = false;
         if (_parameters.size() == 1) {
             final Parameter parameter = _parameters.get(0);
+            this.children = false;
             if (SQLID.equals(_sql)) {
                 ret = getId().equals(parameter.right);
             } else if (SQLUUID.equals(_sql)) {
                 ret = getUuid().toString().equals(parameter.right);
+            } else if (SQLCHILDREN.equals(_sql)) {
+                ret = this.parentTypeId != null && this.parentTypeId.equals(parameter.right);
+                this.children = true;
             } else {
                 ret = getName().toString().equals(parameter.right);
             }
@@ -129,7 +147,7 @@ public final class Type
         /**
          * With sql table id.
          *
-         * @param _purposeId the purpose id
+         * @param _parentTypeId the parent type id
          * @return the attribute builder
          */
         public TypeBuilder withParentTypeId(final Long _parentTypeId)
