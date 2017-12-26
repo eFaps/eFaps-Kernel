@@ -115,4 +115,70 @@ public class EvaluatorTest
 
         assertEquals(eval.count(), 2);
     }
+
+    @Test
+    public void testAccessAllToLinkToObject()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T1.%s,T0.ID,T1.ID "
+                        + "from %s T0 left join %s T1 on T0.%s=T1.ID",
+                        Mocks.AccessTypeStringAttribute.getSQLColumnName(),
+                        Mocks.AccessType2StringAttribute.getSQLColumnName(),
+                        Mocks.AccessTypeSQLTable.getSqlTableName(),
+                        Mocks.AccessType2SQLTable.getSqlTableName(),
+                        Mocks.AccessTypeLinkAttribute.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList4(Object.class, Object.class, Object.class, Object.class)
+                .append("StringValue1A", "StringValue1B", 114L, 115L)
+                .append("StringValue2A", "StringValue2B", 224L, 225L)
+                .append("StringValue3A", "StringValue3B", 334L, 335L)
+                .asResult())
+            .build();
+
+        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+                        .attribute(Mocks.AccessTypeStringAttribute.getName())
+                        .linkto(Mocks.AccessTypeLinkAttribute.getName())
+                            .attribute(Mocks.AccessType2StringAttribute.getName())
+                        .stmt()
+                        .execute()
+                        .evaluator();
+
+        assertEquals(eval.count(), 3);
+    }
+
+    @Test(description = "Access to main object is restricted")
+    public void testAccessMainObjectToLinkToObject()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T1.%s,T0.ID,T1.ID "
+                        + "from %s T0 left join %s T1 on T0.%s=T1.ID",
+                        Mocks.AccessTypeStringAttribute.getSQLColumnName(),
+                        Mocks.AccessType2StringAttribute.getSQLColumnName(),
+                        Mocks.AccessTypeSQLTable.getSqlTableName(),
+                        Mocks.AccessType2SQLTable.getSqlTableName(),
+                        Mocks.AccessTypeLinkAttribute.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList4(Object.class, Object.class, Object.class, Object.class)
+                .append("StringValue1A", "StringValue1B", 114L, 115L)
+                .append("StringValue2A", "StringValue2B", 224L, 225L)
+                .append("StringValue3A", "StringValue3B", 334L, 335L)
+                .asResult())
+            .build();
+
+        AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType.getId()), 224L), false);
+
+        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+                        .attribute(Mocks.AccessTypeStringAttribute.getName())
+                        .linkto(Mocks.AccessTypeLinkAttribute.getName())
+                            .attribute(Mocks.AccessType2StringAttribute.getName())
+                        .stmt()
+                        .execute()
+                        .evaluator();
+
+        assertEquals(eval.count(), 2);
+    }
 }

@@ -110,8 +110,8 @@ public abstract class AbstractElement<T>
     public String getPath()
     {
         final StringBuilder path = new StringBuilder();
-        if (getNext() != null) {
-            path.append(getNext().getPath());
+        if (getPrevious() != null) {
+            path.append(getPrevious().getPath());
         }
         return path.toString();
     }

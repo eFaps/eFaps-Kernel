@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.selection.elements.AttributeElement;
 import org.efaps.db.stmt.selection.elements.InstanceElement;
 import org.efaps.db.stmt.selection.elements.LinktoElement;
@@ -100,6 +102,18 @@ public final class Selection
                     final LinktoElement element = new LinktoElement().setAttribute(attr);
                     select.addElement(element);
                     currentType = attr.getLink();
+                    if (StringUtils.isNotEmpty(element.getPath()) && !this.instSelects.containsKey(element.getPath())) {
+                        final Select instSelect = Select.get();
+                        for (final AbstractElement<?> selectTmp : select.getElements()) {
+                            if (!selectTmp.equals(element) && selectTmp instanceof LinktoElement) {
+                                instSelect.addElement(new LinktoElement()
+                                                .setAttribute(((LinktoElement) selectTmp).getAttribute()));
+                            }
+                        }
+                        instSelect.addElement(new LinktoElement().setAttribute(attr));
+                        instSelect.addElement(new InstanceElement(currentType));
+                        this.instSelects.put(element.getPath(), instSelect);
+                    }
                 } else if (ele instanceof IBaseSelectElement) {
                     switch (((IBaseSelectElement) ele).getElement()) {
                         case INSTANCE:

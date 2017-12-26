@@ -41,7 +41,7 @@ public class AccessCheck
      *
      * @param _parameter the parameter
      * @return the return
-     * @throws EFapsException the e faps exception
+     * @throws EFapsException the eFaps exception
      */
     public Return execute(final Parameter _parameter)
         throws EFapsException

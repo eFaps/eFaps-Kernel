@@ -132,4 +132,10 @@ public class LinktoElement
     {
         return getNext().getObject(_row);
     }
+
+    @Override
+    public String getPath()
+    {
+        return super.getPath() + "->" + getAttribute().getName();
+    }
 }

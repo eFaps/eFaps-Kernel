@@ -135,4 +135,24 @@ public class PrintTest
             .execute();
         verify.verify();
     }
+
+    @Test
+    public void testAttributeAndLinkto()
+        throws EFapsException
+    {
+        final String sql = String.format("select T1.%s from %s T0 left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
+                        Mocks.TestAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.AllAttrLinkAttribute.getSQLColumnName());
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+
+        EQL.print(Mocks.AllAttrType.getId() + ".4")
+            .attribute(Mocks.AllAttrStringAttribute.getName())
+            .linkto(Mocks.AllAttrLinkAttribute.getName())
+                .attribute(Mocks.TestAttribute.getName())
+            .stmt()
+            .execute();
+        verify.verify();
+    }
 }

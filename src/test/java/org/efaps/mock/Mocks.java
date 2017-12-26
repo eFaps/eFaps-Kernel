@@ -251,4 +251,43 @@ public interface Mocks
                     .withMethod("execute")
                     .build();
 
+    Type AccessType2 = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("AccessType2")
+                    .build();
+
+    SQLTable AccessType2SQLTable = SQLTable.builder()
+                    .withName("AccessType2SQLTable")
+                    .withSqlTableName("T_ACCESSTYPE2")
+                    .build();
+
+    Attribute AccessType2IDAttribute = Attribute.builder()
+                    .withName("ID")
+                    .withDataModelTypeId(AccessType2.getId())
+                    .withSqlTableId(AccessType2SQLTable.getId())
+                    .withAttributeTypeId(IDataModel.LongType.getId())
+                    .build();
+
+    Attribute AccessType2StringAttribute = Attribute.builder()
+                    .withName("StringAttribute")
+                    .withDataModelTypeId(AccessType2.getId())
+                    .withSqlTableId(AccessType2SQLTable.getId())
+                    .withAttributeTypeId(IDataModel.StringType.getId())
+                    .build();
+
+    EventDefinition AccessType2Event = EventDefinition.builder()
+                    .withObjectLink(AccessType2.getId())
+                    .withInstId(1L)
+                    .withTypeId(IDataModel.Admin_DataModel_TypeAccessCheckEvent.getId())
+                    .withESJP(AccessCheck.class.getName())
+                    .withMethod("execute")
+                    .build();
+
+    Attribute AccessTypeLinkAttribute = Attribute.builder()
+                    .withName("AccessTypeLink")
+                    .withDataModelTypeId(AccessType.getId())
+                    .withSqlTableId(AccessTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.LinkType.getId())
+                    .withLinkTypeId(AccessType2.getId())
+                    .build();
 }
