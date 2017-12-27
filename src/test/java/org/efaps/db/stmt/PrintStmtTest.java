@@ -323,7 +323,8 @@ public class PrintStmtTest
     public void testLinkto()
         throws EFapsException
     {
-        final String sql = String.format("select T1.%s from %s T0 left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
+        final String sql = String.format("select T1.%s,T1.ID from %s T0 "
+                        + "left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
                         Mocks.TestAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName(),
                         Mocks.SimpleTypeSQLTable.getSqlTableName(),
@@ -331,8 +332,8 @@ public class PrintStmtTest
         final String strValue = RandomUtil.random(8);
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(Object.class)
-                    .append(strValue)
+            .withResult(RowLists.rowList2(Object.class, Object.class)
+                    .append(strValue, 1L)
                     .asResult())
             .build();
 

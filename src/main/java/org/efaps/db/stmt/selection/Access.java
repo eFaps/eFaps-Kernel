@@ -18,6 +18,7 @@
 package org.efaps.db.stmt.selection;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -41,7 +42,7 @@ public final class Access
     private final AccessType accessType;
 
     /** The access map. */
-    private Map<Instance, Boolean> accessMap;
+    private final Map<Instance, Boolean> accessMap = new HashMap<>();
 
     /** The init. */
     private boolean init;
@@ -72,7 +73,7 @@ public final class Access
         if (!this.init) {
             this.init = true;
             for (final Entry<Type, Collection<Instance>> entry : this.instanceMap.asMap().entrySet()) {
-                this.accessMap = entry.getKey().checkAccess(entry.getValue(), this.accessType);
+                this.accessMap.putAll(entry.getKey().checkAccess(entry.getValue(), this.accessType));
             }
         }
     }

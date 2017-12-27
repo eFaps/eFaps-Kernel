@@ -121,7 +121,7 @@ public class PrintTest
     public void testLinkto()
         throws EFapsException
     {
-        final String sql = String.format("select T1.%s from %s T0 left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
+        final String sql = String.format("select T1.%s,T1.ID from %s T0 left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
                         Mocks.TestAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName(),
                         Mocks.SimpleTypeSQLTable.getSqlTableName(),
@@ -140,7 +140,9 @@ public class PrintTest
     public void testAttributeAndLinkto()
         throws EFapsException
     {
-        final String sql = String.format("select T1.%s from %s T0 left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T1.%s,T1.ID from %s T0 "
+                        + "left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
+                        Mocks.AllAttrStringAttribute.getSQLColumnName(),
                         Mocks.TestAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName(),
                         Mocks.SimpleTypeSQLTable.getSqlTableName(),
