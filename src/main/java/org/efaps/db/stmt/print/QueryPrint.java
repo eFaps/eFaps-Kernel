@@ -23,6 +23,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.stmt.filter.Filter;
 import org.efaps.db.stmt.selection.Selection;
 import org.efaps.eql2.IPrintQueryStatement;
+import org.efaps.eql2.IStatement;
 import org.efaps.eql2.IWhere;
 import org.efaps.eql2.impl.PrintQueryStatement;
 import org.efaps.util.EFapsException;
@@ -66,16 +67,28 @@ public class QueryPrint
     {
         Selection ret = super.getSelection();
         if (ret == null) {
-            setSelection(Selection.get(this.eqlStmt.getSelection(), getTypes().toArray(new Type[getTypes().size()])));
+            setSelection(Selection.get(this));
             ret = super.getSelection();
         }
         return ret;
     }
 
+    /**
+     * Gets the filter.
+     *
+     * @return the filter
+     * @throws CacheReloadException the cache reload exception
+     */
     public Filter getFilter()
         throws CacheReloadException
     {
         final IWhere where = this.eqlStmt.getQuery().getWhere();
         return Filter.get(where, getTypes().toArray(new Type[getTypes().size()]));
+    }
+
+    @Override
+    public IStatement<?> getStmt()
+    {
+        return this.eqlStmt;
     }
 }

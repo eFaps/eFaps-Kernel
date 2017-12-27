@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.stmt.selection.ISelectionProvider;
+import org.efaps.db.stmt.selection.IStmtProvider;
 import org.efaps.db.stmt.selection.Selection;
 import org.efaps.util.EFapsException;
 
@@ -31,7 +32,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  */
 public abstract class AbstractPrint
-    implements ISelectionProvider
+    implements ISelectionProvider, IStmtProvider
 {
 
     /** The selection. */
@@ -78,6 +79,7 @@ public abstract class AbstractPrint
      *
      * @return the types
      */
+    @Override
     public Set<Type> getTypes()
     {
         return this.types;

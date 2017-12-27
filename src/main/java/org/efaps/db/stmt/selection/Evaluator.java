@@ -24,8 +24,10 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.db.Instance;
+import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.util.EFapsException;
 
 /**
@@ -102,7 +104,9 @@ public final class Evaluator
         final int idx = _idx - 1;
         if (this.selection.getSelects().size() > idx) {
             final Select select = this.selection.getSelects().get(idx);
-            ret = select.getCurrent();
+            if (hasAccess(select)) {
+                ret = select.getCurrent();
+            }
         }
         return (T) ret;
     }
@@ -123,7 +127,7 @@ public final class Evaluator
         Object ret = null;
         final Optional<Select> selectOpt = this.selection.getSelects().stream().filter(select -> _alias.equals(select
                         .getAlias())).findFirst();
-        if (selectOpt.isPresent()) {
+        if (selectOpt.isPresent() && hasAccess(selectOpt.get())) {
             ret = selectOpt.get().getCurrent();
         }
         return (T) ret;
@@ -151,6 +155,27 @@ public final class Evaluator
         initialize(false);
         return step(this.selection.getAllSelects());
     }
+
+    /**
+     * Checks for access.
+     *
+     * @param _select the select
+     * @return true, if successful
+     * @throws EFapsException on Error
+     */
+    protected boolean hasAccess(final Select _select)
+        throws EFapsException
+    {
+        final boolean ret;
+        final AbstractElement<?> element = _select.getElements().get(_select.getElements().size() - 1);
+        if (StringUtils.isEmpty(element.getPath())) {
+            ret = this.access.hasAccess(inst());
+        } else {
+            ret = this.access.hasAccess((Instance) this.selection.getInstSelects().get(element.getPath()).getCurrent());
+        }
+        return ret;
+    }
+
 
     /**
      * Gets the Access.

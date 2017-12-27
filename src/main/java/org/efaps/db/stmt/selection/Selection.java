@@ -17,7 +17,6 @@
 package org.efaps.db.stmt.selection;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,15 +31,18 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.selection.elements.AttributeElement;
+import org.efaps.db.stmt.selection.elements.IPrimed;
 import org.efaps.db.stmt.selection.elements.InstanceElement;
 import org.efaps.db.stmt.selection.elements.LinktoElement;
+import org.efaps.db.stmt.selection.elements.PrimedElement;
 import org.efaps.eql2.IAttributeSelectElement;
 import org.efaps.eql2.IBaseSelectElement;
 import org.efaps.eql2.ILinktoSelectElement;
 import org.efaps.eql2.IPrintQueryStatement;
+import org.efaps.eql2.IPrintStatement;
 import org.efaps.eql2.ISelect;
 import org.efaps.eql2.ISelectElement;
-import org.efaps.eql2.ISelection;
+import org.efaps.eql2.IStatement;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,22 +70,22 @@ public final class Selection
     /**
      * Analyze.
      *
-     * @param _baseTypes the base types
-     * @param _sel the sel
+     * @param _stmtProvider the stmt provider
      * @return the selection
      * @throws EFapsException on error
      */
-    private Selection analyze(final ISelection _sel,
-                              final Collection<Type> _baseTypes)
-
+    private Selection analyze(final IStmtProvider _stmtProvider)
         throws EFapsException
     {
-        final Type type = evalMainType(_baseTypes);
-        final boolean evalInst =  _sel.getPrintStatement() instanceof IPrintQueryStatement;
-        for (final ISelect sel : _sel.getSelects()) {
+        final Type type = evalMainType(_stmtProvider.getTypes());
+        final IStatement<?> stmt = _stmtProvider.getStmt();
+        final boolean evalInst = stmt instanceof IPrintQueryStatement;
+        for (final ISelect sel : ((IPrintStatement<?>) stmt).getSelection().getSelects()) {
             final Select select = Select.get(sel.getAlias());
-            if (evalInst && this.selects.isEmpty()) {
-                this.instSelects.put(BASEPATH, Select.get().addElement(new InstanceElement(type)));
+            if (this.selects.isEmpty()) {
+                this.instSelects.put(BASEPATH, Select.get().addElement(evalInst
+                                ? new InstanceElement(type)
+                                : new PrimedElement(((IPrimed) _stmtProvider).getObjects())));
             }
             this.selects.add(select);
             Type currentType = type;
@@ -206,15 +208,13 @@ public final class Selection
     /**
      * Gets the.
      *
-     * @param _baseTypes the base types
-     * @param _sel the sel
+     * @param _stmtProvider the stmt provider
      * @return the selection
      * @throws EFapsException on error
      */
-    public static Selection get(final ISelection _sel,
-                                final Type... _baseTypes)
+    public static Selection get(final IStmtProvider _stmtProvider)
         throws EFapsException
     {
-        return new Selection().analyze(_sel, Arrays.asList(_baseTypes));
+        return new Selection().analyze(_stmtProvider);
     }
 }

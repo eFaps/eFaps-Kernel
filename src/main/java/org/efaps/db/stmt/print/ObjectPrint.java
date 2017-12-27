@@ -17,9 +17,14 @@
 
 package org.efaps.db.stmt.print;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.Selection;
+import org.efaps.db.stmt.selection.elements.IPrimed;
 import org.efaps.eql2.IPrintObjectStatement;
+import org.efaps.eql2.IStatement;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -30,6 +35,7 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public class ObjectPrint
     extends AbstractPrint
+    implements IPrimed
 {
 
     /** The instance. */
@@ -68,9 +74,21 @@ public class ObjectPrint
     {
         Selection ret = super.getSelection();
         if (ret == null) {
-            setSelection(Selection.get(this.eqlStmt.getSelection(), this.instance.getType()));
+            setSelection(Selection.get(this));
             ret = super.getSelection();
         }
         return ret;
+    }
+
+    @Override
+    public IStatement<?> getStmt()
+    {
+        return this.eqlStmt;
+    }
+
+    @Override
+    public List<Object> getObjects()
+    {
+        return Arrays.asList(getInstance());
     }
 }

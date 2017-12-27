@@ -18,6 +18,7 @@
 package org.efaps.db.stmt.selection;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
@@ -180,5 +181,48 @@ public class EvaluatorTest
                         .evaluator();
 
         assertEquals(eval.count(), 2);
+    }
+
+    @Test(description = "Access to linkto object is restricted")
+    public void testAccessLinktoObjectToLinkToObject()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T1.%s,T0.ID,T1.ID "
+                        + "from %s T0 left join %s T1 on T0.%s=T1.ID",
+                        Mocks.AccessTypeStringAttribute.getSQLColumnName(),
+                        Mocks.AccessType2StringAttribute.getSQLColumnName(),
+                        Mocks.AccessTypeSQLTable.getSqlTableName(),
+                        Mocks.AccessType2SQLTable.getSqlTableName(),
+                        Mocks.AccessTypeLinkAttribute.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList4(Object.class, Object.class, Object.class, Object.class)
+                .append("StringValue1A", "StringValue1B", 114L, 115L)
+                .append("StringValue2A", "StringValue2B", 224L, 225L)
+                .append("StringValue3A", "StringValue3B", 334L, 335L)
+                .asResult())
+            .build();
+
+        AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType2.getId()), 225L), false);
+
+        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+                        .attribute(Mocks.AccessTypeStringAttribute.getName())
+                        .linkto(Mocks.AccessTypeLinkAttribute.getName())
+                            .attribute(Mocks.AccessType2StringAttribute.getName())
+                        .stmt()
+                        .execute()
+                        .evaluator();
+        assertEquals(eval.count(), 3);
+        eval.next();
+        assertEquals(eval.get(1), "StringValue1A");
+        assertEquals(eval.get(2), "StringValue1B");
+        eval.next();
+        assertEquals(eval.get(1), "StringValue2A");
+        assertNull(eval.get(2));
+        eval.next();
+        assertEquals(eval.get(1), "StringValue3A");
+        assertEquals(eval.get(2), "StringValue3B");
+
     }
 }
