@@ -18,6 +18,7 @@
 package org.efaps.db.stmt.selection;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 
 import org.efaps.admin.datamodel.Type;
@@ -223,6 +224,189 @@ public class EvaluatorTest
         eval.next();
         assertEquals(eval.get(1), "StringValue3A");
         assertEquals(eval.get(2), "StringValue3B");
-
     }
+
+    @Test(description = "Access to linkto.linkto object without restriction")
+    public void testAccessLinktoLinktoObject()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T2.%s,T0.ID,T1.ID,T2.ID "
+                        + "from %s T0 left join %s T1 on T0.%s=T1.ID "
+                        + "left join %s T2 on T0.%s=T2.ID",
+                        Mocks.AccessTypeStringAttribute.getSQLColumnName(),
+                        Mocks.AccessType2StringAttribute.getSQLColumnName(),
+                        Mocks.AccessTypeSQLTable.getSqlTableName(),
+                        Mocks.AccessType2SQLTable.getSqlTableName(),
+                        Mocks.AccessTypeLinkAttribute.getSQLColumnName(),
+                        Mocks.AccessType3SQLTable.getSqlTableName(),
+                        Mocks.AccessType2LinkAttribute.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList5(Object.class, Object.class, Object.class, Object.class, Object.class)
+                .append("StringValue1A", "StringValue1C", 114L, 115L, 116L)
+                .append("StringValue2A", "StringValue2C", 224L, 225L, 226L)
+                .append("StringValue3A", "StringValue3C", 334L, 335L, 336L)
+                .asResult())
+            .build();
+
+        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+                        .attribute(Mocks.AccessTypeStringAttribute.getName())
+                        .linkto(Mocks.AccessTypeLinkAttribute.getName())
+                            .linkto(Mocks.AccessType2LinkAttribute.getName())
+                            .attribute(Mocks.AccessType3StringAttribute.getName())
+                        .stmt()
+                        .execute()
+                        .evaluator();
+        assertEquals(eval.count(), 3);
+        eval.next();
+        assertEquals(eval.get(1), "StringValue1A");
+        assertEquals(eval.get(2), "StringValue1C");
+        eval.next();
+        assertEquals(eval.get(1), "StringValue2A");
+        assertEquals(eval.get(2), "StringValue2C");
+        eval.next();
+        assertEquals(eval.get(1), "StringValue3A");
+        assertEquals(eval.get(2), "StringValue3C");
+    }
+
+    @Test(description = "Access to linkto.linkto object restriction on base element")
+    public void testAccessLinktoLinktoObjectRestrictBase()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T2.%s,T0.ID,T1.ID,T2.ID "
+                        + "from %s T0 left join %s T1 on T0.%s=T1.ID "
+                        + "left join %s T2 on T0.%s=T2.ID",
+                        Mocks.AccessTypeStringAttribute.getSQLColumnName(),
+                        Mocks.AccessType2StringAttribute.getSQLColumnName(),
+                        Mocks.AccessTypeSQLTable.getSqlTableName(),
+                        Mocks.AccessType2SQLTable.getSqlTableName(),
+                        Mocks.AccessTypeLinkAttribute.getSQLColumnName(),
+                        Mocks.AccessType3SQLTable.getSqlTableName(),
+                        Mocks.AccessType2LinkAttribute.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList5(Object.class, Object.class, Object.class, Object.class, Object.class)
+                .append("StringValue1A", "StringValue1C", 114L, 115L, 116L)
+                .append("StringValue2A", "StringValue2C", 224L, 225L, 226L)
+                .append("StringValue3A", "StringValue3C", 334L, 335L, 336L)
+                .asResult())
+            .build();
+
+        AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType.getId()), 224L), false);
+
+        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+                        .attribute(Mocks.AccessTypeStringAttribute.getName())
+                        .linkto(Mocks.AccessTypeLinkAttribute.getName())
+                            .linkto(Mocks.AccessType2LinkAttribute.getName())
+                            .attribute(Mocks.AccessType3StringAttribute.getName())
+                        .stmt()
+                        .execute()
+                        .evaluator();
+        assertEquals(eval.count(), 2);
+        eval.next();
+        assertEquals(eval.get(1), "StringValue1A");
+        assertEquals(eval.get(2), "StringValue1C");
+        eval.next();
+        assertEquals(eval.get(1), "StringValue3A");
+        assertEquals(eval.get(2), "StringValue3C");
+        assertFalse(eval.next());
+    }
+
+    @Test(description = "Access to linkto.linkto object restriction on middle element")
+    public void testAccessLinktoLinktoObjectRestrictMiddle()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T2.%s,T0.ID,T1.ID,T2.ID "
+                        + "from %s T0 left join %s T1 on T0.%s=T1.ID "
+                        + "left join %s T2 on T0.%s=T2.ID",
+                        Mocks.AccessTypeStringAttribute.getSQLColumnName(),
+                        Mocks.AccessType2StringAttribute.getSQLColumnName(),
+                        Mocks.AccessTypeSQLTable.getSqlTableName(),
+                        Mocks.AccessType2SQLTable.getSqlTableName(),
+                        Mocks.AccessTypeLinkAttribute.getSQLColumnName(),
+                        Mocks.AccessType3SQLTable.getSqlTableName(),
+                        Mocks.AccessType2LinkAttribute.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList5(Object.class, Object.class, Object.class, Object.class, Object.class)
+                .append("StringValue1A", "StringValue1C", 114L, 115L, 116L)
+                .append("StringValue2A", "StringValue2C", 224L, 225L, 226L)
+                .append("StringValue3A", "StringValue3C", 334L, 335L, 336L)
+                .asResult())
+            .build();
+
+        AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType2.getId()), 225L), false);
+
+        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+                        .attribute(Mocks.AccessTypeStringAttribute.getName())
+                        .linkto(Mocks.AccessTypeLinkAttribute.getName())
+                            .linkto(Mocks.AccessType2LinkAttribute.getName())
+                            .attribute(Mocks.AccessType3StringAttribute.getName())
+                        .stmt()
+                        .execute()
+                        .evaluator();
+        assertEquals(eval.count(), 3);
+        eval.next();
+        assertEquals(eval.get(1), "StringValue1A");
+        assertEquals(eval.get(2), "StringValue1C");
+        eval.next();
+        assertEquals(eval.get(1), "StringValue2A");
+        assertNull(eval.get(2));
+        eval.next();
+        assertEquals(eval.get(1), "StringValue3A");
+        assertEquals(eval.get(2), "StringValue3C");
+        assertFalse(eval.next());
+    }
+
+
+    @Test(description = "Access to linkto.linkto object restriction on final element")
+    public void testAccessLinktoLinktoObjectRestrictFinal()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T2.%s,T0.ID,T1.ID,T2.ID "
+                        + "from %s T0 left join %s T1 on T0.%s=T1.ID "
+                        + "left join %s T2 on T0.%s=T2.ID",
+                        Mocks.AccessTypeStringAttribute.getSQLColumnName(),
+                        Mocks.AccessType2StringAttribute.getSQLColumnName(),
+                        Mocks.AccessTypeSQLTable.getSqlTableName(),
+                        Mocks.AccessType2SQLTable.getSqlTableName(),
+                        Mocks.AccessTypeLinkAttribute.getSQLColumnName(),
+                        Mocks.AccessType3SQLTable.getSqlTableName(),
+                        Mocks.AccessType2LinkAttribute.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList5(Object.class, Object.class, Object.class, Object.class, Object.class)
+                .append("StringValue1A", "StringValue1C", 114L, 115L, 116L)
+                .append("StringValue2A", "StringValue2C", 224L, 225L, 226L)
+                .append("StringValue3A", "StringValue3C", 334L, 335L, 336L)
+                .asResult())
+            .build();
+
+        AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType3.getId()), 226L), false);
+
+        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+                        .attribute(Mocks.AccessTypeStringAttribute.getName())
+                        .linkto(Mocks.AccessTypeLinkAttribute.getName())
+                            .linkto(Mocks.AccessType2LinkAttribute.getName())
+                            .attribute(Mocks.AccessType3StringAttribute.getName())
+                        .stmt()
+                        .execute()
+                        .evaluator();
+        assertEquals(eval.count(), 3);
+        eval.next();
+        assertEquals(eval.get(1), "StringValue1A");
+        assertEquals(eval.get(2), "StringValue1C");
+        eval.next();
+        assertEquals(eval.get(1), "StringValue2A");
+        assertNull(eval.get(2));
+        eval.next();
+        assertEquals(eval.get(1), "StringValue3A");
+        assertEquals(eval.get(2), "StringValue3C");
+        assertFalse(eval.next());
+    }
+
 }

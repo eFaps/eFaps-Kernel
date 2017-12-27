@@ -161,8 +161,8 @@ public final class EFapsQueryHandler
     {
         for (final String sql : _result.getSqls()) {
             this.sql2results.put(sql, _result);
+            LOG.info("Added Result for '{}'", sql);
         }
-        LOG.info("Added Result '{}'", _result);
     }
 
     /**

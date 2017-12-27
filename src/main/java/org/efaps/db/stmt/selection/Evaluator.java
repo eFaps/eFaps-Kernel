@@ -24,7 +24,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
@@ -144,8 +143,8 @@ public final class Evaluator
     }
 
     /**
-     * Next.
-     *
+     * Move the evaluator to the next value.
+     * Skips values the User does not have access to.
      * @return true, if successful
      * @throws EFapsException on Error
      */
@@ -153,7 +152,13 @@ public final class Evaluator
         throws EFapsException
     {
         initialize(false);
-        return step(this.selection.getAllSelects());
+        boolean stepForward = true;
+        boolean ret = true;
+        while (stepForward && ret) {
+            ret = step(this.selection.getAllSelects());
+            stepForward = !this.access.hasAccess(inst());
+        }
+        return ret;
     }
 
     /**
@@ -166,16 +171,21 @@ public final class Evaluator
     protected boolean hasAccess(final Select _select)
         throws EFapsException
     {
-        final boolean ret;
-        final AbstractElement<?> element = _select.getElements().get(_select.getElements().size() - 1);
-        if (StringUtils.isEmpty(element.getPath())) {
+        boolean ret = true;
+        final int size = _select.getElements().size();
+        if (size == 1) {
             ret = this.access.hasAccess(inst());
         } else {
-            ret = this.access.hasAccess((Instance) this.selection.getInstSelects().get(element.getPath()).getCurrent());
+            int idx = 0;
+            while (idx < size && ret) {
+                final AbstractElement<?> element = _select.getElements().get(idx);
+                idx++;
+                ret = ret && this.access.hasAccess((Instance) this.selection.getInstSelects().get(element.getPath())
+                                .getCurrent());
+            }
         }
         return ret;
     }
-
 
     /**
      * Gets the Access.

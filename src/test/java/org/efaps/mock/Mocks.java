@@ -290,4 +290,44 @@ public interface Mocks
                     .withAttributeTypeId(IDataModel.LinkType.getId())
                     .withLinkTypeId(AccessType2.getId())
                     .build();
+
+    Type AccessType3 = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("AccessType3")
+                    .build();
+
+    SQLTable AccessType3SQLTable = SQLTable.builder()
+                    .withName("AccessType3SQLTable")
+                    .withSqlTableName("T_ACCESSTYPE3")
+                    .build();
+
+    Attribute AccessType3IDAttribute = Attribute.builder()
+                    .withName("ID")
+                    .withDataModelTypeId(AccessType3.getId())
+                    .withSqlTableId(AccessType3SQLTable.getId())
+                    .withAttributeTypeId(IDataModel.LongType.getId())
+                    .build();
+
+    Attribute AccessType3StringAttribute = Attribute.builder()
+                    .withName("StringAttribute")
+                    .withDataModelTypeId(AccessType3.getId())
+                    .withSqlTableId(AccessType3SQLTable.getId())
+                    .withAttributeTypeId(IDataModel.StringType.getId())
+                    .build();
+
+    EventDefinition AccessType3Event = EventDefinition.builder()
+                    .withObjectLink(AccessType3.getId())
+                    .withInstId(1L)
+                    .withTypeId(IDataModel.Admin_DataModel_TypeAccessCheckEvent.getId())
+                    .withESJP(AccessCheck.class.getName())
+                    .withMethod("execute")
+                    .build();
+
+    Attribute AccessType2LinkAttribute = Attribute.builder()
+                    .withName("AccessType2Link")
+                    .withDataModelTypeId(AccessType2.getId())
+                    .withSqlTableId(AccessType2SQLTable.getId())
+                    .withAttributeTypeId(IDataModel.LinkType.getId())
+                    .withLinkTypeId(AccessType3.getId())
+                    .build();
 }
