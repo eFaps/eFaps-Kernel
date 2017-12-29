@@ -182,10 +182,31 @@ public class QueryTest
     public void testQueryLinktoValue()
         throws EFapsException
     {
+        final String sql = String.format("select T1.%s,T0.ID,T1.ID from %s T0 "
+                        + "left join %s T1 on T0.%s=T1.ID",
+                        Mocks.TestAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.AllAttrLinkAttribute.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList3(Object.class, Object.class, Object.class)
+                            .append("StringValue1", 1L, 234L)
+                            .append("StringValue2", 2L, 334L)
+                            .append("StringValue3", 3L, 434L)
+                            .asResult())
+            .build();
+
         final Evaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
                         .linkto(Mocks.AllAttrLinkAttribute.getName()).attribute(Mocks.TestAttribute.getName())
                         .stmt()
                         .execute()
                         .evaluator();
+        final List<String> values1 = new ArrayList<>();
+        while (eval.next()) {
+            values1.add(eval.get(1));
+        }
+        assertEquals(values1, Arrays.asList("StringValue1", "StringValue2", "StringValue3"));
     }
 }
