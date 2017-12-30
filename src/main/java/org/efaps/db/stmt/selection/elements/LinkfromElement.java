@@ -19,24 +19,30 @@ package org.efaps.db.stmt.selection.elements;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.SQLTable;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The Class LinktoElement.
+ * The Class LinkfromElement.
  */
-public class LinktoElement
-    extends AbstractElement<LinktoElement>
+public class LinkfromElement
+    extends AbstractElement<LinkfromElement>
     implements IJoinTableIdx
 {
+
     /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(LinktoElement.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LinkfromElement.class);
 
     /** The attribute. */
     private Attribute attribute;
+
+    /** The type. */
+    private Type startType;
 
     /**
      * Gets the attribute.
@@ -51,20 +57,39 @@ public class LinktoElement
     /**
      * Sets the attribute.
      *
-     * @param _attribute the attribute
-     * @return the attribute element
+     * @param _attribute the new attribute
+     * @return the linkfrom element
      */
-    public LinktoElement setAttribute(final Attribute _attribute)
+    public LinkfromElement setAttribute(final Attribute _attribute)
     {
         this.attribute = _attribute;
         setDBTable(this.attribute.getTable());
         return this;
     }
 
+    /**
+     * Sets the start type.
+     *
+     * @param _startType the start type
+     * @return the linkfrom element
+     */
+    public LinkfromElement setStartType(final Type _startType)
+    {
+        this.startType = _startType;
+        return this;
+    }
+
     @Override
-    public LinktoElement getThis()
+    public LinkfromElement getThis()
     {
         return this;
+    }
+
+    @Override
+    public Object getObject(final Object[] _row)
+        throws EFapsException
+    {
+        return null;
     }
 
     @Override
@@ -72,22 +97,14 @@ public class LinktoElement
         throws EFapsException
     {
         if (getTable() instanceof SQLTable) {
-            final String tableName = ((SQLTable) getTable()).getSqlTable();
-            // evaluated if the attribute that is used as the base for the linkTo is inside a child table
-            if (this.attribute != null && !getTable().equals(this.attribute.getParent().getMainTable())) {
-                LOG.error("STILL MISSING");
-            } else {
-                appendBaseTable(_sqlSelect, (SQLTable) getTable());
-            }
-
+            appendBaseTable(_sqlSelect);
             final TableIdx joinTableidx = getJoinTableIdx(_sqlSelect);
-
             if (joinTableidx.isCreated()) {
-                final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName);
-                final Attribute joinAttr = this.attribute.getLink().getAttribute("ID");
-                final String joinTableName = joinAttr.getTable().getSqlTable();
+                final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(
+                                this.startType.getMainTable().getSqlTable());
                 final String linktoColName = this.attribute.getSqlColNames().get(0);
-                _sqlSelect.leftJoin(joinTableName, joinTableidx.getIdx(), "ID", tableidx.getIdx(), linktoColName);
+                final String tableName = ((SQLTable) getTable()).getSqlTable();
+                _sqlSelect.leftJoin(tableName, joinTableidx.getIdx(), linktoColName, tableidx.getIdx(), "ID");
             }
         }
     }
@@ -97,45 +114,29 @@ public class LinktoElement
      *
      * @param _sqlSelect the sql select
      * @return the join table idx
-     * @throws EFapsException the e faps exception
+     * @throws CacheReloadException the cache reload exception
      */
     @Override
     public TableIdx getJoinTableIdx(final SQLSelect _sqlSelect)
-        throws EFapsException
+        throws CacheReloadException
     {
-        final String linktoColName = this.attribute.getSqlColNames().get(0);
         final String tableName = ((SQLTable) getTable()).getSqlTable();
-        final Attribute joinAttr = this.attribute.getLink().getAttribute("ID");
-        final String joinTableName = joinAttr.getTable().getSqlTable();
-        return _sqlSelect.getIndexer().getTableIdx(joinTableName, tableName, linktoColName);
+        return _sqlSelect.getIndexer().getTableIdx(tableName, this.attribute.getName(),
+                        this.startType.getMainTable().getSqlTable());
     }
 
     /**
      * Append base table if not added already from other element.
      *
      * @param _sqlSelect the sql select
-     * @param _sqlTable the sql table
      */
-    protected void appendBaseTable(final SQLSelect _sqlSelect, final SQLTable _sqlTable)
+    protected void appendBaseTable(final SQLSelect _sqlSelect)
     {
         if (_sqlSelect.getFromTables().isEmpty()) {
-            final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(_sqlTable.getSqlTable());
+            final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(this.startType.getMainTable().getSqlTable());
             if (tableidx.isCreated()) {
                 _sqlSelect.from(tableidx.getTable(), tableidx.getIdx());
             }
         }
-    }
-
-    @Override
-    public Object getObject(final Object[] _row)
-        throws EFapsException
-    {
-        return getNext().getObject(_row);
-    }
-
-    @Override
-    public String getPath()
-    {
-        return super.getPath() + "->" + getAttribute().getName();
     }
 }

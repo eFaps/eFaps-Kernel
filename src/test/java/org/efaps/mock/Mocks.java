@@ -330,4 +330,38 @@ public interface Mocks
                     .withAttributeTypeId(IDataModel.LinkType.getId())
                     .withLinkTypeId(AccessType3.getId())
                     .build();
+
+    Type RelationType = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("RelationType")
+                    .build();
+
+    SQLTable RelationTypeSQLTable = SQLTable.builder()
+                    .withName("RelationTypeSQLTable")
+                    .withSqlTableName("RELTABLE")
+                    .build();
+
+    Attribute RealtionFromLinkAttribute = Attribute.builder()
+                    .withName("FromLink")
+                    .withDataModelTypeId(RelationType.getId())
+                    .withSqlTableId(RelationTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.LinkType.getId())
+                    .withLinkTypeId(SimpleType.getId())
+                    .build();
+
+    Attribute RealtionToLinkAttribute = Attribute.builder()
+                    .withName("ToLink")
+                    .withDataModelTypeId(RelationType.getId())
+                    .withSqlTableId(RelationTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.LinkType.getId())
+                    .withLinkTypeId(TypedType.getId())
+                    .build();
+
+    Attribute RealtionStringAttribute = Attribute.builder()
+                    .withName("Value")
+                    .withDataModelTypeId(RelationType.getId())
+                    .withSqlTableId(RelationTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.StringType.getId())
+                    .build();
+
 }

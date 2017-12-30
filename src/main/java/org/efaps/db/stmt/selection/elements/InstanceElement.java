@@ -65,8 +65,8 @@ public class InstanceElement
         if (getTable() instanceof SQLTable) {
             final SQLTable table = (SQLTable) getTable();
             final TableIdx tableidx;
-            if (getPrevious() != null && getPrevious() instanceof LinktoElement) {
-                tableidx = ((LinktoElement) getPrevious()).getJoinTableIdx(_sqlSelect.getIndexer());
+            if (getPrevious() != null && getPrevious() instanceof IJoinTableIdx) {
+                tableidx = ((IJoinTableIdx) getPrevious()).getJoinTableIdx(_sqlSelect);
             } else {
                 tableidx = _sqlSelect.getIndexer().getTableIdx(table.getSqlTable());
             }

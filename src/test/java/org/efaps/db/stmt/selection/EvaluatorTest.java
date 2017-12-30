@@ -409,4 +409,14 @@ public class EvaluatorTest
         assertFalse(eval.next());
     }
 
+    @Test(description = "Basic linkto")
+    public void testLinkFrom() throws EFapsException
+    {
+        final Evaluator eval = EQL.print(EQL.query(Mocks.SimpleType.getName()))
+                        .linkfrom(Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName())
+                            .instance()
+                        .stmt()
+                        .execute()
+                        .evaluator();
+    }
 }

@@ -33,10 +33,12 @@ import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.selection.elements.AttributeElement;
 import org.efaps.db.stmt.selection.elements.IPrimed;
 import org.efaps.db.stmt.selection.elements.InstanceElement;
+import org.efaps.db.stmt.selection.elements.LinkfromElement;
 import org.efaps.db.stmt.selection.elements.LinktoElement;
 import org.efaps.db.stmt.selection.elements.PrimedElement;
 import org.efaps.eql2.IAttributeSelectElement;
 import org.efaps.eql2.IBaseSelectElement;
+import org.efaps.eql2.ILinkfromSelectElement;
 import org.efaps.eql2.ILinktoSelectElement;
 import org.efaps.eql2.IPrintQueryStatement;
 import org.efaps.eql2.IPrintStatement;
@@ -116,6 +118,14 @@ public final class Selection
                         instSelect.addElement(new InstanceElement(currentType));
                         this.instSelects.put(element.getPath(), instSelect);
                     }
+                } else if (ele instanceof ILinkfromSelectElement) {
+                    final String typeName = ((ILinkfromSelectElement) ele).getTypeName();
+                    final String attrName = ((ILinkfromSelectElement) ele).getAttribute();
+                    final Type linkFromType = Type.get(typeName);
+                    final Attribute attr = linkFromType.getAttribute(attrName);
+                    final LinkfromElement element = new LinkfromElement().setAttribute(attr).setStartType(currentType);
+                    select.addElement(element);
+                    currentType = linkFromType;
                 } else if (ele instanceof IBaseSelectElement) {
                     switch (((IBaseSelectElement) ele).getElement()) {
                         case INSTANCE:

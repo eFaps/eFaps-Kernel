@@ -24,7 +24,6 @@ import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 
 /**
  * The Class AttributeSelect.
@@ -72,12 +71,12 @@ public class AttributeElement
 
     @Override
     public void append2SQLSelect(final SQLSelect _sqlSelect)
-        throws CacheReloadException
+        throws EFapsException
     {
         if (getTable() instanceof SQLTable) {
             final TableIdx tableidx;
-            if (getPrevious() != null && getPrevious() instanceof LinktoElement) {
-                tableidx = ((LinktoElement) getPrevious()).getJoinTableIdx(_sqlSelect.getIndexer());
+            if (getPrevious() != null && getPrevious() instanceof IJoinTableIdx) {
+                tableidx = ((IJoinTableIdx) getPrevious()).getJoinTableIdx(_sqlSelect);
             } else {
                 final String tableName = ((SQLTable) getTable()).getSqlTable();
                 tableidx = _sqlSelect.getIndexer().getTableIdx(tableName);

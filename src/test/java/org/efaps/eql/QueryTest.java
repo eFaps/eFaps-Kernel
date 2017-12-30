@@ -209,4 +209,41 @@ public class QueryTest
         }
         assertEquals(values1, Arrays.asList("StringValue1", "StringValue2", "StringValue3"));
     }
+
+    @Test
+    public void testLinkFromInstance()
+        throws EFapsException
+    {
+        final String sql = String.format("select T1.ID,T0.ID from %s T0 left join %s T1 on T0.ID=T1.%s",
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.RelationTypeSQLTable.getSqlTableName(),
+                        Mocks.RealtionFromLinkAttribute.getSQLColumnName());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(EQL.query(Mocks.SimpleType.getName()))
+                        .linkfrom(Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName())
+                            .instance()
+                        .stmt()
+                        .execute();
+        verify.verify();
+    }
+
+    @Test
+    public void testLinkFromAttribute()
+        throws EFapsException
+    {
+        final String sql = String.format("select T1.%s,T0.ID from %s T0 left join %s T1 on T0.ID=T1.%s",
+                        Mocks.RealtionStringAttribute.getSQLColumnName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.RelationTypeSQLTable.getSqlTableName(),
+                        Mocks.RealtionFromLinkAttribute.getSQLColumnName());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(EQL.query(Mocks.SimpleType.getName()))
+                        .linkfrom(Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName())
+                            .attribute(Mocks.RealtionStringAttribute.getName())
+                        .stmt()
+                        .execute();
+        verify.verify();
+    }
 }
