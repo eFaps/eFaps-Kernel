@@ -246,4 +246,27 @@ public class QueryTest
                         .execute();
         verify.verify();
     }
+
+    @Test
+    public void testLinkToLinkFromAttribute()
+        throws EFapsException
+    {
+        final String sql = String.format("select T2.%s,T0.ID,T1.ID from %s T0 left join %s T1 on T0.%s=T1.ID"
+                        + " left join %s T2 on T1.ID=T2.%s",
+                        Mocks.RealtionStringAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.AllAttrLinkAttribute.getSQLColumnName(),
+                        Mocks.RelationTypeSQLTable.getSqlTableName(),
+                        Mocks.RealtionFromLinkAttribute.getSQLColumnName());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+                        .linkto(Mocks.AllAttrLinkAttribute.getName())
+                        .linkfrom(Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName())
+                            .attribute(Mocks.RealtionStringAttribute.getName())
+                        .stmt()
+                        .execute();
+        verify.verify();
+    }
 }

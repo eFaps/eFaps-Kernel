@@ -100,8 +100,12 @@ public class LinkfromElement
             appendBaseTable(_sqlSelect);
             final TableIdx joinTableidx = getJoinTableIdx(_sqlSelect);
             if (joinTableidx.isCreated()) {
-                final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(
-                                this.startType.getMainTable().getSqlTable());
+                final TableIdx tableidx;
+                if (getPrevious() != null && getPrevious() instanceof IJoinTableIdx) {
+                    tableidx = ((IJoinTableIdx) getPrevious()).getJoinTableIdx(_sqlSelect);
+                } else {
+                    tableidx = _sqlSelect.getIndexer().getTableIdx(this.startType.getMainTable().getSqlTable());
+                }
                 final String linktoColName = this.attribute.getSqlColNames().get(0);
                 final String tableName = ((SQLTable) getTable()).getSqlTable();
                 _sqlSelect.leftJoin(tableName, joinTableidx.getIdx(), linktoColName, tableidx.getIdx(), "ID");
