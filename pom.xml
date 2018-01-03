@@ -228,6 +228,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging-api</artifactId>
                 </exclusion>
+                <!-- exclude beanutils due to old version -->
+                <exclusion>
+                    <groupId>commons-beanutils</groupId>
+                    <artifactId>commons-beanutils</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
