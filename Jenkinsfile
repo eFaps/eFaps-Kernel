@@ -33,6 +33,17 @@ pipeline {
         ])
       }
     }
+    stage('Dependency Check') {
+      steps {
+        withMaven(maven: 'M3.5', mavenSettingsConfig: 'fb57b2b9-c2e4-4e05-955e-8688bc067515', mavenLocalRepo: "$WORKSPACE/../../.m2/${env.BRANCH_NAME}") {
+          sh "mvn org.owasp:dependency-check-maven:check -Ddependency-check-format=XML"
+        }
+      step([
+        $class: 'DependencyCheckPublisher',
+        unstableTotalAll: '0'
+      ])
+    }
+
     stage('Deploy') {
       when {
         branch 'master'
