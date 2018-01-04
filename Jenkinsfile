@@ -48,8 +48,11 @@ pipeline {
         }
         step([
           $class: 'DependencyCheckPublisher',
-          unstableTotalAll: '0',
-          canRunOnFailed: true
+          canRunOnFailed: true,
+          healthy: '95',
+          thresholdLimit: 'high',
+          useDeltaValues: true,
+          usePreviousBuildAsReference: true
         ])
       }
     }
