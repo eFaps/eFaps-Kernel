@@ -157,4 +157,35 @@ public class PrintTest
             .execute();
         verify.verify();
     }
+
+    @Test
+    public void testOIDSimpleType()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.ID from %s T0 where T0.ID = 4",
+                                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(Mocks.AllAttrType.getId() + ".4")
+            .oid()
+            .stmt()
+            .execute();
+        verify.verify();
+    }
+
+    @Test
+    public void testOIDTypedType()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.ID,T0.TYPE from %s T0 where T0.ID = 4",
+                                        Mocks.TypedTypeSQLTable.getSqlTableName(),
+                                        Mocks.TypedType.getId());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(Mocks.TypedType.getId() + ".4")
+            .oid()
+            .stmt()
+            .execute();
+        verify.verify();
+    }
 }

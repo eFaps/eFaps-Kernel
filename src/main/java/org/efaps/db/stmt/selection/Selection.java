@@ -35,6 +35,7 @@ import org.efaps.db.stmt.selection.elements.IPrimed;
 import org.efaps.db.stmt.selection.elements.InstanceElement;
 import org.efaps.db.stmt.selection.elements.LinkfromElement;
 import org.efaps.db.stmt.selection.elements.LinktoElement;
+import org.efaps.db.stmt.selection.elements.OIDElement;
 import org.efaps.db.stmt.selection.elements.PrimedElement;
 import org.efaps.eql2.IAttributeSelectElement;
 import org.efaps.eql2.IBaseSelectElement;
@@ -120,6 +121,9 @@ public final class Selection
                     switch (((IBaseSelectElement) ele).getElement()) {
                         case INSTANCE:
                             select.addElement(new InstanceElement(currentType));
+                            break;
+                        case OID:
+                            select.addElement(new OIDElement(currentType));
                             break;
                         default:
                             break;

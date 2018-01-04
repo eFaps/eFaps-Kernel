@@ -475,5 +475,54 @@ public class PrintStmtTest
                .evaluator();
         assertEquals(evaluator.get(1), instance);
     }
+
+    @Test
+    public void testOIDSimpleType()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.ID from %s T0 where T0.ID = 4",
+                                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Object.class)
+                    .append(4)
+                    .asResult())
+            .build();
+
+        final Instance instance = Instance.get(Mocks.AllAttrType.getName(), "4");
+        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select oid",
+                        Mocks.AllAttrType.getId()));
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluator();
+        assertEquals(evaluator.get(1), instance.getOid());
+    }
+
+    @Test
+    public void testOIDTypedType()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.ID,T0.TYPE from %s T0 where T0.ID = 4",
+                                        Mocks.TypedTypeSQLTable.getSqlTableName(),
+                                        Mocks.TypedType.getId());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(Object.class, Object.class)
+                    .append(4, Mocks.TypedType.getId())
+                    .asResult())
+            .build();
+
+        final Instance instance = Instance.get(Mocks.TypedType.getName(), "4");
+        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select oid",
+                        Mocks.TypedType.getId()));
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluator();
+        assertEquals(evaluator.get(1), instance.getOid());
+    }
 }
 
