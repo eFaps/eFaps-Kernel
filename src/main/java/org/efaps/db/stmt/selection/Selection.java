@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package org.efaps.db.stmt.selection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +67,7 @@ public final class Selection
     private final List<Select> selects = new ArrayList<>();
 
     /** The inst selects. */
-    private final Map<String, Select> instSelects = new HashMap<>();
+    private final Map<String, Select> instSelects = new LinkedHashMap<>();
 
     /**
      * Analyze.
@@ -106,18 +106,7 @@ public final class Selection
                     final LinktoElement element = new LinktoElement().setAttribute(attr);
                     select.addElement(element);
                     currentType = attr.getLink();
-                    if (StringUtils.isNotEmpty(element.getPath()) && !this.instSelects.containsKey(element.getPath())) {
-                        final Select instSelect = Select.get();
-                        for (final AbstractElement<?> selectTmp : select.getElements()) {
-                            if (!selectTmp.equals(element) && selectTmp instanceof LinktoElement) {
-                                instSelect.addElement(new LinktoElement()
-                                                .setAttribute(((LinktoElement) selectTmp).getAttribute()));
-                            }
-                        }
-                        instSelect.addElement(new LinktoElement().setAttribute(attr));
-                        instSelect.addElement(new InstanceElement(currentType));
-                        this.instSelects.put(element.getPath(), instSelect);
-                    }
+                    addInstSelect(select, element, attr, currentType);
                 } else if (ele instanceof ILinkfromSelectElement) {
                     final String typeName = ((ILinkfromSelectElement) ele).getTypeName();
                     final String attrName = ((ILinkfromSelectElement) ele).getAttribute();
@@ -125,6 +114,7 @@ public final class Selection
                     final Attribute attr = linkFromType.getAttribute(attrName);
                     final LinkfromElement element = new LinkfromElement().setAttribute(attr).setStartType(currentType);
                     select.addElement(element);
+                    addInstSelect(select, element, attr, currentType);
                     currentType = linkFromType;
                 } else if (ele instanceof IBaseSelectElement) {
                     switch (((IBaseSelectElement) ele).getElement()) {
@@ -138,6 +128,40 @@ public final class Selection
             }
         }
         return this;
+    }
+
+    /**
+     * Adds the inst select.
+     *
+     * @param _select the select
+     * @param _element the element
+     * @param _attr the attr
+     * @param _currentType the current type
+     */
+    private void addInstSelect(final Select _select, final AbstractElement<?> _element, final Attribute _attr,
+                               final Type _currentType)
+    {
+        if (StringUtils.isNotEmpty(_element.getPath()) && !this.instSelects.containsKey(_element.getPath())) {
+            final Select instSelect = Select.get();
+            for (final AbstractElement<?> selectTmp : _select.getElements()) {
+                if (!selectTmp.equals(_element)) {
+                    if (selectTmp instanceof LinktoElement) {
+                        instSelect.addElement(new LinktoElement().setAttribute(((LinktoElement) selectTmp)
+                                        .getAttribute()));
+                    } else if (selectTmp instanceof LinkfromElement) {
+                        instSelect.addElement(new LinkfromElement().setAttribute(((LinkfromElement) selectTmp)
+                                        .getAttribute()).setStartType(((LinkfromElement) selectTmp).getStartType()));
+                    }
+                }
+            }
+            if (_element instanceof LinkfromElement) {
+                instSelect.addElement(new LinkfromElement().setAttribute(_attr).setStartType(_currentType));
+            } else {
+                instSelect.addElement(new LinktoElement().setAttribute(_attr));
+            }
+            instSelect.addElement(new InstanceElement(_currentType));
+            this.instSelects.put(_element.getPath(), instSelect);
+        }
     }
 
     /**

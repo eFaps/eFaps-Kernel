@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,21 @@
  */
 package org.efaps.db.stmt.selection;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
+import org.apache.commons.collections4.ListValuedMap;
+import org.apache.commons.collections4.multimap.AbstractListValuedMap;
 import org.drools.core.util.StringUtils;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
+import org.efaps.db.stmt.selection.elements.LinkfromElement;
 import org.efaps.util.EFapsException;
 
 /**
@@ -49,6 +56,9 @@ public final class Select
     /** The current. */
     private Object current;
 
+    /** The squash able. */
+    private boolean squashable = true;
+
     /**
      * Instantiates a new select.
      *
@@ -67,12 +77,52 @@ public final class Select
      */
     protected Select addElement(final AbstractElement<?> _element)
     {
+        this.squashable = this.squashable && !(_element instanceof LinkfromElement);
         if (!this.elements.isEmpty()) {
             final AbstractElement<?> prev = this.elements.get(this.elements.size() - 1);
             _element.setPrevious(prev);
         }
         this.elements.add(_element);
         return this;
+    }
+
+    /**
+     * Checks if is squash able.
+     *
+     * @return the squash able
+     */
+    protected boolean isSquashable()
+    {
+        return this.squashable;
+    }
+
+    /**
+     * Squash.
+     *
+     * @param _address the address
+     */
+    protected void squash(final Map<Integer, Integer> _address)
+    {
+        Integer idx = 0;
+        final ListValuedMap<Integer, Object> map = new SortedListValuedMap<>();
+        for (final Object object : this.objects) {
+            if (_address.get(idx) < 0) {
+                map.put(idx, object);
+            } else if (!this.squashable) {
+                map.put(_address.get(idx), object);
+            }
+            idx++;
+        }
+        final List<Object> tmpObjects = new ArrayList<>();
+        for (final Collection<Object> col : map.asMap().values()) {
+            if (this.squashable) {
+                tmpObjects.add(col.iterator().next());
+            } else {
+                tmpObjects.add(col);
+            }
+        }
+        this.objects.clear();
+        this.objects.addAll(tmpObjects);
     }
 
     /**
@@ -196,5 +246,34 @@ public final class Select
     public static Select get(final String _alias)
     {
         return new Select(_alias);
+    }
+
+    /**
+     * The Class SortedListValuedMap.
+     *
+     * @param <K> the key type
+     * @param <V> the value type
+     */
+    public static class SortedListValuedMap<K, V>
+        extends AbstractListValuedMap<K, V>
+        implements Serializable
+    {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Instantiates a new sorted list valued map.
+         */
+        public SortedListValuedMap()
+        {
+            super(new TreeMap<>());
+        }
+
+        @Override
+        protected List<V> createCollection()
+        {
+            return new ArrayList<>();
+        }
     }
 }

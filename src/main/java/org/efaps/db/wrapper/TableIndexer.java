@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class TableIndexer
                                 final String... _keys)
     {
         TableIdx ret = null;
-        final String key = StringUtils.join(_keys, "-");
+        final String key = _tableName + "-" + StringUtils.join(_keys, "-");
         final Optional<TableIdx> val = this.tableidxs.stream().filter(t -> t.getKey().equals(key)).findFirst();
         if (val.isPresent()) {
             ret = val.get();

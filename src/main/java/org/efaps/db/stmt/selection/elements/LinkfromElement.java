@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@ import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The Class LinkfromElement.
@@ -34,10 +32,6 @@ public class LinkfromElement
     extends AbstractElement<LinkfromElement>
     implements IJoinTableIdx
 {
-
-    /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(LinkfromElement.class);
-
     /** The attribute. */
     private Attribute attribute;
 
@@ -68,6 +62,16 @@ public class LinkfromElement
     }
 
     /**
+     * Gets the type.
+     *
+     * @return the type
+     */
+    public Type getStartType()
+    {
+        return this.startType;
+    }
+
+    /**
      * Sets the start type.
      *
      * @param _startType the start type
@@ -89,7 +93,7 @@ public class LinkfromElement
     public Object getObject(final Object[] _row)
         throws EFapsException
     {
-        return null;
+        return getNext().getObject(_row);
     }
 
     @Override
@@ -142,5 +146,11 @@ public class LinkfromElement
                 _sqlSelect.from(tableidx.getTable(), tableidx.getIdx());
             }
         }
+    }
+
+    @Override
+    public String getPath()
+    {
+        return super.getPath() + "<-" + getAttribute().getName() + ":" + getAttribute().getParentId();
     }
 }

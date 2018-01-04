@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -232,7 +232,7 @@ public class QueryTest
     public void testLinkFromAttribute()
         throws EFapsException
     {
-        final String sql = String.format("select T1.%s,T0.ID from %s T0 left join %s T1 on T0.ID=T1.%s",
+        final String sql = String.format("select T1.%s,T0.ID,T1.ID from %s T0 left join %s T1 on T0.ID=T1.%s",
                         Mocks.RealtionStringAttribute.getSQLColumnName(),
                         Mocks.SimpleTypeSQLTable.getSqlTableName(),
                         Mocks.RelationTypeSQLTable.getSqlTableName(),
@@ -251,7 +251,7 @@ public class QueryTest
     public void testLinkToLinkFromAttribute()
         throws EFapsException
     {
-        final String sql = String.format("select T2.%s,T0.ID,T1.ID from %s T0 left join %s T1 on T0.%s=T1.ID"
+        final String sql = String.format("select T2.%s,T0.ID,T1.ID,T2.ID from %s T0 left join %s T1 on T0.%s=T1.ID"
                         + " left join %s T2 on T1.ID=T2.%s",
                         Mocks.RealtionStringAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName(),

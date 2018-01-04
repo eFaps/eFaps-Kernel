@@ -376,6 +376,12 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-bridge</artifactId>
+            <version>1.9.1</version>
+        </dependency>
+
         <!-- from 6.4.3 on it does not work with dynamicreport any more -->
         <dependency>
             <groupId>net.sf.jasperreports</groupId>

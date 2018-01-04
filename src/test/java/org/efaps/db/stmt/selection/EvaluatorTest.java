@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ package org.efaps.db.stmt.selection;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
+
+import java.util.List;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
@@ -232,7 +235,7 @@ public class EvaluatorTest
     {
         final String sql = String.format("select T0.%s,T2.%s,T0.ID,T1.ID,T2.ID "
                         + "from %s T0 left join %s T1 on T0.%s=T1.ID "
-                        + "left join %s T2 on T0.%s=T2.ID",
+                        + "left join %s T2 on T1.%s=T2.ID",
                         Mocks.AccessTypeStringAttribute.getSQLColumnName(),
                         Mocks.AccessType2StringAttribute.getSQLColumnName(),
                         Mocks.AccessTypeSQLTable.getSqlTableName(),
@@ -276,7 +279,7 @@ public class EvaluatorTest
     {
         final String sql = String.format("select T0.%s,T2.%s,T0.ID,T1.ID,T2.ID "
                         + "from %s T0 left join %s T1 on T0.%s=T1.ID "
-                        + "left join %s T2 on T0.%s=T2.ID",
+                        + "left join %s T2 on T1.%s=T2.ID",
                         Mocks.AccessTypeStringAttribute.getSQLColumnName(),
                         Mocks.AccessType2StringAttribute.getSQLColumnName(),
                         Mocks.AccessTypeSQLTable.getSqlTableName(),
@@ -320,7 +323,7 @@ public class EvaluatorTest
     {
         final String sql = String.format("select T0.%s,T2.%s,T0.ID,T1.ID,T2.ID "
                         + "from %s T0 left join %s T1 on T0.%s=T1.ID "
-                        + "left join %s T2 on T0.%s=T2.ID",
+                        + "left join %s T2 on T1.%s=T2.ID",
                         Mocks.AccessTypeStringAttribute.getSQLColumnName(),
                         Mocks.AccessType2StringAttribute.getSQLColumnName(),
                         Mocks.AccessTypeSQLTable.getSqlTableName(),
@@ -368,7 +371,7 @@ public class EvaluatorTest
     {
         final String sql = String.format("select T0.%s,T2.%s,T0.ID,T1.ID,T2.ID "
                         + "from %s T0 left join %s T1 on T0.%s=T1.ID "
-                        + "left join %s T2 on T0.%s=T2.ID",
+                        + "left join %s T2 on T1.%s=T2.ID",
                         Mocks.AccessTypeStringAttribute.getSQLColumnName(),
                         Mocks.AccessType2StringAttribute.getSQLColumnName(),
                         Mocks.AccessTypeSQLTable.getSqlTableName(),
@@ -409,14 +412,74 @@ public class EvaluatorTest
         assertFalse(eval.next());
     }
 
-    @Test(description = "Basic linkto")
+    @Test(description = "Basic linkFrom")
     public void testLinkFrom() throws EFapsException
     {
+        final String sql = String.format("select T1.ID,T0.ID from %s T0 left join %s T1 on T0.ID=T1.%s",
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.RelationTypeSQLTable.getSqlTableName(),
+                        Mocks.RealtionFromLinkAttribute.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(Object.class, Object.class)
+                            .append(215L, 116L)
+                            .append(315L, 116L)
+                            .append(415L, 116L)
+                            .asResult())
+            .build();
+
         final Evaluator eval = EQL.print(EQL.query(Mocks.SimpleType.getName()))
                         .linkfrom(Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName())
                             .instance()
                         .stmt()
                         .execute()
                         .evaluator();
+        assertEquals(eval.count(), 1);
+        eval.next();
+        assertEquals(eval.inst(), Instance.get(Mocks.SimpleType.getName(), "116"));
+        assertTrue(eval.get(1) instanceof List);
+        assertEquals(((List<?>) eval.get(1)).size(), 3);
+    }
+
+    @Test(description = "linkFrom with mulitple results")
+    public void testLinkFromMultiple() throws EFapsException
+    {
+        final String sql = String.format("select T1.ID,T0.ID from %s T0 left join %s T1 on T0.ID=T1.%s",
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.RelationTypeSQLTable.getSqlTableName(),
+                        Mocks.RealtionFromLinkAttribute.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(Object.class, Object.class)
+                            .append(215L, 116L)
+                            .append(315L, 116L)
+                            .append(415L, 116L)
+                            .append(515L, 117L)
+                            .append(515L, 118L)
+                            .append(715L, 118L)
+                            .asResult())
+            .build();
+
+        final Evaluator eval = EQL.print(EQL.query(Mocks.SimpleType.getName()))
+                        .linkfrom(Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName())
+                            .instance()
+                        .stmt()
+                        .execute()
+                        .evaluator();
+        assertEquals(eval.count(), 3);
+        eval.next();
+        assertEquals(eval.inst(), Instance.get(Mocks.SimpleType.getName(), "116"));
+        assertTrue(eval.get(1) instanceof List);
+        assertEquals(((List<?>) eval.get(1)).size(), 3);
+        eval.next();
+        assertEquals(eval.inst(), Instance.get(Mocks.SimpleType.getName(), "117"));
+        assertTrue(eval.get(1) instanceof List);
+        assertEquals(((List<?>) eval.get(1)).size(), 1);
+        eval.next();
+        assertEquals(eval.inst(), Instance.get(Mocks.SimpleType.getName(), "118"));
+        assertTrue(eval.get(1) instanceof List);
+        assertEquals(((List<?>) eval.get(1)).size(), 2);
     }
 }

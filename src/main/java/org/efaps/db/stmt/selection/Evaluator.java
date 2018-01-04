@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,21 +19,30 @@ package org.efaps.db.stmt.selection;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.ListValuedMap;
+import org.apache.commons.collections4.MultiMapUtils;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class SelectionEvaluator.
  */
 public final class Evaluator
 {
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(Evaluator.class);
 
     /** The init. */
     private boolean init;
@@ -64,6 +73,7 @@ public final class Evaluator
         throws EFapsException
     {
         if (!this.init) {
+            squash();
             evalAccess();
             this.init = true;
             if (_step) {
@@ -73,10 +83,45 @@ public final class Evaluator
     }
 
     /**
+     * Squash.
+     *
+     * @throws EFapsException the e faps exception
+     */
+    private void squash()
+        throws EFapsException
+    {
+        if (!this.selection.getSelects().stream().anyMatch(Select::isSquashable)) {
+            final Select select = this.selection.getInstSelects().get(Selection.BASEPATH);
+            final List<Object> instances = select.getObjects(null);
+            Integer idx = 0;
+            final ListValuedMap<Object, Integer> map = MultiMapUtils.newListValuedHashMap();
+            for (final Object instance : instances) {
+                map.put(instance, idx);
+                idx++;
+            }
+            final Map<Integer, Integer> address = new HashMap<>();
+            for (final Collection<Integer> set : map.asMap().values()) {
+                Integer current = -1;
+                for (final Integer ele : set) {
+                    if (current < 0) {
+                        address.put(ele, -1);
+                        current = ele;
+                    } else {
+                        address.put(ele, current);
+                    }
+                }
+            }
+            for (final Select currentSelect : this.selection.getAllSelects()) {
+                currentSelect.squash(address);
+            }
+        }
+    }
+
+    /**
      * Count.
      *
      * @return the int
-     * @throws EFapsException the e faps exception
+     * @throws EFapsException the eFaps exception
      */
     public int count()
         throws EFapsException
@@ -180,8 +225,14 @@ public final class Evaluator
             while (idx < size && ret) {
                 final AbstractElement<?> element = _select.getElements().get(idx);
                 idx++;
-                ret = ret && this.access.hasAccess((Instance) this.selection.getInstSelects().get(element.getPath())
-                                .getCurrent());
+                final Select instSelect = this.selection.getInstSelects().get(element.getPath());
+                if (instSelect == null) {
+                    LOG.error("Could not retrieve Instance Select for Path {}", element.getPath());
+                }
+                final Object obj = instSelect.getCurrent();
+                if (obj instanceof Instance) {
+                    ret = ret && this.access.hasAccess((Instance) obj);
+                }
             }
         }
         return ret;
@@ -233,9 +284,15 @@ public final class Evaluator
         final List<Instance> instances = new ArrayList<>();
         while (step(this.selection.getInstSelects().values())) {
             for (final Entry<String, Select> entry : this.selection.getInstSelects().entrySet()) {
-                final Instance inst = (Instance) entry.getValue().getCurrent();
-                if (inst != null) {
-                    instances.add(inst);
+                final Object object = entry.getValue().getCurrent();
+                if (object != null) {
+                    if (object instanceof List) {
+                        ((List<?>) object).stream()
+                            .filter(Objects::nonNull)
+                            .forEach(e -> instances.add((Instance) e));
+                    } else {
+                        instances.add((Instance) object);
+                    }
                 }
             }
         }

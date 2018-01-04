@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,6 @@ public class LinktoElement
         throws EFapsException
     {
         if (getTable() instanceof SQLTable) {
-            final String tableName = ((SQLTable) getTable()).getSqlTable();
             // evaluated if the attribute that is used as the base for the linkTo is inside a child table
             if (this.attribute != null && !getTable().equals(this.attribute.getParent().getMainTable())) {
                 LOG.error("STILL MISSING");
@@ -83,7 +82,12 @@ public class LinktoElement
             final TableIdx joinTableidx = getJoinTableIdx(_sqlSelect);
 
             if (joinTableidx.isCreated()) {
-                final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName);
+                final TableIdx tableidx;
+                if (getPrevious() != null && getPrevious() instanceof IJoinTableIdx) {
+                    tableidx = ((IJoinTableIdx) getPrevious()).getJoinTableIdx(_sqlSelect);
+                } else {
+                    tableidx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable());
+                }
                 final Attribute joinAttr = this.attribute.getLink().getAttribute("ID");
                 final String joinTableName = joinAttr.getTable().getSqlTable();
                 final String linktoColName = this.attribute.getSqlColNames().get(0);
