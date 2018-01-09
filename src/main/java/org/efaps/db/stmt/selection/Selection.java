@@ -47,6 +47,7 @@ import org.efaps.eql2.ISelect;
 import org.efaps.eql2.ISelectElement;
 import org.efaps.eql2.IStatement;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,9 +142,11 @@ public final class Selection
      * @param _element the element
      * @param _attr the attr
      * @param _currentType the current type
+     * @throws CacheReloadException on error
      */
     private void addInstSelect(final Select _select, final AbstractElement<?> _element, final Attribute _attr,
                                final Type _currentType)
+        throws CacheReloadException
     {
         if (StringUtils.isNotEmpty(_element.getPath()) && !this.instSelects.containsKey(_element.getPath())) {
             final Select instSelect = Select.get();
@@ -160,10 +163,11 @@ public final class Selection
             }
             if (_element instanceof LinkfromElement) {
                 instSelect.addElement(new LinkfromElement().setAttribute(_attr).setStartType(_currentType));
+                instSelect.addElement(new InstanceElement(_attr.getParent()));
             } else {
                 instSelect.addElement(new LinktoElement().setAttribute(_attr));
+                instSelect.addElement(new InstanceElement(_currentType));
             }
-            instSelect.addElement(new InstanceElement(_currentType));
             this.instSelects.put(_element.getPath(), instSelect);
         }
     }

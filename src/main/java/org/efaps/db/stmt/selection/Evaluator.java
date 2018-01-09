@@ -20,11 +20,13 @@ package org.efaps.db.stmt.selection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListValuedMap;
@@ -148,9 +150,7 @@ public final class Evaluator
         final int idx = _idx - 1;
         if (this.selection.getSelects().size() > idx) {
             final Select select = this.selection.getSelects().get(idx);
-            if (hasAccess(select)) {
-                ret = select.getCurrent();
-            }
+            ret = get(select);
         }
         return (T) ret;
     }
@@ -169,10 +169,37 @@ public final class Evaluator
     {
         initialize(true);
         Object ret = null;
-        final Optional<Select> selectOpt = this.selection.getSelects().stream().filter(select -> _alias.equals(select
-                        .getAlias())).findFirst();
-        if (selectOpt.isPresent() && hasAccess(selectOpt.get())) {
-            ret = selectOpt.get().getCurrent();
+        final Optional<Select> selectOpt = this.selection.getSelects().stream()
+                        .filter(select -> _alias.equals(select.getAlias()))
+                        .findFirst();
+        if (selectOpt.isPresent()) {
+            ret = get(selectOpt.get());
+        }
+        return (T) ret;
+    }
+
+    /**
+     * Gets the.
+     *
+     * @param <T> the generic type
+     * @param _select the select
+     * @return the t
+     * @throws EFapsException the eFaps exception
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T get(final Select _select)
+        throws EFapsException
+    {
+        Object ret = null;
+        final List<Boolean> accessList = access(_select);
+        final Object obj = _select.getCurrent();
+        if (obj instanceof List) {
+            final Iterator<Boolean> iter = accessList.iterator();
+            ret = ((List<?>) obj).stream()
+                .map(ele -> iter.next() ? ele : null)
+                .collect(Collectors.toList());
+        } else if (accessList.size() == 1 && accessList.get(0)) {
+            ret = obj;
         }
         return (T) ret;
     }
@@ -213,16 +240,17 @@ public final class Evaluator
      * @return true, if successful
      * @throws EFapsException on Error
      */
-    protected boolean hasAccess(final Select _select)
+    protected List<Boolean> access(final Select _select)
         throws EFapsException
     {
-        boolean ret = true;
+        List<Boolean> ret = new ArrayList<>();
         final int size = _select.getElements().size();
         if (size == 1) {
-            ret = this.access.hasAccess(inst());
+            ret.add(this.access.hasAccess(inst()));
         } else {
             int idx = 0;
-            while (idx < size && ret) {
+            boolean accessTemp = true;
+            while (idx < size && accessTemp) {
                 final AbstractElement<?> element = _select.getElements().get(idx);
                 idx++;
                 final Select instSelect = this.selection.getInstSelects().get(element.getPath());
@@ -231,7 +259,21 @@ public final class Evaluator
                 }
                 final Object obj = instSelect.getCurrent();
                 if (obj instanceof Instance) {
-                    ret = ret && this.access.hasAccess((Instance) obj);
+                    accessTemp = this.access.hasAccess((Instance) obj);
+                    ret.clear();
+                    ret.add(accessTemp);
+                } else if (obj instanceof List) {
+                    if (ret.isEmpty()) {
+                        ret = ((List<?>) obj).stream()
+                                        .map(ele -> this.access.hasAccess((Instance) ele))
+                                        .collect(Collectors.toList());
+                    } else {
+                        final Iterator<Boolean> iter = ret.iterator();
+                        ret = ((List<?>) obj).stream()
+                                        .map(ele -> iter.next() && this.access.hasAccess((Instance) ele))
+                                        .collect(Collectors.toList());
+                    }
+                    accessTemp = ret.contains(true);
                 }
             }
         }

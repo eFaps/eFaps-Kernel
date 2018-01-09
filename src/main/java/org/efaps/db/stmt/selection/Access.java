@@ -28,12 +28,16 @@ import org.efaps.admin.access.AccessType;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class Access.
  */
 public final class Access
 {
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(Access.class);
 
     /** The instance map. */
     private final MultiValuedMap<Type, Instance> instanceMap = MultiMapUtils.newSetValuedHashMap();
@@ -83,12 +87,14 @@ public final class Access
      *
      * @param _instance the instance
      * @return true, if successful
-     * @throws EFapsException the e faps exception
      */
     public boolean hasAccess(final Instance _instance)
-        throws EFapsException
     {
-        initialize();
+        try {
+            initialize();
+        } catch (final EFapsException e) {
+            LOG.error("Problems while evaluation access.", e);
+        }
         return this.accessMap.containsKey(_instance) ? this.accessMap.get(_instance) : false;
     }
 

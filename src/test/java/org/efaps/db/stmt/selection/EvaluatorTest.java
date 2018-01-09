@@ -482,4 +482,68 @@ public class EvaluatorTest
         assertTrue(eval.get(1) instanceof List);
         assertEquals(((List<?>) eval.get(1)).size(), 2);
     }
+
+    @Test(description = "Access check for Basic linkFrom")
+    public void testAccessLinkFromBasic() throws EFapsException
+    {
+        final String sql = String.format("select T1.ID,T0.ID from %s T0 left join %s T1 on T0.ID=T1.%s",
+                        Mocks.AccessTypeSQLTable.getSqlTableName(),
+                        Mocks.RelationTypeSQLTable.getSqlTableName(),
+                        Mocks.RealtionFromLinkAttribute.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(Object.class, Object.class)
+                            .append(215L, 116L)
+                            .append(315L, 116L)
+                            .append(415L, 116L)
+                            .asResult())
+            .build();
+
+        AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType.getId()), 116L), false);
+
+        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+                        .linkfrom(Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName())
+                            .instance()
+                        .stmt()
+                        .execute()
+                        .evaluator();
+        assertEquals(eval.count(), 0);
+    }
+
+    @Test(description = "Access check for Basic linkFrom")
+    public void testAccessLinkFromLeft() throws EFapsException
+    {
+        final String sql = String.format("select T1.ID,T0.ID from %s T0 left join %s T1 on T0.ID=T1.%s",
+                        Mocks.AccessTypeSQLTable.getSqlTableName(),
+                        Mocks.RelationAccessTypeSQLTable.getSqlTableName(),
+                        Mocks.RealtionAccessFromLinkAttribute.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(Object.class, Object.class)
+                            .append(215L, 116L)
+                            .append(315L, 116L)
+                            .append(415L, 116L)
+                            .asResult())
+            .build();
+
+        AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.RelationAccessType.getId()), 315L), false);
+
+        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+                        .linkfrom(Mocks.RelationAccessType.getName(), Mocks.RealtionAccessFromLinkAttribute.getName())
+                            .instance()
+                        .stmt()
+                        .execute()
+                        .evaluator();
+        assertEquals(eval.count(), 1);
+        eval.next();
+        assertEquals(eval.inst(), Instance.get(Mocks.AccessType.getName(), "116"));
+        final Object result = eval.get(1);
+        assertTrue(result instanceof List);
+        assertEquals(((List<?>) result).size(), 3);
+        assertEquals(((List<?>) result).get(0), Instance.get(Mocks.RelationAccessType.getName(), "215"));
+        assertNull(((List<?>) result).get(1));
+        assertEquals(((List<?>) result).get(2), Instance.get(Mocks.RelationAccessType.getName(), "415"));
+    }
 }

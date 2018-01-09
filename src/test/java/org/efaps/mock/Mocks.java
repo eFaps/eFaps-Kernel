@@ -364,4 +364,36 @@ public interface Mocks
                     .withAttributeTypeId(IDataModel.StringType.getId())
                     .build();
 
+    Type RelationAccessType = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("RelationAccessType")
+                    .build();
+
+    SQLTable RelationAccessTypeSQLTable = SQLTable.builder()
+                    .withName("RelationAccessTypeSQLTable")
+                    .withSqlTableName("RELACCTABLE")
+                    .build();
+
+    Attribute RelationAccessTypeIDAttribute = Attribute.builder()
+                    .withName("ID")
+                    .withDataModelTypeId(RelationAccessType.getId())
+                    .withSqlTableId(RelationAccessTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.LongType.getId())
+                    .build();
+
+    Attribute RealtionAccessFromLinkAttribute = Attribute.builder()
+                    .withName("FromLink")
+                    .withDataModelTypeId(RelationAccessType.getId())
+                    .withSqlTableId(RelationAccessTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.LinkType.getId())
+                    .withLinkTypeId(AccessType.getId())
+                    .build();
+
+    EventDefinition RealtionAccessTypeEvent = EventDefinition.builder()
+                    .withObjectLink(RelationAccessType.getId())
+                    .withInstId(2L)
+                    .withTypeId(IDataModel.Admin_DataModel_TypeAccessCheckEvent.getId())
+                    .withESJP(AccessCheck.class.getName())
+                    .withMethod("execute")
+                    .build();
 }

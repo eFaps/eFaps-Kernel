@@ -49,9 +49,16 @@ public class AccessCheck
         final Return ret = new Return();
         @SuppressWarnings("unchecked")
         final Collection<Instance> instances = (Collection<Instance>) _parameter.get(ParameterValues.OTHERS);
-        final Map<Instance, Boolean> map = new HashMap<>();
-        instances.forEach(inst -> map.put(inst, RESULTS.containsKey(inst) ? RESULTS.get(inst) : true));
-        ret.put(ReturnValues.VALUES, map);
+        if (instances == null) {
+            final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+            if (RESULTS.containsKey(instance) && RESULTS.get(instance) || !RESULTS.containsKey(instance)) {
+                ret.put(ReturnValues.TRUE, true);
+            }
+        } else {
+            final Map<Instance, Boolean> map = new HashMap<>();
+            instances.forEach(inst -> map.put(inst, RESULTS.containsKey(inst) ? RESULTS.get(inst) : true));
+            ret.put(ReturnValues.VALUES, map);
+        }
         return ret;
     }
 }
