@@ -22,6 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -741,13 +742,13 @@ public class Type
      * @return Map of instances to boolean
      */
     @SuppressWarnings("unchecked")
-    public Map<Instance, Boolean> checkAccess(final List<Instance> _instances,
+    public Map<Instance, Boolean> checkAccess(final Collection<Instance> _instances,
                                               final AccessType _accessType)
         throws EFapsException
     {
         Map<Instance, Boolean> ret = new HashMap<>();
         if (_instances != null && !_instances.isEmpty() && _instances.size() == 1) {
-            final Instance instance = _instances.get(0);
+            final Instance instance = _instances.iterator().next();
             ret.put(instance, hasAccess(instance, _accessType));
         } else {
             final List<EventDefinition> events = super.getEvents(EventType.ACCESSCHECK);

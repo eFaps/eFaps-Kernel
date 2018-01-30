@@ -18,7 +18,6 @@ package org.efaps.mock.datamodel;
 
 import java.util.List;
 
-import org.efaps.test.AbstractTest;
 import org.efaps.test.EFapsQueryHandler;
 import org.efaps.test.IMockResult;
 
@@ -29,13 +28,14 @@ import acolyte.jdbc.StatementHandler.Parameter;
 /**
  * The Class Attribute.
  */
-public class Attribute
+public final class Attribute
     extends AbstractType
 {
     /** The Constant SQL. */
     private static final String SQL = "select ID,NAME,TYPEID,DMTABLE,DMATTRIBUTETYPE,DMTYPELINK,PARENTSET,SQLCOLUMN,"
                     + "DEFAULTVAL,DIMENSION,CLASSNAME from V_ADMINATTRIBUTE T0 where T0.DMTYPE = ?";
 
+    /** The Constant SQL4ATTR2TYPE. */
     private static final String SQL4ATTR2TYPE = "select DMTYPE from V_ADMINATTRIBUTE T0 where T0.ID = ?";
 
     /** The data model type id. */
@@ -49,25 +49,32 @@ public class Attribute
 
     /** The attribute type id. */
     private final Long typeId;
+
+    /** The link type id. */
+    private final Long linkTypeId;
+
     /**
      * Instantiates a new attribute.
      *
      * @param _builder the builder
      */
-    private Attribute(final AttributeBuilder _builder) {
+    private Attribute(final AttributeBuilder _builder)
+    {
         super(_builder);
         this.dataModelTypeId = _builder.dataModelTypeId;
         this.sqlTableId = _builder.sqlTableId;
         this.attributeTypeId = _builder.attributeTypeId;
         this.typeId = _builder.typeId;
+        this.linkTypeId = _builder.linkTypeId;
     }
 
     @Override
-    public QueryResult getResult() {
+    public QueryResult getResult()
+    {
         return RowLists.rowList11(Long.class, String.class, Long.class, Long.class, Long.class, Long.class, Long.class,
                         String.class, String.class, Long.class, String.class)
-                        .append(getId(), getName(), this.typeId, this.sqlTableId, this.attributeTypeId,
-                                        Long.valueOf(123), null, getName() + "_SQLColumn", null, null, null)
+                        .append(getId(), getName(), this.typeId, this.sqlTableId, this.attributeTypeId, this.linkTypeId,
+                                        null, getSQLColumnName(), null, null, null)
                         .asResult();
     }
 
@@ -88,9 +95,24 @@ public class Attribute
         return ret;
     }
 
+    /**
+     * Gets the data model type id.
+     *
+     * @return the data model type id
+     */
     public Long getDataModelTypeId()
     {
         return this.dataModelTypeId;
+    }
+
+    /**
+     * Gets the SQL column name.
+     *
+     * @return the SQL column name
+     */
+    public String getSQLColumnName()
+    {
+        return getName() + "_COL";
     }
 
     /**
@@ -98,7 +120,8 @@ public class Attribute
      *
      * @return the attribute builder
      */
-    public static AttributeBuilder builder() {
+    public static AttributeBuilder builder()
+    {
         return new AttributeBuilder();
     }
 
@@ -119,7 +142,10 @@ public class Attribute
         private Long attributeTypeId;
 
         /** The type id. */
-        private Long typeId = AbstractTest.TYPE_Attribute.getId();
+        private Long typeId;
+
+        /** The link type id. */
+        private Long linkTypeId;
 
         /**
          * With data model type id.
@@ -160,7 +186,7 @@ public class Attribute
         /**
          * With attribute type id.
          *
-         * @param _attributeTypeId the attribute type id
+         * @param _typeId the type id
          * @return the attribute builder
          */
         public AttributeBuilder withTypeId(final Long _typeId)
@@ -170,11 +196,24 @@ public class Attribute
         }
 
         /**
+         * With link type id.
+         *
+         * @param _linkTypeId the link type id
+         * @return the attribute builder
+         */
+        public AttributeBuilder withLinkTypeId(final Long _linkTypeId)
+        {
+            this.linkTypeId = _linkTypeId;
+            return this;
+        }
+
+        /**
          * Builds the.
          *
          * @return the attribute
          */
-        public Attribute build() {
+        public Attribute build()
+        {
             final Attribute ret = new Attribute(this);
             EFapsQueryHandler.get().register(ret);
             final Attribute2Type attr2Type = new Attribute2Type(this);
@@ -186,7 +225,7 @@ public class Attribute
     /**
      * The Class Attribute2Type.
      */
-    private static class Attribute2Type
+    private static final class Attribute2Type
         implements IMockResult
     {
 
@@ -201,7 +240,8 @@ public class Attribute
          *
          * @param _builder the builder
          */
-        private Attribute2Type(final AttributeBuilder _builder) {
+        private Attribute2Type(final AttributeBuilder _builder)
+        {
             this.id = _builder.id;
             this.dataModelTypeId = _builder.dataModelTypeId;
         }

@@ -167,7 +167,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.1.4</version>
+            <version>42.2.0</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -205,6 +205,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <artifactId>efaps-eql</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+             <groupId>org.efaps</groupId>
+            <artifactId>efaps-eql2</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- easy XML reader
             using version 2.XX leads to problems on creation of the FactoryParser if different
@@ -222,6 +227,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                 <exclusion>
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging-api</artifactId>
+                </exclusion>
+                <!-- exclude beanutils due to old version -->
+                <exclusion>
+                    <groupId>commons-beanutils</groupId>
+                    <artifactId>commons-beanutils</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -366,6 +376,12 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-bridge</artifactId>
+            <version>1.9.1</version>
+        </dependency>
+
         <!-- from 6.4.3 on it does not work with dynamicreport any more -->
         <dependency>
             <groupId>net.sf.jasperreports</groupId>

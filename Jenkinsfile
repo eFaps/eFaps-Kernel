@@ -1,3 +1,8 @@
+properties([
+  [$class: 'jenkins.model.BuildDiscarderProperty', strategy: [$class: 'LogRotator', numToKeepStr: '25']],
+  pipelineTriggers([[$class:"SCMTrigger", scmpoll_spec:"H/30 * * * *"]]),
+])
+
 pipeline {
   agent any
   stages {
@@ -10,7 +15,8 @@ pipeline {
     }
     stage('Test') {
       steps {
-        withMaven(maven: 'M3.5', mavenSettingsConfig: 'fb57b2b9-c2e4-4e05-955e-8688bc067515', mavenLocalRepo: "$WORKSPACE/../../.m2/${env.BRANCH_NAME}") {
+        withMaven(maven: 'M3.5', mavenSettingsConfig: 'fb57b2b9-c2e4-4e05-955e-8688bc067515', mavenLocalRepo: "$WORKSPACE/../../.m2/${env.BRANCH_NAME}",
+            options: [openTasksPublisher(disabled: true)]) {
           sh 'mvn test'
         }
       }
@@ -22,7 +28,8 @@ pipeline {
     }
     stage('Coverage') {
       steps {
-        withMaven(maven: 'M3.5', mavenSettingsConfig: 'fb57b2b9-c2e4-4e05-955e-8688bc067515') {
+        withMaven(maven: 'M3.5', mavenSettingsConfig: 'fb57b2b9-c2e4-4e05-955e-8688bc067515', mavenLocalRepo: "$WORKSPACE/../../.m2/${env.BRANCH_NAME}",
+            options: [openTasksPublisher(disabled: true)]) {
           sh "mvn clean clover:setup test clover:aggregate clover:clover"
         }
         step([
@@ -33,12 +40,29 @@ pipeline {
         ])
       }
     }
+    stage('Dependency Check') {
+      steps {
+        withMaven(maven: 'M3.5', mavenSettingsConfig: 'fb57b2b9-c2e4-4e05-955e-8688bc067515', mavenLocalRepo: "$WORKSPACE/../../.m2/${env.BRANCH_NAME}",
+            options: [openTasksPublisher(disabled: true)]) {
+          sh "mvn org.owasp:dependency-check-maven:check -Dformat=XML"
+        }
+        step([
+          $class: 'DependencyCheckPublisher',
+          canRunOnFailed: true,
+          healthy: '95',
+          thresholdLimit: 'high',
+          useDeltaValues: true,
+          usePreviousBuildAsReference: true
+        ])
+      }
+    }
     stage('Deploy') {
       when {
         branch 'master'
       }
       steps {
-        withMaven(maven: 'M3.5', mavenSettingsConfig: 'fb57b2b9-c2e4-4e05-955e-8688bc067515', mavenLocalRepo: "$WORKSPACE/../../.m2/${env.BRANCH_NAME}") {
+        withMaven(maven: 'M3.5', mavenSettingsConfig: 'fb57b2b9-c2e4-4e05-955e-8688bc067515', mavenLocalRepo: "$WORKSPACE/../../.m2/${env.BRANCH_NAME}",
+            options: [openTasksPublisher(disabled: true)]) {
           sh 'mvn deploy'
         }
       }

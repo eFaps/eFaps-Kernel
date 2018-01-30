@@ -56,8 +56,19 @@ public class SQLVerify
     @Override
     public void verify()
     {
-        assertEquals(this.counter, 1);
         EFapsQueryHandler.get().unregister(getSql());
+        assertEquals(this.counter, 1);
+    }
+
+    @Override
+    public String toString()
+    {
+        return new StringBuilder()
+                        .append(SQLVerify.class.getSimpleName())
+                        .append(" ")
+                        .append("sql: ")
+                        .append(this.sql)
+                        .toString();
     }
 
     /**
@@ -85,7 +96,8 @@ public class SQLVerify
          * @param _sql the sql
          * @return the SQL verify builder
          */
-        public SQLVerifyBuilder withSql(final String _sql) {
+        public SQLVerifyBuilder withSql(final String _sql)
+        {
             this.sql = _sql;
             return this;
         }

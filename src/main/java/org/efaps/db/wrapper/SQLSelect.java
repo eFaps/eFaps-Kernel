@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.efaps.db.wrapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.efaps.db.Context;
 import org.efaps.db.search.section.AbstractQSection;
@@ -31,24 +32,25 @@ import org.efaps.util.EFapsException;
  */
 public class SQLSelect
 {
+
     /**
      * Parts that will be added to the created SQL Statement.
      */
-    private final List<SQLSelectPart> parts = new ArrayList<SQLSelectPart>();
+    private final List<SQLSelectPart> parts = new ArrayList<>();
 
     /**
      * Selected columns.
      *
      * @see #column(String)
      */
-    private final List<Column> columns = new ArrayList<Column>();
+    private final List<Column> columns = new ArrayList<>();
 
     /**
      * Selected tables.
      *
      * @see #from(String)
      */
-    private final List<FromTable> fromTables = new ArrayList<FromTable>();
+    private final List<FromTable> fromTables = new ArrayList<>();
 
     /**
      * Must the select be distinct.
@@ -58,6 +60,12 @@ public class SQLSelect
 
     /** The table prefix. */
     private final String tablePrefix;
+
+    /** The indexer. */
+    private final TableIndexer indexer = new TableIndexer();
+
+    /** The where. */
+    private SQLWhere where;
 
     /**
      * Instantiates a new SQL select.
@@ -75,6 +83,16 @@ public class SQLSelect
     public SQLSelect(final String _prefix)
     {
         this.tablePrefix = _prefix;
+    }
+
+    /**
+     * Gets the indexer.
+     *
+     * @return the indexer
+     */
+    public TableIndexer getIndexer()
+    {
+        return this.indexer;
     }
 
     /**
@@ -107,6 +125,28 @@ public class SQLSelect
     }
 
     /**
+     * Column index.
+     *
+     * @param _tableIndex the table index
+     * @param _columnName the column name
+     * @return the int
+     */
+    public int columnIndex(final int _tableIndex, final String _columnName)
+    {
+        final Optional<Column> colOpt = getColumns().stream()
+                        .filter(column -> column.tableIndex == _tableIndex && column.columnName.equals(_columnName))
+                        .findFirst();
+        final int ret;
+        if (colOpt.isPresent()) {
+            ret = getColumns().indexOf(colOpt.get());
+        } else {
+            this.columns.add(new Column(this.tablePrefix, _tableIndex, _columnName));
+            ret = getColumnIdx();
+        }
+        return ret;
+    }
+
+    /**
      * Getter method for the instance variable {@link #columns}.
      *
      * @return value of instance variable {@link #columns}
@@ -114,6 +154,16 @@ public class SQLSelect
     public List<Column> getColumns()
     {
         return this.columns;
+    }
+
+    /**
+     * Gets the column idx.
+     *
+     * @return the column idx
+     */
+    public int getColumnIdx()
+    {
+        return getColumns().size() - 1;
     }
 
     /**
@@ -276,9 +326,19 @@ public class SQLSelect
             }
         }
         cmd.append(" ");
+        boolean whereAdded = false;
         for (final SQLSelectPart part : this.parts) {
             part.appendSQL(cmd);
             cmd.append(" ");
+            whereAdded = whereAdded || !whereAdded && part.sqlpart.equals(SQLPart.WHERE);
+        }
+
+        if (this.where != null) {
+            if (!whereAdded) {
+                new SQLSelectPart(SQLPart.WHERE).appendSQL(cmd);
+                new SQLSelectPart(SQLPart.SPACE).appendSQL(cmd);
+            }
+            this.where.appendSQL(this.tablePrefix, cmd);
         }
         return cmd.toString();
     }
@@ -410,6 +470,28 @@ public class SQLSelect
         return select;
     }
 
+    /**
+     * Gets the current.
+     *
+     * @return the current
+     */
+    public SQLSelectPart getCurrentPart()
+    {
+        return this.parts.isEmpty() ? null : this.parts.get(this.parts.size() - 1);
+    }
+
+    /**
+     * Where.
+     *
+     * @param _where the where
+     * @return the SQL select part
+     */
+    public SQLSelect where(final SQLWhere _where)
+    {
+        this.where = _where;
+        return this;
+    }
+
     @Override
     public String toString()
     {
@@ -475,7 +557,7 @@ public class SQLSelect
         @Override
         public void appendSQL(final StringBuilder _cmd)
         {
-            appendSQL(true, _cmd);
+            this.appendSQL(true, _cmd);
         }
 
         /**
@@ -727,7 +809,7 @@ public class SQLSelect
     /**
      * Value .
      */
-    protected static class Value
+    public static class Value
         extends SQLSelectPart
     {
 
@@ -760,7 +842,7 @@ public class SQLSelect
     /**
      * Value to be escaped.
      */
-    protected static class EscapedValue
+    public static class EscapedValue
         extends SQLSelectPart
     {
 
@@ -869,7 +951,7 @@ public class SQLSelect
     /**
      * Column.
      */
-    protected static class Column
+    public static class Column
         extends SQLSelect.SQLSelectPart
     {
         /**

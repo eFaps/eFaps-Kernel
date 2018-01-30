@@ -21,6 +21,7 @@ package org.efaps.admin.datamodel;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 
+import org.efaps.mock.Mocks;
 import org.efaps.test.AbstractTest;
 import org.efaps.util.cache.CacheReloadException;
 import org.testng.annotations.Test;
@@ -33,11 +34,12 @@ public class AttributeTest
 {
     @Test
     public void testAttributeInstantiated()
-        throws CacheReloadException {
-        final Attribute attr = Attribute.get(AbstractTest.TestAttribute.getId());
+        throws CacheReloadException
+    {
+        final Attribute attr = Attribute.get(Mocks.TestAttribute.getId());
         assertFalse(attr.isRequired());
         assertEquals(attr.getSize(), 500);
         assertEquals(attr.getScale(), 0);
-        assertEquals(attr.getParentId(), TestAttribute.getDataModelTypeId());
+        assertEquals(attr.getParentId(), Mocks.TestAttribute.getDataModelTypeId());
     }
 }
