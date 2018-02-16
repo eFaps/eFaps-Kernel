@@ -167,7 +167,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.0</version>
+            <version>42.2.1</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -331,7 +331,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>de.jollyday</groupId>
             <artifactId>jollyday</artifactId>
-            <version>0.5.2</version>
+            <version>0.5.4</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.xml.bind</groupId>
@@ -358,7 +358,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>net.sourceforge.dynamicreports</groupId>
             <artifactId>dynamicreports-core</artifactId>
-            <version>5.0.0</version>
+            <version>5.1.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
@@ -369,7 +369,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     <artifactId>jdtcore</artifactId>
                     <groupId>eclipse</groupId>
                 </exclusion>
-                 <!-- Exlclude because it vrings version 2.x -->
+                 <!-- Exclude because it brings version 2.x -->
                 <exclusion>
                     <artifactId>servlet-api</artifactId>
                     <groupId>javax.servlet</groupId>
@@ -381,12 +381,10 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <artifactId>batik-bridge</artifactId>
             <version>1.9.1</version>
         </dependency>
-
-        <!-- from 6.4.3 on it does not work with dynamicreport any more -->
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.4.1</version>
+            <version>6.5.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.lucene</groupId>
@@ -461,7 +459,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
-            <version>1.10.1</version>
+            <version>1.10.2</version>
         </dependency>
 
         <!--  ivy dependency management -->
