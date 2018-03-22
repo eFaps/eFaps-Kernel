@@ -167,7 +167,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.1</version>
+            <version>42.2.2</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -766,13 +766,13 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
          <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-testng-agent</artifactId>
-            <version>1.7.1</version>
+            <version>1.7.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-easymock</artifactId>
-            <version>1.7.1</version>
+            <version>1.7.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
