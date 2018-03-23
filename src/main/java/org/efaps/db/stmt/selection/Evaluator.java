@@ -34,6 +34,9 @@ import org.apache.commons.collections4.MultiMapUtils;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
+import org.efaps.eql.JSONData;
+import org.efaps.json.data.DataList;
+import org.efaps.json.data.ObjectData;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -342,6 +345,29 @@ public final class Evaluator
             entry.getValue().reset();
         }
         this.access = Access.get(AccessTypeEnums.READ.getAccessType(), instances);
+    }
+
+    /**
+     * Gets the data list.
+     *
+     * @return the data list
+     * @throws EFapsException
+     */
+    public DataList getDataList()
+        throws EFapsException
+    {
+        final DataList ret = new DataList();
+        while (next()) {
+            final ObjectData data = new ObjectData();
+            int idx = 1;
+            for (final Select select : this.selection.getSelects()) {
+                final String key = select.getAlias() == null ? String.valueOf(idx) : select.getAlias();
+                data.getValues().add(JSONData.getValue(key, get(select)));
+                idx++;
+            }
+            ret.add(data);
+        }
+        return ret;
     }
 
     /**
