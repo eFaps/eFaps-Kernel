@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,10 @@ package org.efaps.db.stmt;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-import com.google.inject.Inject;
-
-import org.eclipse.xtext.parser.IParseResult;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.Evaluator;
-import org.efaps.eql2.EQLStandaloneSetup;
+import org.efaps.eql2.EQL;
 import org.efaps.eql2.IPrintObjectStatement;
-import org.efaps.eql2.parser.antlr.EQLParser;
 import org.efaps.mock.MockResult;
 import org.efaps.mock.Mocks;
 import org.efaps.test.AbstractTest;
@@ -35,7 +31,6 @@ import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
 import org.efaps.util.RandomUtil;
 import org.joda.time.DateTime;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import acolyte.jdbc.RowLists;
@@ -47,26 +42,13 @@ public class PrintStmtTest
     extends AbstractTest
 {
 
-    /** The parser. */
-    @Inject
-    private EQLParser parser;
-
-    /**
-     * Sets the up.
-     */
-    @BeforeClass
-    public void setUp()
-    {
-        EQLStandaloneSetup.doSetup(this);
-    }
-
     @Test
     public void testSimplePrintObject()
         throws EFapsException
     {
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select attribute[%s]",
                         Mocks.SimpleType.getId(), Mocks.TestAttribute.getName()));
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
         final PrintStmt printStmt = PrintStmt.get(stmt);
         final SQLVerify verify = SQLVerify.builder()
             .withSql("select T0.TestAttribute_COL from T_DEMO T0 where T0.ID = 4")
@@ -89,12 +71,13 @@ public class PrintStmtTest
                         .asResult())
             .build();
 
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select attribute[%s]",
                         Mocks.TypedType.getId(), Mocks.TypedTypeTestAttr.getName()));
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(evaluator.get(1), "A Value");
     }
 
@@ -113,12 +96,13 @@ public class PrintStmtTest
                         .asResult())
             .build();
 
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrStringAttribute.getName()));
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(evaluator.get(1), "A Value");
     }
 
@@ -137,12 +121,13 @@ public class PrintStmtTest
                         .asResult())
             .build();
 
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrLongAttribute.getName()));
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(evaluator.get(1), Long.valueOf(100));
     }
 
@@ -161,12 +146,13 @@ public class PrintStmtTest
                         .asResult())
             .build();
 
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrIntegerAttribute.getName()));
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(evaluator.get(1), Integer.valueOf(101));
     }
 
@@ -185,12 +171,13 @@ public class PrintStmtTest
                         .asResult())
             .build();
 
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrBooleanAttribute.getName()));
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertTrue(evaluator.get(1));
     }
 
@@ -210,12 +197,13 @@ public class PrintStmtTest
                         .asResult())
             .build();
 
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrDateAttribute.getName()));
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(evaluator.get(1), date);
     }
 
@@ -235,12 +223,13 @@ public class PrintStmtTest
                         .asResult())
             .build();
 
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrTimeAttribute.getName()));
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(evaluator.get(1), date.toLocalTime());
     }
 
@@ -260,12 +249,13 @@ public class PrintStmtTest
                         .asResult())
             .build();
 
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrDateTimeAttribute.getName()));
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(evaluator.get(1), date);
     }
 
@@ -285,12 +275,13 @@ public class PrintStmtTest
                         .asResult())
             .build();
 
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrCreatedAttribute.getName()));
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(evaluator.get(1), date);
     }
 
@@ -310,12 +301,13 @@ public class PrintStmtTest
                         .asResult())
             .build();
 
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s]",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrModifiedAttribute.getName()));
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(evaluator.get(1), date);
     }
 
@@ -337,13 +329,14 @@ public class PrintStmtTest
                     .asResult())
             .build();
 
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select linkto[%s].attribute[%s]",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select linkto[%s].attribute[%s]",
                     Mocks.AllAttrType.getId(), Mocks.AllAttrLinkAttribute.getName(), Mocks.TestAttribute.getName()));
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                .execute()
-               .evaluator();
+               .evaluate();
         assertEquals(evaluator.get(1), strValue);
     }
 
@@ -363,12 +356,13 @@ public class PrintStmtTest
             .build();
         final String alias = "AliasName";
 
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select attribute[%s] as %s",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select attribute[%s] as %s",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrStringAttribute.getName(), alias));
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(evaluator.get(alias), "A Value");
     }
 
@@ -387,12 +381,13 @@ public class PrintStmtTest
             .build();
 
         final Instance instance = Instance.get(Mocks.AllAttrType.getName(), "4");
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select instance",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select instance",
                         Mocks.AllAttrType.getId()));
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(evaluator.get(1), instance);
     }
 
@@ -412,12 +407,13 @@ public class PrintStmtTest
             .build();
 
         final Instance instance = Instance.get(Mocks.TypedType.getName(), "4");
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select instance",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select instance",
                         Mocks.TypedType.getId()));
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(evaluator.get(1), instance);
     }
 
@@ -438,13 +434,14 @@ public class PrintStmtTest
             .build();
 
         final Instance instance = Instance.get(Mocks.SimpleType.getName(), "4");
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select linkto[%s].instance",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select linkto[%s].instance",
                     Mocks.AllAttrType.getId(), Mocks.AllAttrLinkAttribute.getName()));
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                .execute()
-               .evaluator();
+               .evaluate();
         assertEquals(evaluator.get(1), instance);
     }
 
@@ -466,13 +463,14 @@ public class PrintStmtTest
             .build();
 
         final Instance instance = Instance.get(Mocks.TypedType.getName(), "4");
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select linkto[%s].instance",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select linkto[%s].instance",
                     Mocks.AllAttrType.getId(), Mocks.AllAttrLinkAttributeTyped.getName()));
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                .execute()
-               .evaluator();
+               .evaluate();
         assertEquals(evaluator.get(1), instance);
     }
 
@@ -491,12 +489,13 @@ public class PrintStmtTest
             .build();
 
         final Instance instance = Instance.get(Mocks.AllAttrType.getName(), "4");
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select oid",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select oid",
                         Mocks.AllAttrType.getId()));
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(evaluator.get(1), instance.getOid());
     }
 
@@ -516,12 +515,12 @@ public class PrintStmtTest
             .build();
 
         final Instance instance = Instance.get(Mocks.TypedType.getName(), "4");
-        final IParseResult result = this.parser.doParse(String.format("print obj %s.4 select oid",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(String.format("print obj %s.4 select oid",
                         Mocks.TypedType.getId()));
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) result.getRootASTElement();
+
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(evaluator.get(1), instance.getOid());
     }
 }

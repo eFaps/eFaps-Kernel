@@ -17,9 +17,13 @@
 
 package org.efaps.eql;
 
+import org.efaps.db.stmt.AbstractStmt;
+import org.efaps.db.stmt.PrintStmt;
 import org.efaps.eql.builder.Print;
 import org.efaps.eql.builder.Query;
 import org.efaps.eql.builder.Where;
+import org.efaps.eql2.IPrintStatement;
+import org.efaps.eql2.IStatement;
 import org.efaps.eql2.bldr.AbstractInsertEQLBuilder;
 import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
 import org.efaps.eql2.bldr.AbstractQueryEQLBuilder;
@@ -95,5 +99,20 @@ public final class EQL
     public static Query query(final String... _types)
     {
         return (Query) org.efaps.eql2.EQL.query(_types);
+    }
+
+    /**
+     * Parses the stmt.
+     *
+     * @param _stmt the stmt
+     * @return the abstract stmt
+     */
+    public static AbstractStmt getStatement(final CharSequence _stmt) {
+        AbstractStmt ret = null;
+        final IStatement<?> stmt = parse(_stmt);
+        if (stmt instanceof IPrintStatement) {
+            ret = PrintStmt.get((IPrintStatement<?>) stmt);
+        }
+        return ret;
     }
 }

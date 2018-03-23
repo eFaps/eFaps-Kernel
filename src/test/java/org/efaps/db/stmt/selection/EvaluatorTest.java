@@ -64,7 +64,7 @@ public class EvaluatorTest
             .attribute(Mocks.AllAttrStringAttribute.getName(), Mocks.AllAttrLongAttribute.getName())
             .stmt()
             .execute()
-            .evaluator();
+            .evaluate();
 
         assertEquals(eval.count(), 3);
     }
@@ -89,7 +89,7 @@ public class EvaluatorTest
                         .attribute(Mocks.AccessTypeStringAttribute.getName())
                         .stmt()
                         .execute()
-                        .evaluator();
+                        .evaluate();
 
         assertEquals(eval.count(), 3);
     }
@@ -116,7 +116,7 @@ public class EvaluatorTest
                         .attribute(Mocks.AccessTypeStringAttribute.getName())
                         .stmt()
                         .execute()
-                        .evaluator();
+                        .evaluate();
 
         assertEquals(eval.count(), 2);
     }
@@ -148,7 +148,7 @@ public class EvaluatorTest
                             .attribute(Mocks.AccessType2StringAttribute.getName())
                         .stmt()
                         .execute()
-                        .evaluator();
+                        .evaluate();
 
         assertEquals(eval.count(), 3);
     }
@@ -182,7 +182,7 @@ public class EvaluatorTest
                             .attribute(Mocks.AccessType2StringAttribute.getName())
                         .stmt()
                         .execute()
-                        .evaluator();
+                        .evaluate();
 
         assertEquals(eval.count(), 2);
     }
@@ -216,7 +216,7 @@ public class EvaluatorTest
                             .attribute(Mocks.AccessType2StringAttribute.getName())
                         .stmt()
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(eval.count(), 3);
         eval.next();
         assertEquals(eval.get(1), "StringValue1A");
@@ -260,7 +260,7 @@ public class EvaluatorTest
                             .attribute(Mocks.AccessType3StringAttribute.getName())
                         .stmt()
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(eval.count(), 3);
         eval.next();
         assertEquals(eval.get(1), "StringValue1A");
@@ -306,7 +306,7 @@ public class EvaluatorTest
                             .attribute(Mocks.AccessType3StringAttribute.getName())
                         .stmt()
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(eval.count(), 2);
         eval.next();
         assertEquals(eval.get(1), "StringValue1A");
@@ -350,7 +350,7 @@ public class EvaluatorTest
                             .attribute(Mocks.AccessType3StringAttribute.getName())
                         .stmt()
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(eval.count(), 3);
         eval.next();
         assertEquals(eval.get(1), "StringValue1A");
@@ -398,7 +398,7 @@ public class EvaluatorTest
                             .attribute(Mocks.AccessType3StringAttribute.getName())
                         .stmt()
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(eval.count(), 3);
         eval.next();
         assertEquals(eval.get(1), "StringValue1A");
@@ -434,7 +434,7 @@ public class EvaluatorTest
                             .instance()
                         .stmt()
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(eval.count(), 1);
         eval.next();
         assertEquals(eval.inst(), Instance.get(Mocks.SimpleType.getName(), "116"));
@@ -467,7 +467,7 @@ public class EvaluatorTest
                             .instance()
                         .stmt()
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(eval.count(), 3);
         eval.next();
         assertEquals(eval.inst(), Instance.get(Mocks.SimpleType.getName(), "116"));
@@ -507,7 +507,7 @@ public class EvaluatorTest
                             .instance()
                         .stmt()
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(eval.count(), 0);
     }
 
@@ -535,7 +535,7 @@ public class EvaluatorTest
                             .instance()
                         .stmt()
                         .execute()
-                        .evaluator();
+                        .evaluate();
         assertEquals(eval.count(), 1);
         eval.next();
         assertEquals(eval.inst(), Instance.get(Mocks.AccessType.getName(), "116"));

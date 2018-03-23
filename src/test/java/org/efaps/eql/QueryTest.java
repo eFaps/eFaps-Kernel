@@ -136,7 +136,7 @@ public class QueryTest
             .attribute(Mocks.TestAttribute.getName())
             .stmt()
             .execute()
-            .evaluator();
+            .evaluate();
         while (eval.next()) {
             values.add(eval.get(1));
         }
@@ -168,7 +168,7 @@ public class QueryTest
             .attribute(Mocks.AllAttrStringAttribute.getName(), Mocks.AllAttrLongAttribute.getName())
             .stmt()
             .execute()
-            .evaluator();
+            .evaluate();
         while (eval.next()) {
             values1.add(eval.get(1));
             values2.add(eval.get(2));
@@ -202,7 +202,7 @@ public class QueryTest
                         .linkto(Mocks.AllAttrLinkAttribute.getName()).attribute(Mocks.TestAttribute.getName())
                         .stmt()
                         .execute()
-                        .evaluator();
+                        .evaluate();
         final List<String> values1 = new ArrayList<>();
         while (eval.next()) {
             values1.add(eval.get(1));

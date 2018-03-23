@@ -73,9 +73,12 @@ public final class PrintStmt
      * @return the selection evaluator
      * @throws EFapsException the e faps exception
      */
-    public Evaluator evaluator()
+    public Evaluator evaluate()
         throws EFapsException
     {
+        if (this.print == null) {
+            execute();
+        }
         return Evaluator.get(this.print.getSelection());
     }
 
