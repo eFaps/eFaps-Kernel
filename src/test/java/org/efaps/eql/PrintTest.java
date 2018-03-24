@@ -208,6 +208,21 @@ public class PrintTest
     }
 
     @Test
+    public void testPrintInstanceSelectAttr()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+                        Mocks.TypedTypeTestAttr.getSQLColumnName(),
+                        Mocks.TypedTypeSQLTable.getSqlTableName());
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(Instance.get(Mocks.TypedType.getId() + ".4"))
+            .select(Selectables.attribute(CI.TypedType.TestAttr.name))
+            .stmt()
+            .execute();
+        verify.verify();
+    }
+
+    @Test
     public void testPrintInstanceSelectCIAttrs()
         throws EFapsException
     {

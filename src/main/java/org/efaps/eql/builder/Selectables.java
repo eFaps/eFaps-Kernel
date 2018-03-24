@@ -26,12 +26,6 @@ public class Selectables
     extends AbstractSelectables
 {
 
-    @Override
-    protected AbstractLinkto getLinkto(final String _linktoAttr)
-    {
-        return new Linkto(_linktoAttr);
-    }
-
     /**
      * Linkto.
      *
@@ -47,7 +41,7 @@ public class Selectables
      * The Class Linkto.
      */
     public static class Linkto
-        extends AbstractLinkto
+        extends AbstractSelectables.Linkto
     {
 
         /**
@@ -76,7 +70,7 @@ public class Selectables
          * @param _attr the attr
          * @return the abstract linkto
          */
-        public AbstractLinkto attr(final CIAttribute _attr)
+        public Linkto attr(final CIAttribute _attr)
         {
             return attribute(_attr);
         }
@@ -87,7 +81,7 @@ public class Selectables
          * @param _attr the attr
          * @return the abstract linkto
          */
-        public AbstractLinkto attribute(final CIAttribute _attr)
+        public Linkto attribute(final CIAttribute _attr)
         {
             super.attribute(_attr.name);
             return this;
