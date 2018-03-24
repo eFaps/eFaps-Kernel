@@ -19,6 +19,7 @@ package org.efaps.eql.builder;
 
 import org.efaps.ci.CIAttribute;
 import org.efaps.db.stmt.PrintStmt;
+import org.efaps.eql.builder.Selectable.Linkto;
 import org.efaps.eql2.IPrintStatement;
 import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
 
@@ -49,6 +50,10 @@ public class Print
         for (final Selectable select : _selects) {
             if (select instanceof CIAttribute) {
                 attribute(((CIAttribute) select).name);
+            } else if (select instanceof Selectable.Linkto) {
+                final Linkto linkto = (Selectable.Linkto) select;
+                linkto(linkto.getLinktoAttr());
+                attribute(linkto.getAttr());
             }
         }
         return getThis();

@@ -221,4 +221,44 @@ public class PrintTest
             .execute();
         verify.verify();
     }
+
+    @Test
+    public void testPrintInstanceSelectLinkto()
+        throws EFapsException
+    {
+        final String sql = String.format("select T1.%s,T1.ID from %s T0 left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
+                        Mocks.TestAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.AllAttrLinkAttribute.getSQLColumnName());
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+
+        EQL.print(Instance.get(Mocks.AllAttrType.getId() + ".4"))
+            .select(EQL.linkto(CI.AllAttrType.LinkAttribute).attr(CI.SimpleType.TestAttr))
+            .stmt()
+            .execute();
+        verify.verify();
+    }
+
+    @Test
+    public void testPrintInstanceAttributeAndLinkto()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T1.%s,T1.ID from %s T0 "
+                        + "left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
+                        Mocks.AllAttrStringAttribute.getSQLColumnName(),
+                        Mocks.TestAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.AllAttrLinkAttribute.getSQLColumnName());
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+
+        EQL.print(Mocks.AllAttrType.getId() + ".4")
+            .select(CI.AllAttrType.StringAttribute,
+                EQL.linkto(CI.AllAttrType.LinkAttribute).attr(CI.SimpleType.TestAttr))
+            .stmt()
+            .execute();
+        verify.verify();
+    }
+
 }
