@@ -18,6 +18,7 @@
 package org.efaps.eql;
 
 import org.efaps.db.Instance;
+import org.efaps.eql.builder.Selectables;
 import org.efaps.mock.Mocks;
 import org.efaps.mock.datamodel.CI;
 import org.efaps.test.AbstractTest;
@@ -234,14 +235,14 @@ public class PrintTest
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
 
         EQL.print(Instance.get(Mocks.AllAttrType.getId() + ".4"))
-            .select(EQL.linkto(CI.AllAttrType.LinkAttribute).attr(CI.SimpleType.TestAttr))
+            .select(Selectables.linkto(CI.AllAttrType.LinkAttribute).attr(CI.SimpleType.TestAttr))
             .stmt()
             .execute();
         verify.verify();
     }
 
     @Test
-    public void testPrintInstanceAttributeAndLinkto()
+    public void testPrintInstanceSelectAttributeAndLinkto()
         throws EFapsException
     {
         final String sql = String.format("select T0.%s,T1.%s,T1.ID from %s T0 "
@@ -255,10 +256,25 @@ public class PrintTest
 
         EQL.print(Mocks.AllAttrType.getId() + ".4")
             .select(CI.AllAttrType.StringAttribute,
-                EQL.linkto(CI.AllAttrType.LinkAttribute).attr(CI.SimpleType.TestAttr))
+                Selectables.linkto(CI.AllAttrType.LinkAttribute).attr(CI.SimpleType.TestAttr))
             .stmt()
             .execute();
+
         verify.verify();
     }
 
+    @Test
+    public void testPrintInstanceSelectInstance()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.ID,T0.TYPE from %s T0 where T0.ID = 4",
+                        Mocks.TypedTypeSQLTable.getSqlTableName());
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(Instance.get(Mocks.TypedType.getId() + ".4"))
+            .select(Selectables.instance())
+            .stmt()
+            .execute();
+        verify.verify();
+
+    }
 }

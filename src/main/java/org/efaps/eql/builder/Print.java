@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package org.efaps.eql.builder;
 
 import org.efaps.ci.CIAttribute;
 import org.efaps.db.stmt.PrintStmt;
-import org.efaps.eql.builder.Selectable.Linkto;
 import org.efaps.eql2.IPrintStatement;
 import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
+import org.efaps.eql2.bldr.ISelectable;
 
 /**
  * The Class Print.
@@ -46,14 +46,16 @@ public class Print
         return this;
     }
 
-    public Print select(final Selectable... _selects) {
-        for (final Selectable select : _selects) {
-            if (select instanceof CIAttribute) {
-                attribute(((CIAttribute) select).name);
-            } else if (select instanceof Selectable.Linkto) {
-                final Linkto linkto = (Selectable.Linkto) select;
-                linkto(linkto.getLinktoAttr());
-                attribute(linkto.getAttr());
+    @Override
+    public Print select(final ISelectable... _selects) {
+        for (final ISelectable select : _selects) {
+            switch (select.getKey()) {
+                case "CIAttribute":
+                    attribute(((CIAttribute) select).name);
+                    break;
+                default:
+                    super.select(select);
+                    break;
             }
         }
         return getThis();

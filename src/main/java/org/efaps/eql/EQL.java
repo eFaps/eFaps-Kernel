@@ -19,20 +19,19 @@ package org.efaps.eql;
 
 import java.util.Arrays;
 
-import org.efaps.ci.CIAttribute;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.AbstractStmt;
 import org.efaps.db.stmt.PrintStmt;
 import org.efaps.eql.builder.Print;
 import org.efaps.eql.builder.Query;
-import org.efaps.eql.builder.Selectable;
-import org.efaps.eql.builder.Selectable.Linkto;
+import org.efaps.eql.builder.Selectables;
 import org.efaps.eql.builder.Where;
 import org.efaps.eql2.IPrintStatement;
 import org.efaps.eql2.IStatement;
 import org.efaps.eql2.bldr.AbstractInsertEQLBuilder;
 import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
 import org.efaps.eql2.bldr.AbstractQueryEQLBuilder;
+import org.efaps.eql2.bldr.AbstractSelectables;
 import org.efaps.eql2.bldr.AbstractUpdateEQLBuilder;
 import org.efaps.eql2.bldr.AbstractWhereBuilder;
 
@@ -72,6 +71,12 @@ public final class EQL
     protected AbstractWhereBuilder<?> getWhere()
     {
         return new Where();
+    }
+
+    @Override
+    protected AbstractSelectables getSelectables()
+    {
+        return new Selectables();
     }
 
     /**
@@ -133,9 +138,5 @@ public final class EQL
             ret = PrintStmt.get((IPrintStatement<?>) stmt);
         }
         return ret;
-    }
-
-    public static Linkto linkto(final CIAttribute _attr) {
-        return new Selectable.Linkto(_attr);
     }
 }

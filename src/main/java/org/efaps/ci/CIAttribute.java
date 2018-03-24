@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,14 @@
 package org.efaps.ci;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.efaps.eql.builder.Selectable;
+import org.efaps.eql2.bldr.ISelectable;
+
 
 /**
- * TODO comment!
- *
  * @author The eFaps Team
- *
  */
 public class CIAttribute
-    implements Selectable
+    implements ISelectable
 {
     //CHECKSTYLE:OFF
     /**
@@ -75,5 +73,11 @@ public class CIAttribute
     public String toString()
     {
         return new ToStringBuilder(this).append("name", this.name).append("ciType", this.ciType).toString();
+    }
+
+    @Override
+    public String getKey()
+    {
+        return "CIAttribute";
     }
 }
