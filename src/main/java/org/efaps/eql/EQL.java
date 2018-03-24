@@ -17,10 +17,16 @@
 
 package org.efaps.eql;
 
+import java.util.Arrays;
+
+import org.efaps.ci.CIAttribute;
+import org.efaps.db.Instance;
 import org.efaps.db.stmt.AbstractStmt;
 import org.efaps.db.stmt.PrintStmt;
 import org.efaps.eql.builder.Print;
 import org.efaps.eql.builder.Query;
+import org.efaps.eql.builder.Selectable;
+import org.efaps.eql.builder.Selectable.Linkto;
 import org.efaps.eql.builder.Where;
 import org.efaps.eql2.IPrintStatement;
 import org.efaps.eql2.IStatement;
@@ -71,6 +77,19 @@ public final class EQL
     /**
      * Prints the.
      *
+     * @param _instances the instances
+     * @return the prints the
+     */
+    public static Print print(final Instance... _instances)
+    {
+        return print(Arrays.stream(_instances)
+                        .map(instance -> instance.getOid())
+                        .toArray(String[]::new));
+    }
+
+    /**
+     * Prints the.
+     *
      * @param _oid the oid
      * @return the prints the
      */
@@ -114,5 +133,9 @@ public final class EQL
             ret = PrintStmt.get((IPrintStatement<?>) stmt);
         }
         return ret;
+    }
+
+    public static Linkto linkto(final CIAttribute _attr) {
+        return new Selectable.Linkto(_attr);
     }
 }

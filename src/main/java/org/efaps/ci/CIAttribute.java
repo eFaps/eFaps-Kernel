@@ -19,6 +19,7 @@
 package org.efaps.ci;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.efaps.eql.builder.Selectable;
 
 /**
  * TODO comment!
@@ -27,6 +28,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  *
  */
 public class CIAttribute
+    implements Selectable
 {
     //CHECKSTYLE:OFF
     /**

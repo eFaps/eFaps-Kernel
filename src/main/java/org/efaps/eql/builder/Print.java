@@ -17,6 +17,7 @@
 
 package org.efaps.eql.builder;
 
+import org.efaps.ci.CIAttribute;
 import org.efaps.db.stmt.PrintStmt;
 import org.efaps.eql2.IPrintStatement;
 import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
@@ -42,5 +43,14 @@ public class Print
     protected Print getThis()
     {
         return this;
+    }
+
+    public Print select(final Selectable... _selects) {
+        for (final Selectable select : _selects) {
+            if (select instanceof CIAttribute) {
+                attribute(((CIAttribute) select).name);
+            }
+        }
+        return getThis();
     }
 }

@@ -17,7 +17,9 @@
 
 package org.efaps.eql;
 
+import org.efaps.db.Instance;
 import org.efaps.mock.Mocks;
+import org.efaps.mock.datamodel.CI;
 import org.efaps.test.AbstractTest;
 import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
@@ -184,6 +186,37 @@ public class PrintTest
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
         EQL.print(Mocks.TypedType.getId() + ".4")
             .oid()
+            .stmt()
+            .execute();
+        verify.verify();
+    }
+
+    @Test
+    public void testPrintInstanceSelectCIAttr()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+                        Mocks.TypedTypeTestAttr.getSQLColumnName(),
+                        Mocks.TypedTypeSQLTable.getSqlTableName());
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(Instance.get(Mocks.TypedType.getId() + ".4"))
+            .select(CI.TypedType.TestAttr)
+            .stmt()
+            .execute();
+        verify.verify();
+    }
+
+    @Test
+    public void testPrintInstanceSelectCIAttrs()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T0.%s from %s T0 where T0.ID = 4",
+                        Mocks.TypedTypeTestAttr.getSQLColumnName(),
+                        Mocks.TypedTypeIDAttribute.getSQLColumnName(),
+                        Mocks.TypedTypeSQLTable.getSqlTableName());
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(Instance.get(Mocks.TypedType.getId() + ".4"))
+            .select(CI.TypedType.TestAttr, CI.TypedType.ID)
             .stmt()
             .execute();
         verify.verify();
