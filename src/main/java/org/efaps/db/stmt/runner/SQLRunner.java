@@ -22,11 +22,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.collections4.MultiMapUtils;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.dbutils.handlers.ArrayListHandler;
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.stmt.filter.Filter;
@@ -36,11 +41,15 @@ import org.efaps.db.stmt.print.QueryPrint;
 import org.efaps.db.stmt.selection.ISelectionProvider;
 import org.efaps.db.stmt.selection.Select;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
+import org.efaps.db.stmt.update.Insert;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLSelect.SQLSelectPart;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
+import org.efaps.eql2.IUpdateElement;
+import org.efaps.eql2.IUpdateElementsStmt;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -59,39 +68,99 @@ public class SQLRunner
     private static final Logger LOG = LoggerFactory.getLogger(SQLRunner.class);
 
     /** The print. */
-    private AbstractPrint print;
+    private IRunnable runnable;
 
     /** The sql select. */
     private SQLSelect sqlSelect;
 
+    private final Map<SQLTable, SQLInsert> insertmap = new LinkedHashMap<>();
+
     @Override
-    public void prepare(final AbstractPrint _print)
+    public void prepare(final IRunnable _runnable)
         throws EFapsException
     {
-        this.print = _print;
+        this.runnable = _runnable;
         this.sqlSelect = new SQLSelect();
-        for (final Select select : this.print.getSelection().getAllSelects()) {
+        if (isPrint()) {
+            preparePrint((AbstractPrint) _runnable);
+        } else {
+            prepareInsert();
+        }
+    }
+
+    private void prepareInsert()
+        throws EFapsException
+    {
+        final Insert insert = (Insert) this.runnable;
+        final Type type = insert.getType();
+        final IUpdateElementsStmt<?> eqlStmt = insert.getEqlStmt();
+        final SQLTable mainTable = insert.getType().getMainTable();
+        getSQLInsert(mainTable);
+        for (final IUpdateElement element : eqlStmt.getUpdateElements()) {
+            final Attribute attr = type.getAttribute(element.getAttribute());
+            final SQLTable sqlTable = attr.getTable();
+            final SQLInsert sqlInsert = getSQLInsert(sqlTable);
+            try {
+                attr.prepareDBInsert(sqlInsert, element.getValue());
+            } catch (final SQLException e) {
+                throw new EFapsException(SQLRunner.class, "prepareInsert", e);
+            }
+        }
+    }
+
+    private SQLInsert getSQLInsert(final SQLTable _sqlTable)
+    {
+        SQLInsert ret;
+        if (this.insertmap.containsKey(_sqlTable)) {
+            ret = this.insertmap.get(_sqlTable);
+        } else {
+            ret = Context.getDbType().newInsert(_sqlTable.getSqlTable(), _sqlTable.getSqlColId(), this.insertmap
+                            .isEmpty());
+            this.insertmap.put(_sqlTable, ret);
+        }
+        return ret;
+    }
+
+    /**
+     * Prepare print.
+     *
+     * @param _print the print
+     * @throws EFapsException the e faps exception
+     */
+    private void preparePrint(final AbstractPrint _print) throws EFapsException {
+        for (final Select select : _print.getSelection().getAllSelects()) {
             for (final AbstractElement<?> element : select.getElements()) {
                 element.append2SQLSelect(this.sqlSelect);
             }
         }
         if (this.sqlSelect.getColumns().size() > 0) {
-            if (this.print instanceof ObjectPrint) {
-                addWhere4ObjectPrint();
+            if (_print instanceof ObjectPrint) {
+                addWhere4ObjectPrint((ObjectPrint) _print);
             } else {
-                addTypeCriteria();
-                addWhere4QueryPrint();
+                addTypeCriteria((QueryPrint) _print);
+                addWhere4QueryPrint((QueryPrint) _print);
             }
         }
     }
 
     /**
-     * Adds the type criteria.
+     * Checks if is prints the.
+     *
+     * @return true, if is prints the
      */
-    private void addTypeCriteria()
+    private boolean isPrint() {
+        return this.runnable instanceof AbstractPrint;
+    }
+
+    /**
+     * Adds the type criteria.
+     *
+     * @param _print the print
+     */
+    private void addTypeCriteria(final QueryPrint _print)
     {
         final MultiValuedMap<TableIdx, TypeCriteria> typeCriterias = MultiMapUtils.newListValuedHashMap();
-        for (final Type type : this.print.getTypes()) {
+        for (final Type type : _print.getTypes()) {
             final String tableName = type.getMainTable().getSqlTable();
             final TableIdx tableIdx = this.sqlSelect.getIndexer().getTableIdx(tableName);
             if (tableIdx.isCreated()) {
@@ -129,20 +198,18 @@ public class SQLRunner
      * Adds the where.
      * @throws CacheReloadException on error
      */
-    private void addWhere4QueryPrint()
+    private void addWhere4QueryPrint(final QueryPrint _print)
         throws CacheReloadException
     {
-        final QueryPrint queryPrint = (QueryPrint) this.print;
-        final Filter filter = queryPrint.getFilter();
+        final Filter filter = _print.getFilter();
         filter.append2SQLSelect(this.sqlSelect);
     }
 
     /**
      * Adds the where.
      */
-    private void addWhere4ObjectPrint()
+    private void addWhere4ObjectPrint(final ObjectPrint _print)
     {
-        final ObjectPrint objectPrint = (ObjectPrint) this.print;
         final SQLSelectPart currentPart = this.sqlSelect.getCurrentPart();
         if (currentPart == null) {
             this.sqlSelect.addPart(SQLPart.WHERE);
@@ -150,14 +217,44 @@ public class SQLRunner
             this.sqlSelect.addPart(SQLPart.AND);
         }
         this.sqlSelect.addColumnPart(0, "ID").addPart(SQLPart.EQUAL)
-            .addValuePart(objectPrint.getInstance().getId());
+            .addValuePart(_print.getInstance().getId());
     }
 
     @Override
     public void execute()
         throws EFapsException
     {
-        executeSQLStmt(this.print, this.sqlSelect.getSQL());
+        if (isPrint()) {
+            executeSQLStmt((ISelectionProvider) this.runnable, this.sqlSelect.getSQL());
+        } else {
+            executeInserts();
+        }
+    }
+
+    private long executeInserts() throws EFapsException
+    {
+        long ret = 0;
+        ConnectionResource con = null;
+        try {
+            final Insert insert = (Insert) this.runnable;
+            con = Context.getThreadContext().getConnectionResource();
+            for (final Entry<SQLTable, SQLInsert> entry : this.insertmap.entrySet()) {
+                if (ret != 0) {
+                    entry.getValue().column(entry.getKey().getSqlColId(), ret);
+                }
+                if (entry.getKey().getSqlColType() != null) {
+                    entry.getValue().column(entry.getKey().getSqlColType(), insert.getType().getId());
+                }
+                final Long created = entry.getValue().execute(con);
+                if (created != null) {
+                    ret = created;
+                }
+            }
+        } catch (final SQLException e) {
+            throw new EFapsException(SQLRunner.class, "executeOneCompleteStmt", e);
+        }
+        return ret;
+
     }
 
     /**

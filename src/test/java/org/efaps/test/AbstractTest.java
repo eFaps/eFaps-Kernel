@@ -46,6 +46,7 @@ import org.testng.annotations.BeforeSuite;
 
 import acolyte.jdbc.CompositeHandler;
 import acolyte.jdbc.StatementHandler;
+import acolyte.jdbc.UpdateResult;
 
 /**
  * The Class AbstractTest.
@@ -88,7 +89,11 @@ public abstract class AbstractTest
         }
 
         final StatementHandler handler = new CompositeHandler().withQueryDetection("^ select ")
-                        .withQueryHandler(EFapsQueryHandler.get());
+                        .withQueryHandler(EFapsQueryHandler.get())
+                        .withUpdateHandler((_sql, _parameters) -> {
+                            EFapsQueryHandler.get().apply(_sql, _parameters);
+                            return UpdateResult.One;
+                        });
         acolyte.jdbc.Driver.register("my-handler-id", handler);
 
         final Map<String, String> connectionProperties = new HashMap<>();

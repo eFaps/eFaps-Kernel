@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ package org.efaps.db.stmt.runner;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.efaps.db.stmt.print.AbstractPrint;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +65,7 @@ public final class StmtRunner
      * @param _print the print
      * @throws EFapsException the e faps exception
      */
-    public void execute(final AbstractPrint _print)
+    public void execute(final IRunnable _runnable)
         throws EFapsException
     {
         try {
@@ -74,7 +73,7 @@ public final class StmtRunner
             for (final Class<? extends IEQLRunner> clazz : EQLRUNNERS) {
                 final IEQLRunner runner = clazz.newInstance();
                 instances.add(runner);
-                runner.prepare(_print);
+                runner.prepare(_runnable);
             }
             for (final IEQLRunner runner : instances) {
                 runner.execute();

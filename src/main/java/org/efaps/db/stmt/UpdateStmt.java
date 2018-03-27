@@ -14,39 +14,12 @@
  * limitations under the License.
  *
  */
-
 package org.efaps.db.stmt;
 
-import org.efaps.eql2.IStatement;
-
 /**
- * The Class AbstractStmt.
- *
- * @author The eFaps Team
+ * The Class UpdateStmt.
  */
-public abstract class AbstractStmt
+public class UpdateStmt
 {
 
-    /** The statement. */
-    private IStatement<?> eqlStmt;
-
-    /**
-     * Gets the statement.
-     *
-     * @return the statement
-     */
-    protected IStatement<?> getEQLStmt()
-    {
-        return this.eqlStmt;
-    }
-
-    /**
-     * Sets the statement.
-     *
-     * @param _eqlStmt the new statement
-     */
-    protected void setEQLStmt(final IStatement<?> _eqlStmt)
-    {
-        this.eqlStmt = _eqlStmt;
-    }
 }

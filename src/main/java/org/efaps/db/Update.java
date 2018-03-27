@@ -652,7 +652,7 @@ public class Update
     /**
      * Represents one value for an attribte that will be updated.
      */
-    protected static final class Value
+    public static final class Value
     {
         /**
          * Attribute the value belongs to.

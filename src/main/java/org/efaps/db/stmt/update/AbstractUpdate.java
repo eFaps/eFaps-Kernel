@@ -14,39 +14,32 @@
  * limitations under the License.
  *
  */
+package org.efaps.db.stmt.update;
 
-package org.efaps.db.stmt;
-
-import org.efaps.eql2.IStatement;
+import org.efaps.db.stmt.runner.IRunnable;
+import org.efaps.eql2.IUpdateElementsStmt;
 
 /**
- * The Class AbstractStmt.
- *
- * @author The eFaps Team
+ * The Class AbstractUpdate.
  */
-public abstract class AbstractStmt
+public abstract class AbstractUpdate
+    implements IRunnable
 {
 
-    /** The statement. */
-    private IStatement<?> eqlStmt;
+    /** The update elements stmt. */
+    private final IUpdateElementsStmt<?> eqlStmt;
 
     /**
-     * Gets the statement.
+     * Instantiates a new abstract update.
      *
-     * @return the statement
+     * @param _eqlStmt the update elements stmt
      */
-    protected IStatement<?> getEQLStmt()
-    {
-        return this.eqlStmt;
+    public AbstractUpdate(final IUpdateElementsStmt<?> _eqlStmt) {
+        this.eqlStmt = _eqlStmt;
     }
 
-    /**
-     * Sets the statement.
-     *
-     * @param _eqlStmt the new statement
-     */
-    protected void setEQLStmt(final IStatement<?> _eqlStmt)
+    public IUpdateElementsStmt<?> getEqlStmt()
     {
-        this.eqlStmt = _eqlStmt;
+        return this.eqlStmt;
     }
 }

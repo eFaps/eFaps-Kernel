@@ -19,9 +19,11 @@ package org.efaps.eql;
 
 import java.util.Arrays;
 
+import org.efaps.ci.CIType;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.AbstractStmt;
 import org.efaps.db.stmt.PrintStmt;
+import org.efaps.eql.builder.Insert;
 import org.efaps.eql.builder.Print;
 import org.efaps.eql.builder.Query;
 import org.efaps.eql.builder.Selectables;
@@ -58,7 +60,7 @@ public final class EQL
     @Override
     protected AbstractInsertEQLBuilder<?> getInsert()
     {
-        return null;
+        return new Insert();
     }
 
     @Override
@@ -123,6 +125,28 @@ public final class EQL
     public static Query query(final String... _types)
     {
         return (Query) org.efaps.eql2.EQL.query(_types);
+    }
+
+    /**
+     * Insert.
+     *
+     * @param _typeName the type name
+     * @return the insert
+     */
+    public static Insert insert(final String _typeName)
+    {
+        return (Insert) org.efaps.eql2.EQL.insert(_typeName);
+    }
+
+    /**
+     * Insert.
+     *
+     * @param _ciType the ci type
+     * @return the insert
+     */
+    public static Insert insert(final CIType _ciType)
+    {
+        return (Insert) org.efaps.eql2.EQL.insert(_ciType.getType().getName());
     }
 
     /**

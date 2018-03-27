@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 package org.efaps.db.stmt.runner;
 
-import org.efaps.db.stmt.print.AbstractPrint;
 import org.efaps.util.EFapsException;
 
 /**
@@ -31,10 +30,10 @@ public interface IEQLRunner
     /**
      * Prepare.
      *
-     * @param _print the print
+     * @param _runnable the runnable
      * @throws EFapsException on errors
      */
-    void prepare(AbstractPrint _print)
+    void prepare(IRunnable _runnable)
         throws EFapsException;
 
     /**

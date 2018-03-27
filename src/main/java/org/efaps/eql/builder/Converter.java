@@ -15,38 +15,29 @@
  *
  */
 
-package org.efaps.db.stmt;
+package org.efaps.eql.builder;
 
-import org.efaps.eql2.IStatement;
+import org.efaps.db.Instance;
 
 /**
- * The Class AbstractStmt.
- *
- * @author The eFaps Team
+ * The Class Converter.
  */
-public abstract class AbstractStmt
+public final class Converter
 {
 
-    /** The statement. */
-    private IStatement<?> eqlStmt;
-
     /**
-     * Gets the statement.
+     * Convert.
      *
-     * @return the statement
+     * @param _value the value
+     * @return the string
      */
-    protected IStatement<?> getEQLStmt()
-    {
-        return this.eqlStmt;
-    }
-
-    /**
-     * Sets the statement.
-     *
-     * @param _eqlStmt the new statement
-     */
-    protected void setEQLStmt(final IStatement<?> _eqlStmt)
-    {
-        this.eqlStmt = _eqlStmt;
+    public static String convert(final Object _value) {
+        String ret = null;
+        if (_value instanceof String) {
+            ret = (String) _value;
+        } else if (_value instanceof Instance) {
+            ret = ((Instance) _value).getOid();
+        }
+        return ret;
     }
 }
