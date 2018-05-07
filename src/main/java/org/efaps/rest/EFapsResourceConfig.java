@@ -110,6 +110,7 @@ public class EFapsResourceConfig
         registerClasses(RestEQLInvoker.class);
         registerClasses(RestContext.class);
         registerClasses(Search.class);
+        registerClasses(ObjectMapperResolver.class);
         if (EFapsResourceConfig.LOG.isInfoEnabled() && !getClasses().isEmpty()) {
             final Set<Class<?>> rootResourceClasses = get(Path.class);
             if (rootResourceClasses.isEmpty()) {
