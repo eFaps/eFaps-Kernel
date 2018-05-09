@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,6 +72,7 @@ public class EFapsResourceConfig
     public void init()
     {
         final Set<String> classNames= new HashSet<>();
+        LOG.info("Scanning esjps for REST implementations");
         try {
             boolean contextStarted = false;
             if (!Context.isThreadActive()) {
