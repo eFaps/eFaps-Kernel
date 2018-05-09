@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.efaps.admin.program.esjp.EFapsClassLoader;
-import org.efaps.rest.EFapsResourceConfig;
-import org.efaps.rest.EFapsResourceConfig.EFapsResourceFinder;
+import org.efaps.admin.program.esjp.EFapsResourceFinder;
 import org.efaps.util.EFapsException;
 import org.glassfish.jersey.server.internal.scanning.AnnotationAcceptingListener;
 import org.slf4j.Logger;
@@ -95,7 +94,7 @@ public final class JmsResourceConfig
                         XmlElementRef.class,
                         XmlRootElement.class,
                         XmlAttribute.class);
-        try (EFapsResourceFinder resourceFinder = new EFapsResourceConfig.EFapsResourceFinder()) {
+        try (EFapsResourceFinder resourceFinder = new EFapsResourceFinder()) {
             while (resourceFinder.hasNext()) {
                 final String next = resourceFinder.next();
                 if (asl.accept(next)) {
