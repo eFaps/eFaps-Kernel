@@ -117,7 +117,7 @@ public class RateUI
      * The Class Value.
      */
     public static class Value
-        implements Serializable
+        implements Serializable, Comparable<Value>
     {
         /** The Constant serialVersionUID. */
         private static final long serialVersionUID = 1L;
@@ -235,6 +235,16 @@ public class RateUI
         {
             this.denominator = _denominator;
             return this;
+        }
+
+        @Override
+        public int compareTo(final Value _arg0)
+        {
+            int ret = 0;
+            if (_arg0 != null) {
+                ret = _arg0.getRate().compareTo(getRate());
+            }
+            return ret;
         }
 
         @Override
