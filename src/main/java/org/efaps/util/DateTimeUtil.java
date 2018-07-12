@@ -137,6 +137,15 @@ public final class DateTimeUtil
             ret = ((DateTime) _value).withChronology(chron);
         } else if (_value instanceof String) {
             ret = ISODateTimeFormat.dateTime().parseDateTime((String) _value).withChronology(chron);
+        } else if (_value instanceof java.time.LocalDate) {
+            final java.time.LocalDate localDateTime = (java.time.LocalDate) _value;
+            ret = new DateTime(localDateTime.getYear(), localDateTime.getMonthValue(),
+                            localDateTime.getDayOfMonth(), 0, 0).withChronology(chron);
+        } else if (_value instanceof java.time.LocalDateTime) {
+            final java.time.LocalDateTime localDateTime = (java.time.LocalDateTime) _value;
+            ret = new DateTime(localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth(),
+                            localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond(),
+                            localDateTime.getSecond()).withChronology(chron);
         } else  {
             ret = null;
         }
