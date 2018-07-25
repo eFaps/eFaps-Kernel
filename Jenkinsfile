@@ -42,23 +42,10 @@ pipeline {
     }
     stage('Dependency Check') {
       steps {
-        step([
-            $class: 'DependencyCheckAnalyzer',
-            datadir: '',
-            hintsFile: '',
-            includeCsvReports: false,
-            includeHtmlReports: true,
-            includeJsonReports: false,
-            includeVulnReports: true,
-            isAutoupdateDisabled: false,
-            outdir: '',
-            scanpath: '',
-            skipOnScmChange: false,
-            skipOnUpstreamChange: false,
-            suppressionFile: '',
-            zipExtensions: ''
-
-        ])
+        step( {
+            dependencyCheckAnalyzer datadir: '', hintsFile: '', includeCsvReports: false, includeHtmlReports: false, includeJsonReports: false, includeVulnReports: false, isAutoupdateDisabled: false, outdir: '', scanpath: '', skipOnScmChange: false, skipOnUpstreamChange: false, suppressionFile: '', zipExtensions: ''
+        }
+        )
         step([
           $class: 'DependencyCheckPublisher',
           canRunOnFailed: true,
