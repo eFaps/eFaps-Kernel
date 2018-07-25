@@ -41,20 +41,9 @@ pipeline {
       }
     }
     stage('Dependency Check') {
-      steps {
-        step( {
-            dependencyCheckAnalyzer datadir: '', hintsFile: '', includeCsvReports: false, includeHtmlReports: false, includeJsonReports: false, includeVulnReports: false, isAutoupdateDisabled: false, outdir: '', scanpath: '', skipOnScmChange: false, skipOnUpstreamChange: false, suppressionFile: '', zipExtensions: ''
-        }
-        )
-        step([
-          $class: 'DependencyCheckPublisher',
-          canRunOnFailed: true,
-          healthy: '95',
-          thresholdLimit: 'high',
-          useDeltaValues: true,
-          usePreviousBuildAsReference: true
-        ])
-      }
+       dependencyCheckAnalyzer datadir: 'dependency-check-data', isFailOnErrorDisabled: true, hintsFile: '', includeCsvReports: false, includeHtmlReports: false, includeJsonReports: false, isAutoupdateDisabled: false, outdir: '', scanpath: '', skipOnScmChange: false, skipOnUpstreamChange: false, suppressionFile: '', zipExtensions: ''
+
+       dependencyCheckPublisher  canRunOnFailed: true, healthy: '95', thresholdLimit: 'high', useDeltaValues: true, usePreviousBuildAsReference: true
     }
     stage('Deploy') {
       when {
