@@ -42,22 +42,10 @@ pipeline {
     }
     stage('Dependency Check') {
       steps {
-        step([
-          $class: 'DependencyCheckBuilder',
-          datadir: '',
-          hintsFile: '',
-          includeCsvReports: false,
-          includeHtmlReports: true,
-          includeJsonReports: false,
-          includeVulnReports: true,
-          isAutoupdateDisabled: false,
-          outdir: '',
-          scanpath: '',
-          skipOnScmChange: false,
-          skipOnUpstreamChange: false,
-          suppressionFile: '',
-          zipExtensions: ''
-        ])
+        withMaven(maven: 'M3.5', mavenSettingsConfig: 'fb57b2b9-c2e4-4e05-955e-8688bc067515', mavenLocalRepo: "$WORKSPACE/../../.m2/${env.BRANCH_NAME}",
+             options: [openTasksPublisher(disabled: true)]) {
+           sh "mvn org.owasp:dependency-check-maven:3.3.0:check -Dformat=XML -DfailOnError=false"
+        }
         step([
           $class: 'DependencyCheckPublisher',
           canRunOnFailed: true,
