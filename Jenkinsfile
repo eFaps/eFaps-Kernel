@@ -40,22 +40,6 @@ pipeline {
         ])
       }
     }
-    stage('Dependency Check') {
-      steps {
-        withMaven(maven: 'M3.5', mavenSettingsConfig: 'fb57b2b9-c2e4-4e05-955e-8688bc067515', mavenLocalRepo: "$WORKSPACE/../../.m2/${env.BRANCH_NAME}",
-             options: [openTasksPublisher(disabled: true)]) {
-           sh "mvn org.owasp:dependency-check-maven:3.3.0:check -Dformat=XML -DfailOnError=false"
-        }
-        step([
-          $class: 'DependencyCheckPublisher',
-          canRunOnFailed: true,
-          healthy: '95',
-          thresholdLimit: 'high',
-          useDeltaValues: true,
-          usePreviousBuildAsReference: true
-        ])
-      }
-    }
     stage('Deploy') {
       when {
         branch 'master'
