@@ -89,9 +89,8 @@ public class InsertTest
     public void testInsertReturnsInstance()
         throws EFapsException
     {
-        final String sql = String.format("insert into %s (%s,ID)values(?,?)",
-                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
-                        Mocks.TestAttribute.getSQLColumnName());
+        final String sql = String.format("select nextval('%s_ID_SEQ')",
+                        Mocks.SimpleTypeSQLTable.getSqlTableName());
 
         MockResult.builder().withSql(sql)
                     .withResult(RowLists.rowList1(Long.class)
@@ -103,6 +102,7 @@ public class InsertTest
             .set(CI.SimpleType.TestAttr, "A Value")
             .stmt()
             .execute();
-        assertEquals(instance, Instance.get(CI.SimpleType.getType(), 3435));
+        assertEquals(instance.getType(), CI.SimpleType.getType());
+        assertEquals(instance.getId(), 3435L);
     }
 }
