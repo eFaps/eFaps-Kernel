@@ -231,30 +231,34 @@ public class SQLRunner
         }
     }
 
-    private long executeInserts() throws EFapsException
+    /**
+     * Execute the inserts.
+     *
+     * @throws EFapsException the e faps exception
+     */
+    private void executeInserts() throws EFapsException
     {
-        long ret = 0;
         ConnectionResource con = null;
         try {
             final Insert insert = (Insert) this.runnable;
             con = Context.getThreadContext().getConnectionResource();
+            long id = 0;
             for (final Entry<SQLTable, SQLInsert> entry : this.insertmap.entrySet()) {
-                if (ret != 0) {
-                    entry.getValue().column(entry.getKey().getSqlColId(), ret);
+                if (id != 0) {
+                    entry.getValue().column(entry.getKey().getSqlColId(), id);
                 }
                 if (entry.getKey().getSqlColType() != null) {
                     entry.getValue().column(entry.getKey().getSqlColType(), insert.getType().getId());
                 }
                 final Long created = entry.getValue().execute(con);
                 if (created != null) {
-                    ret = created;
+                    id = created;
+                    insert.evaluateInstance(created);
                 }
             }
         } catch (final SQLException e) {
             throw new EFapsException(SQLRunner.class, "executeOneCompleteStmt", e);
         }
-        return ret;
-
     }
 
     /**

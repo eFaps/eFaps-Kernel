@@ -16,6 +16,7 @@
  */
 package org.efaps.db.stmt;
 
+import org.efaps.db.Instance;
 import org.efaps.db.stmt.runner.StmtRunner;
 import org.efaps.db.stmt.update.AbstractUpdate;
 import org.efaps.db.stmt.update.Insert;
@@ -44,12 +45,12 @@ public class InsertStmt
      * @return the insert stmt
      * @throws EFapsException the e faps exception
      */
-    public InsertStmt execute()
+    public Instance execute()
         throws EFapsException
     {
         this.update = new Insert((IInsertStatement) getEQLStmt());
         StmtRunner.get().execute(this.update);
-        return this;
+        return this.update.getInstance();
     }
 
     /**

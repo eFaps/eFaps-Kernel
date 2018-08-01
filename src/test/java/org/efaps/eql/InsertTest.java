@@ -23,6 +23,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.efaps.db.Instance;
+import org.efaps.mock.MockResult;
 import org.efaps.mock.Mocks;
 import org.efaps.mock.datamodel.CI;
 import org.efaps.test.AbstractTest;
@@ -30,6 +32,7 @@ import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
 import org.testng.annotations.Test;
 
+import acolyte.jdbc.RowLists;
 import acolyte.jdbc.StatementHandler.Parameter;
 
 public class InsertTest
@@ -80,5 +83,26 @@ public class InsertTest
         assertEquals(parameters.get(3).getValue(), new BigDecimal("12.98"));
         assertEquals(parameters.get(4).getKey().sqlTypeName, "TIMESTAMP");
         assertEquals(parameters.get(4).getValue().toString(), "2018-08-22 00:00:00.0");
+    }
+
+    @Test
+    public void testInsertReturnsInstance()
+        throws EFapsException
+    {
+        final String sql = String.format("insert into %s (%s,ID)values(?,?)",
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.TestAttribute.getSQLColumnName());
+
+        MockResult.builder().withSql(sql)
+                    .withResult(RowLists.rowList1(Long.class)
+                                    .append(3435L)
+                                    .asResult())
+                    .build();
+
+        final Instance instance = EQL.insert(CI.SimpleType)
+            .set(CI.SimpleType.TestAttr, "A Value")
+            .stmt()
+            .execute();
+        assertEquals(instance, Instance.get(CI.SimpleType.getType(), 3435));
     }
 }

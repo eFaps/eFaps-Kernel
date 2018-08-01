@@ -16,6 +16,7 @@
  */
 package org.efaps.db.stmt.update;
 
+import org.efaps.db.Instance;
 import org.efaps.db.stmt.runner.IRunnable;
 import org.efaps.eql2.IUpdateElementsStmt;
 
@@ -29,6 +30,9 @@ public abstract class AbstractUpdate
     /** The update elements stmt. */
     private final IUpdateElementsStmt<?> eqlStmt;
 
+    /** The instance. */
+    protected Instance instance;
+
     /**
      * Instantiates a new abstract update.
      *
@@ -38,8 +42,22 @@ public abstract class AbstractUpdate
         this.eqlStmt = _eqlStmt;
     }
 
+    /**
+     * Gets the update elements stmt.
+     *
+     * @return the update elements stmt
+     */
     public IUpdateElementsStmt<?> getEqlStmt()
     {
         return this.eqlStmt;
+    }
+
+    /**
+     * Gets the instance.
+     *
+     * @return the instance
+     */
+    public Instance getInstance() {
+        return this.instance;
     }
 }

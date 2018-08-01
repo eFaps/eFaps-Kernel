@@ -19,6 +19,7 @@ package org.efaps.db.stmt.update;
 import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Instance;
 import org.efaps.eql2.IInsertStatement;
 import org.efaps.util.UUIDUtil;
 import org.efaps.util.cache.CacheReloadException;
@@ -58,5 +59,15 @@ public class Insert
     public Type getType()
     {
         return this.type;
+    }
+
+    /**
+     * Evaluate instance.
+     *
+     * @param _created the created
+     */
+    public void evaluateInstance(final Long _created)
+    {
+       this.instance = Instance.get(getType(), _created);
     }
 }
