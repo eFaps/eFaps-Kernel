@@ -19,6 +19,8 @@ package org.efaps.eql;
 
 import static org.testng.Assert.assertEquals;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +29,7 @@ import org.efaps.db.Instance;
 import org.efaps.eql.builder.Converter;
 import org.efaps.mock.Mocks;
 import org.efaps.test.AbstractTest;
+import org.efaps.util.EFapsException;
 import org.testng.ITestContext;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -37,6 +40,7 @@ public class ConverterTest
     @Test(description = "Test Converter", dataProvider = "DataProvider")
     public void convert(final Object _value,
                         final String _convertedValue)
+        throws EFapsException
     {
         assertEquals(Converter.convert(_value), _convertedValue);
     }
@@ -49,6 +53,8 @@ public class ConverterTest
         ret.add(new Object[] { Instance.get(Mocks.AllAttrType.getUuid(), 4), Mocks.AllAttrType.getId() + ".4" });
         ret.add(new Object[] { 25635345L, "25635345" });
         ret.add(new Object[] { 3, "3" });
+        ret.add(new Object[] { LocalDate.of(2018, 8, 22), "2018-08-22" });
+        ret.add(new Object[] { new BigDecimal("12.986"), "12.986" });
         return ret.iterator();
     }
 }

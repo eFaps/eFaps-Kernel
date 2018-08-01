@@ -53,6 +53,8 @@ public class CI
         public final CIAttribute LinkAttribute = new CIAttribute(this, Mocks.AllAttrLinkAttribute.getName());
         public final CIAttribute LongAttribute = new CIAttribute(this, Mocks.AllAttrLongAttribute.getName());
         public final CIAttribute IntegerAttribute = new CIAttribute(this, Mocks.AllAttrIntegerAttribute.getName());
+        public final CIAttribute DecimalAttribute = new CIAttribute(this, Mocks.AllAttrDecimalAttribute.getName());
+        public final CIAttribute DateAttribute = new CIAttribute(this, Mocks.AllAttrDateAttribute.getName());
     }
 
 }

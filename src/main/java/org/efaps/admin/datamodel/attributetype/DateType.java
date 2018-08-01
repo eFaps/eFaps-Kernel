@@ -19,6 +19,9 @@
 package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.Timestamp;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 
 import org.efaps.util.EFapsException;
@@ -65,7 +68,14 @@ public class DateType
             } else if (_value[0] instanceof DateTime) {
                 dateTime = (DateTime) _value[0];
             } else if (_value[0] instanceof String) {
-                dateTime = ISODateTimeFormat.dateTime().withOffsetParsed().parseDateTime((String) _value[0]);
+                final String str = (String) _value[0];
+                if (str.length() == 10) {
+                    final TemporalAccessor temp = DateTimeFormatter.ISO_LOCAL_DATE.parse(str);
+                    dateTime = new DateTime().withDate(temp.get(ChronoField.YEAR),
+                                    temp.get(ChronoField.MONTH_OF_YEAR), temp.get(ChronoField.DAY_OF_MONTH));
+                } else {
+                    dateTime = ISODateTimeFormat.dateTime().withOffsetParsed().parseDateTime((String) _value[0]);
+                }
             }
             // until now we have a time that depends on the timezone of the application server
             // to convert it in a timestamp for the efaps database the timezone information (mainly the offset)

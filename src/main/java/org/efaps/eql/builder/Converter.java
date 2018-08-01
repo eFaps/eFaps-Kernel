@@ -17,21 +17,28 @@
 
 package org.efaps.eql.builder;
 
+import java.time.LocalDate;
+
 import org.efaps.db.Instance;
+import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class Converter.
  */
 public final class Converter
 {
+    private static final Logger LOG = LoggerFactory.getLogger(Converter.class);
 
     /**
      * Convert.
      *
      * @param _value the value
      * @return the string
+     * @throws EFapsException
      */
-    public static String convert(final Object _value) {
+    public static String convert(final Object _value) throws EFapsException {
         String ret = null;
         if (_value instanceof String) {
             ret = (String) _value;
@@ -39,6 +46,11 @@ public final class Converter
             ret = ((Instance) _value).getOid();
         } else if (_value instanceof Number) {
             ret = ((Number) _value).toString();
+        } else if (_value instanceof LocalDate) {
+            ret = ((LocalDate) _value).toString();
+        } else {
+            LOG.warn("No specific converter defined for: {}", _value);
+            ret = String.valueOf(_value);
         }
         return ret;
     }

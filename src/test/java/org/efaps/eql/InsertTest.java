@@ -17,12 +17,20 @@
 
 package org.efaps.eql;
 
+import static org.testng.Assert.assertEquals;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.efaps.mock.Mocks;
 import org.efaps.mock.datamodel.CI;
 import org.efaps.test.AbstractTest;
 import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
 import org.testng.annotations.Test;
+
+import acolyte.jdbc.StatementHandler.Parameter;
 
 public class InsertTest
     extends AbstractTest
@@ -47,19 +55,30 @@ public class InsertTest
     public void testInsertMultipleAttributes()
         throws EFapsException
     {
-        final String sql = String.format("insert into %s (%s,%s,%s,ID)values(?,?,?,?)",
+        final String sql = String.format("insert into %s (%s,%s,%s,%s,%s,ID)values(?,?,?,?,?,?)",
                         Mocks.AllAttrTypeSQLTable.getSqlTableName(),
                         Mocks.AllAttrStringAttribute.getSQLColumnName(),
                         Mocks.AllAttrLongAttribute.getSQLColumnName(),
-                        Mocks.AllAttrIntegerAttribute.getSQLColumnName());
+                        Mocks.AllAttrIntegerAttribute.getSQLColumnName(),
+                        Mocks.AllAttrDecimalAttribute.getSQLColumnName(),
+                        Mocks.AllAttrDateAttribute.getSQLColumnName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
         EQL.insert(CI.AllAttrType)
             .set(CI.AllAttrType.StringAttribute, "A String Value")
             .set(CI.AllAttrType.LongAttribute, 248651L)
             .set(CI.AllAttrType.IntegerAttribute, 4)
+            .set(CI.AllAttrType.DecimalAttribute, new BigDecimal("12.98"))
+            .set(CI.AllAttrType.DateAttribute, LocalDate.of(2018, 8, 22))
             .stmt()
             .execute();
         verify.verify();
+        final List<Parameter> parameters = verify.getSqlParameters();
+        assertEquals(parameters.get(0).getValue(), "A String Value");
+        assertEquals(parameters.get(1).getValue(), 248651L);
+        assertEquals(parameters.get(2).getValue(), 4L);
+        assertEquals(parameters.get(3).getValue(), new BigDecimal("12.98"));
+        assertEquals(parameters.get(4).getKey().sqlTypeName, "TIMESTAMP");
+        assertEquals(parameters.get(4).getValue().toString(), "2018-08-22 00:00:00.0");
     }
 }

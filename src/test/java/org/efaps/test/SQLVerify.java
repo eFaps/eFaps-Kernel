@@ -18,6 +18,10 @@ package org.efaps.test;
 
 import static org.testng.Assert.assertEquals;
 
+import java.util.List;
+
+import acolyte.jdbc.StatementHandler.Parameter;
+
 /**
  * The Class SQLVerify.
  */
@@ -30,6 +34,9 @@ public class SQLVerify
 
     /** The counter. */
     private int counter = 0;
+
+    /** Parameters the SQL was executed with. */
+    private List<Parameter> sqlParameters;
 
     /**
      * Instantiates a new SQL verify.
@@ -48,8 +55,9 @@ public class SQLVerify
     }
 
     @Override
-    public void execute()
+    public void execute(final List<Parameter> _sqlParameters)
     {
+        this.sqlParameters = _sqlParameters;
         this.counter++;
     }
 
@@ -69,6 +77,16 @@ public class SQLVerify
                         .append("sql: ")
                         .append(this.sql)
                         .toString();
+    }
+
+    /**
+     * Gets the parameters the SQL was executed with.
+     *
+     * @return the parameters the SQL was executed with
+     */
+    public List<Parameter> getSqlParameters()
+    {
+        return this.sqlParameters;
     }
 
     /**

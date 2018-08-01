@@ -16,6 +16,10 @@
 
 package org.efaps.test;
 
+import java.util.List;
+
+import acolyte.jdbc.StatementHandler.Parameter;
+
 /**
  * The Interface IVerify.
  */
@@ -37,5 +41,5 @@ public interface IVerify
     /**
      * Execute.
      */
-    void execute();
+    void execute(List<Parameter> _sqlParameters);
 }

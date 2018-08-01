@@ -79,7 +79,7 @@ public final class EFapsQueryHandler
         LOG.info("Handle Query: '{}'", sql);
 
         if (this.sql2verify.containsKey(sql)) {
-            this.sql2verify.get(sql).execute();
+            this.sql2verify.get(sql).execute(_parameters);
         } else if (this.sql2results.containsKey(sql)) {
             final List<QueryResult> results = new ArrayList<>();
             for (final IMockResult result : this.sql2results.get(sql)) {

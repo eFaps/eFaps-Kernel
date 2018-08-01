@@ -52,6 +52,13 @@ public interface IDataModel
                     .withClassNameUI("org.efaps.admin.datamodel.ui.NumberUI")
                     .build();
 
+    AttributeType DecimalType = AttributeType.builder()
+                    .withName("Decimal")
+                    .withUuid(UUID.fromString("58d1f0e-43ae-425d-a4a0-8d5bad6f40d7"))
+                    .withClassName("org.efaps.admin.datamodel.attributetype.DecimalType")
+                    .withClassNameUI("org.efaps.admin.datamodel.ui.NumberUI")
+                    .build();
+
     AttributeType BooleanType = AttributeType.builder()
                     .withName("Boolean")
                     .withUuid(UUID.fromString("7fb3799d-4e31-45a3-8c5e-4fbf445ec3c1"))

@@ -128,6 +128,13 @@ public interface Mocks
                     .withAttributeTypeId(IDataModel.IntegerType.getId())
                     .build();
 
+    Attribute AllAttrDecimalAttribute = Attribute.builder()
+                    .withName("AllAttrDecimalAttribute")
+                    .withDataModelTypeId(AllAttrType.getId())
+                    .withSqlTableId(AllAttrTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.DecimalType.getId())
+                    .build();
+
     Attribute AllAttrBooleanAttribute = Attribute.builder()
                     .withName("AllAttrBooleanAttribute")
                     .withDataModelTypeId(AllAttrType.getId())
