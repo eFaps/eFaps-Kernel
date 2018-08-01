@@ -49,8 +49,10 @@ public class CI
             super(_uuid);
         }
 
-        public final CIAttribute StringAttribute = new CIAttribute(this, Mocks.AllAttrStringAttribute .getName());
-        public final CIAttribute LinkAttribute = new CIAttribute(this, Mocks.AllAttrLinkAttribute .getName());
+        public final CIAttribute StringAttribute = new CIAttribute(this, Mocks.AllAttrStringAttribute.getName());
+        public final CIAttribute LinkAttribute = new CIAttribute(this, Mocks.AllAttrLinkAttribute.getName());
+        public final CIAttribute LongAttribute = new CIAttribute(this, Mocks.AllAttrLongAttribute.getName());
+        public final CIAttribute IntegerAttribute = new CIAttribute(this, Mocks.AllAttrIntegerAttribute.getName());
     }
 
 }

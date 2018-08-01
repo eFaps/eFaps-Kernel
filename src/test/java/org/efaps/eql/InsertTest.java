@@ -42,4 +42,24 @@ public class InsertTest
             .execute();
         verify.verify();
     }
+
+    @Test
+    public void testInsertMultipleAttributes()
+        throws EFapsException
+    {
+        final String sql = String.format("insert into %s (%s,%s,%s,ID)values(?,?,?,?)",
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName(),
+                        Mocks.AllAttrStringAttribute.getSQLColumnName(),
+                        Mocks.AllAttrLongAttribute.getSQLColumnName(),
+                        Mocks.AllAttrIntegerAttribute.getSQLColumnName());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.insert(CI.AllAttrType)
+            .set(CI.AllAttrType.StringAttribute, "A String Value")
+            .set(CI.AllAttrType.LongAttribute, 248651L)
+            .set(CI.AllAttrType.IntegerAttribute, 4)
+            .stmt()
+            .execute();
+        verify.verify();
+    }
 }

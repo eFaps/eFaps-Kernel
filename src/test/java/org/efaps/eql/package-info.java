@@ -15,31 +15,8 @@
  *
  */
 
-package org.efaps.eql.builder;
-
-import org.efaps.db.Instance;
-
 /**
- * The Class Converter.
+ * Eql tests
  */
-public final class Converter
-{
+package org.efaps.eql;
 
-    /**
-     * Convert.
-     *
-     * @param _value the value
-     * @return the string
-     */
-    public static String convert(final Object _value) {
-        String ret = null;
-        if (_value instanceof String) {
-            ret = (String) _value;
-        } else if (_value instanceof Instance) {
-            ret = ((Instance) _value).getOid();
-        } else if (_value instanceof Number) {
-            ret = ((Number) _value).toString();
-        }
-        return ret;
-    }
-}

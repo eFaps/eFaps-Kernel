@@ -47,7 +47,8 @@ public class ConverterTest
         final List<Object[]> ret = new ArrayList<>();
         ret.add(new Object[] { "just a value", "just a value" });
         ret.add(new Object[] { Instance.get(Mocks.AllAttrType.getUuid(), 4), Mocks.AllAttrType.getId() + ".4" });
-
+        ret.add(new Object[] { 25635345L, "25635345" });
+        ret.add(new Object[] { 3, "3" });
         return ret.iterator();
     }
 }
