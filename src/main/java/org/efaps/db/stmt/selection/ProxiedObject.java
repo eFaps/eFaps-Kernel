@@ -22,6 +22,9 @@ import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The Class ProxiedObject.
+ */
 public class ProxiedObject
 {
     /**
@@ -29,22 +32,41 @@ public class ProxiedObject
      */
     private static final Logger LOG = LoggerFactory.getLogger(ProxiedObject.class);
 
+    /** The object. */
     private Object object;
 
+    /** The proxy. */
     private IProxy proxy;
 
+    /**
+     * Sets the object.
+     *
+     * @param _object the object
+     * @return the proxied object
+     */
     public ProxiedObject setObject(final Object _object)
     {
         this.object = _object;
         return this;
     }
 
+    /**
+     * Sets the proxy.
+     *
+     * @param _proxy the proxy
+     * @return the proxied object
+     */
     public ProxiedObject setProxy(final IProxy _proxy)
     {
         this.proxy = _proxy;
         return this;
     }
 
+    /**
+     * Gets the object.
+     *
+     * @return the object
+     */
     public Object getObject()
     {
         Object ret = null;

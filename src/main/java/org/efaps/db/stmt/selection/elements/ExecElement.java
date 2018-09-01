@@ -30,6 +30,9 @@ import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The Class ExecElement.
+ */
 public class ExecElement
     extends InstanceElement
     implements IProxy
@@ -39,14 +42,23 @@ public class ExecElement
      */
     private static final Logger LOG = LoggerFactory.getLogger(ExecElement.class);
 
+    /** The instances. */
     final List<Instance> instances = new ArrayList<>();
 
+    /** The class name. */
     private String className;
 
+    /** The parameters. */
     private String[] parameters;
 
+    /** The esjp. */
     private IEsjpSelect esjp;
 
+    /**
+     * Instantiates a new exec element.
+     *
+     * @param _type the type
+     */
     public ExecElement(final Type _type)
     {
         super(_type);
@@ -67,11 +79,23 @@ public class ExecElement
         return new ProxiedObject().setObject(inst).setProxy(this);
     }
 
+    /**
+     * Sets the esjp.
+     *
+     * @param _className the class name
+     * @return the exec element
+     */
     public ExecElement setEsjp(final String _className) {
         this.className = _className;
         return this;
     }
 
+    /**
+     * Sets the parameters.
+     *
+     * @param _parameters the parameters
+     * @return the exec element
+     */
     public ExecElement setParameters(final String[] _parameters) {
         this.parameters = _parameters;
         return this;

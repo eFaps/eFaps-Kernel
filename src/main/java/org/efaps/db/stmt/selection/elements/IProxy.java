@@ -18,9 +18,19 @@ package org.efaps.db.stmt.selection.elements;
 
 import org.efaps.util.EFapsException;
 
+/**
+ * The Interface IProxy.
+ */
 public interface IProxy
 {
 
+    /**
+     * Gets the value.
+     *
+     * @param _object the object
+     * @return the value
+     * @throws EFapsException the eFaps exception
+     */
     Object getValue(Object _object)
         throws EFapsException;
 
