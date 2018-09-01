@@ -28,6 +28,7 @@ import org.efaps.eql2.IPrintQueryStatement;
 import org.efaps.mock.MockResult;
 import org.efaps.mock.Mocks;
 import org.efaps.test.AbstractTest;
+import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
 import org.testng.annotations.Test;
 
@@ -36,8 +37,24 @@ import acolyte.jdbc.RowLists;
 public class PrintQueryStmtTest
     extends AbstractTest
 {
+    @Test
+    public void testSimpleType()
+        throws EFapsException
+    {
+        final String stmtStr = String.format("print query type %s select attribute[%s]",
+                        Mocks.SimpleType.getName(), Mocks.TestAttribute.getName());
+
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+        final PrintStmt printStmt = PrintStmt.get(stmt);
+        final SQLVerify verify = SQLVerify.builder()
+            .withSql("select T0.TestAttribute_COL,T0.ID from T_DEMO T0")
+            .build();
+        printStmt.execute();
+        verify.verify();
+    }
+
     @Test(description = "Exec select without any other selects")
-    public void testSelectExec3()
+    public void testSelectExec()
         throws EFapsException
     {
         final String sql = String.format("select T0.ID from %s T0",
