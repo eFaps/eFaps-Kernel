@@ -29,7 +29,7 @@ import org.efaps.util.EFapsException;
  * The Class InstanceElement.
  */
 public class InstanceElement
-    extends AbstractElement<InstanceElement>
+    extends AbstractDataElement<InstanceElement>
 {
 
     /** The type id. */

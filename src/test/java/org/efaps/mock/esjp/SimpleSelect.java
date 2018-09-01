@@ -26,6 +26,8 @@ public class SimpleSelect
     implements IEsjpSelect
 {
 
+    public static String FORMAT = "Simple select returns: %s";
+
     @Override
     public void initialize(final List<Instance> _instances, final String... _parameters)
         throws EFapsException
@@ -37,6 +39,6 @@ public class SimpleSelect
     public Object getValue(final Instance _instance)
         throws EFapsException
     {
-        return _instance;
+        return String.format(FORMAT, _instance.getOid());
     }
 }

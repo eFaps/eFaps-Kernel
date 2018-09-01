@@ -21,27 +21,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.Instance;
-import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.stmt.selection.ProxiedObject;
 import org.efaps.eql.IEsjpSelect;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExecElement
-    extends AbstractElement<ExecElement>
+    extends InstanceElement
+    implements IProxy
 {
     /**
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(ExecElement.class);
 
+    final List<Instance> instances = new ArrayList<>();
+
     private String className;
 
     private String[] parameters;
 
     private IEsjpSelect esjp;
+
+    public ExecElement(final Type _type)
+    {
+        super(_type);
+    }
 
     @Override
     public ExecElement getThis()
@@ -53,30 +62,9 @@ public class ExecElement
     public Object getObject(final Object[] _row)
         throws EFapsException
     {
-        final Instance inst = (Instance) _row[0];
-        if (this.esjp == null) {
-            try {
-                final Class<?> clazz = Class.forName(this.className, false, EFapsClassLoader.getInstance());
-                this.esjp = (IEsjpSelect) clazz.newInstance();
-                final List<Instance> instances = new ArrayList<>();
-                instances.add(inst);
-                if (ArrayUtils.isEmpty(this.parameters)) {
-                    this.esjp.initialize(instances);
-                } else {
-                    this.esjp.initialize(instances, this.parameters);
-                }
-            } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                LOG.error("Catched error", e);
-            }
-        }
-        return this.esjp.getValue(inst);
-    }
-
-    @Override
-    public void append2SQLSelect(final SQLSelect _sqlSelect)
-        throws EFapsException
-    {
-        // Nothing to append for Execute elements
+        final Instance inst = (Instance) super.getObject(_row);
+        this.instances.add(inst);
+        return new ProxiedObject().setObject(inst).setProxy(this);
     }
 
     public ExecElement setEsjp(final String _className) {
@@ -87,5 +75,25 @@ public class ExecElement
     public ExecElement setParameters(final String[] _parameters) {
         this.parameters = _parameters;
         return this;
+    }
+
+    @Override
+    public Object getValue(final Object _object)
+        throws EFapsException
+    {
+        if (this.esjp == null) {
+            try {
+                final Class<?> clazz = Class.forName(this.className, false, EFapsClassLoader.getInstance());
+                this.esjp = (IEsjpSelect) clazz.newInstance();
+                if (ArrayUtils.isEmpty(this.parameters)) {
+                    this.esjp.initialize(this.instances);
+                } else {
+                    this.esjp.initialize(this.instances, this.parameters);
+                }
+            } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                LOG.error("Catched error", e);
+            }
+        }
+        return this.esjp.getValue((Instance) _object);
     }
 }

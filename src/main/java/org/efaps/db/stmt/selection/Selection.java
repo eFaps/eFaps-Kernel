@@ -29,6 +29,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.stmt.selection.elements.AbstractDataElement;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.selection.elements.AttributeElement;
 import org.efaps.db.stmt.selection.elements.ExecElement;
@@ -132,7 +133,7 @@ public final class Selection
                             break;
                     }
                 } else if (ele instanceof IExecSelectElement) {
-                    select.addElement(new ExecElement()
+                    select.addElement(new ExecElement(currentType)
                                     .setEsjp(((IExecSelectElement) ele).getClassName())
                                     .setParameters(((IExecSelectElement) ele).getParameters()));
                 }
@@ -150,7 +151,7 @@ public final class Selection
      * @param _currentType the current type
      * @throws CacheReloadException on error
      */
-    private void addInstSelect(final Select _select, final AbstractElement<?> _element, final Attribute _attr,
+    private void addInstSelect(final Select _select, final AbstractDataElement<?> _element, final Attribute _attr,
                                final Type _currentType)
         throws CacheReloadException
     {
@@ -242,7 +243,7 @@ public final class Selection
     }
 
     /**
-     * Gets the all selects.
+     * Gets the all data selects.
      *
      * @return the all selects
      */

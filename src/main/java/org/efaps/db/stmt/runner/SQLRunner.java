@@ -40,6 +40,7 @@ import org.efaps.db.stmt.print.ObjectPrint;
 import org.efaps.db.stmt.print.QueryPrint;
 import org.efaps.db.stmt.selection.ISelectionProvider;
 import org.efaps.db.stmt.selection.Select;
+import org.efaps.db.stmt.selection.elements.AbstractDataElement;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.update.Insert;
 import org.efaps.db.transaction.ConnectionResource;
@@ -130,7 +131,9 @@ public class SQLRunner
     private void preparePrint(final AbstractPrint _print) throws EFapsException {
         for (final Select select : _print.getSelection().getAllSelects()) {
             for (final AbstractElement<?> element : select.getElements()) {
-                element.append2SQLSelect(this.sqlSelect);
+                if (element instanceof AbstractDataElement) {
+                    ((AbstractDataElement<?>) element).append2SQLSelect(this.sqlSelect);
+                }
             }
         }
         if (this.sqlSelect.getColumns().size() > 0) {
@@ -225,17 +228,7 @@ public class SQLRunner
         throws EFapsException
     {
         if (isPrint()) {
-            // for a print it can happen that e.g. only Executes Select was
-            // added and no SQL is needed
-            if (this.sqlSelect.getColumns().isEmpty()) {
-                if (this.runnable instanceof ObjectPrint) {
-                    for (final Select select : ((ISelectionProvider) this.runnable).getSelection().getAllSelects()) {
-                        select.addObject(new Object[] { ((ObjectPrint) this.runnable).getInstance() });
-                    }
-                }
-            } else {
-                executeSQLStmt((ISelectionProvider) this.runnable, this.sqlSelect.getSQL());
-            }
+            executeSQLStmt((ISelectionProvider) this.runnable, this.sqlSelect.getSQL());
         } else {
             executeInserts();
         }

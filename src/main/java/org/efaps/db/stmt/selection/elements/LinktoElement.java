@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * The Class LinktoElement.
  */
 public class LinktoElement
-    extends AbstractElement<LinktoElement>
+    extends AbstractDataElement<LinktoElement>
     implements IJoinTableIdx
 {
     /** The Constant LOG. */

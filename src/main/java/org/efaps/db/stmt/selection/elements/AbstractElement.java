@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,13 @@
  * limitations under the License.
  *
  */
+
 package org.efaps.db.stmt.selection.elements;
 
-import org.efaps.admin.datamodel.DBTable;
-import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 
-/**
- * The Class AbstractElement.
- *
- * @author The eFaps Team
- * @param <T> the generic type
- */
 public abstract class AbstractElement<T>
 {
-
-    /** The table. */
-    private DBTable table;
-
     /** The previous. */
     private AbstractElement<?> previous;
 
@@ -79,27 +68,6 @@ public abstract class AbstractElement<T>
         this.next = _next;
     }
 
-    /**
-     * Gets the table.
-     *
-     * @return the table
-     */
-    public DBTable getTable()
-    {
-        return this.table;
-    }
-
-    /**
-     * Sets the DB table.
-     *
-     * @param _table the table
-     * @return the t
-     */
-    public T setDBTable(final DBTable _table)
-    {
-        this.table = _table;
-        return this.getThis();
-    }
 
     /**
      * Gets the path.
@@ -133,12 +101,4 @@ public abstract class AbstractElement<T>
     public abstract Object getObject(Object[] _row)
         throws EFapsException;
 
-    /**
-     * Append two SQL select.
-     *
-     * @param _sqlSelect the sql select
-     * @throws EFapsException the eFaps exception
-     */
-    public abstract void append2SQLSelect(SQLSelect _sqlSelect)
-        throws EFapsException;
 }

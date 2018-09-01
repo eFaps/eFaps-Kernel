@@ -27,7 +27,7 @@ import org.efaps.util.EFapsException;
  * The Class ObjectElement.
  */
 public class PrimedElement
-    extends AbstractElement<PrimedElement>
+    extends AbstractDataElement<PrimedElement>
 {
 
     /** The objects. */

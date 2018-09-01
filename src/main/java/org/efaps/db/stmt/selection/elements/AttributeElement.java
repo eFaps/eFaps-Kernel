@@ -31,7 +31,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  */
 public class AttributeElement
-    extends AbstractElement<AttributeElement>
+    extends AbstractDataElement<AttributeElement>
 {
 
     /** The col idxs. */

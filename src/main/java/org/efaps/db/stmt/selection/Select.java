@@ -197,7 +197,7 @@ public final class Select
      */
     public Object getCurrent()
     {
-        return this.current;
+        return this.current instanceof ProxiedObject ? ((ProxiedObject) this.current).getObject() : this.current;
     }
 
     /**

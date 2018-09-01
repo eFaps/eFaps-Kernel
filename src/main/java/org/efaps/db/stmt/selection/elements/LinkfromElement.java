@@ -29,7 +29,7 @@ import org.efaps.util.cache.CacheReloadException;
  * The Class LinkfromElement.
  */
 public class LinkfromElement
-    extends AbstractElement<LinkfromElement>
+    extends AbstractDataElement<LinkfromElement>
     implements IJoinTableIdx
 {
     /** The attribute. */

@@ -524,10 +524,18 @@ public class PrintStmtTest
         assertEquals(evaluator.get(1), instance.getOid());
     }
 
-    @Test
+    @Test(description = "Exec select without any other selects")
     public void testSelectExec()
         throws EFapsException
     {
+        final String sql = String.format("select T0.ID from %s T0 where T0.ID = 4",
+                        Mocks.SimpleTypeSQLTable.getSqlTableName());
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Long.class)
+                .append(4L)
+                .asResult())
+            .build();
         final Instance instance = Instance.get(Mocks.SimpleType.getName(), "4");
         final String stmtStr = String.format("print obj %s select exec %s as barcode",
                         instance.getOid(), org.efaps.mock.esjp.SimpleSelect.class.getName());
@@ -535,7 +543,36 @@ public class PrintStmtTest
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluate();
-        assertEquals(evaluator.get("barcode"), instance);
+        assertEquals(evaluator.get("barcode"),
+                        String.format(org.efaps.mock.esjp.SimpleSelect.FORMAT, instance.getOid()));
+    }
+
+    @Test(description = "Exec select without any other selects")
+    public void testSelectExec2()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
+                        Mocks.TestAttribute.getSQLColumnName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(String.class, Long.class)
+                    .append("A Value", 4L)
+                    .asResult())
+            .build();
+
+        final Instance instance = Instance.get(Mocks.SimpleType.getName(), "4");
+        final String stmtStr = String.format("print obj %s select attribute[%s], exec %s as barcode",
+                        instance.getOid(),  Mocks.TestAttribute.getName(),
+                        org.efaps.mock.esjp.SimpleSelect.class.getName());
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(stmtStr);
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertEquals(evaluator.get(1), "A Value");
+        assertEquals(evaluator.get("barcode"),
+                        String.format(org.efaps.mock.esjp.SimpleSelect.FORMAT, instance.getOid()));
     }
 }
 
