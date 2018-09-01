@@ -523,5 +523,19 @@ public class PrintStmtTest
                         .evaluate();
         assertEquals(evaluator.get(1), instance.getOid());
     }
+
+    @Test
+    public void testSelectExec()
+        throws EFapsException
+    {
+        final Instance instance = Instance.get(Mocks.SimpleType.getName(), "4");
+        final String stmtStr = String.format("print obj %s select exec %s as barcode",
+                        instance.getOid(), org.efaps.mock.esjp.SimpleSelect.class.getName());
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(stmtStr);
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertEquals(evaluator.get("barcode"), instance);
+    }
 }
 

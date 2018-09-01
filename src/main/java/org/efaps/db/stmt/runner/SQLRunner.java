@@ -225,7 +225,17 @@ public class SQLRunner
         throws EFapsException
     {
         if (isPrint()) {
-            executeSQLStmt((ISelectionProvider) this.runnable, this.sqlSelect.getSQL());
+            // for a print it can happen that e.g. only Executes Select was
+            // added and no SQL is needed
+            if (this.sqlSelect.getColumns().isEmpty()) {
+                if (this.runnable instanceof ObjectPrint) {
+                    for (final Select select : ((ISelectionProvider) this.runnable).getSelection().getAllSelects()) {
+                        select.addObject(new Object[] { ((ObjectPrint) this.runnable).getInstance() });
+                    }
+                }
+            } else {
+                executeSQLStmt((ISelectionProvider) this.runnable, this.sqlSelect.getSQL());
+            }
         } else {
             executeInserts();
         }
