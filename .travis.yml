@@ -15,7 +15,8 @@ install:
 
 script:
   - mvn test -s mySettings.xml -B
-
+  - mvn clean clover:setup test clover:aggregate clover:clover -s mySettings.xml -B
+  
 after_success:
  - "[[ $TRAVIS_BRANCH == \"master\" ]] && [[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} == '' ]] && mvn deploy -DskipTests -s mySettings.xml"
-
+ - bash <(curl -s https://codecov.io/bash)
