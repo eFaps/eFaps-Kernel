@@ -38,7 +38,7 @@ import acolyte.jdbc.RowLists;
 /**
  * The Class PrintStmtTest.
  */
-public class PrintStmtTest
+public class PrintObjectStmtTest
     extends AbstractTest
 {
 
@@ -547,7 +547,7 @@ public class PrintStmtTest
                         String.format(org.efaps.mock.esjp.SimpleSelect.FORMAT, instance.getOid()));
     }
 
-    @Test(description = "Exec select without any other selects")
+    @Test(description = "Exec select with another select combined")
     public void testSelectExec2()
         throws EFapsException
     {
