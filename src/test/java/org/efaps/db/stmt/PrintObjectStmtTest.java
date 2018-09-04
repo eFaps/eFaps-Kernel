@@ -575,7 +575,7 @@ public class PrintObjectStmtTest
                         String.format(org.efaps.mock.esjp.SimpleSelect.FORMAT, instance.getOid()));
     }
 
-    @Test(description = "Class select")
+    @Test(description = "Single class select")
     public void testSelectClass()
         throws EFapsException
     {
@@ -596,6 +596,40 @@ public class PrintObjectStmtTest
         final Instance instance = Instance.get(Mocks.SimpleType.getName(), "4");
         final String stmtStr = String.format("print obj %s select class[%s].attribute[%s]",
                         instance.getOid(), Mocks.ClassType.getName(), Mocks.ClassTypeStringAttribute.getName());
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(stmtStr);
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertEquals(evaluator.get(1), "A Value");
+    }
+
+    @Test(description = "Linkto with a  class select")
+    public void testLinktoSelectClass()
+        throws EFapsException
+    {
+        final String sql = String.format("select T2.%s,T1.ID,T2.ID "
+                        + "from %s T0 "
+                        + "left join %s T1 on T0.%s=T1.ID "
+                        + "left join %s T2 on T1.%s=T2.%s where T0.ID = 4",
+                        Mocks.ClassTypeStringAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.AllAttrLinkAttribute.getSQLColumnName(),
+                        Mocks.ClassTypeSQLTable.getSqlTableName(),
+                        Mocks.IDAttribute.getSQLColumnName(),
+                        Mocks.ClassTypeLinkAttribute.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList3(String.class, Long.class, Long.class)
+                    .append("A Value", 14L, 33L)
+                    .asResult())
+            .build();
+
+        final Instance instance = Instance.get(Mocks.AllAttrType.getName(), "4");
+        final String stmtStr = String.format("print obj %s select linkto[%s].class[%s].attribute[%s]",
+                        instance.getOid(), Mocks.AllAttrLinkAttribute.getName(), Mocks.ClassType.getName(),
+                        Mocks.ClassTypeStringAttribute.getName());
         final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(stmtStr);
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
