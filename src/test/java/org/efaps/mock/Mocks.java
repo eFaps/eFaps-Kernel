@@ -21,6 +21,7 @@ import org.efaps.admin.datamodel.Type.Purpose;
 import org.efaps.mock.datamodel.Attribute;
 import org.efaps.mock.datamodel.EventDefinition;
 import org.efaps.mock.datamodel.IDataModel;
+import org.efaps.mock.datamodel.Property;
 import org.efaps.mock.datamodel.SQLTable;
 import org.efaps.mock.datamodel.Type;
 import org.efaps.mock.esjp.AccessCheck;
@@ -402,5 +403,43 @@ public interface Mocks
                     .withTypeId(IDataModel.Admin_DataModel_TypeAccessCheckEvent.getId())
                     .withESJP(AccessCheck.class.getName())
                     .withMethod("execute")
+                    .build();
+
+    Type ClassType = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withPurposeId(2)
+                    .withName("ClassType")
+                    .build();
+
+    Property classProperty = Property.builder()
+                    .withName("classLinkAttribute")
+                    .withValue("ClassLinkAttribute")
+                    .withAbstractId(ClassType.getId())
+                    .build();
+
+    SQLTable ClassTypeSQLTable = SQLTable.builder()
+                    .withName("ClassTypeSQLTable")
+                    .withSqlTableName("CLASSTABLE")
+                    .build();
+
+    Attribute ClassTypeIDAttribute = Attribute.builder()
+                    .withName("ID")
+                    .withDataModelTypeId(ClassType.getId())
+                    .withSqlTableId(ClassTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.LongType.getId())
+                    .build();
+
+    Attribute ClassTypeLinkAttribute = Attribute.builder()
+                    .withName("ClassLinkAttribute")
+                    .withDataModelTypeId(ClassType.getId())
+                    .withSqlTableId(ClassTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.LongType.getId())
+                    .build();
+
+    Attribute ClassTypeStringAttribute = Attribute.builder()
+                    .withName("ClassStringAttr")
+                    .withDataModelTypeId(ClassType.getId())
+                    .withSqlTableId(ClassTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.StringType.getId())
                     .build();
 }

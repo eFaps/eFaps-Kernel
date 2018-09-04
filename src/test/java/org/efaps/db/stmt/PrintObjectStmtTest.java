@@ -574,5 +574,33 @@ public class PrintObjectStmtTest
         assertEquals(evaluator.get("barcode"),
                         String.format(org.efaps.mock.esjp.SimpleSelect.FORMAT, instance.getOid()));
     }
+
+    @Test(description = "Class select")
+    public void testSelectClass()
+        throws EFapsException
+    {
+        final String sql = String.format("select T1.%s,T1.ID from %s T0 left join %s T1 on T0.%s=T1.%s where T0.ID = 4",
+                        Mocks.ClassTypeStringAttribute.getSQLColumnName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.ClassTypeSQLTable.getSqlTableName(),
+                        Mocks.IDAttribute.getSQLColumnName(),
+                        Mocks.ClassTypeLinkAttribute.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(String.class, Long.class)
+                    .append("A Value", 4L)
+                    .asResult())
+            .build();
+
+        final Instance instance = Instance.get(Mocks.SimpleType.getName(), "4");
+        final String stmtStr = String.format("print obj %s select class[%s].attribute[%s]",
+                        instance.getOid(), Mocks.ClassType.getName(), Mocks.ClassTypeStringAttribute.getName());
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(stmtStr);
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertEquals(evaluator.get(1), "A Value");
+    }
 }
 

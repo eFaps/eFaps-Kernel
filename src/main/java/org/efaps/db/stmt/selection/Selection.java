@@ -28,10 +28,12 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.stmt.selection.elements.AbstractDataElement;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.selection.elements.AttributeElement;
+import org.efaps.db.stmt.selection.elements.ClassElement;
 import org.efaps.db.stmt.selection.elements.ExecElement;
 import org.efaps.db.stmt.selection.elements.IPrimed;
 import org.efaps.db.stmt.selection.elements.InstanceElement;
@@ -41,6 +43,7 @@ import org.efaps.db.stmt.selection.elements.OIDElement;
 import org.efaps.db.stmt.selection.elements.PrimedElement;
 import org.efaps.eql2.IAttributeSelectElement;
 import org.efaps.eql2.IBaseSelectElement;
+import org.efaps.eql2.IClassSelectElement;
 import org.efaps.eql2.IExecSelectElement;
 import org.efaps.eql2.ILinkfromSelectElement;
 import org.efaps.eql2.ILinktoSelectElement;
@@ -121,6 +124,14 @@ public final class Selection
                     select.addElement(element);
                     addInstSelect(select, element, attr, currentType);
                     currentType = linkFromType;
+                } else if (ele instanceof IClassSelectElement) {
+                    final String typeName = ((IClassSelectElement) ele).getName();
+                    final Classification classification = Classification.get(typeName);
+                    final ClassElement element = new ClassElement().setClassification(classification)
+                                    .setType(currentType);
+                    select.addElement(element);
+                    addInstSelect(select, element, classification, currentType);
+                    currentType = classification;
                 } else if (ele instanceof IBaseSelectElement) {
                     switch (((IBaseSelectElement) ele).getElement()) {
                         case INSTANCE:
@@ -151,7 +162,7 @@ public final class Selection
      * @param _currentType the current type
      * @throws CacheReloadException on error
      */
-    private void addInstSelect(final Select _select, final AbstractDataElement<?> _element, final Attribute _attr,
+    private void addInstSelect(final Select _select, final AbstractDataElement<?> _element, final Object _attrOrClass,
                                final Type _currentType)
         throws CacheReloadException
     {
@@ -165,15 +176,24 @@ public final class Selection
                     } else if (selectTmp instanceof LinkfromElement) {
                         instSelect.addElement(new LinkfromElement().setAttribute(((LinkfromElement) selectTmp)
                                         .getAttribute()).setStartType(((LinkfromElement) selectTmp).getStartType()));
+                    } else if (selectTmp instanceof ClassElement) {
+                        instSelect.addElement(new ClassElement()
+                                        .setClassification(((ClassElement) selectTmp).getClassification())
+                                        .setType(((ClassElement) selectTmp).getType()));
                     }
                 }
             }
             if (_element instanceof LinkfromElement) {
-                instSelect.addElement(new LinkfromElement().setAttribute(_attr).setStartType(_currentType));
-                instSelect.addElement(new InstanceElement(_attr.getParent()));
-            } else {
-                instSelect.addElement(new LinktoElement().setAttribute(_attr));
+                instSelect.addElement(new LinkfromElement().setAttribute((Attribute) _attrOrClass).setStartType(
+                                _currentType));
+                instSelect.addElement(new InstanceElement(((Attribute) _attrOrClass).getParent()));
+            } else if (_element instanceof LinktoElement) {
+                instSelect.addElement(new LinktoElement().setAttribute((Attribute) _attrOrClass));
                 instSelect.addElement(new InstanceElement(_currentType));
+            } else if (_element instanceof ClassElement) {
+                instSelect.addElement(new ClassElement().setClassification((Classification) _attrOrClass).setType(
+                                _currentType));
+                instSelect.addElement(new InstanceElement((Type) _attrOrClass));
             }
             this.instSelects.put(_element.getPath(), instSelect);
         }
