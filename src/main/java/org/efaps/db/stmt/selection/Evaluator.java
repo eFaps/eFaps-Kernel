@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -366,6 +367,29 @@ public final class Evaluator
                 idx++;
             }
             ret.add(data);
+        }
+        return ret;
+    }
+
+    /**
+     * Gets the data.
+     *
+     * @return the data
+     * @throws EFapsException the e faps exception
+     */
+    public final Collection<Map<String, ?>> getData()
+        throws EFapsException
+    {
+        final Collection<Map<String, ?>> ret = new ArrayList<>();
+        while (next()) {
+            final Map<String, ?> map = new LinkedHashMap<>();
+            int idx = 1;
+            for (final Select select : this.selection.getSelects()) {
+                final String key = select.getAlias() == null ? String.valueOf(idx) : select.getAlias();
+                map.put(key, get(select));
+                idx++;
+            }
+            ret.add(map);
         }
         return ret;
     }
