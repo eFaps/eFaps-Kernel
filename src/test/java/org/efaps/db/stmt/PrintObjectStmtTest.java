@@ -20,6 +20,8 @@ package org.efaps.db.stmt;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import java.math.BigDecimal;
+
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.Evaluator;
 import org.efaps.eql2.EQL;
@@ -665,6 +667,39 @@ public class PrintObjectStmtTest
                         .evaluate();
         assertEquals(evaluator.get(1), "A Value in Child SQL Table");
     }
+
+    @Test(description = "read a Attribute from a child table")
+    public void testAttributeInChildTable2()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T1.%s "
+                        + "from %s T0 "
+                        + "left join %s T1 on T0.ID=T1.ID "
+                        + "where T0.ID = 4",
+                        Mocks.AllAttrDecimalAttribute.getSQLColumnName(),
+                        Mocks.AllAttrInChildSQLAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName(),
+                        Mocks.AllAttrTypeChildSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(BigDecimal.class, String.class)
+                        .append(BigDecimal.ZERO, "A Value in Child SQL Table")
+                        .asResult())
+            .build();
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select attribute[%s], attribute[%s]",
+                        Mocks.AllAttrType.getId(), Mocks.AllAttrDecimalAttribute.getName(),
+                        Mocks.AllAttrInChildSQLAttribute.getName()));
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertEquals(((BigDecimal) evaluator.get(1)).intValue(), BigDecimal.ZERO.intValue());
+        assertEquals(evaluator.get(2), "A Value in Child SQL Table");
+    }
+
 
     @Test(description = "read a linked to Attribute from a child table without attribute in main table")
     public void testLinktoAttributeInChildTable()
