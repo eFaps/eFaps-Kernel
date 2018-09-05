@@ -74,9 +74,21 @@ public class LinktoElement
         if (getTable() instanceof SQLTable) {
             // evaluated if the attribute that is used as the base for the linkTo is inside a child table
             if (this.attribute != null && !getTable().equals(this.attribute.getParent().getMainTable())) {
-                LOG.error("STILL MISSING");
-            } else {
-                appendBaseTable(_sqlSelect, (SQLTable) getTable());
+                final TableIdx mainTableIdx = _sqlSelect.getIndexer().getTableIdx(this.attribute.getParent()
+                                .getMainTable().getSqlTable());
+                if (mainTableIdx.isCreated()) {
+                    _sqlSelect.from(mainTableIdx.getTable(), mainTableIdx.getIdx());
+                }
+                final TableIdx tableIdx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable(),
+                                this.attribute.getParent().getMainTable().getSqlTable(), "ID");
+                if (tableIdx.isCreated()) {
+                    _sqlSelect.leftJoin(tableIdx.getTable(), tableIdx.getIdx(), "ID", mainTableIdx.getIdx(), "ID");
+                }
+            } else if (_sqlSelect.getFromTables().isEmpty()) {
+                final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable());
+                if (tableidx.isCreated()) {
+                    _sqlSelect.from(tableidx.getTable(), tableidx.getIdx());
+                }
             }
 
             final TableIdx joinTableidx = getJoinTableIdx(_sqlSelect);
@@ -112,22 +124,6 @@ public class LinktoElement
         final Attribute joinAttr = this.attribute.getLink().getAttribute("ID");
         final String joinTableName = joinAttr.getTable().getSqlTable();
         return _sqlSelect.getIndexer().getTableIdx(joinTableName, tableName, linktoColName);
-    }
-
-    /**
-     * Append base table if not added already from other element.
-     *
-     * @param _sqlSelect the sql select
-     * @param _sqlTable the sql table
-     */
-    protected void appendBaseTable(final SQLSelect _sqlSelect, final SQLTable _sqlTable)
-    {
-        if (_sqlSelect.getFromTables().isEmpty()) {
-            final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(_sqlTable.getSqlTable());
-            if (tableidx.isCreated()) {
-                _sqlSelect.from(tableidx.getTable(), tableidx.getIdx());
-            }
-        }
     }
 
     @Override

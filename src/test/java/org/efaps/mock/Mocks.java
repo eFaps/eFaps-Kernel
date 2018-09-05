@@ -220,6 +220,14 @@ public interface Mocks
                     .withAttributeTypeId(IDataModel.StringType.getId())
                     .build();
 
+    Attribute AllAttrLinkInChildSQLAttribute = Attribute.builder()
+                    .withName("AllAttrLinkInChildSQLAttribute")
+                    .withDataModelTypeId(AllAttrType.getId())
+                    .withSqlTableId(AllAttrTypeChildSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.LinkType.getId())
+                    .withLinkTypeId(SimpleType.getId())
+                    .build();
+
     Type AbstractType = Type.builder().withId(RandomUtils.nextLong())
                     .withName("AbstractType")
                     .withPurposeId(Purpose.ABSTRACT.getInt())

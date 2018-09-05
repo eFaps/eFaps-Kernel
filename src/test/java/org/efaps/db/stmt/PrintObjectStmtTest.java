@@ -698,5 +698,38 @@ public class PrintObjectStmtTest
                         .evaluate();
         assertEquals(evaluator.get(1), "A Value in Child SQL Table");
     }
+
+    @Test(description = "read Attribute linked to Attribute from a child table")
+    public void testAttributeLinktoAttributeInChildTable()
+        throws EFapsException
+    {
+        final String sql = String.format("select T2.%s,T2.ID "
+                        + "from %s T0 "
+                        + "left join %s T1 on T0.ID=T1.ID "
+                        + "left join %s T2 on T3.AllAttrLinkInChildSQLAttribute_COL=T2.ID "
+                        + "where T0.ID = 4",
+                        Mocks.TestAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName(),
+                        Mocks.AllAttrTypeChildSQLTable.getSqlTableName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.AllAttrLinkInChildSQLAttribute.getSQLColumnName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(String.class, Long.class)
+                        .append("A Value in Child SQL Table", 77L)
+                        .asResult())
+            .build();
+
+        final Instance instance = Instance.get(Mocks.AllAttrType.getName(), "4");
+        final String stmtStr = String.format("print obj %s select linkto[%s].attribute[%s]",
+                        instance.getOid(), Mocks.AllAttrLinkInChildSQLAttribute.getName(),
+                        Mocks.TestAttribute.getName());
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(stmtStr);
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertEquals(evaluator.get(1), "A Value in Child SQL Table");
+    }
 }
 
