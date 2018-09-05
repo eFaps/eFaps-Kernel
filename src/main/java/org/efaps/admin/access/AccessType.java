@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,9 +130,9 @@ public final class AccessType
     @Override
     public boolean equals(final Object _toCompare)
     {
-        return (_toCompare != null)
-                        && (_toCompare instanceof AccessType)
-                        && (((AccessType) _toCompare).getId() == getId());
+        return _toCompare != null
+                        && _toCompare instanceof AccessType
+                        && ((AccessType) _toCompare).getId() == getId();
     }
 
     /**
@@ -142,7 +142,7 @@ public final class AccessType
     @Override
     public int hashCode()
     {
-        return (new Long(getId())).hashCode();
+        return new Long(getId()).hashCode();
     }
 
     /**
@@ -242,7 +242,6 @@ public final class AccessType
                         AccessType.IDCACHE);
         idCache.putIfAbsent(_accessType.getId(), _accessType);
     }
-
 
     /**
      * @param _sql      sql Statement to be executed
