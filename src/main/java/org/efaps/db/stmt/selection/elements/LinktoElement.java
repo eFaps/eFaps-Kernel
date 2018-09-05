@@ -73,16 +73,17 @@ public class LinktoElement
     {
         if (getTable() instanceof SQLTable) {
             // evaluated if the attribute that is used as the base for the linkTo is inside a child table
+            TableIdx childIdx = null;
             if (this.attribute != null && !getTable().equals(this.attribute.getParent().getMainTable())) {
                 final TableIdx mainTableIdx = _sqlSelect.getIndexer().getTableIdx(this.attribute.getParent()
                                 .getMainTable().getSqlTable());
                 if (mainTableIdx.isCreated()) {
                     _sqlSelect.from(mainTableIdx.getTable(), mainTableIdx.getIdx());
                 }
-                final TableIdx tableIdx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable(),
+                childIdx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable(),
                                 this.attribute.getParent().getMainTable().getSqlTable(), "ID");
-                if (tableIdx.isCreated()) {
-                    _sqlSelect.leftJoin(tableIdx.getTable(), tableIdx.getIdx(), "ID", mainTableIdx.getIdx(), "ID");
+                if (childIdx.isCreated()) {
+                    _sqlSelect.leftJoin(childIdx.getTable(), childIdx.getIdx(), "ID", mainTableIdx.getIdx(), "ID");
                 }
             } else if (_sqlSelect.getFromTables().isEmpty()) {
                 final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable());
@@ -98,7 +99,8 @@ public class LinktoElement
                 if (getPrevious() != null && getPrevious() instanceof IJoinTableIdx) {
                     tableidx = ((IJoinTableIdx) getPrevious()).getJoinTableIdx(_sqlSelect);
                 } else {
-                    tableidx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable());
+                    tableidx = childIdx == null ? _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable())
+                                    .getSqlTable()) : childIdx;
                 }
                 final Attribute joinAttr = this.attribute.getLink().getAttribute("ID");
                 final String joinTableName = joinAttr.getTable().getSqlTable();

@@ -741,7 +741,7 @@ public class PrintObjectStmtTest
         final String sql = String.format("select T2.%s,T2.ID "
                         + "from %s T0 "
                         + "left join %s T1 on T0.ID=T1.ID "
-                        + "left join %s T2 on T3.AllAttrLinkInChildSQLAttribute_COL=T2.ID "
+                        + "left join %s T2 on T1.AllAttrLinkInChildSQLAttribute_COL=T2.ID "
                         + "where T0.ID = 4",
                         Mocks.TestAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName(),
