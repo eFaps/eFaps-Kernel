@@ -59,13 +59,13 @@ public enum AccessTypeEnums
     /**
      * Used to cache the enum for uuid.
      */
-    private static final Map<UUID, AccessTypeEnums> MAP = new HashMap<UUID, AccessTypeEnums>();
+    private static final Map<UUID, AccessTypeEnums> MAP = new HashMap<>();
 
     /**
      * The universal unique identifier of one access type enum is stored in this
      * instance variable.
      */
-    private final UUID uuid;
+    protected final UUID uuid;
 
     /**
      * The constructor creates a new enum instance of access type for given
@@ -105,7 +105,7 @@ public enum AccessTypeEnums
     public List<AccessType> getAccessTypeAsList()
         throws CacheReloadException
     {
-        final List<AccessType> ret = new ArrayList<AccessType>(1);
+        final List<AccessType> ret = new ArrayList<>(1);
         ret.add(getAccessType());
         return ret;
     }
