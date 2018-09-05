@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -84,6 +84,12 @@ public interface Mocks
                     .withName("SimpleTypeSQLTable")
                     .build();
 
+    SQLTable SimpleTypeChildSQLTable = SQLTable.builder()
+                    .withName("SimpleTypeChildSQLTable")
+                    .withSqlTableName("SIMPTYPESQLCHILDTABLE")
+                    .withMainTableId(SimpleTypeSQLTable.getId())
+                    .build();
+
     Attribute IDAttribute = Attribute.builder()
                     .withName("ID")
                     .withDataModelTypeId(SimpleType.getId())
@@ -98,6 +104,13 @@ public interface Mocks
                     .withAttributeTypeId(IDataModel.StringType.getId())
                     .build();
 
+    Attribute SimpleTypeInChildSQLAttribute = Attribute.builder()
+                    .withName("SimpleTypeInChildSQLAttribute")
+                    .withDataModelTypeId(SimpleType.getId())
+                    .withSqlTableId(SimpleTypeChildSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.StringType.getId())
+                    .build();
+
     Type AllAttrType = Type.builder()
                     .withId(RandomUtils.nextLong())
                     .withName("AllAttrType")
@@ -106,6 +119,12 @@ public interface Mocks
     SQLTable AllAttrTypeSQLTable = SQLTable.builder()
                     .withName("AllAttrTypeSQLTable")
                     .withSqlTableName("JUSTANAME")
+                    .build();
+
+    SQLTable AllAttrTypeChildSQLTable = SQLTable.builder()
+                    .withName("AllAttrTypeChildSQLTable")
+                    .withSqlTableName("AATYPESQLCHILDTABLE")
+                    .withMainTableId(AllAttrTypeSQLTable.getId())
                     .build();
 
     Attribute AllAttrStringAttribute = Attribute.builder()
@@ -194,6 +213,12 @@ public interface Mocks
                     .withLinkTypeId(TypedType.getId())
                     .build();
 
+    Attribute AllAttrInChildSQLAttribute = Attribute.builder()
+                    .withName("AllAttrInChildSQLAttribute")
+                    .withDataModelTypeId(AllAttrType.getId())
+                    .withSqlTableId(AllAttrTypeChildSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.StringType.getId())
+                    .build();
 
     Type AbstractType = Type.builder().withId(RandomUtils.nextLong())
                     .withName("AbstractType")

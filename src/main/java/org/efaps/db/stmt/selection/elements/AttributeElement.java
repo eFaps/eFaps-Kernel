@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,25 +74,42 @@ public class AttributeElement
         throws EFapsException
     {
         if (getTable() instanceof SQLTable) {
-            final TableIdx tableidx;
-            if (getPrevious() != null && getPrevious() instanceof IJoinTableIdx) {
-                tableidx = ((IJoinTableIdx) getPrevious()).getJoinTableIdx(_sqlSelect);
+            final TableIdx tableIdx;
+            final SQLTable mainTable = ((SQLTable) getTable()).getMainTable();
+            if (mainTable != null) {
+                final TableIdx mainTableIdx;
+                if (getPrevious() != null && getPrevious() instanceof IJoinTableIdx) {
+                    mainTableIdx = ((IJoinTableIdx) getPrevious()).getJoinTableIdx(_sqlSelect);
+                } else {
+                    mainTableIdx = _sqlSelect.getIndexer().getTableIdx(mainTable.getSqlTable());
+                }
+                if (mainTableIdx.isCreated()) {
+                    _sqlSelect.from(mainTableIdx.getTable(), mainTableIdx.getIdx());
+                }
+                tableIdx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable(),
+                                mainTable.getSqlTable(), "ID");
+                if (tableIdx.isCreated()) {
+                    _sqlSelect.leftJoin(tableIdx.getTable(), tableIdx.getIdx(), "ID", mainTableIdx.getIdx(), "ID");
+                }
             } else {
-                final String tableName = ((SQLTable) getTable()).getSqlTable();
-                tableidx = _sqlSelect.getIndexer().getTableIdx(tableName);
+                if (getPrevious() != null && getPrevious() instanceof IJoinTableIdx) {
+                    tableIdx = ((IJoinTableIdx) getPrevious()).getJoinTableIdx(_sqlSelect);
+                } else {
+                    tableIdx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable());
+                }
+                if (tableIdx.isCreated()) {
+                    _sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
+                }
             }
 
             for (final String colName : this.attribute.getSqlColNames()) {
-                this.colIdxs = ArrayUtils.add(this.colIdxs, _sqlSelect.columnIndex(tableidx.getIdx(), colName));
-            }
-            if (tableidx.isCreated()) {
-                _sqlSelect.from(tableidx.getTable(), tableidx.getIdx());
+                this.colIdxs = ArrayUtils.add(this.colIdxs, _sqlSelect.columnIndex(tableIdx.getIdx(), colName));
             }
 
             // in case of dependencies for the attribute they must be selected also
             for (final Attribute attr : this.attribute.getDependencies().values()) {
                 for (final String colName : attr.getSqlColNames()) {
-                    final int colidx = _sqlSelect.column(tableidx.getIdx(), colName).getColumnIdx();
+                    final int colidx = _sqlSelect.column(tableIdx.getIdx(), colName).getColumnIdx();
                     ArrayUtils.add(this.colIdxs, colidx);
                 }
             }

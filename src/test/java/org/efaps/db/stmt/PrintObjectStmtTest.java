@@ -636,5 +636,67 @@ public class PrintObjectStmtTest
                         .evaluate();
         assertEquals(evaluator.get(1), "A Value");
     }
+
+    @Test(description = "read a Attribute from a child table without attribute in main table")
+    public void testAttributeInChildTable()
+        throws EFapsException
+    {
+        final String sql = String.format("select T1.%s "
+                        + "from %s T0 "
+                        + "left join %s T1 on T0.ID=T1.ID "
+                        + "where T0.ID = 4",
+                        Mocks.AllAttrInChildSQLAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName(),
+                        Mocks.AllAttrTypeChildSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(String.class)
+                        .append("A Value in Child SQL Table")
+                        .asResult())
+            .build();
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select attribute[%s]",
+                        Mocks.AllAttrType.getId(), Mocks.AllAttrInChildSQLAttribute.getName()));
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertEquals(evaluator.get(1), "A Value in Child SQL Table");
+    }
+
+    @Test(description = "read a linked to Attribute from a child table without attribute in main table")
+    public void testLinktoAttributeInChildTable()
+        throws EFapsException
+    {
+        final String sql = String.format("select T2.%s,T1.ID "
+                        + "from %s T0 "
+                        + "left join %s T1 on T0.%s=T1.ID "
+                        + "left join %s T2 on T1.ID=T2.ID "
+                        + "where T0.ID = 4",
+                        Mocks.SimpleTypeInChildSQLAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.AllAttrLinkAttribute.getSQLColumnName(),
+                        Mocks.SimpleTypeChildSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(String.class, Long.class)
+                        .append("A Value in Child SQL Table", 77L)
+                        .asResult())
+            .build();
+
+        final Instance instance = Instance.get(Mocks.AllAttrType.getName(), "4");
+        final String stmtStr = String.format("print obj %s select linkto[%s].attribute[%s]",
+                        instance.getOid(), Mocks.AllAttrLinkAttribute.getName(),
+                        Mocks.SimpleTypeInChildSQLAttribute.getName());
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(stmtStr);
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertEquals(evaluator.get(1), "A Value in Child SQL Table");
+    }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -31,7 +31,6 @@ public final class SQLTable
     extends AbstractType
 {
 
-
     /** The Constant SQL. */
     private static final String SQL = "select ID,UUID,NAME,SQLTABLE,SQLCOLUMNID,SQLCOLUMNTYPE,DMTABLEMAIN "
                     + "from V_ADMINSQLTABLE T0 where T0.ID = ?";
@@ -41,6 +40,8 @@ public final class SQLTable
 
     /** The sql table name. */
     private final String sqlTableName;
+
+    private final Long mainTableId;
 
     /**
      * Instantiates a new SQL table.
@@ -52,6 +53,7 @@ public final class SQLTable
         super(_builder);
         this.typeColumn = _builder.typeColumn;
         this.sqlTableName = _builder.sqlTableName;
+        this.mainTableId = _builder.mainTableId;
     }
 
     @Override
@@ -59,7 +61,8 @@ public final class SQLTable
     {
         return RowLists.rowList7(Long.class, String.class, String.class, String.class, String.class, String.class,
                         Long.class)
-                    .append(getId(), getUuid().toString(), getName(), this.sqlTableName, "ID", this.typeColumn, null)
+                    .append(getId(), getUuid().toString(), getName(), this.sqlTableName, "ID", this.typeColumn,
+                                    getMainTableId())
                     .asResult();
     }
 
@@ -90,6 +93,11 @@ public final class SQLTable
         return this.sqlTableName;
     }
 
+    public Long getMainTableId()
+    {
+        return this.mainTableId;
+    }
+
     /**
      * Builder.
      *
@@ -113,6 +121,8 @@ public final class SQLTable
         /** The sql table name. */
         private String sqlTableName = "T_DEMO";
 
+        private Long mainTableId;
+
         /**
          * With type column.
          *
@@ -134,6 +144,18 @@ public final class SQLTable
         public SQLTableBuilder withSqlTableName(final String _sqlTableName)
         {
             this.sqlTableName = _sqlTableName;
+            return this;
+        }
+
+        /**
+         * With type column.
+         *
+         * @param _sqlTableName the sql table name
+         * @return the SQL table builder
+         */
+        public SQLTableBuilder withMainTableId(final Long _mainTableId)
+        {
+            this.mainTableId = _mainTableId;
             return this;
         }
 
