@@ -23,6 +23,7 @@ import java.util.List;
 import org.efaps.db.wrapper.SQLSelect.EscapedValue;
 import org.efaps.db.wrapper.SQLSelect.SQLSelectPart;
 import org.efaps.eql2.Comparison;
+import org.efaps.eql2.Connection;
 
 /**
  * The Class SQLWhere.
@@ -46,7 +47,7 @@ public class SQLWhere
      * @param _escape the escape
      */
     public void addCriteria(final int _idx, final ArrayList<String> _sqlColNames, final Comparison _comparison,
-                            final String[] _values, final boolean _escape)
+                            final String[] _values, final boolean _escape, final Connection connection)
     {
         this.criterias.add(new Criteria(_idx, _sqlColNames, _comparison, _values, _escape));
     }

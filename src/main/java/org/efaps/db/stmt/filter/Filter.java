@@ -83,7 +83,7 @@ public class Filter
                                 final IAttributeType attrType = attr.getAttributeType().getDbAttrType();
                                 final boolean noEscape = attrType instanceof LongType;
                                 sqlWhere.addCriteria(tableidx.getIdx(), attr.getSqlColNames(), element.getComparison(),
-                                                element.getValues(), !noEscape);
+                                                element.getValues(), !noEscape, term.getConnection());
                             }
                         }
                     }
