@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,6 @@ public class SQLWhere
                              final StringBuilder _cmd)
     {
         for (final Criteria criteria : this.criterias) {
-            int i = 0;
             for (final String colName : criteria.colNames) {
                 new SQLSelect.Column(_tablePrefix, criteria.tableIndex, colName).appendSQL(_cmd);
                 new SQLSelect.SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
@@ -66,16 +65,49 @@ public class SQLWhere
                     case EQUAL:
                         new SQLSelect.SQLSelectPart(SQLPart.EQUAL).appendSQL(_cmd);
                         break;
+                    case LIKE:
+                        new SQLSelect.SQLSelectPart(SQLPart.LIKE).appendSQL(_cmd);
+                        break;
+                    case LESS:
+                        new SQLSelect.SQLSelectPart(SQLPart.LESS).appendSQL(_cmd);
+                        break;
+                    case GREATER:
+                        new SQLSelect.SQLSelectPart(SQLPart.GREATER).appendSQL(_cmd);
+                        break;
+                    case UNEQUAL:
+                        new SQLSelect.SQLSelectPart(SQLPart.UNEQUAL).appendSQL(_cmd);
+                        break;
+                    case IN:
+                        new SQLSelect.SQLSelectPart(SQLPart.IN).appendSQL(_cmd);
+                        break;
+                    case NOTIN:
+                        new SQLSelect.SQLSelectPart(SQLPart.NOT).appendSQL(_cmd);
+                        new SQLSelect.SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
+                        new SQLSelect.SQLSelectPart(SQLPart.IN).appendSQL(_cmd);
+                        break;
                     default:
                         break;
                 }
                 new SQLSelect.SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
-                if (criteria.escape) {
-                    new EscapedValue(criteria.values[i]).appendSQL(_cmd);
-                } else {
-                    new SQLSelect.Value(criteria.values[i]).appendSQL(_cmd);
+                if (criteria.values.length > 1) {
+                    new SQLSelect.SQLSelectPart(SQLPart.PARENTHESIS_OPEN).appendSQL(_cmd);
                 }
-                i++;
+                boolean first = true;
+                for (final String value : criteria.values) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        new SQLSelect.SQLSelectPart(SQLPart.COMMA).appendSQL(_cmd);
+                    }
+                    if (criteria.escape) {
+                        new EscapedValue(value).appendSQL(_cmd);
+                    } else {
+                        new SQLSelect.Value(value).appendSQL(_cmd);
+                    }
+                }
+                if (criteria.values.length > 1) {
+                    new SQLSelect.SQLSelectPart(SQLPart.PARENTHESIS_CLOSE).appendSQL(_cmd);
+                }
             }
         }
     }

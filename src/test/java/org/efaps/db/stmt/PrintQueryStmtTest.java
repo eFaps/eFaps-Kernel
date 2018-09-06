@@ -21,6 +21,10 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.Evaluator;
 import org.efaps.eql2.EQL;
@@ -30,6 +34,8 @@ import org.efaps.mock.Mocks;
 import org.efaps.test.AbstractTest;
 import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
+import org.testng.ITestContext;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import acolyte.jdbc.RowLists;
@@ -82,5 +88,49 @@ public class PrintQueryStmtTest
                         String.format(org.efaps.mock.esjp.SimpleSelect.FORMAT,
                                         Instance.get(Mocks.SimpleType.getName(), "8").getOid()));
         assertFalse(evaluator.next());
+    }
+
+    @Test(description = "Test for different wheres", dataProvider = "WhereDataProvider")
+    public void testSimpleTypeWithWheres(final String _whereStmtPart,
+                                         final String _sql)
+        throws EFapsException
+    {
+        final String stmtStr = String.format("print query type %s %s select attribute[%s]",
+                        Mocks.SimpleType.getName(), _whereStmtPart, Mocks.TestAttribute.getName());
+
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+        final PrintStmt printStmt = PrintStmt.get(stmt);
+        final SQLVerify verify = SQLVerify.builder()
+            .withSql(_sql)
+            .build();
+        printStmt.execute();
+        verify.verify();
+    }
+
+    @DataProvider(name = "WhereDataProvider")
+    public static Iterator<Object[]> whereDataProvider(final ITestContext _context)
+    {
+        final String baseSelect = String.format("select T0.%s,T0.ID from %s T0",
+                        Mocks.TestAttribute.getSQLColumnName(), Mocks.SimpleTypeSQLTable.getSqlTableName());
+        final List<Object[]> ret = new ArrayList<>();
+        ret.add(new Object[] { "", baseSelect });
+        ret.add(new Object[] { String.format("where %s == 'ABC'", Mocks.TestAttribute.getName()) ,
+                        String.format("%s where T0.%s = 'ABC'", baseSelect, Mocks.TestAttribute.getSQLColumnName()) });
+        ret.add(new Object[] { String.format("where %s eq 'ABC'", Mocks.TestAttribute.getName()) ,
+                        String.format("%s where T0.%s = 'ABC'", baseSelect, Mocks.TestAttribute.getSQLColumnName()) });
+        ret.add(new Object[] { String.format("where %s < 'ABC'", Mocks.TestAttribute.getName()) ,
+                        String.format("%s where T0.%s < 'ABC'", baseSelect, Mocks.TestAttribute.getSQLColumnName()) });
+        ret.add(new Object[] { String.format("where %s > 'ABC'", Mocks.TestAttribute.getName()) ,
+                String.format("%s where T0.%s > 'ABC'", baseSelect, Mocks.TestAttribute.getSQLColumnName()) });
+        ret.add(new Object[] { String.format("where %s != 'ABC'", Mocks.TestAttribute.getName()) ,
+                String.format("%s where T0.%s != 'ABC'", baseSelect, Mocks.TestAttribute.getSQLColumnName()) });
+        ret.add(new Object[] { String.format("where %s like 'ABC'", Mocks.TestAttribute.getName()) ,
+                String.format("%s where T0.%s like 'ABC'", baseSelect, Mocks.TestAttribute.getSQLColumnName())});
+        ret.add(new Object[] { String.format("where %s in ('ABC', 'DEF')", Mocks.TestAttribute.getName()) ,
+                String.format("%s where T0.%s in ('ABC','DEF')", baseSelect, Mocks.TestAttribute.getSQLColumnName())});
+        ret.add(new Object[] { String.format("where %s not in ('ABC', 'DEF')", Mocks.TestAttribute.getName()) ,
+                String.format("%s where T0.%s not in ('ABC','DEF')",
+                                baseSelect, Mocks.TestAttribute.getSQLColumnName())});
+        return ret.iterator();
     }
 }
