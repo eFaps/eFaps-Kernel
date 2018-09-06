@@ -131,6 +131,10 @@ public class PrintQueryStmtTest
         ret.add(new Object[] { String.format("where %s not in ('ABC', 'DEF')", Mocks.TestAttribute.getName()) ,
                 String.format("%s where T0.%s not in ('ABC','DEF')",
                                 baseSelect, Mocks.TestAttribute.getSQLColumnName())});
+        ret.add(new Object[] { String.format("where %s <= 'ABC'", Mocks.TestAttribute.getName()) ,
+                        String.format("%s where T0.%s <= 'ABC'", baseSelect, Mocks.TestAttribute.getSQLColumnName()) });
+        ret.add(new Object[] { String.format("where %s >= 'ABC'", Mocks.TestAttribute.getName()) ,
+                        String.format("%s where T0.%s >= 'ABC'", baseSelect, Mocks.TestAttribute.getSQLColumnName()) });
         return ret.iterator();
     }
 }

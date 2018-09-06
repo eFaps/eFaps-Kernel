@@ -71,8 +71,16 @@ public class SQLWhere
                     case LESS:
                         new SQLSelect.SQLSelectPart(SQLPart.LESS).appendSQL(_cmd);
                         break;
+                    case LESSEQ:
+                        new SQLSelect.SQLSelectPart(SQLPart.LESS).appendSQL(_cmd);
+                        new SQLSelect.SQLSelectPart(SQLPart.EQUAL).appendSQL(_cmd);
+                        break;
                     case GREATER:
                         new SQLSelect.SQLSelectPart(SQLPart.GREATER).appendSQL(_cmd);
+                        break;
+                    case GREATEREQ:
+                        new SQLSelect.SQLSelectPart(SQLPart.GREATER).appendSQL(_cmd);
+                        new SQLSelect.SQLSelectPart(SQLPart.EQUAL).appendSQL(_cmd);
                         break;
                     case UNEQUAL:
                         new SQLSelect.SQLSelectPart(SQLPart.UNEQUAL).appendSQL(_cmd);
