@@ -90,7 +90,7 @@ public class PrintQueryStmtTest
         assertFalse(evaluator.next());
     }
 
-    @Test(description = "Test for different wheres", dataProvider = "WhereDataProvider")
+    @Test(description = "Test for different basic wheres", dataProvider = "SimpleTypeWhereDataProvider")
     public void testSimpleTypeWithWheres(final String _whereStmtPart,
                                          final String _sql)
         throws EFapsException
@@ -107,8 +107,25 @@ public class PrintQueryStmtTest
         verify.verify();
     }
 
-    @DataProvider(name = "WhereDataProvider")
-    public static Iterator<Object[]> whereDataProvider(final ITestContext _context)
+    @Test(description = "Test for different basic wheres on a typed Type", dataProvider = "TypedTypeWhereDataProvider")
+    public void testTypedTypeWithWheres(final String _whereStmtPart,
+                                         final String _sql)
+        throws EFapsException
+    {
+        final String stmtStr = String.format("print query type %s %s select attribute[%s]",
+                        Mocks.TypedType.getName(), _whereStmtPart, Mocks.TypedTypeTestAttr.getName());
+
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+        final PrintStmt printStmt = PrintStmt.get(stmt);
+        final SQLVerify verify = SQLVerify.builder()
+            .withSql(_sql)
+            .build();
+        printStmt.execute();
+        verify.verify();
+    }
+
+    @DataProvider(name = "SimpleTypeWhereDataProvider")
+    public static Iterator<Object[]> dataProvider1(final ITestContext _context)
     {
         final String baseSelect = String.format("select T0.%s,T0.ID from %s T0",
                         Mocks.TestAttribute.getSQLColumnName(), Mocks.SimpleTypeSQLTable.getSqlTableName());
@@ -135,6 +152,39 @@ public class PrintQueryStmtTest
                         String.format("%s where T0.%s <= 'ABC'", baseSelect, Mocks.TestAttribute.getSQLColumnName()) });
         ret.add(new Object[] { String.format("where %s >= 'ABC'", Mocks.TestAttribute.getName()) ,
                         String.format("%s where T0.%s >= 'ABC'", baseSelect, Mocks.TestAttribute.getSQLColumnName()) });
+        return ret.iterator();
+    }
+
+    @DataProvider(name = "TypedTypeWhereDataProvider")
+    public static Iterator<Object[]> dataProvider2(final ITestContext _context)
+    {
+        final String baseSelect = String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE = %s",
+                        Mocks.TypedTypeTestAttr.getSQLColumnName(), Mocks.TypedTypeSQLTable.getSqlTableName(),
+                        Mocks.TypedType.getId());
+        final List<Object[]> ret = new ArrayList<>();
+        ret.add(new Object[] { "", baseSelect });
+        ret.add(new Object[] { String.format("where %s == 'ABC'", Mocks.TypedTypeTestAttr.getName()) ,
+                String.format("%s and T0.%s = 'ABC'", baseSelect, Mocks.TypedTypeTestAttr.getSQLColumnName()) });
+        ret.add(new Object[] { String.format("where %s eq 'ABC'", Mocks.TypedTypeTestAttr.getName()) ,
+                String.format("%s and T0.%s = 'ABC'", baseSelect, Mocks.TypedTypeTestAttr.getSQLColumnName()) });
+        ret.add(new Object[] { String.format("where %s < 'ABC'", Mocks.TypedTypeTestAttr.getName()) ,
+                String.format("%s and T0.%s < 'ABC'", baseSelect, Mocks.TypedTypeTestAttr.getSQLColumnName()) });
+        ret.add(new Object[] { String.format("where %s <= 'ABC'", Mocks.TypedTypeTestAttr.getName()) ,
+                String.format("%s and T0.%s <= 'ABC'", baseSelect, Mocks.TypedTypeTestAttr.getSQLColumnName()) });
+        ret.add(new Object[] { String.format("where %s > 'ABC'", Mocks.TypedTypeTestAttr.getName()) ,
+                String.format("%s and T0.%s > 'ABC'", baseSelect, Mocks.TypedTypeTestAttr.getSQLColumnName()) });
+        ret.add(new Object[] { String.format("where %s >= 'ABC'", Mocks.TypedTypeTestAttr.getName()) ,
+                String.format("%s and T0.%s >= 'ABC'", baseSelect, Mocks.TypedTypeTestAttr.getSQLColumnName()) });
+        ret.add(new Object[] { String.format("where %s != 'ABC'", Mocks.TypedTypeTestAttr.getName()) ,
+                String.format("%s and T0.%s != 'ABC'", baseSelect, Mocks.TypedTypeTestAttr.getSQLColumnName()) });
+        ret.add(new Object[] { String.format("where %s like 'ABC'", Mocks.TypedTypeTestAttr.getName()) ,
+                String.format("%s and T0.%s like 'ABC'", baseSelect, Mocks.TypedTypeTestAttr.getSQLColumnName()) });
+        ret.add(new Object[] { String.format("where %s in ('ABC', 'DEF')", Mocks.TypedTypeTestAttr.getName()) ,
+                String.format("%s and T0.%s in ('ABC','DEF')", baseSelect,
+                                Mocks.TypedTypeTestAttr.getSQLColumnName()) });
+        ret.add(new Object[] { String.format("where %s not in ('ABC', 'DEF')", Mocks.TypedTypeTestAttr.getName()) ,
+                String.format("%s and T0.%s not in ('ABC','DEF')", baseSelect,
+                                Mocks.TypedTypeTestAttr.getSQLColumnName()) });
         return ret.iterator();
     }
 }

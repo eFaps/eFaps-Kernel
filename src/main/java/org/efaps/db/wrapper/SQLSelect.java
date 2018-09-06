@@ -334,10 +334,7 @@ public class SQLSelect
         }
 
         if (this.where != null) {
-            if (!whereAdded) {
-                new SQLSelectPart(SQLPart.WHERE).appendSQL(cmd);
-                new SQLSelectPart(SQLPart.SPACE).appendSQL(cmd);
-            }
+            this.where.setStarted(whereAdded);
             this.where.appendSQL(this.tablePrefix, cmd);
         }
         return cmd.toString();

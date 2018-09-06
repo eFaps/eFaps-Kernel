@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.db.wrapper.SQLSelect.EscapedValue;
+import org.efaps.db.wrapper.SQLSelect.SQLSelectPart;
 import org.efaps.eql2.Comparison;
 
 /**
@@ -31,6 +32,9 @@ public class SQLWhere
 
     /** The criterias. */
     private final List<Criteria> criterias = new ArrayList<>();
+
+    /** The started. */
+    private boolean started;
 
     /**
      * Adds the criteria.
@@ -45,7 +49,16 @@ public class SQLWhere
                             final String[] _values, final boolean _escape)
     {
         this.criterias.add(new Criteria(_idx, _sqlColNames, _comparison, _values, _escape));
+    }
 
+    public boolean isStarted()
+    {
+        return this.started;
+    }
+
+    public void setStarted(final boolean _started)
+    {
+        this.started = _started;
     }
 
     /**
@@ -57,6 +70,14 @@ public class SQLWhere
     protected void appendSQL(final String _tablePrefix,
                              final StringBuilder _cmd)
     {
+        if (isStarted()) {
+            new SQLSelectPart(SQLPart.AND).appendSQL(_cmd);
+            new SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
+        } else {
+            new SQLSelectPart(SQLPart.WHERE).appendSQL(_cmd);
+            new SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
+        }
+
         for (final Criteria criteria : this.criterias) {
             for (final String colName : criteria.colNames) {
                 new SQLSelect.Column(_tablePrefix, criteria.tableIndex, colName).appendSQL(_cmd);
