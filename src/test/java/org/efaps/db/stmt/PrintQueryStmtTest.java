@@ -47,16 +47,30 @@ public class PrintQueryStmtTest
     public void testSimpleType()
         throws EFapsException
     {
+        final String sql = String.format("select T0.%s,T0.ID from %s T0",
+                        Mocks.TestAttribute.getSQLColumnName(), Mocks.SimpleTypeSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(String.class, Long.class)
+                            .append("Val1", 6L)
+                            .append("Val2", 8L)
+                            .append("Val3", 11L)
+                            .asResult())
+            .build();
+
         final String stmtStr = String.format("print query type %s select attribute[%s]",
                         Mocks.SimpleType.getName(), Mocks.TestAttribute.getName());
-
         final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
         final PrintStmt printStmt = PrintStmt.get(stmt);
-        final SQLVerify verify = SQLVerify.builder()
-            .withSql("select T0.TestAttribute_COL,T0.ID from T_DEMO T0")
-            .build();
-        printStmt.execute();
-        verify.verify();
+        final Evaluator evalutor = printStmt.evaluate();
+        assertTrue(evalutor.next());
+        assertEquals(evalutor.get(1), "Val1");
+        assertTrue(evalutor.next());
+        assertEquals(evalutor.get(1), "Val2");
+        assertTrue(evalutor.next());
+        assertEquals(evalutor.get(1), "Val3");
+        assertFalse(evalutor.next());
     }
 
     @Test(description = "Exec select without any other selects")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -51,7 +51,7 @@ public class PrintQueryTest
         assertEquals(print.getAttribute(Mocks.TestAttribute.getName()), "A Value");
     }
 
-    //@Test
+    @Test
     public void testTypedType()
         throws EFapsException
     {
