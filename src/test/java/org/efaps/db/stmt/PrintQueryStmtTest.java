@@ -91,32 +91,88 @@ public class PrintQueryStmtTest
     }
 
     @Test(description = "Test for different single where", dataProvider = "SingleWhereDataProvider")
-    public void testSingleWheres(final String _stmt,
-                                 final String _sql)
-       throws EFapsException
-   {
-       final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(_stmt);
-       final PrintStmt printStmt = PrintStmt.get(stmt);
-       final SQLVerify verify = SQLVerify.builder()
-           .withSql(_sql)
-           .build();
-       printStmt.execute();
-       verify.verify();
-   }
+    public void testSingleWheres(final String _stmt, final String _sql)
+        throws EFapsException
+    {
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(_stmt);
+        final PrintStmt printStmt = PrintStmt.get(stmt);
+        final SQLVerify verify = SQLVerify.builder().withSql(_sql).build();
+        printStmt.execute();
+        verify.verify();
+    }
 
-    @DataProvider(name = "SingleWhereDataProvider")
-    public static Iterator<Object[]> dataProvider1(final ITestContext _context)
+    @Test(description = "Test for different two where", dataProvider = "TwoWhereDataProvider")
+    public void testTwoWheres(final String _stmt, final String _sql)
+        throws EFapsException
+    {
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(_stmt);
+        final PrintStmt printStmt = PrintStmt.get(stmt);
+        final SQLVerify verify = SQLVerify.builder().withSql(_sql).build();
+        printStmt.execute();
+        verify.verify();
+    }
+
+    @DataProvider(name = "TwoWhereDataProvider")
+    public static Iterator<Object[]> dataProvider2(final ITestContext _context)
     {
         final List<Object[]> ret = new ArrayList<>();
-        final Iterator<String> stmtIter = getStmtParts().iterator();
-        final Iterator<String> sqlIter = getSQLParts().iterator();
+        final Iterator<String> stmtIter = getStmtParts2().iterator();
+        final Iterator<String> sqlIter = getSQLParts2().iterator();
         while (stmtIter.hasNext()) {
             ret.add(new Object[] { stmtIter.next(), sqlIter.next() });
         }
         return ret.iterator();
     }
 
-    public static List<String> getSQLParts() {
+    public static List<String> getStmtParts2() {
+
+        final List<String> ret = new ArrayList<>();
+        final Iterator<String> iter1 = getStmtWheres(Mocks.TestAttribute.getName()).iterator();
+        while (iter1.hasNext()) {
+            final String val = iter1.next();
+            ret.add(String.format("print query type %s where %s and %s select attribute[%s]",
+                            Mocks.SimpleType.getName(), val, val, Mocks.TestAttribute.getName()));
+        }
+        final Iterator<String> iter3 = getStmtWheres(Mocks.TypedTypeTestAttr.getName()).iterator();
+        while (iter3.hasNext()) {
+            final String val = iter3.next();
+            ret.add(String.format("print query type %s where %s and %s select attribute[%s]",
+                            Mocks.TypedType.getName(), val, val, Mocks.TypedTypeTestAttr.getName()));
+        }
+        return ret;
+    }
+
+    public static List<String> getSQLParts2() {
+        final List<String> ret = new ArrayList<>();
+        final Iterator<String> iter1 = getSQLWheres(Mocks.TestAttribute.getSQLColumnName()).iterator();
+        while (iter1.hasNext()) {
+            final String val = iter1.next();
+            ret.add(String.format("select T0.%s,T0.ID from %s T0 where T0.%s and T0.%s",
+                        Mocks.TestAttribute.getSQLColumnName(), Mocks.SimpleTypeSQLTable.getSqlTableName(), val, val));
+        }
+        final Iterator<String> iter2 = getSQLWheres(Mocks.TypedTypeTestAttr.getSQLColumnName()).iterator();
+        while (iter2.hasNext()) {
+            final String val = iter2.next();
+            ret.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE = %s and T0.%s and T0.%s",
+                            Mocks.TypedTypeTestAttr.getSQLColumnName(), Mocks.TypedTypeSQLTable.getSqlTableName(),
+                            Mocks.TypedType.getId(), val, val));
+        }
+        return ret;
+    }
+
+    @DataProvider(name = "SingleWhereDataProvider")
+    public static Iterator<Object[]> dataProvider1(final ITestContext _context)
+    {
+        final List<Object[]> ret = new ArrayList<>();
+        final Iterator<String> stmtIter = getStmtParts1().iterator();
+        final Iterator<String> sqlIter = getSQLParts1().iterator();
+        while (stmtIter.hasNext()) {
+            ret.add(new Object[] { stmtIter.next(), sqlIter.next() });
+        }
+        return ret.iterator();
+    }
+
+    public static List<String> getSQLParts1() {
         final List<String> ret = new ArrayList<>();
         final Iterator<String> iter1 = getSQLWheres(Mocks.TestAttribute.getSQLColumnName()).iterator();
         while (iter1.hasNext()) {
@@ -132,7 +188,7 @@ public class PrintQueryStmtTest
         return ret;
     }
 
-    public static List<String> getStmtParts() {
+    public static List<String> getStmtParts1() {
 
         final List<String> ret = new ArrayList<>();
         final Iterator<String> iter = getStmtWheres(Mocks.TestAttribute.getName()).iterator();

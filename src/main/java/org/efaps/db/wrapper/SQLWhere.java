@@ -47,9 +47,9 @@ public class SQLWhere
      * @param _escape the escape
      */
     public void addCriteria(final int _idx, final ArrayList<String> _sqlColNames, final Comparison _comparison,
-                            final String[] _values, final boolean _escape, final Connection connection)
+                            final String[] _values, final boolean _escape, final Connection _connection)
     {
-        this.criterias.add(new Criteria(_idx, _sqlColNames, _comparison, _values, _escape));
+        this.criterias.add(new Criteria(_idx, _sqlColNames, _comparison, _values, _escape, _connection));
     }
 
     public boolean isStarted()
@@ -80,6 +80,20 @@ public class SQLWhere
         }
 
         for (final Criteria criteria : this.criterias) {
+            switch (criteria.connection) {
+                case AND:
+                    new SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
+                    new SQLSelect.SQLSelectPart(SQLPart.AND).appendSQL(_cmd);
+                    new SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
+                    break;
+                case OR:
+                    new SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
+                    new SQLSelect.SQLSelectPart(SQLPart.OR).appendSQL(_cmd);
+                    new SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
+                    break;
+                default:
+                    break;
+            }
             for (final String colName : criteria.colNames) {
                 new SQLSelect.Column(_tablePrefix, criteria.tableIndex, colName).appendSQL(_cmd);
                 new SQLSelect.SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
@@ -150,18 +164,21 @@ public class SQLWhere
         private final Comparison comparison;
         private final String[] values;
         private final boolean escape;
+        private final Connection connection;
 
         public Criteria(final int _tableIndex,
                         final ArrayList<String> _sqlColNames,
                         final Comparison _comparison,
                         final String[] _values,
-                        final boolean _escape)
+                        final boolean _escape,
+                        final Connection _connection)
         {
             this.tableIndex = _tableIndex;
             this.colNames = _sqlColNames;
             this.comparison = _comparison;
             this.values = _values;
             this.escape = _escape;
+            this.connection = _connection;
         }
 
     }
