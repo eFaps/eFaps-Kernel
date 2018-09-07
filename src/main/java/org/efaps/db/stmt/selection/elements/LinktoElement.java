@@ -22,8 +22,6 @@ import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The Class LinktoElement.
@@ -32,9 +30,6 @@ public class LinktoElement
     extends AbstractDataElement<LinktoElement>
     implements IJoinTableIdx
 {
-    /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(LinktoElement.class);
-
     /** The attribute. */
     private Attribute attribute;
 
