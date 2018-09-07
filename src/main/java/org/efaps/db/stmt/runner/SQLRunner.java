@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.MultiMapUtils;
 import org.apache.commons.collections4.MultiValuedMap;
@@ -36,6 +37,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.stmt.filter.Filter;
 import org.efaps.db.stmt.print.AbstractPrint;
+import org.efaps.db.stmt.print.ListPrint;
 import org.efaps.db.stmt.print.ObjectPrint;
 import org.efaps.db.stmt.print.QueryPrint;
 import org.efaps.db.stmt.selection.ISelectionProvider;
@@ -139,6 +141,8 @@ public class SQLRunner
         if (this.sqlSelect.getColumns().size() > 0) {
             if (_print instanceof ObjectPrint) {
                 addWhere4ObjectPrint((ObjectPrint) _print);
+            } else if (_print instanceof ListPrint) {
+                addWhere4ListPrint((ListPrint) _print);
             } else {
                 addTypeCriteria((QueryPrint) _print);
                 addWhere4QueryPrint((QueryPrint) _print);
@@ -221,6 +225,26 @@ public class SQLRunner
         }
         this.sqlSelect.addColumnPart(0, "ID").addPart(SQLPart.EQUAL)
             .addValuePart(_print.getInstance().getId());
+    }
+
+    /**
+     * Adds the where.
+     */
+    private void addWhere4ListPrint(final ListPrint _print)
+    {
+        final SQLSelectPart currentPart = this.sqlSelect.getCurrentPart();
+        if (currentPart == null) {
+            this.sqlSelect.addPart(SQLPart.WHERE);
+        } else {
+            this.sqlSelect.addPart(SQLPart.AND);
+        }
+        this.sqlSelect.addColumnPart(0, "ID")
+            .addPart(SQLPart.IN)
+            .addPart(SQLPart.PARENTHESIS_OPEN)
+            .addValuePart(_print.getInstances().stream()
+                        .map(instance -> String.valueOf(instance.getId()))
+                        .collect(Collectors.joining(SQLPart.COMMA.getDefaultValue())))
+            .addPart(SQLPart.PARENTHESIS_CLOSE);
     }
 
     @Override

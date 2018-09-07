@@ -18,6 +18,7 @@
 package org.efaps.db.stmt;
 
 import org.efaps.db.stmt.print.AbstractPrint;
+import org.efaps.db.stmt.print.ListPrint;
 import org.efaps.db.stmt.print.ObjectPrint;
 import org.efaps.db.stmt.print.QueryPrint;
 import org.efaps.db.stmt.runner.StmtRunner;
@@ -59,7 +60,7 @@ public final class PrintStmt
         if (getEQLStmt() instanceof IPrintObjectStatement) {
             this.print = new ObjectPrint((IPrintObjectStatement) getEQLStmt());
         } else if (getEQLStmt() instanceof IPrintListStatement) {
-
+            this.print = new ListPrint((IPrintListStatement) getEQLStmt());
         } else if (getEQLStmt() instanceof IPrintQueryStatement) {
             this.print = new QueryPrint((IPrintQueryStatement) getEQLStmt());
         }
