@@ -29,7 +29,7 @@
             </memory>
             <!--10 minutes, 5 minutes (miliseconds) -->
             <expiration lifespan="600000" max-idle="300000" />
-            <indexing index="ALL">
+            <indexing index="LOCAL">
                 <indexed-entities>
                     <indexed-entity>org.efaps.admin.access.user.Evaluation</indexed-entity>
                 </indexed-entities>
@@ -105,7 +105,7 @@
         <local-cache name="org.efaps.db.QueryCache.Index">
             <!---Only experation no eviction, 10 minutes, 5 minutes (miliseconds) -->
             <expiration lifespan="600000" max-idle="300000" />
-            <indexing index="ALL">
+            <indexing index="LOCAL">
                 <indexed-entities>
                     <indexed-entity>org.efaps.db.QueryKey</indexed-entity>
                 </indexed-entities>
@@ -245,7 +245,7 @@
             <memory>
                 <object size="5000" strategy="LIRS"/>
             </memory>
-            <indexing index="ALL">
+            <indexing index="LOCAL">
                 <!-- the entity will be added during webapp loading
                 <indexed-entities>
                     <indexed-entity>org.efaps.ui.wicket.connectionregistry.UserSession</indexed-entity>
