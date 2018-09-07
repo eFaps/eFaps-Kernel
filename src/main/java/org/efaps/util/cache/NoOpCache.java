@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import org.infinispan.AdvancedCache;
 import org.infinispan.Cache;
@@ -47,35 +49,26 @@ public class NoOpCache<K, V>
 {
 
     @Override
-    public V put(final K _key,
-                 final V _value)
+    public V put(final K _key, final V _value)
     {
         return _value;
     }
 
     @Override
-    public CompletableFuture<V> putAsync(final K _key,
-                                       final V _value)
+    public CompletableFuture<V> putAsync(final K _key, final V _value)
     {
         return null;
     }
 
     @Override
-    public CompletableFuture<V> putAsync(final K _key,
-                                       final V _value,
-                                       final long _lifespan,
-                                       final TimeUnit _unit)
+    public CompletableFuture<V> putAsync(final K _key, final V _value, final long _lifespan, final TimeUnit _unit)
     {
         return null;
     }
 
     @Override
-    public CompletableFuture<V> putAsync(final K _key,
-                                       final V _value,
-                                       final long _lifespan,
-                                       final TimeUnit _lifespanUnit,
-                                       final long _maxIdle,
-                                       final TimeUnit _maxIdleUnit)
+    public CompletableFuture<V> putAsync(final K _key, final V _value, final long _lifespan,
+                                         final TimeUnit _lifespanUnit, final long _maxIdle, final TimeUnit _maxIdleUnit)
     {
         return null;
     }
@@ -87,19 +80,16 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public CompletableFuture<Void> putAllAsync(final Map<? extends K, ? extends V> _data,
-                                             final long _lifespan,
-                                             final TimeUnit _unit)
+    public CompletableFuture<Void> putAllAsync(final Map<? extends K, ? extends V> _data, final long _lifespan,
+                                               final TimeUnit _unit)
     {
         return null;
     }
 
     @Override
-    public CompletableFuture<Void> putAllAsync(final Map<? extends K, ? extends V> _data,
-                                             final long _lifespan,
-                                             final TimeUnit _lifespanUnit,
-                                             final long _maxIdle,
-                                             final TimeUnit _maxIdleUnit)
+    public CompletableFuture<Void> putAllAsync(final Map<? extends K, ? extends V> _data, final long _lifespan,
+                                               final TimeUnit _lifespanUnit, final long _maxIdle,
+                                               final TimeUnit _maxIdleUnit)
     {
         return null;
     }
@@ -111,28 +101,22 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public CompletableFuture<V> putIfAbsentAsync(final K _key,
-                                               final V _value)
+    public CompletableFuture<V> putIfAbsentAsync(final K _key, final V _value)
     {
         return null;
     }
 
     @Override
-    public CompletableFuture<V> putIfAbsentAsync(final K _key,
-                                               final V _value,
-                                               final long _lifespan,
-                                               final TimeUnit _unit)
+    public CompletableFuture<V> putIfAbsentAsync(final K _key, final V _value, final long _lifespan,
+                                                 final TimeUnit _unit)
     {
         return null;
     }
 
     @Override
-    public CompletableFuture<V> putIfAbsentAsync(final K _key,
-                                               final V _value,
-                                               final long _lifespan,
-                                               final TimeUnit _lifespanUnit,
-                                               final long _maxIdle,
-                                               final TimeUnit _maxIdleUnit)
+    public CompletableFuture<V> putIfAbsentAsync(final K _key, final V _value, final long _lifespan,
+                                                 final TimeUnit _lifespanUnit, final long _maxIdle,
+                                                 final TimeUnit _maxIdleUnit)
     {
         return null;
     }
@@ -144,65 +128,48 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public CompletableFuture<Boolean> removeAsync(final Object _key,
-                                                final Object _value)
+    public CompletableFuture<Boolean> removeAsync(final Object _key, final Object _value)
     {
         return null;
     }
 
     @Override
-    public CompletableFuture<V> replaceAsync(final K _key,
-                                           final V _value)
+    public CompletableFuture<V> replaceAsync(final K _key, final V _value)
     {
         return null;
     }
 
     @Override
-    public CompletableFuture<V> replaceAsync(final K _key,
-                                           final V _value,
-                                           final long _lifespan,
-                                           final TimeUnit _unit)
+    public CompletableFuture<V> replaceAsync(final K _key, final V _value, final long _lifespan, final TimeUnit _unit)
     {
         return null;
     }
 
     @Override
-    public CompletableFuture<V> replaceAsync(final K _key,
-                                           final V _value,
-                                           final long _lifespan,
-                                           final TimeUnit _lifespanUnit,
-                                           final long _maxIdle,
-                                           final TimeUnit _maxIdleUnit)
+    public CompletableFuture<V> replaceAsync(final K _key, final V _value, final long _lifespan,
+                                             final TimeUnit _lifespanUnit, final long _maxIdle,
+                                             final TimeUnit _maxIdleUnit)
     {
         return null;
     }
 
     @Override
-    public CompletableFuture<Boolean> replaceAsync(final K _key,
-                                                 final V _oldValue,
-                                                 final V _newValue)
+    public CompletableFuture<Boolean> replaceAsync(final K _key, final V _oldValue, final V _newValue)
     {
         return null;
     }
 
     @Override
-    public CompletableFuture<Boolean> replaceAsync(final K _key,
-                                                 final V _oldValue,
-                                                 final V _newValue,
-                                                 final long _lifespan,
-                                                 final TimeUnit _unit)
+    public CompletableFuture<Boolean> replaceAsync(final K _key, final V _oldValue, final V _newValue,
+                                                   final long _lifespan, final TimeUnit _unit)
     {
         return null;
     }
 
     @Override
-    public CompletableFuture<Boolean> replaceAsync(final K _key,
-                                                 final V _oldValue,
-                                                 final V _newValue,
-                                                 final long _lifespan,
-                                                 final TimeUnit _lifespanUnit,
-                                                 final long _maxIdle,
-                                                 final TimeUnit _maxIdleUnit)
+    public CompletableFuture<Boolean> replaceAsync(final K _key, final V _oldValue, final V _newValue,
+                                                   final long _lifespan, final TimeUnit _lifespanUnit,
+                                                   final long _maxIdle, final TimeUnit _maxIdleUnit)
     {
         return null;
     }
@@ -226,130 +193,90 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public V put(final K _key,
-                 final V _value,
-                 final long _lifespan,
-                 final TimeUnit _unit)
+    public V put(final K _key, final V _value, final long _lifespan, final TimeUnit _unit)
     {
         return _value;
     }
 
     @Override
-    public V putIfAbsent(final K _key,
-                         final V _value,
-                         final long _lifespan,
-                         final TimeUnit _unit)
+    public V putIfAbsent(final K _key, final V _value, final long _lifespan, final TimeUnit _unit)
     {
         return _value;
     }
 
     @Override
-    public void putAll(final Map<? extends K, ? extends V> _map,
-                       final long _lifespan,
-                       final TimeUnit _unit)
+    public void putAll(final Map<? extends K, ? extends V> _map, final long _lifespan, final TimeUnit _unit)
     {
 
     }
 
     @Override
-    public V replace(final K _key,
-                     final V _value,
-                     final long _lifespan,
-                     final TimeUnit _unit)
+    public V replace(final K _key, final V _value, final long _lifespan, final TimeUnit _unit)
     {
         return _value;
     }
 
     @Override
-    public boolean replace(final K _key,
-                           final V _oldValue,
-                           final V _value,
-                           final long _lifespan,
-                           final TimeUnit _unit)
+    public boolean replace(final K _key, final V _oldValue, final V _value, final long _lifespan, final TimeUnit _unit)
     {
         return false;
     }
 
     @Override
-    public V put(final K _key,
-                 final V _value,
-                 final long _lifespan,
-                 final TimeUnit _lifespanUnit,
-                 final long _maxIdleTime,
-                 final TimeUnit _maxIdleTimeUnit)
+    public V put(final K _key, final V _value, final long _lifespan, final TimeUnit _lifespanUnit,
+                 final long _maxIdleTime, final TimeUnit _maxIdleTimeUnit)
     {
         return _value;
     }
 
     @Override
-    public V putIfAbsent(final K _key,
-                         final V _value,
-                         final long _lifespan,
-                         final TimeUnit _lifespanUnit,
-                         final long _maxIdleTime,
-                         final TimeUnit _maxIdleTimeUnit)
+    public V putIfAbsent(final K _key, final V _value, final long _lifespan, final TimeUnit _lifespanUnit,
+                         final long _maxIdleTime, final TimeUnit _maxIdleTimeUnit)
     {
         return _value;
     }
 
     @Override
-    public void putAll(final Map<? extends K, ? extends V> _map,
-                       final long _lifespan,
-                       final TimeUnit _lifespanUnit,
-                       final long _maxIdleTime,
-                       final TimeUnit _maxIdleTimeUnit)
+    public void putAll(final Map<? extends K, ? extends V> _map, final long _lifespan, final TimeUnit _lifespanUnit,
+                       final long _maxIdleTime, final TimeUnit _maxIdleTimeUnit)
     {
 
     }
 
     @Override
-    public V replace(final K _key,
-                     final V _value,
-                     final long _lifespan,
-                     final TimeUnit _lifespanUnit,
-                     final long _maxIdleTime,
-                     final TimeUnit _maxIdleTimeUnit)
+    public V replace(final K _key, final V _value, final long _lifespan, final TimeUnit _lifespanUnit,
+                     final long _maxIdleTime, final TimeUnit _maxIdleTimeUnit)
     {
         return _value;
     }
 
     @Override
-    public boolean replace(final K _key,
-                           final V _oldValue,
-                           final V _value,
-                           final long _lifespan,
-                           final TimeUnit _lifespanUnit,
-                           final long _maxIdleTime,
-                           final TimeUnit _maxIdleTimeUnit)
+    public boolean replace(final K _key, final V _oldValue, final V _value, final long _lifespan,
+                           final TimeUnit _lifespanUnit, final long _maxIdleTime, final TimeUnit _maxIdleTimeUnit)
     {
         return false;
     }
 
     @Override
-    public V putIfAbsent(final K _key,
-                         final V _value)
+    public V putIfAbsent(final K _key, final V _value)
     {
         return _value;
     }
 
     @Override
-    public boolean remove(final Object _key,
-                          final Object _value)
+    public boolean remove(final Object _key, final Object _value)
     {
         return false;
     }
 
     @Override
-    public boolean replace(final K _key,
-                           final V _oldValue,
-                           final V _newValue)
+    public boolean replace(final K _key, final V _oldValue, final V _newValue)
     {
         return false;
     }
 
     @Override
-    public V replace(final K _key,
-                     final V _value)
+    public V replace(final K _key, final V _value)
     {
         return _value;
     }
@@ -379,13 +306,6 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public void addListener(final Object _listener,
-                            final KeyFilter<? super K> _filter)
-    {
-
-    }
-
-    @Override
     public void addListener(final Object _listener)
     {
 
@@ -404,8 +324,7 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public void putForExternalRead(final K _key,
-                                   final V _value)
+    public void putForExternalRead(final K _key, final V _value)
     {
     }
 
@@ -440,27 +359,19 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public <C> void addListener(final Object _listener,
-                                final CacheEventFilter<? super K, ? super V> _filter,
+    public <C> void addListener(final Object _listener, final CacheEventFilter<? super K, ? super V> _filter,
                                 final CacheEventConverter<? super K, ? super V, C> _converter)
     {
     }
 
     @Override
-    public void putForExternalRead(final K _key,
-                                   final V _value,
-                                   final long _lifespan,
-                                   final TimeUnit _unit)
+    public void putForExternalRead(final K _key, final V _value, final long _lifespan, final TimeUnit _unit)
     {
     }
 
     @Override
-    public void putForExternalRead(final K _key,
-                                   final V _value,
-                                   final long _lifespan,
-                                   final TimeUnit _lifespanUnit,
-                                   final long _maxIdle,
-                                   final TimeUnit _maxIdleUnit)
+    public void putForExternalRead(final K _key, final V _value, final long _lifespan, final TimeUnit _lifespanUnit,
+                                   final long _maxIdle, final TimeUnit _maxIdleUnit)
     {
     }
 
@@ -529,10 +440,60 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public <C> void addFilteredListener(final Object _listener,
-                                        final CacheEventFilter<? super K, ? super V> _filter,
+    public <C> void addFilteredListener(final Object _listener, final CacheEventFilter<? super K, ? super V> _filter,
                                         final CacheEventConverter<? super K, ? super V, C> _converter,
                                         final Set<Class<? extends Annotation>> _filterAnnotations)
+    {
+    }
+
+    @Override
+    public V merge(final K key, final V value, final BiFunction<? super V, ? super V, ? extends V> remappingFunction)
+    {
+        return null;
+    }
+
+    @Override
+    public V merge(final K _arg0, final V _arg1, final BiFunction<? super V, ? super V, ? extends V> _arg2,
+                   final long _arg3, final TimeUnit _arg4)
+    {
+        return null;
+    }
+
+    @Override
+    public V merge(final K _arg0, final V _arg1, final BiFunction<? super V, ? super V, ? extends V> _arg2,
+                   final long _arg3, final TimeUnit _arg4, final long _arg5, final TimeUnit _arg6)
+    {
+        return null;
+    }
+
+    @Override
+    public <C> void addStorageFormatFilteredListener(final Object _arg0,
+                                                     final CacheEventFilter<? super K, ? super V> _arg1,
+                                                     final CacheEventConverter<? super K, ? super V, C> _arg2,
+                                                     final Set<Class<? extends Annotation>> _arg3)
+    {
+    }
+
+    @Override
+    public V compute(final K _arg0, final BiFunction<? super K, ? super V, ? extends V> _arg1)
+    {
+        return null;
+    }
+
+    @Override
+    public V computeIfAbsent(final K _arg0, final Function<? super K, ? extends V> _arg1)
+    {
+        return null;
+    }
+
+    @Override
+    public V computeIfPresent(final K _arg0, final BiFunction<? super K, ? super V, ? extends V> _arg1)
+    {
+        return null;
+    }
+
+    @Override
+    public void addListener(final Object _arg0, final KeyFilter<? super K> _arg1)
     {
     }
 }
