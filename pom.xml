@@ -566,6 +566,17 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- Infinispan needs jboss logging or it will fail -->
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <version>3.3.2.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logmanager</groupId>
+            <artifactId>jboss-logmanager</artifactId>
+            <version>2.1.4.Final</version>
+        </dependency>
         <!-- Used by infinispan to search
         <dependency>
             <groupId>org.hibernate</groupId>
