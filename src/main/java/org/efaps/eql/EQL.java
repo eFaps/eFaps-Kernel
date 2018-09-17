@@ -119,6 +119,18 @@ public final class EQL
     /**
      * Prints the.
      *
+     * @param _queryBuilder the query builder
+     * @return the prints the
+     */
+    public static Print print(final CIType... _ciTypes)
+    {
+        return (Print) org.efaps.eql2.EQL.print(query(Arrays.stream(_ciTypes)
+                        .map(ciType -> ciType.uuid.toString()).toArray(String[]::new)));
+    }
+
+    /**
+     * Prints the.
+     *
      * @param _types the types
      * @return the abstract print EQL builder<?>
      */

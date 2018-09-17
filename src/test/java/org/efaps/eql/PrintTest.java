@@ -50,6 +50,22 @@ public class PrintTest
     }
 
     @Test
+    public void testObjPrintOneAttributeUsingCI()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+                        Mocks.TestAttribute.getSQLColumnName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(Mocks.SimpleType.getId() + ".4")
+            .attribute(CI.SimpleType.TestAttr)
+            .stmt()
+            .execute();
+        verify.verify();
+    }
+
+    @Test
     public void testObjPrintVariousAttributes()
         throws EFapsException
     {

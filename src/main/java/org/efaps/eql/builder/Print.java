@@ -17,6 +17,8 @@
 
 package org.efaps.eql.builder;
 
+import java.util.Arrays;
+
 import org.efaps.ci.CIAttribute;
 import org.efaps.db.stmt.PrintStmt;
 import org.efaps.eql2.IPrintStatement;
@@ -47,7 +49,8 @@ public class Print
     }
 
     @Override
-    public Print select(final ISelectable... _selects) {
+    public Print select(final ISelectable... _selects)
+    {
         for (final ISelectable select : _selects) {
             switch (select.getKey()) {
                 case "CIAttribute":
@@ -59,5 +62,10 @@ public class Print
             }
         }
         return getThis();
+    }
+
+    public Print attribute(final CIAttribute... _ciAttrs)
+    {
+        return super.attribute(Arrays.stream(_ciAttrs).map(ciAttr -> ciAttr.name).toArray(String[]::new));
     }
 }
