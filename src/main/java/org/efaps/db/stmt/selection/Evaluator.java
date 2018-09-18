@@ -33,9 +33,11 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListValuedMap;
 import org.apache.commons.collections4.MultiMapUtils;
 import org.efaps.admin.access.AccessTypeEnums;
+import org.efaps.ci.CIAttribute;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.eql.JSONData;
+import org.efaps.eql.builder.Print;
 import org.efaps.json.data.DataList;
 import org.efaps.json.data.ObjectData;
 import org.efaps.util.EFapsException;
@@ -180,6 +182,12 @@ public final class Evaluator
             ret = get(selectOpt.get());
         }
         return (T) ret;
+    }
+
+    public <T> T get(final CIAttribute _ciAttr)
+        throws EFapsException
+    {
+        return get(Print.getDefaultAlias(_ciAttr));
     }
 
     /**

@@ -32,6 +32,7 @@ import org.efaps.json.data.LongValue;
 import org.efaps.json.data.StringValue;
 import org.efaps.mock.MockResult;
 import org.efaps.mock.Mocks;
+import org.efaps.mock.datamodel.CI;
 import org.efaps.mock.esjp.AccessCheck;
 import org.efaps.test.AbstractTest;
 import org.efaps.util.EFapsException;
@@ -579,5 +580,56 @@ public class EvaluatorTest
         assertEquals(dataList.get(0).getValues().get(0).getKey(), "1");
         assertTrue(dataList.get(0).getValues().get(1) instanceof LongValue);
         assertEquals(dataList.get(0).getValues().get(1).getKey(), "2");
+    }
+
+    @Test
+    public void testGetByCIAttribute()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T0.%s,T0.ID from %s T0",
+                        Mocks.AllAttrStringAttribute.getSQLColumnName(),
+                        Mocks.AllAttrLongAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList3(Object.class, Object.class, Object.class)
+                .append("StringValue1", 1L, 234L)
+                .asResult())
+            .build();
+
+        final Evaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+            .attribute(CI.AllAttrType.StringAttribute, CI.AllAttrType.LongAttribute)
+            .stmt()
+            .evaluate();
+        eval.next();
+        assertEquals(eval.get(CI.AllAttrType.StringAttribute), "StringValue1");
+        assertEquals(eval.get(CI.AllAttrType.LongAttribute), Long.valueOf(1));
+    }
+
+    @Test
+    public void testGetByCIAttributeOverwriteAlias()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T0.%s,T0.ID from %s T0",
+                        Mocks.AllAttrStringAttribute.getSQLColumnName(),
+                        Mocks.AllAttrLongAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList3(Object.class, Object.class, Object.class)
+                .append("StringValue1", 1L, 234L)
+                .asResult())
+            .build();
+
+        final Evaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+            .attribute(CI.AllAttrType.StringAttribute).as("Bethoven")
+            .attribute(CI.AllAttrType.LongAttribute)
+            .stmt()
+            .evaluate();
+        eval.next();
+        assertEquals(eval.get("Bethoven"), "StringValue1");
+        assertEquals(eval.get(CI.AllAttrType.LongAttribute), Long.valueOf(1));
     }
 }

@@ -41,6 +41,7 @@ public final class PrintStmt
     /** The print. */
     private AbstractPrint print;
 
+
     /**
      * Instantiates a new prints the stmt.
      */
@@ -72,7 +73,7 @@ public final class PrintStmt
      * Evaluator.
      *
      * @return the selection evaluator
-     * @throws EFapsException the e faps exception
+     * @throws EFapsException the eFaps exception
      */
     public Evaluator evaluate()
         throws EFapsException

@@ -17,8 +17,6 @@
 
 package org.efaps.eql.builder;
 
-import java.util.Arrays;
-
 import org.efaps.ci.CIAttribute;
 import org.efaps.db.stmt.PrintStmt;
 import org.efaps.eql2.IPrintStatement;
@@ -31,7 +29,6 @@ import org.efaps.eql2.bldr.ISelectable;
 public class Print
     extends AbstractPrintEQLBuilder<Print>
 {
-
     /**
      * Stmt.
      *
@@ -66,6 +63,14 @@ public class Print
 
     public Print attribute(final CIAttribute... _ciAttrs)
     {
-        return super.attribute(Arrays.stream(_ciAttrs).map(ciAttr -> ciAttr.name).toArray(String[]::new));
+        for (final CIAttribute ciAttr : _ciAttrs) {
+            attribute(ciAttr.name);
+            as(getDefaultAlias(ciAttr));
+        }
+        return getThis();
+    }
+
+    public static String getDefaultAlias(final CIAttribute _ciAttr) {
+        return "CIALIAS" + _ciAttr.name;
     }
 }
