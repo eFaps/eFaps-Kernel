@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,14 @@ public class QueryPrint
             } else {
                 type = Type.get(typeStr);
             }
-            addType(type);
+            if (type.isAbstract()) {
+                type.getChildTypes()
+                    .stream()
+                    .filter(t -> !t.isAbstract())
+                    .forEach(child -> addType(child));
+            } else {
+                addType(type);
+            }
         }
     }
 

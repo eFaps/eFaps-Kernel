@@ -167,7 +167,10 @@ public class SQLRunner
     private void addTypeCriteria(final QueryPrint _print)
     {
         final MultiValuedMap<TableIdx, TypeCriteria> typeCriterias = MultiMapUtils.newListValuedHashMap();
-        for (final Type type : _print.getTypes()) {
+        final List<Type> types = _print.getTypes().stream()
+                        .sorted((type1, type2) -> Long.compare(type1.getId(), type2.getId()))
+                        .collect(Collectors.toList());
+        for (final Type type : types) {
             final String tableName = type.getMainTable().getSqlTable();
             final TableIdx tableIdx = this.sqlSelect.getIndexer().getTableIdx(tableName);
             if (tableIdx.isCreated()) {

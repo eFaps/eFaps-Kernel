@@ -73,6 +73,42 @@ public class PrintQueryStmtTest
         assertFalse(evalutor.next());
     }
 
+    @Test
+    public void testAbstractType()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 "
+                        + "where T0.TYPE in ( %s , %s )",
+                        Mocks.AbstractTypeStringAttribute.getSQLColumnName(),
+                        Mocks.AbstractTypeSQLTable.getSqlTableName(),
+                        Mocks.ChildType1.getId() < Mocks.ChildType2.getId()
+                            ? Mocks.ChildType1.getId() : Mocks.ChildType2.getId() ,
+                        Mocks.ChildType1.getId() < Mocks.ChildType2.getId()
+                            ? Mocks.ChildType2.getId() : Mocks.ChildType1.getId());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList3(String.class, Long.class, Long.class)
+                            .append("Val1", 6L, Mocks.ChildType1.getId())
+                            .append("Val2", 8L, Mocks.ChildType2.getId())
+                            .append("Val3", 11L, Mocks.ChildType1.getId())
+                            .asResult())
+            .build();
+
+        final String stmtStr = String.format("print query type %s select attribute[%s]",
+                        Mocks.AbstractType.getName(), Mocks.AbstractTypeStringAttribute.getName());
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+        final PrintStmt printStmt = PrintStmt.get(stmt);
+        final Evaluator evalutor = printStmt.evaluate();
+        assertTrue(evalutor.next());
+        assertEquals(evalutor.get(1), "Val1");
+        assertTrue(evalutor.next());
+        assertEquals(evalutor.get(1), "Val2");
+        assertTrue(evalutor.next());
+        assertEquals(evalutor.get(1), "Val3");
+        assertFalse(evalutor.next());
+    }
+
     @Test(description = "Exec select without any other selects")
     public void testSelectExec()
         throws EFapsException

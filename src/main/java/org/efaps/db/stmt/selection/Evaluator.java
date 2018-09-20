@@ -93,7 +93,7 @@ public final class Evaluator
     /**
      * Squash.
      *
-     * @throws EFapsException the e faps exception
+     * @throws EFapsException the eFaps exception
      */
     private void squash()
         throws EFapsException
