@@ -81,8 +81,10 @@ public class QueryTest
         final String sql = String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE in ( %s , %s )",
                         Mocks.AbstractTypeStringAttribute.getSQLColumnName(),
                         Mocks.AbstractTypeSQLTable.getSqlTableName(),
-                        Mocks.ChildType1.getId(),
-                        Mocks.ChildType2.getId());
+                        Mocks.ChildType1.getId() < Mocks.ChildType2.getId()
+                            ? Mocks.ChildType1.getId() : Mocks.ChildType2.getId() ,
+                        Mocks.ChildType1.getId() < Mocks.ChildType2.getId()
+                            ? Mocks.ChildType2.getId() : Mocks.ChildType1.getId());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
         EQL.print(EQL.query(Mocks.ChildType1.getName(), Mocks.ChildType2.getName()))
