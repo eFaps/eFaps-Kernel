@@ -15,11 +15,8 @@
  *
  */
 
-
 package org.efaps.admin.program.esjp;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -29,13 +26,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.efaps.util.EFapsException;
-import org.glassfish.jersey.server.internal.scanning.AnnotationAcceptingListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
- * TODO comment!
  *
  * @author The eFaps Team
  *
@@ -80,36 +74,13 @@ public final class Listener
     {
         if (!this.initialized) {
             Listener.LOG.info("Scanning for Listener classes....");
-            @SuppressWarnings("unchecked")
-            final AnnotationAcceptingListener asl = new AnnotationAcceptingListener(EFapsClassLoader.getInstance(),
-                            EFapsListener.class);
-            try (EFapsResourceFinder resourceFinder = new EFapsResourceFinder()) {
-                while (resourceFinder.hasNext()) {
-                    final String next = resourceFinder.next();
-                    if (asl.accept(next)) {
-                        final InputStream in = resourceFinder.open();
-                        try {
-                            Listener.LOG.debug("Scanning '{}' for annotations.", next);
-                            asl.process(next, in);
-                        } catch (final IOException e) {
-                            Listener.LOG.warn("Cannot process '{}'", next);
-                        } finally {
-                            try {
-                                in.close();
-                            } catch (final IOException ex) {
-                                Listener.LOG.trace("Error closing resource stream.", ex);
-                            }
-                        }
-                    }
-                }
-                this.classes.clear();
-                this.classes.addAll(asl.getAnnotatedClasses());
+            this.classes.clear();
+            this.classes.addAll(new EsjpScanner().scan(EFapsListener.class));
 
-                if (Listener.LOG.isInfoEnabled() && !this.classes.isEmpty()) {
-                    logClasses("Listener classes found:", this.classes);
-                }
-                this.initialized = true;
+            if (Listener.LOG.isInfoEnabled() && !this.classes.isEmpty()) {
+                logClasses("Listener classes found:", this.classes);
             }
+            this.initialized = true;
         }
     }
 

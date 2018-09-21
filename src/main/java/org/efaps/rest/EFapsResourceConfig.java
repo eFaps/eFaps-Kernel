@@ -24,12 +24,7 @@ import java.util.Set;
 import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
 
-import org.efaps.admin.program.esjp.EFapsClassLoader;
-import org.efaps.ci.CIAdminProgram;
-import org.efaps.db.Checkout;
-import org.efaps.db.Context;
-import org.efaps.db.InstanceQuery;
-import org.efaps.db.QueryBuilder;
+import org.efaps.admin.program.esjp.EsjpScanner;
 import org.efaps.util.EFapsException;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -71,41 +66,12 @@ public class EFapsResourceConfig
      */
     public void init()
     {
-        final Set<String> classNames= new HashSet<>();
         LOG.info("Scanning esjps for REST implementations");
         try {
-            boolean contextStarted = false;
-            if (!Context.isThreadActive()) {
-                Context.begin(null, Context.Inheritance.Local);
-                contextStarted = true;
-            }
-            final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.JavaClass);
-            final InstanceQuery query = queryBldr.getQuery();
-            query.executeWithoutAccessCheck();
-            while (query.next()) {
-                final Checkout checkout = new Checkout(query.getCurrentValue());
-                checkout.execute();
-                classNames.add(checkout.getFileName());
-            }
-            final EFapsClassLoader classloader = EFapsClassLoader.getInstance();
-            for (final String className : classNames) {
-                LOG.trace("Checking for annotations {} ", className);
-                final Class<?> clazz = Class.forName(className, false, classloader);
-                if (clazz.getAnnotation(Path.class) != null) {
-                    registerClasses(clazz);
-                } else if (clazz.getAnnotation(Provider.class) != null) {
-                    registerClasses(clazz);
-                }
-            }
-            if (contextStarted) {
-                Context.rollback();
-            }
+            registerClasses(new EsjpScanner().scan(Path.class, Provider.class));
         } catch (final EFapsException e) {
-            LOG.error("Catched", e);
-        } catch (final ClassNotFoundException e) {
-            LOG.error("Catched", e);
+            LOG.error("Catched EFapsException", e);
         }
-
         registerClasses(Compile.class);
         registerClasses(Update.class);
         registerClasses(RestEQLInvoker.class);
