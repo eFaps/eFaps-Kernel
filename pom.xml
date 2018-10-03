@@ -617,6 +617,10 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     <artifactId>hibernate-jpa-2.0-api</artifactId>
                     <groupId>org.hibernate.javax.persistence</groupId>
                 </exclusion>
+                <exclusion>
+                    <groupId>javassist</groupId>
+                    <artifactId>javassist</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
