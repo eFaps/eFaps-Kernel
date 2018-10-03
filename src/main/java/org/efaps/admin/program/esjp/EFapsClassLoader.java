@@ -184,9 +184,9 @@ public final class EFapsClassLoader
                 is.close();
             }
         } catch (final EFapsException e) {
-            EFapsClassLoader.LOG.error("could not access the Database for reading '{}'", e, _resourceName);
+            EFapsClassLoader.LOG.error("could not access the Database for reading '{}' - {}", _resourceName, e);
         } catch (final IOException e) {
-            EFapsClassLoader.LOG.error("could not read the Javaclass '{}'", e, _resourceName);
+            EFapsClassLoader.LOG.error("could not read the Javaclass '{}' - {}", _resourceName, e);
         }
         return ret;
     }

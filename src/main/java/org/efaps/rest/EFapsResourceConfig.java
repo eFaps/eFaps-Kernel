@@ -25,6 +25,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
 
 import org.efaps.admin.program.esjp.EsjpScanner;
+import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -33,13 +34,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO comment!
  *
  * @author The eFaps Team
  */
 public class EFapsResourceConfig
     extends ResourceConfig
 {
+    public static String CONTEXTHINT = EFapsResourceConfig.class.getName() + ".ContextStarted";
 
     /**
      * Logging instance used in this class.
@@ -56,7 +57,7 @@ public class EFapsResourceConfig
      */
     public EFapsResourceConfig()
     {
-        super(MultiPartFeature.class);
+        super(MultiPartFeature.class, RestApplicationEventListener.class);
         init();
     }
 
@@ -68,6 +69,10 @@ public class EFapsResourceConfig
     {
         LOG.info("Scanning esjps for REST implementations");
         try {
+            if (!Context.isThreadActive()) {
+                Context.begin(null, Context.Inheritance.Local);
+                Context.getThreadContext().setRequestAttribute(CONTEXTHINT, true);
+            }
             registerClasses(new EsjpScanner().scan(Path.class, Provider.class));
         } catch (final EFapsException e) {
             LOG.error("Catched EFapsException", e);
