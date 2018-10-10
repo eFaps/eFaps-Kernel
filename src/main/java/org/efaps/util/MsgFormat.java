@@ -17,8 +17,6 @@
 
 package org.efaps.util;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -26,11 +24,9 @@ import java.util.Map;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.text.ExtendedMessageFormat;
 import org.apache.commons.text.FormatFactory;
-import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.admin.program.esjp.EFapsFormatFactory;
-import org.efaps.admin.program.esjp.EFapsResourceFinder;
+import org.efaps.admin.program.esjp.EsjpScanner;
 import org.efaps.db.Context;
-import org.glassfish.jersey.server.internal.scanning.AnnotationAcceptingListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,40 +76,17 @@ public final class MsgFormat
         throws EFapsException
     {
         if (!this.initialized) {
-            @SuppressWarnings("unchecked")
-            final AnnotationAcceptingListener asl = new AnnotationAcceptingListener(EFapsClassLoader.getInstance(),
-                            EFapsFormatFactory.class);
-            try (EFapsResourceFinder resourceFinder = new EFapsResourceFinder()) {
-                while (resourceFinder.hasNext()) {
-                    final String next = resourceFinder.next();
-                    if (asl.accept(next)) {
-                        final InputStream in = resourceFinder.open();
-                        try {
-                            MsgFormat.LOG.debug("Scanning '{}' for annotations.", next);
-                            asl.process(next, in);
-                        } catch (final IOException e) {
-                            MsgFormat.LOG.warn("Cannot process '{}'", next);
-                        } finally {
-                            try {
-                                in.close();
-                            } catch (final IOException ex) {
-                                MsgFormat.LOG.trace("Error closing resource stream.", ex);
-                            }
-                        }
-                    }
+            for (final Class<?> clazz : new EsjpScanner().scan(EFapsFormatFactory.class)) {
+                try {
+                    final FormatFactory factory = (FormatFactory) clazz.newInstance();
+                    final EFapsFormatFactory ano = clazz.getAnnotation(EFapsFormatFactory.class);
+                    this.registry.put(ano.name(), factory);
+                } catch (final InstantiationException | IllegalAccessException e) {
+                    MsgFormat.LOG.error("Catched error on instantiotion", e);
                 }
-                for (final Class<?> clazz : asl.getAnnotatedClasses()) {
-                    try {
-                        final FormatFactory factory = (FormatFactory) clazz.newInstance();
-                        final EFapsFormatFactory ano = clazz.getAnnotation(EFapsFormatFactory.class);
-                        this.registry.put(ano.name(), factory);
-                    } catch (final InstantiationException | IllegalAccessException e) {
-                        MsgFormat.LOG.error("Catched error on instantiotion", e);
-                    }
-                }
-                MsgFormat.LOG.info("registered FormatFactories: {}", this.registry);
-                this.initialized = true;
             }
+            MsgFormat.LOG.info("registered FormatFactories: {}", this.registry);
+            this.initialized = true;
         }
         return this;
     }

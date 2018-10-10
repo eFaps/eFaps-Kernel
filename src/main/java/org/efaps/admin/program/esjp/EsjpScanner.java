@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.efaps.admin.AppConfigHandler;
 import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.Checkout;
 import org.efaps.db.Context;
@@ -34,6 +35,9 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
 import org.reflections.Reflections;
+import org.reflections.scanners.FieldAnnotationsScanner;
+import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.scanners.Scanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ConfigurationBuilder;
@@ -53,6 +57,9 @@ public class EsjpScanner
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(EsjpScanner.class);
+
+    /** The reflections store. */
+    private static java.io.File REFLECTIONS;
 
     static {
         Vfs.setDefaultURLTypes(Collections.singletonList(new UrlType()
@@ -79,29 +86,48 @@ public class EsjpScanner
     {
         final Set<Class<?>> ret = new HashSet<>();
         try {
-            final ConfigurationBuilder configuration = new ConfigurationBuilder()
-                            .setUrls(new URL("file://"))
-                            .setScanners(new TypeAnnotationsScanner(), new SubTypesScanner())
-                            .setExpandSuperTypes(false);
-            configuration.setClassLoaders(new ClassLoader[] { EFapsClassLoader.getInstance()} );
-            // in case of jboss the transaction filter is not executed
-            // before the method is called therefore a Context must be opened
-            boolean contextStarted = false;
-            if (!Context.isThreadActive()) {
-                Context.begin(null, Context.Inheritance.Local);
-                contextStarted = true;
+            final Reflections reflections;
+            if (REFLECTIONS == null) {
+                LOG.info("Scanning esjps for annotations.");
+                final ConfigurationBuilder configuration = new ConfigurationBuilder()
+                                .setUrls(new URL("file://"))
+                                .setScanners(new SubTypesScanner(), new TypeAnnotationsScanner(),
+                                                new FieldAnnotationsScanner(), new MethodAnnotationsScanner());
+                configuration.setClassLoaders(new ClassLoader[] { EFapsClassLoader.getInstance()} );
+                // in case of jboss the transaction filter is not executed
+                // before the method is called therefore a Context must be opened
+                boolean contextStarted = false;
+                if (!Context.isThreadActive()) {
+                    Context.begin(null, Context.Inheritance.Local);
+                    contextStarted = true;
+                }
+                reflections = new Reflections(configuration);
+                save(reflections);
+                if (contextStarted) {
+                    Context.rollback();
+                }
+            } else {
+                LOG.info("Loading refelections result.");
+                reflections = new Reflections(new ConfigurationBuilder().setScanners(new Scanner[] {}));
+                reflections.collect(REFLECTIONS);
             }
-            final Reflections reflections = new Reflections(configuration);
             for (final Class<? extends Annotation> annotation : _annotations) {
                 ret.addAll(reflections.getTypesAnnotatedWith(annotation));
             }
-            if (contextStarted) {
-                Context.rollback();
-            }
         } catch (final MalformedURLException e) {
             LOG.error("Catched MalformedURLException", e);
+        } catch (final IOException e) {
+            LOG.error("Catched IOException", e);
         }
         return ret;
+    }
+
+    private void save(final Reflections _reflections)
+        throws IOException
+    {
+        final java.io.File tmpFolder = AppConfigHandler.get().getTempFolder();
+        final java.io.File xmlFile = java.io.File.createTempFile("eFapsReflections-", ".xml", tmpFolder);
+        REFLECTIONS = _reflections.save(xmlFile.getAbsolutePath());
     }
 
     public static class EsjpDir

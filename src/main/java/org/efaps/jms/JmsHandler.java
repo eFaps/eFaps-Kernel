@@ -129,7 +129,7 @@ public final class JmsHandler
                                     .file().label();
                     multi.addSelect(sel);
                     if (multi.executeWithoutAccessCheck()) {
-                        JmsResourceConfig.getResourceConfig().init();
+                        //TODO add scanning
                     }
                     while (multi.next()) {
                         final Type type = multi.<Type>getAttribute(CIAdminCommon.JmsAbstract.Type);
