@@ -109,7 +109,9 @@ public class EsjpScanner
                 }
             } else {
                 LOG.info("Loading refelections result.");
-                reflections = new Reflections(new ConfigurationBuilder().setScanners(new Scanner[] {}));
+                final ConfigurationBuilder configuration = new ConfigurationBuilder().setScanners(new Scanner[] {});
+                configuration.setClassLoaders(new ClassLoader[] { EFapsClassLoader.getInstance()} );
+                reflections = new Reflections();
                 reflections.collect(REFLECTIONS);
             }
             for (final Class<? extends Annotation> annotation : _annotations) {
