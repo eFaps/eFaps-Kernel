@@ -92,7 +92,8 @@ public class EsjpScanner
                 final ConfigurationBuilder configuration = new ConfigurationBuilder()
                                 .setUrls(new URL("file://"))
                                 .setScanners(new SubTypesScanner(), new TypeAnnotationsScanner(),
-                                                new FieldAnnotationsScanner(), new MethodAnnotationsScanner());
+                                                new FieldAnnotationsScanner(), new MethodAnnotationsScanner())
+                                .setExpandSuperTypes(false);
                 configuration.setClassLoaders(new ClassLoader[] { EFapsClassLoader.getInstance()} );
                 // in case of jboss the transaction filter is not executed
                 // before the method is called therefore a Context must be opened
