@@ -544,7 +544,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-rmi</artifactId>
-            <version>2.17.5</version>
+            <version>2.17.6</version>
         </dependency>
         <dependency>
             <groupId>javax.jms</groupId>
@@ -575,7 +575,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.jboss.logmanager</groupId>
             <artifactId>jboss-logmanager</artifactId>
-            <version>2.1.4.Final</version>
+            <version>2.1.5.Final</version>
         </dependency>
         <!-- Used by infinispan to search
         <dependency>
@@ -833,7 +833,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.eu.acolyte</groupId>
             <artifactId>jdbc-java8</artifactId>
-            <version>1.0.48</version>
+            <version>1.0.50</version>
             <scope>test</scope>
         </dependency>
    </dependencies>
