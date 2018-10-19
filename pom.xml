@@ -358,7 +358,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>net.sourceforge.dynamicreports</groupId>
             <artifactId>dynamicreports-core</artifactId>
-            <version>5.1.0</version>
+            <version>6.0.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
@@ -374,18 +374,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     <artifactId>servlet-api</artifactId>
                     <groupId>javax.servlet</groupId>
                 </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-bridge</artifactId>
-            <version>1.9.1</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.jasperreports</groupId>
-            <artifactId>jasperreports</artifactId>
-            <version>6.5.1</version>
-            <exclusions>
+                <!-- exclude the lucene brought in by jasperreport -->
                 <exclusion>
                     <groupId>org.apache.lucene</groupId>
                     <artifactId>lucene-core</artifactId>
@@ -411,6 +400,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     <artifactId>jackson-databind</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-bridge</artifactId>
+            <version>1.9.1</version>
         </dependency>
         <!--  replacing the lucene from jasperreport with the one used by infinispan-->
         <dependency>
@@ -727,7 +721,6 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <artifactId>javassist</artifactId>
             <version>3.23.1-GA</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.testng</groupId>
