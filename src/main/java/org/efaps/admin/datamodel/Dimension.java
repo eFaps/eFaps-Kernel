@@ -23,7 +23,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.efaps.admin.AbstractAdminObject;
@@ -206,7 +208,7 @@ public class Dimension
      */
     public List<UoM> getUoMs()
     {
-        return this.uoMs;
+        return Collections.unmodifiableList(this.uoMs);
     }
 
     /**
@@ -386,9 +388,14 @@ public class Dimension
                 final int denominator = (Integer) row[6];
                 Dimension.LOG.debug("read UoM '" + name + "' (id = " + id + ")");
                 final Dimension dim = Dimension.get(dimId);
-                final UoM uom = new UoM(id, dimId, symbol, name, code, numerator, denominator);
-                dim.addUoM(uom);
-                cache.put(uom.getId(), uom);
+                final Optional<UoM> uomOpt = dim.getUoMs().stream().filter(uom -> uom.getId() == id).findFirst();
+                if (uomOpt.isPresent()) {
+                    cache.put(uomOpt.get().getId(), uomOpt.get());
+                } else {
+                    final UoM uom = new UoM(id, dimId, symbol, name, code, numerator, denominator);
+                    dim.addUoM(uom);
+                    cache.put(uom.getId(), uom);
+                }
                 // needed due to cluster serialization that does not update automatically
                 Dimension.cacheDimension(dim);
             }
