@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ package org.efaps.admin.datamodel.ui;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment!
  *
  * @author The eFaps Team
  */
@@ -30,6 +29,11 @@ public abstract class AbstractWithUoMProvider
 {
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Suffix for the field name for UoM part.
+     */
+    public static final String UOMSUFFIX = "UoM";
 
     @Override
     public Object getValue(final UIValue _uiValue)
