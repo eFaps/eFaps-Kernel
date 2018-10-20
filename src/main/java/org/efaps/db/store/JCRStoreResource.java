@@ -138,7 +138,7 @@ public class JCRStoreResource
             this.repository = (Repository) ctx.lookup(getStore().getProperty(Store.PROPERTY_JNDINAME));
             if (JCRStoreResource.LOG.isDebugEnabled()) {
                 final String name = this.repository.getDescriptor(Repository.REP_NAME_DESC);
-                JCRStoreResource.LOG.debug("Successfully retrieved '%s' repository from JNDI", new Object[]{ name });
+                JCRStoreResource.LOG.debug("Successfully retrieved '{}' repository from JNDI", new Object[]{ name });
             }
 
         } catch (final NamingException e) {
