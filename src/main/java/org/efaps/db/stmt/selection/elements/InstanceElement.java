@@ -87,13 +87,19 @@ public class InstanceElement
     {
         final Long idObject = getValue(_row[this.idColIdxs]);
         final Type type;
-        if (this.typeColIdxs > -1) {
-            final Long typeIdTemp = getValue(_row[this.typeColIdxs]);
-            type = Type.get(typeIdTemp);
+        Object ret;
+        if (idObject == null) {
+            ret = null;
         } else {
-            type = Type.get(this.typeId);
+            if (this.typeColIdxs > -1) {
+                final Long typeIdTemp = getValue(_row[this.typeColIdxs]);
+                type = Type.get(typeIdTemp);
+            } else {
+                type = Type.get(this.typeId);
+            }
+            ret = Instance.get(type, idObject);
         }
-        return idObject == null ? null : Instance.get(type, idObject);
+        return ret;
     }
 
     /**
