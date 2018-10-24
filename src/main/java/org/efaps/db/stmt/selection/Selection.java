@@ -35,6 +35,7 @@ import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.selection.elements.AttributeElement;
 import org.efaps.db.stmt.selection.elements.ClassElement;
 import org.efaps.db.stmt.selection.elements.ExecElement;
+import org.efaps.db.stmt.selection.elements.FormatElement;
 import org.efaps.db.stmt.selection.elements.IPrimed;
 import org.efaps.db.stmt.selection.elements.InstanceElement;
 import org.efaps.db.stmt.selection.elements.LinkfromElement;
@@ -45,6 +46,7 @@ import org.efaps.eql2.IAttributeSelectElement;
 import org.efaps.eql2.IBaseSelectElement;
 import org.efaps.eql2.IClassSelectElement;
 import org.efaps.eql2.IExecSelectElement;
+import org.efaps.eql2.IFormatSelectElement;
 import org.efaps.eql2.ILinkfromSelectElement;
 import org.efaps.eql2.ILinktoSelectElement;
 import org.efaps.eql2.IPrintQueryStatement;
@@ -143,6 +145,9 @@ public final class Selection
                         default:
                             break;
                     }
+                } else if (ele instanceof IFormatSelectElement) {
+                    final String pattern = ((IFormatSelectElement) ele).getPattern();
+                    select.addElement(new FormatElement().setPattern(pattern));
                 } else if (ele instanceof IExecSelectElement) {
                     select.addElement(new ExecElement(currentType)
                                     .setEsjp(((IExecSelectElement) ele).getClassName())

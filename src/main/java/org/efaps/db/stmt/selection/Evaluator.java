@@ -36,6 +36,7 @@ import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.ci.CIAttribute;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
+import org.efaps.db.stmt.selection.elements.IAuxillary;
 import org.efaps.eql.JSONData;
 import org.efaps.eql.builder.Print;
 import org.efaps.json.data.DataList;
@@ -256,7 +257,11 @@ public final class Evaluator
         throws EFapsException
     {
         List<Boolean> ret = new ArrayList<>();
-        final int size = _select.getElements().size();
+        // remove the IAuxillary to determine the size
+        int size = _select.getElements().size();
+        while (_select.getElements().get(size - 1) instanceof IAuxillary) {
+            size--;
+        }
         if (size == 1) {
             ret.add(this.access.hasAccess(inst()));
         } else {

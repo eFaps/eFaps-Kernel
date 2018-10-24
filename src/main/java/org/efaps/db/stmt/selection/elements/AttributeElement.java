@@ -129,6 +129,10 @@ public class AttributeElement
                 ((Object[]) ret)[i] = this.colIdxs[i];
             }
         }
-        return this.attribute.readDBValue(Collections.singletonList(ret));
+        Object temp = this.attribute.readDBValue(Collections.singletonList(ret));
+        if (getNext() != null && getNext() instanceof IAuxillary) {
+            temp = getNext().getObject(new Object[] { temp });
+        }
+        return temp;
     }
 }
