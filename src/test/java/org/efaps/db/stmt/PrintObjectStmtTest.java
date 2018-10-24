@@ -766,5 +766,31 @@ public class PrintObjectStmtTest
                         .evaluate();
         assertEquals(evaluator.get(1), "A Value in Child SQL Table");
     }
+
+    @Test(description = "read Attribute with format")
+    public void testAttributeWithFormat()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+                        Mocks.AllAttrDateAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        final DateTime date = new DateTime();
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Object.class)
+                        .append(date.toDate())
+                        .asResult())
+            .build();
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select attribute[%s].format[YYYY]",
+                        Mocks.AllAttrType.getId(), Mocks.AllAttrDateAttribute.getName()));
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertEquals(evaluator.get(1), date.toString("YYYY"));
+    }
 }
 
