@@ -23,10 +23,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.mock.MockResult;
 import org.efaps.mock.Mocks;
 import org.efaps.mock.datamodel.CI;
+import org.efaps.mock.datamodel.Company;
+import org.efaps.mock.datamodel.Company.CompanyBuilder;
 import org.efaps.test.AbstractTest;
 import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
@@ -104,5 +107,27 @@ public class InsertTest
             .execute();
         assertEquals(instance.getType(), CI.SimpleType.getType());
         assertEquals(instance.getId(), 3435L);
+    }
+
+    @Test
+    public void testInsertSetsCompany()
+        throws EFapsException
+    {
+        final Company company = new CompanyBuilder()
+                        .withName("Mock Company")
+                        .build();
+        Context.getThreadContext().setCompany(org.efaps.admin.user.Company.get(company.getId()));
+        final String sql = String.format("insert into %s (%s,%s,ID)values(?,?,?)",
+                        Mocks.CompanyTypeSQLTable.getSqlTableName(),
+                        Mocks.CompanyCompanyAttribute.getSQLColumnName(),
+                        Mocks.CompanyStringAttribute.getSQLColumnName(),
+                        Mocks.CompanyStringAttribute);
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.insert(CI.CompanyType)
+            .set(CI.CompanyType.StringAttribute, "A Value")
+            .stmt()
+            .execute();
+        verify.verify();
     }
 }

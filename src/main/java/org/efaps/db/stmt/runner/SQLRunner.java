@@ -32,6 +32,7 @@ import org.apache.commons.collections4.MultiMapUtils;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.dbutils.handlers.ArrayListHandler;
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
@@ -96,9 +97,26 @@ public class SQLRunner
     {
         final Insert insert = (Insert) this.runnable;
         final Type type = insert.getType();
-        final IUpdateElementsStmt<?> eqlStmt = insert.getEqlStmt();
         final SQLTable mainTable = insert.getType().getMainTable();
         getSQLInsert(mainTable);
+
+        final Iterator<?> iter = type.getAttributes().entrySet().iterator();
+        while (iter.hasNext()) {
+            final Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
+            final Attribute attr = (Attribute) entry.getValue();
+            final AttributeType attrType = attr.getAttributeType();
+            if (attrType.isCreateUpdate() || attrType.isAlwaysUpdate()) {
+                final SQLTable sqlTable = attr.getTable();
+                final SQLInsert sqlInsert = getSQLInsert(sqlTable);
+                try {
+                    attr.prepareDBInsert(sqlInsert);
+                } catch (final SQLException e) {
+                    throw new EFapsException(SQLRunner.class, "prepareInsert", e);
+                }
+            }
+        }
+
+        final IUpdateElementsStmt<?> eqlStmt = insert.getEqlStmt();
         for (final IUpdateElement element : eqlStmt.getUpdateElements()) {
             final Attribute attr = type.getAttribute(element.getAttribute());
             final SQLTable sqlTable = attr.getTable();

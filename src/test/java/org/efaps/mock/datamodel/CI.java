@@ -37,7 +37,6 @@ public class CI
         public final CIAttribute TestAttr = new CIAttribute(this, Mocks.TypedTypeTestAttr.getName());
     }
 
-
     public static final _AllAttrType AllAttrType = new _AllAttrType(Mocks.AllAttrType.getUuid().toString());
 
     public static class _AllAttrType
@@ -55,6 +54,20 @@ public class CI
         public final CIAttribute IntegerAttribute = new CIAttribute(this, Mocks.AllAttrIntegerAttribute.getName());
         public final CIAttribute DecimalAttribute = new CIAttribute(this, Mocks.AllAttrDecimalAttribute.getName());
         public final CIAttribute DateAttribute = new CIAttribute(this, Mocks.AllAttrDateAttribute.getName());
+    }
+
+    public static final _CompanyType CompanyType = new _CompanyType(Mocks.CompanyType.getUuid().toString());
+
+    public static class _CompanyType
+        extends CIType
+    {
+
+        protected _CompanyType(final String _uuid)
+        {
+            super(_uuid);
+        }
+        public final CIAttribute CompanyAttribute = new CIAttribute(this, Mocks.CompanyCompanyAttribute.getName());
+        public final CIAttribute StringAttribute = new CIAttribute(this, Mocks.CompanyStringAttribute.getName());
     }
 
 }

@@ -115,6 +115,14 @@ public interface IDataModel
                     .withClassNameUI("org.efaps.admin.datamodel.ui.StringUI")
                     .build();
 
+    AttributeType CompanyLinkType = AttributeType.builder()
+                    .withName("CompanyLink")
+                    .withUuid(UUID.fromString("66c5d239-47d7-4fef-a79b-9dac432ab7ba"))
+                    .withClassName("org.efaps.admin.datamodel.attributetype.CompanyLinkType")
+                    .withClassNameUI("org.efaps.admin.datamodel.ui.UserUI")
+                    .withCreateUpdate(true)
+                    .build();
+
     Type Admin_Abstract = Type.builder()
                     .withId(RandomUtils.nextLong())
                     .withUuid(CIAdmin.Abstract.uuid)

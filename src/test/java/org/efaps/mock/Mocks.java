@@ -475,4 +475,28 @@ public interface Mocks
                     .withSqlTableId(ClassTypeSQLTable.getId())
                     .withAttributeTypeId(IDataModel.StringType.getId())
                     .build();
+
+    Type CompanyType = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("CompanyType")
+                    .build();
+
+    SQLTable CompanyTypeSQLTable = SQLTable.builder()
+                    .withName("CompanyTypeSQLTable")
+                    .withSqlTableName("COMPANYTABLE")
+                    .build();
+
+    Attribute CompanyCompanyAttribute = Attribute.builder()
+                    .withName("Company")
+                    .withDataModelTypeId(CompanyType.getId())
+                    .withSqlTableId(CompanyTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.CompanyLinkType.getId())
+                    .build();
+
+    Attribute CompanyStringAttribute = Attribute.builder()
+                    .withName("StringAttribute")
+                    .withDataModelTypeId(CompanyType.getId())
+                    .withSqlTableId(CompanyTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.StringType.getId())
+                    .build();
 }

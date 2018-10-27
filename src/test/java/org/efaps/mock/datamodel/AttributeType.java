@@ -41,6 +41,12 @@ public final class AttributeType
     /** The class name UI. */
     private final String classNameUI;
 
+    /** The always update. */
+    private boolean alwaysUpdate = false;
+
+    /** The create update. */
+    private boolean createUpdate = false;
+
     /**
      * Instantiates a new attribute type.
      *
@@ -51,14 +57,17 @@ public final class AttributeType
         super(_builder);
         this.className = _builder.className;
         this.classNameUI = _builder.classNameUI;
+        this.alwaysUpdate = _builder.alwaysUpdate;
+        this.createUpdate = _builder.createUpdate;
     }
 
     @Override
     public QueryResult getResult()
     {
-        return RowLists.rowList7(Long.class, String.class, String.class, String.class, String.class, Boolean.class,
-                        Boolean.class).append(getId(), getName(), getUuid().toString(), this.className,
-                                        this.classNameUI, false, false).asResult();
+        return RowLists.rowList7(Long.class, String.class, String.class, String.class, String.class, Integer.class,
+                        Integer.class).append(getId(), getName(), getUuid().toString(), this.className,
+                                        this.classNameUI,
+                                        this.alwaysUpdate ? 1 : null, this.createUpdate ? 1 : null).asResult();
     }
 
     @Override
@@ -101,6 +110,12 @@ public final class AttributeType
         /** The class name UI. */
         private String classNameUI;
 
+        /** The always update. */
+        private boolean alwaysUpdate = false;
+
+        /** The create update. */
+        private boolean createUpdate = false;
+
         /**
          * With class name.
          *
@@ -122,6 +137,30 @@ public final class AttributeType
         public AttributeTypeBuilder withClassNameUI(final String _classNameUI)
         {
             this.classNameUI = _classNameUI;
+            return this;
+        }
+
+        /**
+         * With always Update.
+         *
+         * @param _alwaysUpdate the always update
+         * @return the attribute type builder
+         */
+        public AttributeTypeBuilder withAlwaysUpdate(final boolean _alwaysUpdate)
+        {
+            this.alwaysUpdate = _alwaysUpdate;
+            return this;
+        }
+
+        /**
+         * With create Update.
+         *
+         * @param _createUpdate the create update
+         * @return the attribute type builder
+         */
+        public AttributeTypeBuilder withCreateUpdate(final boolean _createUpdate)
+        {
+            this.createUpdate = _createUpdate;
             return this;
         }
 
