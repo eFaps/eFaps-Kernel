@@ -16,10 +16,64 @@
  */
 package org.efaps.db.stmt;
 
+import org.efaps.db.stmt.runner.StmtRunner;
+import org.efaps.db.stmt.update.AbstractUpdate;
+import org.efaps.db.stmt.update.ListUpdate;
+import org.efaps.db.stmt.update.ObjectUpdate;
+import org.efaps.db.stmt.update.QueryUpdate;
+import org.efaps.eql2.IUpdateListStatement;
+import org.efaps.eql2.IUpdateObjectStatement;
+import org.efaps.eql2.IUpdateQueryStatement;
+import org.efaps.eql2.IUpdateStatement;
+import org.efaps.util.EFapsException;
+
 /**
  * The Class UpdateStmt.
  */
 public class UpdateStmt
+    extends AbstractStmt
 {
 
+    /** The print. */
+    private AbstractUpdate update;
+
+    /**
+     * Instantiates a new update stmt.
+     */
+    private UpdateStmt()
+    {
+    }
+
+    /**
+     * Execute.
+     *
+     * @return the update stmt
+     * @throws EFapsException the e faps exception
+     */
+    public UpdateStmt execute()
+        throws EFapsException
+    {
+        if (getEQLStmt() instanceof IUpdateObjectStatement) {
+            this.update = new ObjectUpdate((IUpdateObjectStatement) getEQLStmt());
+        } else if (getEQLStmt() instanceof IUpdateListStatement) {
+            this.update = new ListUpdate((IUpdateListStatement) getEQLStmt());
+        } else if (getEQLStmt() instanceof IUpdateQueryStatement) {
+            this.update = new QueryUpdate((IUpdateQueryStatement) getEQLStmt());
+        }
+        StmtRunner.get().execute(this.update);
+        return this;
+    }
+
+    /**
+     * Gets the.
+     *
+     * @param _printStmt the print stmt
+     * @return the prints the stmt
+     */
+    public static UpdateStmt get(final IUpdateStatement<?> _updateStmt)
+    {
+        final UpdateStmt ret = new UpdateStmt();
+        ret.setEQLStmt(_updateStmt);
+        return ret;
+    }
 }

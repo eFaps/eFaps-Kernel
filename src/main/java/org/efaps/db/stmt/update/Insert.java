@@ -28,7 +28,7 @@ import org.efaps.util.cache.CacheReloadException;
  * The Class Insert.
  */
 public class Insert
-    extends AbstractUpdate
+    extends AbstractObjectUpdate
 {
     /** The type. */
     private Type type;

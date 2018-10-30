@@ -27,6 +27,7 @@ import org.efaps.eql.builder.Insert;
 import org.efaps.eql.builder.Print;
 import org.efaps.eql.builder.Query;
 import org.efaps.eql.builder.Selectables;
+import org.efaps.eql.builder.Update;
 import org.efaps.eql.builder.Where;
 import org.efaps.eql2.IPrintStatement;
 import org.efaps.eql2.IStatement;
@@ -54,7 +55,7 @@ public final class EQL
     @Override
     protected AbstractUpdateEQLBuilder<?> getUpdate()
     {
-        return null;
+        return new Update();
     }
 
     @Override
@@ -159,6 +160,28 @@ public final class EQL
     public static Insert insert(final CIType _ciType)
     {
         return (Insert) org.efaps.eql2.EQL.insert(_ciType.getType().getName());
+    }
+
+    /**
+     * Update.
+     *
+     * @param _instance the instance
+     * @return the update
+     */
+    public static Update update(final Instance _instance)
+    {
+        return update(_instance.getOid());
+    }
+
+    /**
+     * Update.
+     *
+     * @param _oid the oid of the instance to be updated
+     * @return the update
+     */
+    public static Update update(final String _oid)
+    {
+        return  (Update) org.efaps.eql2.EQL.update(_oid);
     }
 
     /**

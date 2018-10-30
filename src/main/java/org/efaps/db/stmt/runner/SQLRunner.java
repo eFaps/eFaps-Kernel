@@ -47,12 +47,17 @@ import org.efaps.db.stmt.selection.ISelectionProvider;
 import org.efaps.db.stmt.selection.Select;
 import org.efaps.db.stmt.selection.elements.AbstractDataElement;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
+import org.efaps.db.stmt.update.AbstractObjectUpdate;
+import org.efaps.db.stmt.update.AbstractUpdate;
 import org.efaps.db.stmt.update.Insert;
+import org.efaps.db.stmt.update.ObjectUpdate;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLSelect.SQLSelectPart;
+import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.eql2.IUpdateElement;
 import org.efaps.eql2.IUpdateElementsStmt;
@@ -79,7 +84,8 @@ public class SQLRunner
     /** The sql select. */
     private SQLSelect sqlSelect;
 
-    private final Map<SQLTable, SQLInsert> insertmap = new LinkedHashMap<>();
+    /** The updatemap. */
+    private final Map<SQLTable, AbstractSQLInsertUpdate<?>> updatemap = new LinkedHashMap<>();
 
     @Override
     public void prepare(final IRunnable _runnable)
@@ -89,9 +95,18 @@ public class SQLRunner
         this.sqlSelect = new SQLSelect();
         if (isPrint()) {
             preparePrint((AbstractPrint) _runnable);
-        } else {
+        } else if (isInsert()) {
             prepareInsert();
+        } else {
+            prepareUpdate();
         }
+    }
+
+    private void prepareUpdate()
+        throws EFapsException
+    {
+        final ObjectUpdate update = (ObjectUpdate) this.runnable;
+        prepareUpdate(update.getInstance().getType(), false);
     }
 
     private void prepareInsert()
@@ -99,15 +114,20 @@ public class SQLRunner
     {
         final Insert insert = (Insert) this.runnable;
         final Type type = insert.getType();
-        final SQLTable mainTable = insert.getType().getMainTable();
+        final SQLTable mainTable = type.getMainTable();
         getSQLInsert(mainTable);
+        prepareUpdate(type, true);
+    }
 
-        final Iterator<?> iter = type.getAttributes().entrySet().iterator();
+    private void prepareUpdate(final Type _type, final boolean _create)
+        throws EFapsException
+    {
+        final Iterator<?> iter = _type.getAttributes().entrySet().iterator();
         while (iter.hasNext()) {
             final Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
             final Attribute attr = (Attribute) entry.getValue();
             final AttributeType attrType = attr.getAttributeType();
-            if (attrType.isCreateUpdate() || attrType.isAlwaysUpdate()) {
+            if (_create && attrType.isCreateUpdate() || attrType.isAlwaysUpdate()) {
                 final SQLTable sqlTable = attr.getTable();
                 final SQLInsert sqlInsert = getSQLInsert(sqlTable);
                 try {
@@ -118,15 +138,20 @@ public class SQLRunner
             }
         }
 
-        final IUpdateElementsStmt<?> eqlStmt = insert.getEqlStmt();
+        final IUpdateElementsStmt<?> eqlStmt = ((AbstractUpdate) this.runnable).getEqlStmt();
         for (final IUpdateElement element : eqlStmt.getUpdateElements()) {
-            final Attribute attr = type.getAttribute(element.getAttribute());
+            final Attribute attr = _type.getAttribute(element.getAttribute());
             final SQLTable sqlTable = attr.getTable();
-            final SQLInsert sqlInsert = getSQLInsert(sqlTable);
             try {
-                attr.prepareDBInsert(sqlInsert, element.getValue());
+                if (_create) {
+                    final SQLInsert sqlInsert = getSQLInsert(sqlTable);
+                    attr.prepareDBInsert(sqlInsert, element.getValue());
+                } else {
+                    final SQLUpdate sqlUpdate = getSQLUpdate(sqlTable);
+                    attr.prepareDBUpdate(sqlUpdate, element.getValue());
+                }
             } catch (final SQLException e) {
-                throw new EFapsException(SQLRunner.class, "prepareInsert", e);
+                throw new EFapsException(SQLRunner.class, "prepareUpdate", e);
             }
         }
     }
@@ -134,12 +159,29 @@ public class SQLRunner
     private SQLInsert getSQLInsert(final SQLTable _sqlTable)
     {
         SQLInsert ret;
-        if (this.insertmap.containsKey(_sqlTable)) {
-            ret = this.insertmap.get(_sqlTable);
+        if (this.updatemap.containsKey(_sqlTable)) {
+            ret = (SQLInsert) this.updatemap.get(_sqlTable);
         } else {
-            ret = Context.getDbType().newInsert(_sqlTable.getSqlTable(), _sqlTable.getSqlColId(), this.insertmap
+            ret = Context.getDbType().newInsert(_sqlTable.getSqlTable(), _sqlTable.getSqlColId(), this.updatemap
                             .isEmpty());
-            this.insertmap.put(_sqlTable, ret);
+            this.updatemap.put(_sqlTable, ret);
+        }
+        return ret;
+    }
+
+    private SQLUpdate getSQLUpdate(final SQLTable _sqlTable)
+    {
+        SQLUpdate ret;
+        if (this.updatemap.containsKey(_sqlTable)) {
+            ret = (SQLUpdate) this.updatemap.get(_sqlTable);
+        } else {
+            final AbstractUpdate update = (AbstractUpdate) this.runnable;
+            long id = 0;
+            if (update instanceof AbstractObjectUpdate) {
+                id = ((AbstractObjectUpdate) update).getInstance().getId();
+            }
+            ret = Context.getDbType().newUpdate(_sqlTable.getSqlTable(), _sqlTable.getSqlColId(), id);
+            this.updatemap.put(_sqlTable, ret);
         }
         return ret;
     }
@@ -178,6 +220,10 @@ public class SQLRunner
      */
     private boolean isPrint() {
         return this.runnable instanceof AbstractPrint;
+    }
+
+    private boolean isInsert() {
+        return this.runnable instanceof Insert;
     }
 
     /**
@@ -334,8 +380,29 @@ public class SQLRunner
     {
         if (isPrint()) {
             executeSQLStmt((ISelectionProvider) this.runnable, this.sqlSelect.getSQL());
-        } else {
+        } else if (isInsert()) {
             executeInserts();
+        } else {
+            executeUpdates();
+        }
+    }
+
+    /**
+     * Execute the inserts.
+     *
+     * @throws EFapsException the e faps exception
+     */
+    private void executeUpdates()
+        throws EFapsException
+    {
+        ConnectionResource con = null;
+        try {
+            con = Context.getThreadContext().getConnectionResource();
+            for (final Entry<SQLTable, AbstractSQLInsertUpdate<?>> entry : this.updatemap.entrySet()) {
+                ((SQLUpdate) entry.getValue()).execute(con);
+            }
+        } catch (final SQLException e) {
+            throw new EFapsException(SQLRunner.class, "executeOneCompleteStmt", e);
         }
     }
 
@@ -351,14 +418,14 @@ public class SQLRunner
             final Insert insert = (Insert) this.runnable;
             con = Context.getThreadContext().getConnectionResource();
             long id = 0;
-            for (final Entry<SQLTable, SQLInsert> entry : this.insertmap.entrySet()) {
+            for (final Entry<SQLTable, AbstractSQLInsertUpdate<?>> entry : this.updatemap.entrySet()) {
                 if (id != 0) {
                     entry.getValue().column(entry.getKey().getSqlColId(), id);
                 }
                 if (entry.getKey().getSqlColType() != null) {
                     entry.getValue().column(entry.getKey().getSqlColType(), insert.getType().getId());
                 }
-                final Long created = entry.getValue().execute(con);
+                final Long created = ((SQLInsert) entry.getValue()).execute(con);
                 if (created != null) {
                     id = created;
                     insert.evaluateInstance(created);

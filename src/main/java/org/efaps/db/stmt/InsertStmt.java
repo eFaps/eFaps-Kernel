@@ -18,7 +18,7 @@ package org.efaps.db.stmt;
 
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.runner.StmtRunner;
-import org.efaps.db.stmt.update.AbstractUpdate;
+import org.efaps.db.stmt.update.AbstractObjectUpdate;
 import org.efaps.db.stmt.update.Insert;
 import org.efaps.eql2.IInsertStatement;
 import org.efaps.util.EFapsException;
@@ -30,7 +30,7 @@ public class InsertStmt
     extends AbstractStmt
 {
     /** The print. */
-    private AbstractUpdate update;
+    private AbstractObjectUpdate update;
 
     /**
      * Instantiates a new prints the stmt.
