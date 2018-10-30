@@ -18,11 +18,15 @@ package org.efaps.db.stmt.update;
 
 import java.util.UUID;
 
+import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.eql2.IInsertStatement;
+import org.efaps.util.EFapsException;
 import org.efaps.util.UUIDUtil;
-import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class Insert.
@@ -30,6 +34,8 @@ import org.efaps.util.cache.CacheReloadException;
 public class Insert
     extends AbstractObjectUpdate
 {
+    private static final Logger LOG = LoggerFactory.getLogger(Insert.class);
+
     /** The type. */
     private Type type;
 
@@ -37,10 +43,10 @@ public class Insert
      * Instantiates a new insert.
      *
      * @param _eqlStmt the eql stmt
-     * @throws CacheReloadException
+     * @throws EFapsException
      */
     public Insert(final IInsertStatement _eqlStmt)
-        throws CacheReloadException
+        throws EFapsException
     {
         super(_eqlStmt);
         final String typeStr = ((IInsertStatement) getEqlStmt()).getTypeName();
@@ -48,6 +54,12 @@ public class Insert
             this.type = Type.get(UUID.fromString(typeStr));
         } else {
             this.type = Type.get(typeStr);
+        }
+
+        if (!getType().hasAccess(Instance.get(getType(), 0), AccessTypeEnums.CREATE.getAccessType(), null)) {
+            Insert.LOG.error("Insert not permitted for Person: {} on Type: {}", Context.getThreadContext().getPerson(),
+                            getType());
+            throw new EFapsException(getClass(), "execute.NoAccess", getType());
         }
     }
 

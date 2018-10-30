@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.mock.MockResult;
@@ -30,6 +31,7 @@ import org.efaps.mock.Mocks;
 import org.efaps.mock.datamodel.CI;
 import org.efaps.mock.datamodel.Company;
 import org.efaps.mock.datamodel.Company.CompanyBuilder;
+import org.efaps.mock.esjp.AccessCheck;
 import org.efaps.test.AbstractTest;
 import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
@@ -126,6 +128,34 @@ public class InsertTest
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
         EQL.insert(CI.CompanyType)
             .set(CI.CompanyType.StringAttribute, "A Value")
+            .stmt()
+            .execute();
+        verify.verify();
+    }
+
+    @Test(expectedExceptions = { EFapsException.class })
+    public void testInsertNoAccess()
+        throws EFapsException
+    {
+        AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType.getId()), 0L), false);
+        EQL.insert(Mocks.AccessType.getName())
+            .set(Mocks.AccessTypeStringAttribute.getName(), "A Value")
+            .stmt()
+            .execute();
+    }
+
+    @Test
+    public void testInsertAccess()
+        throws EFapsException
+    {
+        AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType.getId()), 0L), true);
+        final String sql = String.format("insert into %s (%s,ID)values(?,?)",
+                        Mocks.AccessTypeSQLTable.getSqlTableName(),
+                        Mocks.AccessTypeStringAttribute.getSQLColumnName());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.insert(Mocks.AccessType.getName())
+            .set(Mocks.AccessTypeStringAttribute.getName(), "A Value")
             .stmt()
             .execute();
         verify.verify();
