@@ -17,16 +17,40 @@
 
 package org.efaps.db.stmt.update;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.efaps.admin.access.AccessTypeEnums;
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.AttributeType;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.eql2.IUpdateElement;
 import org.efaps.eql2.IUpdateObjectStatement;
+import org.efaps.util.EFapsException;
 
 public class ObjectUpdate
     extends AbstractObjectUpdate
 {
 
     public ObjectUpdate(final IUpdateObjectStatement _eqlStmt)
+                    throws EFapsException
     {
         super(_eqlStmt);
         this.instance = Instance.get(_eqlStmt.getOid());
+
+        final Set<Attribute> attributes = new HashSet<>();
+        final Type type = getInstance().getType();
+        for (final IUpdateElement element : _eqlStmt.getUpdateElements()) {
+            final Attribute attr = type.getAttribute(element.getAttribute());
+            final AttributeType attrType = attr.getAttributeType();
+            if (!attrType.isAlwaysUpdate()) {
+                attributes.add(attr);
+            }
+        }
+        if (!getInstance().getType().hasAccess(getInstance(), AccessTypeEnums.MODIFY.getAccessType(), attributes)) {
+            throw new EFapsException(getClass(), "execute.NoAccess", Context.getThreadContext().getPerson());
+        }
     }
 }

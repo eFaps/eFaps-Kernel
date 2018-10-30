@@ -23,8 +23,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Instance;
 import org.efaps.mock.Mocks;
 import org.efaps.mock.datamodel.CI;
+import org.efaps.mock.esjp.AccessCheck;
 import org.efaps.test.AbstractTest;
 import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
@@ -84,5 +87,33 @@ public class UpdateTest
         assertEquals(parameters.get(4).getKey().sqlTypeName, "TIMESTAMP");
         assertEquals(parameters.get(4).getValue().toString(), "2018-08-22 00:00:00.0");
         assertEquals(parameters.get(5).getValue(), 4L);
+    }
+
+    @Test(expectedExceptions = { EFapsException.class })
+    public void testUpdateNoAccess()
+        throws EFapsException
+    {
+        AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType.getId()), 4L), false);
+        EQL.update(Mocks.AccessType.getId() + ".4")
+            .set(Mocks.AccessTypeStringAttribute.getName(), "A value")
+            .stmt()
+            .execute();
+    }
+
+    @Test
+    public void testUpdateAccess()
+        throws EFapsException
+    {
+        final String sql = String.format("update %s set %s=? where ID=?",
+                        Mocks.AccessTypeSQLTable.getSqlTableName(),
+                        Mocks.AccessTypeStringAttribute.getSQLColumnName());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType.getId()), 4L), true);
+        EQL.update(Mocks.AccessType.getId() + ".4")
+            .set(Mocks.AccessTypeStringAttribute.getName(), "A value")
+            .stmt()
+            .execute();
+        verify.verify();
     }
 }
