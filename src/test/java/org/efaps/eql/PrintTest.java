@@ -19,7 +19,7 @@ package org.efaps.eql;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.efaps.admin.user.Person;
@@ -233,7 +233,7 @@ public class PrintTest
 
         final Person person = Context.getThreadContext().getPerson();
         FieldUtils.writeDeclaredField(person, "companies",
-                        new HashSet<>(Arrays.asList(company.getId(), company2.getId())), true);
+                        new LinkedHashSet<>(Arrays.asList(company.getId(), company2.getId())), true);
 
         final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.%s in ( %s , %s )" ,
                         Mocks.CompanyStringAttribute.getSQLColumnName(),
