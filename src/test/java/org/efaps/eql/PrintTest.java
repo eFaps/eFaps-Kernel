@@ -17,10 +17,13 @@
 
 package org.efaps.eql;
 
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.eql.builder.Selectables;
 import org.efaps.mock.Mocks;
 import org.efaps.mock.datamodel.CI;
+import org.efaps.mock.datamodel.Company;
+import org.efaps.mock.datamodel.Company.CompanyBuilder;
 import org.efaps.test.AbstractTest;
 import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
@@ -131,6 +134,52 @@ public class PrintTest
         EQL.print(Mocks.AllAttrType.getId() + ".4")
             .attribute(Mocks.AllAttrBooleanAttribute.getName()).as("BlaBla")
             .attribute(Mocks.AllAttrStringAttribute.getName()).as("BlaBla2")
+            .stmt()
+            .execute();
+        verify.verify();
+    }
+
+    @Test
+    public void testObjPrintRespectsCompany()
+        throws EFapsException
+    {
+        final Company company = new CompanyBuilder()
+                        .withName("Mock Company")
+                        .build();
+        Context.getThreadContext().setCompany(org.efaps.admin.user.Company.get(company.getId()));
+
+        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4 and T0.%s = %s" ,
+                        Mocks.CompanyStringAttribute.getSQLColumnName(),
+                        Mocks.CompanyTypeSQLTable.getSqlTableName(),
+                        Mocks.CompanyCompanyAttribute.getSQLColumnName(),
+                        company.getId());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(Mocks.CompanyType.getId() + ".4")
+            .attribute(Mocks.CompanyStringAttribute.getName())
+            .stmt()
+            .execute();
+        verify.verify();
+    }
+
+    @Test
+    public void testPrintRespectsCompany()
+        throws EFapsException
+    {
+        final Company company = new CompanyBuilder()
+                        .withName("Mock Company")
+                        .build();
+        Context.getThreadContext().setCompany(org.efaps.admin.user.Company.get(company.getId()));
+
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.%s = %s" ,
+                        Mocks.CompanyStringAttribute.getSQLColumnName(),
+                        Mocks.CompanyTypeSQLTable.getSqlTableName(),
+                        Mocks.CompanyCompanyAttribute.getSQLColumnName(),
+                        company.getId());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(CI.CompanyType)
+            .attribute(CI.CompanyType.StringAttribute)
             .stmt()
             .execute();
         verify.verify();

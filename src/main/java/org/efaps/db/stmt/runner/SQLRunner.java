@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.attributetype.ConsortiumLinkType;
 import org.efaps.db.Context;
 import org.efaps.db.stmt.filter.Filter;
 import org.efaps.db.stmt.print.AbstractPrint;
@@ -165,6 +167,7 @@ public class SQLRunner
                 addTypeCriteria((QueryPrint) _print);
                 addWhere4QueryPrint((QueryPrint) _print);
             }
+            addCompanyCriteria(_print);
         }
     }
 
@@ -175,6 +178,61 @@ public class SQLRunner
      */
     private boolean isPrint() {
         return this.runnable instanceof AbstractPrint;
+    }
+
+    /**
+     * Adds the company criteria.
+     *
+     * @param _print the print
+     * @throws EFapsException the e faps exception
+     */
+    private void addCompanyCriteria(final AbstractPrint _print)
+        throws EFapsException
+    {
+        final Map<TableIdx, CompanyCriteria> companyCriterias = new HashMap<>();
+        final List<Type> types = _print.getTypes().stream().sorted((type1, type2) -> Long.compare(type1.getId(), type2
+                        .getId())).collect(Collectors.toList());
+        for (final Type type : types) {
+            final String tableName = type.getMainTable().getSqlTable();
+            final TableIdx tableIdx = this.sqlSelect.getIndexer().getTableIdx(tableName);
+            if (tableIdx.isCreated()) {
+                this.sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
+            }
+            if (type.isCompanyDependent()) {
+                final String columnName = type.getCompanyAttribute().getSqlColNames().get(0);
+                companyCriterias.put(tableIdx, new CompanyCriteria(columnName, type.getId()));
+            }
+        }
+        if (!companyCriterias.isEmpty()) {
+            if (Context.getThreadContext().getCompany() == null) {
+                throw new EFapsException(SQLRunner.class, "noCompany");
+            }
+            final SQLSelectPart currentPart = this.sqlSelect.getCurrentPart();
+            if (currentPart == null) {
+                this.sqlSelect.addPart(SQLPart.WHERE);
+            } else {
+                this.sqlSelect.addPart(SQLPart.AND);
+            }
+            for (final Entry<TableIdx, CompanyCriteria> entry : companyCriterias.entrySet()) {
+                this.sqlSelect.addColumnPart(entry.getKey().getIdx(), entry.getValue().sqlColCompany);
+                if (Type.get(entry.getValue().id).getCompanyAttribute().getAttributeType().getClassRepr().equals(
+                                ConsortiumLinkType.class)) {
+                    this.sqlSelect.addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
+                    boolean first = true;
+                    for (final Long consortium : Context.getThreadContext().getCompany().getConsortiums()) {
+                        if (first) {
+                            first = false;
+                        } else {
+                            this.sqlSelect.addPart(SQLPart.COMMA);
+                        }
+                        this.sqlSelect.addValuePart(consortium);
+                    }
+                    this.sqlSelect.addPart(SQLPart.PARENTHESIS_CLOSE);
+                } else {
+                    this.sqlSelect.addPart(SQLPart.EQUAL).addValuePart(Context.getThreadContext().getCompany().getId());
+                }
+            }
+        }
     }
 
     /**
@@ -202,6 +260,8 @@ public class SQLRunner
             final SQLSelectPart currentPart = this.sqlSelect.getCurrentPart();
             if (currentPart == null) {
                 this.sqlSelect.addPart(SQLPart.WHERE);
+            } else {
+                this.sqlSelect.addPart(SQLPart.AND);
             }
             for (final TableIdx tableIdx : typeCriterias.keySet()) {
                 final Collection<TypeCriteria> criterias = typeCriterias.get(tableIdx);
@@ -386,6 +446,51 @@ public class SQLRunner
         public int hashCode()
         {
             return this.sqlColType.hashCode() + Long.valueOf(this.id).hashCode();
+        }
+    }
+
+    /**
+     * The Class TypeCriteria.
+     */
+    private static class CompanyCriteria
+    {
+
+        /** The sql column for company. */
+        private final String sqlColCompany;
+
+        /** The id. */
+        private final long id;
+
+        /**
+         * Instantiates a new type criteria.
+         *
+         * @param _sqlColCopmany the sql column for company id
+         * @param _id the id
+         */
+        CompanyCriteria(final String _sqlColCompany,
+                        final long _id)
+        {
+            this.sqlColCompany = _sqlColCompany;
+            this.id = _id;
+        }
+
+        @Override
+        public boolean equals(final Object _obj)
+        {
+            final boolean ret;
+            if (_obj instanceof CompanyCriteria) {
+                final CompanyCriteria obj = (CompanyCriteria) _obj;
+                ret = this.sqlColCompany.equals(obj.sqlColCompany) && this.id == obj.id;
+            } else {
+                ret = super.equals(_obj);
+            }
+            return ret;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return this.sqlColCompany.hashCode() + Long.valueOf(this.id).hashCode();
         }
     }
 }
