@@ -17,10 +17,6 @@
 
 package org.efaps.db.stmt;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-
-import org.apache.commons.lang3.ArrayUtils;
 import org.efaps.eql2.IStatement;
 
 /**
@@ -34,16 +30,11 @@ public abstract class AbstractStmt
     /** The statement. */
     private IStatement<?> eqlStmt;
 
-    /** The flags. */
-    private final EnumSet<StmtFlag> flags;
+    private final StmtFlag[] flags;
 
     protected AbstractStmt(final StmtFlag... _flags)
     {
-        if (ArrayUtils.isEmpty(_flags)) {
-            this.flags = EnumSet.noneOf(StmtFlag.class);
-        } else {
-            this.flags = EnumSet.copyOf(Arrays.asList(_flags));
-        }
+        this.flags = _flags;
     }
 
     /**
@@ -66,14 +57,9 @@ public abstract class AbstractStmt
         this.eqlStmt = _eqlStmt;
     }
 
-    /**
-     * Checks for.
-     *
-     * @param _flag the flag
-     * @return true, if successful
-     */
-    public boolean has(final StmtFlag _flag)
+
+    protected StmtFlag[] getFlags()
     {
-        return this.flags.contains(_flag);
+        return this.flags;
     }
 }

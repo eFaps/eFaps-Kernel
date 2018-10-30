@@ -37,7 +37,9 @@ import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.ConsortiumLinkType;
+import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
+import org.efaps.db.stmt.StmtFlag;
 import org.efaps.db.stmt.filter.Filter;
 import org.efaps.db.stmt.print.AbstractPrint;
 import org.efaps.db.stmt.print.ListPrint;
@@ -261,21 +263,49 @@ public class SQLRunner
             }
             for (final Entry<TableIdx, CompanyCriteria> entry : companyCriterias.entrySet()) {
                 this.sqlSelect.addColumnPart(entry.getKey().getIdx(), entry.getValue().sqlColCompany);
-                if (Type.get(entry.getValue().id).getCompanyAttribute().getAttributeType().getClassRepr().equals(
-                                ConsortiumLinkType.class)) {
+
+                final boolean isConsortium = Type.get(entry.getValue().id).getCompanyAttribute()
+                                .getAttributeType().getClassRepr().equals(ConsortiumLinkType.class);
+                if (_print.has(StmtFlag.COMPANYINDEPENDENT)) {
                     this.sqlSelect.addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
                     boolean first = true;
-                    for (final Long consortium : Context.getThreadContext().getCompany().getConsortiums()) {
-                        if (first) {
-                            first = false;
+                    for (final Long compId : Context.getThreadContext().getPerson().getCompanies()) {
+                        if (isConsortium) {
+                            for (final Long consortium : Company.get(compId).getConsortiums()) {
+                                if (first) {
+                                    first = false;
+                                } else {
+                                    this.sqlSelect.addPart(SQLPart.COMMA);
+                                }
+                                this.sqlSelect.addValuePart(consortium);
+                            }
                         } else {
-                            this.sqlSelect.addPart(SQLPart.COMMA);
+                            if (first) {
+                                first = false;
+                            } else {
+                                this.sqlSelect.addPart(SQLPart.COMMA);
+                            }
+                            this.sqlSelect.addValuePart(compId);
                         }
-                        this.sqlSelect.addValuePart(consortium);
                     }
                     this.sqlSelect.addPart(SQLPart.PARENTHESIS_CLOSE);
                 } else {
-                    this.sqlSelect.addPart(SQLPart.EQUAL).addValuePart(Context.getThreadContext().getCompany().getId());
+                    if (isConsortium) {
+                        this.sqlSelect.addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
+                        boolean first = true;
+                        for (final Long consortium : Context.getThreadContext().getCompany().getConsortiums()) {
+                            if (first) {
+                                first = false;
+                            } else {
+                                this.sqlSelect.addPart(SQLPart.COMMA);
+                            }
+                            this.sqlSelect.addValuePart(consortium);
+                        }
+                        this.sqlSelect.addPart(SQLPart.PARENTHESIS_CLOSE);
+                    } else {
+                        this.sqlSelect.addPart(SQLPart.EQUAL).addValuePart(
+                                        Context.getThreadContext().getCompany().getId());
+                    }
                 }
             }
         }

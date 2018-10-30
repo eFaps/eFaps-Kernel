@@ -16,14 +16,14 @@
  */
 package org.efaps.db.stmt.update;
 
-import org.efaps.db.stmt.runner.IRunnable;
+import org.efaps.db.stmt.runner.AbstractRunnable;
 import org.efaps.eql2.IUpdateElementsStmt;
 
 /**
  * The Class AbstractUpdate.
  */
 public abstract class AbstractUpdate
-    implements IRunnable
+    extends AbstractRunnable
 {
 
     /** The update elements stmt. */

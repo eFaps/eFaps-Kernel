@@ -20,5 +20,5 @@ package org.efaps.db.stmt;
 
 public enum StmtFlag
 {
-
+    COMPANYINDEPENDENT
 }

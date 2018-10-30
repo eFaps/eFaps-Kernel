@@ -19,6 +19,7 @@ package org.efaps.eql.builder;
 
 import org.efaps.ci.CIAttribute;
 import org.efaps.db.stmt.PrintStmt;
+import org.efaps.db.stmt.StmtFlag;
 import org.efaps.eql2.IPrintStatement;
 import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
 import org.efaps.eql2.bldr.ISelectable;
@@ -29,6 +30,10 @@ import org.efaps.eql2.bldr.ISelectable;
 public class Print
     extends AbstractPrintEQLBuilder<Print>
 {
+
+    /** The flags. */
+    private StmtFlag[] flags;
+
     /**
      * Stmt.
      *
@@ -36,7 +41,7 @@ public class Print
      */
     public PrintStmt stmt()
     {
-        return PrintStmt.get((IPrintStatement<?>) getStmt());
+        return PrintStmt.get((IPrintStatement<?>) getStmt(), this.flags);
     }
 
     @Override
@@ -67,6 +72,12 @@ public class Print
             attribute(ciAttr.name);
             as(getDefaultAlias(ciAttr));
         }
+        return getThis();
+    }
+
+    public Print with(final StmtFlag... _flags)
+    {
+        this.flags = _flags;
         return getThis();
     }
 

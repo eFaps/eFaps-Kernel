@@ -59,11 +59,11 @@ public final class PrintStmt
         throws EFapsException
     {
         if (getEQLStmt() instanceof IPrintObjectStatement) {
-            this.print = new ObjectPrint((IPrintObjectStatement) getEQLStmt());
+            this.print = new ObjectPrint((IPrintObjectStatement) getEQLStmt(), getFlags());
         } else if (getEQLStmt() instanceof IPrintListStatement) {
-            this.print = new ListPrint((IPrintListStatement) getEQLStmt());
+            this.print = new ListPrint((IPrintListStatement) getEQLStmt(), getFlags());
         } else if (getEQLStmt() instanceof IPrintQueryStatement) {
-            this.print = new QueryPrint((IPrintQueryStatement) getEQLStmt());
+            this.print = new QueryPrint((IPrintQueryStatement) getEQLStmt(), getFlags());
         }
         StmtRunner.get().execute(this.print);
         return this;
@@ -88,11 +88,13 @@ public final class PrintStmt
      * Gets the.
      *
      * @param _printStmt the print stmt
+     * @param _flags the flags
      * @return the prints the stmt
      */
-    public static PrintStmt get(final IPrintStatement<?> _printStmt)
+    public static PrintStmt get(final IPrintStatement<?> _printStmt,
+                                final StmtFlag... _flags)
     {
-        final PrintStmt ret = new PrintStmt();
+        final PrintStmt ret = new PrintStmt(_flags);
         ret.setEQLStmt(_printStmt);
         return ret;
     }

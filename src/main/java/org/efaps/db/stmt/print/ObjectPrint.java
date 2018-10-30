@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.efaps.db.Instance;
+import org.efaps.db.stmt.StmtFlag;
 import org.efaps.db.stmt.selection.Selection;
 import org.efaps.db.stmt.selection.elements.IPrimed;
 import org.efaps.eql2.IPrintObjectStatement;
@@ -50,9 +51,10 @@ public class ObjectPrint
      * @param _eqlStmt the eql stmt
      * @throws CacheReloadException on error
      */
-    public ObjectPrint(final IPrintObjectStatement _eqlStmt)
+    public ObjectPrint(final IPrintObjectStatement _eqlStmt, final StmtFlag... _flags)
         throws CacheReloadException
     {
+        super(_flags);
         this.instance = Instance.get(_eqlStmt.getOid());
         this.eqlStmt = _eqlStmt;
         addType(this.instance.getType());

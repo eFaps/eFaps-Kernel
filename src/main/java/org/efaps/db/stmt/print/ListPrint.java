@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.efaps.db.Instance;
+import org.efaps.db.stmt.StmtFlag;
 import org.efaps.db.stmt.selection.Selection;
 import org.efaps.db.stmt.selection.elements.IPrimed;
 import org.efaps.eql2.IPrintListStatement;
@@ -40,8 +41,9 @@ public class ListPrint
 
     private final List<Instance> instances;
 
-    public ListPrint(final IPrintListStatement _eqlStmt)
+    public ListPrint(final IPrintListStatement _eqlStmt, final StmtFlag... _flags)
     {
+        super(_flags);
         this.eqlStmt = _eqlStmt;
         this.instances = _eqlStmt.getOidsList().stream()
                         .map(oid -> Instance.get(oid))

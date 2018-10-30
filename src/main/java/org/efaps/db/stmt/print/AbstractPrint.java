@@ -21,7 +21,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.efaps.admin.datamodel.Type;
-import org.efaps.db.stmt.runner.IRunnable;
+import org.efaps.db.stmt.StmtFlag;
+import org.efaps.db.stmt.runner.AbstractRunnable;
 import org.efaps.db.stmt.selection.ISelectionProvider;
 import org.efaps.db.stmt.selection.IStmtProvider;
 import org.efaps.db.stmt.selection.Selection;
@@ -33,7 +34,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  */
 public abstract class AbstractPrint
-    implements ISelectionProvider, IStmtProvider, IRunnable
+    extends AbstractRunnable
+    implements ISelectionProvider, IStmtProvider
 {
 
     /** The selection. */
@@ -41,6 +43,12 @@ public abstract class AbstractPrint
 
     /** The types. */
     private final Set<Type> types = new LinkedHashSet<>();
+
+    public AbstractPrint(final StmtFlag... _flags)
+    {
+        super(_flags);
+    }
+
 
     /**
      * Gets the selection.

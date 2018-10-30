@@ -20,6 +20,7 @@ package org.efaps.db.stmt.print;
 import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.stmt.StmtFlag;
 import org.efaps.db.stmt.filter.Filter;
 import org.efaps.db.stmt.selection.Selection;
 import org.efaps.eql2.IPrintQueryStatement;
@@ -46,9 +47,10 @@ public class QueryPrint
      * @param _eqlStmt the eql stmt
      * @throws CacheReloadException on error
      */
-    public QueryPrint(final IPrintQueryStatement _eqlStmt)
+    public QueryPrint(final IPrintQueryStatement _eqlStmt, final StmtFlag... _flags)
         throws CacheReloadException
     {
+        super(_flags);
         this.eqlStmt = _eqlStmt;
         for (final String typeStr : ((PrintQueryStatement) this.eqlStmt).getQuery().getTypes()) {
             final Type type;

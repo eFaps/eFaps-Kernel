@@ -17,8 +17,15 @@
 
 package org.efaps.eql;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+
+import org.apache.commons.lang.reflect.FieldUtils;
+import org.efaps.admin.user.Person;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.db.stmt.StmtFlag;
 import org.efaps.eql.builder.Selectables;
 import org.efaps.mock.Mocks;
 import org.efaps.mock.datamodel.CI;
@@ -179,6 +186,65 @@ public class PrintTest
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
         EQL.print(CI.CompanyType)
+            .attribute(CI.CompanyType.StringAttribute)
+            .stmt()
+            .execute();
+        verify.verify();
+    }
+
+    @Test
+    public void testPrintRespectsCompanyIndependent()
+        throws EFapsException, IllegalAccessException
+    {
+        final Company company = new CompanyBuilder()
+                        .withName("Mock Company")
+                        .build();
+        Context.getThreadContext().setCompany(org.efaps.admin.user.Company.get(company.getId()));
+
+        final Person person = Context.getThreadContext().getPerson();
+        FieldUtils.writeDeclaredField(person, "companies", Collections.singleton(company.getId()), true);
+
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.%s in ( %s )" ,
+                        Mocks.CompanyStringAttribute.getSQLColumnName(),
+                        Mocks.CompanyTypeSQLTable.getSqlTableName(),
+                        Mocks.CompanyCompanyAttribute.getSQLColumnName(),
+                        company.getId());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(CI.CompanyType)
+            .with(StmtFlag.COMPANYINDEPENDENT)
+            .attribute(CI.CompanyType.StringAttribute)
+            .stmt()
+            .execute();
+        verify.verify();
+    }
+
+    @Test
+    public void testPrintRespectsCompanyIndependentMultiple()
+        throws EFapsException, IllegalAccessException
+    {
+        final Company company = new CompanyBuilder()
+                        .withName("Mock Company1")
+                        .build();
+        final Company company2 = new CompanyBuilder()
+                        .withName("Mock Company2")
+                        .build();
+        Context.getThreadContext().setCompany(org.efaps.admin.user.Company.get(company.getId()));
+
+        final Person person = Context.getThreadContext().getPerson();
+        FieldUtils.writeDeclaredField(person, "companies",
+                        new HashSet<>(Arrays.asList(company.getId(), company2.getId())), true);
+
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.%s in ( %s , %s )" ,
+                        Mocks.CompanyStringAttribute.getSQLColumnName(),
+                        Mocks.CompanyTypeSQLTable.getSqlTableName(),
+                        Mocks.CompanyCompanyAttribute.getSQLColumnName(),
+                        company.getId(),
+                        company2.getId());
+
+        final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
+        EQL.print(CI.CompanyType)
+            .with(StmtFlag.COMPANYINDEPENDENT)
             .attribute(CI.CompanyType.StringAttribute)
             .stmt()
             .execute();

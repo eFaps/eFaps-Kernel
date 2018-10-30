@@ -14,18 +14,33 @@
  * limitations under the License.
  *
  */
+
 package org.efaps.db.stmt.runner;
 
+import java.util.Arrays;
+import java.util.EnumSet;
+
+import org.apache.commons.lang3.ArrayUtils;
 import org.efaps.db.stmt.StmtFlag;
 
-public interface IRunnable
+public abstract class AbstractRunnable
+    implements IRunnable
 {
+    /** The flags. */
+    private final EnumSet<StmtFlag> flags;
 
-    /**
-     * Checks for a Stmt Flag.
-     *
-     * @param _flag the flag
-     * @return true, if successful
-     */
-    boolean has(final StmtFlag _flag);
+    protected AbstractRunnable(final StmtFlag... _flags)
+    {
+        if (ArrayUtils.isEmpty(_flags)) {
+            this.flags = EnumSet.noneOf(StmtFlag.class);
+        } else {
+            this.flags = EnumSet.copyOf(Arrays.asList(_flags));
+        }
+    }
+
+    @Override
+    public boolean has(final StmtFlag _flag)
+    {
+        return this.flags.contains(_flag);
+    }
 }
