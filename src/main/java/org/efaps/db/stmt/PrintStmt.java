@@ -41,12 +41,12 @@ public final class PrintStmt
     /** The print. */
     private AbstractPrint print;
 
-
     /**
      * Instantiates a new prints the stmt.
      */
-    private PrintStmt()
+    private PrintStmt(final StmtFlag... _flags)
     {
+        super(_flags);
     }
 
     /**

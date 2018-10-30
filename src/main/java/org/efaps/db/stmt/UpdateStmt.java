@@ -40,8 +40,9 @@ public class UpdateStmt
     /**
      * Instantiates a new update stmt.
      */
-    private UpdateStmt()
+    private UpdateStmt(final StmtFlag... _flags)
     {
+        super(_flags);
     }
 
     /**

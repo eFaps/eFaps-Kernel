@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.efaps.admin.access.AccessTypeEnums;
+import org.efaps.admin.access.user.AccessCache;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.Type;
@@ -30,15 +31,19 @@ import org.efaps.eql2.IUpdateElement;
 import org.efaps.eql2.IUpdateObjectStatement;
 import org.efaps.util.EFapsException;
 
+/**
+ * Update for one given Instance.
+ */
 public class ObjectUpdate
     extends AbstractObjectUpdate
 {
 
     public ObjectUpdate(final IUpdateObjectStatement _eqlStmt)
-                    throws EFapsException
+        throws EFapsException
     {
         super(_eqlStmt);
         this.instance = Instance.get(_eqlStmt.getOid());
+        AccessCache.registerUpdate(getInstance());
 
         final Set<Attribute> attributes = new HashSet<>();
         final Type type = getInstance().getType();

@@ -35,8 +35,9 @@ public class InsertStmt
     /**
      * Instantiates a new prints the stmt.
      */
-    private InsertStmt()
+    private InsertStmt(final StmtFlag... _flags)
     {
+        super(_flags);
     }
 
     /**
