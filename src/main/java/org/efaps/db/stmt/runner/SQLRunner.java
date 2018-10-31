@@ -130,10 +130,15 @@ public class SQLRunner
             final Attribute attr = (Attribute) entry.getValue();
             final AttributeType attrType = attr.getAttributeType();
             if (_create && attrType.isCreateUpdate() || attrType.isAlwaysUpdate()) {
-                final SQLTable sqlTable = attr.getTable();
-                final SQLInsert sqlInsert = getSQLInsert(sqlTable);
                 try {
-                    attr.prepareDBInsert(sqlInsert);
+                    final SQLTable sqlTable = attr.getTable();
+                    if (_create) {
+                        final SQLInsert sqlInsert = getSQLInsert(sqlTable);
+                        attr.prepareDBInsert(sqlInsert);
+                    } else {
+                        final SQLUpdate sqlUpdate = getSQLUpdate(sqlTable);
+                        attr.prepareDBUpdate(sqlUpdate);
+                    }
                 } catch (final SQLException e) {
                     throw new EFapsException(SQLRunner.class, "prepareInsert", e);
                 }
