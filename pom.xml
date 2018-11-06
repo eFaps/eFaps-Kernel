@@ -172,7 +172,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.12</version>
+            <version>8.0.13</version>
         </dependency>
 
         <!-- used for toString methods -->
@@ -331,7 +331,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>de.jollyday</groupId>
             <artifactId>jollyday</artifactId>
-            <version>0.5.6</version>
+            <version>0.5.7</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.xml.bind</groupId>
@@ -798,7 +798,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
-            <version>3.6</version>
+            <version>4.0.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -826,7 +826,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.eu.acolyte</groupId>
             <artifactId>jdbc-java8</artifactId>
-            <version>1.0.50</version>
+            <version>1.0.51</version>
             <scope>test</scope>
         </dependency>
    </dependencies>
