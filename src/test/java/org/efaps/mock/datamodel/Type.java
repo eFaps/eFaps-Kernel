@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -45,6 +45,7 @@ public final class Type
 
     /** The Constant SQLCHILDREN. */
     private static final String SQLCHILDREN = "select ID,PURPOSE from V_ADMINTYPE T0 where T0.PARENTDMTYPE = ?";
+
 
     /** The purpose id. */
     private final Integer purposeId;

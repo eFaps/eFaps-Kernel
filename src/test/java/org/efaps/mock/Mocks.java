@@ -23,6 +23,7 @@ import org.efaps.mock.datamodel.EventDefinition;
 import org.efaps.mock.datamodel.IDataModel;
 import org.efaps.mock.datamodel.Property;
 import org.efaps.mock.datamodel.SQLTable;
+import org.efaps.mock.datamodel.StatusGroup;
 import org.efaps.mock.datamodel.Type;
 import org.efaps.mock.esjp.AccessCheck;
 
@@ -498,5 +499,27 @@ public interface Mocks
                     .withDataModelTypeId(CompanyType.getId())
                     .withSqlTableId(CompanyTypeSQLTable.getId())
                     .withAttributeTypeId(IDataModel.StringType.getId())
+                    .build();
+
+    StatusGroup StatusGrp = StatusGroup.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("TestStatusGroup")
+                    .withKeys("Open", "Closed", "Canceled")
+                    .build();
+
+    Type StatusType = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("StatusType")
+                    .build();
+
+    SQLTable StatusTypeSQLTable = SQLTable.builder()
+                    .withName("StatusTypeSQLTable")
+                    .build();
+
+    Attribute StatusAttribute = Attribute.builder()
+                    .withName("StatusAttribute")
+                    .withDataModelTypeId(StatusType.getId())
+                    .withSqlTableId(StatusTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.StatusType.getId())
                     .build();
 }

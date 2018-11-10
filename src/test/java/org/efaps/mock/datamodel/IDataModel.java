@@ -123,6 +123,13 @@ public interface IDataModel
                     .withCreateUpdate(true)
                     .build();
 
+    AttributeType StatusType = AttributeType.builder()
+                    .withName("StatusType")
+                    .withUuid(UUID.fromString("0161bcdb-45e9-4839-a709-3a1c56f8a76a"))
+                    .withClassName("org.efaps.admin.datamodel.attributetype.StatusType")
+                    .withClassNameUI("org.efaps.admin.datamodel.ui.LinkWithRangesUI")
+                    .build();
+
     Type Admin_Abstract = Type.builder()
                     .withId(RandomUtils.nextLong())
                     .withUuid(CIAdmin.Abstract.uuid)

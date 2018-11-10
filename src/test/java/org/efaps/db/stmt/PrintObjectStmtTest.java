@@ -22,6 +22,7 @@ import static org.testng.Assert.assertTrue;
 
 import java.math.BigDecimal;
 
+import org.efaps.admin.datamodel.Status;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.Evaluator;
 import org.efaps.eql2.EQL;
@@ -791,6 +792,32 @@ public class PrintObjectStmtTest
                         .execute()
                         .evaluate();
         assertEquals(evaluator.get(1), date.toString("YYYY"));
+    }
+
+    @Test
+    public void testStatusType()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+                                        Mocks.StatusAttribute.getSQLColumnName(),
+                                        Mocks.StatusTypeSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Object.class)
+                    .append(Mocks.StatusGrp.getStatusId("Open"))
+                    .asResult())
+            .build();
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select status",
+                        Mocks.StatusType.getId()));
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        final Status status = evaluator.get(1);
+        assertEquals(Long.valueOf(status.getId()), Mocks.StatusGrp.getStatusId("Open"));
     }
 }
 

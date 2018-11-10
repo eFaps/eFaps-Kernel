@@ -42,6 +42,7 @@ import org.efaps.db.stmt.selection.elements.LinkfromElement;
 import org.efaps.db.stmt.selection.elements.LinktoElement;
 import org.efaps.db.stmt.selection.elements.OIDElement;
 import org.efaps.db.stmt.selection.elements.PrimedElement;
+import org.efaps.db.stmt.selection.elements.StatusElement;
 import org.efaps.eql2.IAttributeSelectElement;
 import org.efaps.eql2.IBaseSelectElement;
 import org.efaps.eql2.IClassSelectElement;
@@ -141,6 +142,9 @@ public final class Selection
                             break;
                         case OID:
                             select.addElement(new OIDElement(currentType));
+                            break;
+                        case STATUS:
+                            select.addElement(new StatusElement(currentType));
                             break;
                         default:
                             break;
