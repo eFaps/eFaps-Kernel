@@ -48,6 +48,7 @@ import org.efaps.db.stmt.selection.elements.OIDElement;
 import org.efaps.db.stmt.selection.elements.PrimedElement;
 import org.efaps.db.stmt.selection.elements.StatusElement;
 import org.efaps.db.stmt.selection.elements.TypeElement;
+import org.efaps.db.stmt.selection.elements.UUIDElement;
 import org.efaps.eql2.IAttributeSelectElement;
 import org.efaps.eql2.IBaseSelectElement;
 import org.efaps.eql2.IClassSelectElement;
@@ -165,6 +166,9 @@ public final class Selection
                             break;
                         case ID:
                             select.addElement(new IDElement());
+                            break;
+                        case UUID:
+                            select.addElement(new UUIDElement());
                             break;
                         default:
                             break;

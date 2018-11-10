@@ -994,5 +994,30 @@ public class PrintObjectStmtTest
                         .evaluate();
         assertEquals(evaluator.get(1), Mocks.TypedType.getId());
     }
+
+    @Test
+    public void testTypeUUID()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.ID,T0.TYPE from %s T0 where T0.ID = 4",
+                                        Mocks.TypedTypeSQLTable.getSqlTableName(),
+                                        Mocks.TypedType.getId());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(Object.class, Object.class)
+                    .append(4, Mocks.TypedType.getId())
+                    .asResult())
+            .build();
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select type.uuid",
+                        Mocks.TypedType.getId()));
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertEquals(evaluator.get(1), Mocks.TypedType.getUuid());
+    }
 }
 
