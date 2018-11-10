@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,26 +18,40 @@
 package org.efaps.db.stmt.selection.elements;
 
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Instance;
+import org.efaps.util.EFapsException;
 
-/**
- * The Class InstanceElement.
- */
-public class InstanceElement
-    extends AbstractInstanceElement<InstanceElement>
+public class TypeElement
+    extends AbstractInstanceElement<TypeElement>
 {
+
     /**
      * Instantiates a new instance element.
      *
      * @param _type the type
      */
-    public InstanceElement(final Type _type)
+    public TypeElement(final Type _type)
     {
-       super(_type);
+        super(_type);
     }
 
     @Override
-    public InstanceElement getThis()
+    public TypeElement getThis()
     {
         return this;
+    }
+
+    @Override
+    public Object getObject(final Object[] _row)
+        throws EFapsException
+    {
+        final Instance instance = (Instance) super.getObject(_row);
+        final Object ret;
+        if (getNext() != null && getNext() instanceof IAuxillary) {
+            ret = getNext().getObject(new Object[] { instance.getType() });
+        } else {
+            ret = instance.getType();
+        }
+        return ret;
     }
 }

@@ -23,6 +23,7 @@ import static org.testng.Assert.assertTrue;
 import java.math.BigDecimal;
 
 import org.efaps.admin.datamodel.Status;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.Evaluator;
 import org.efaps.eql2.EQL;
@@ -868,6 +869,80 @@ public class PrintObjectStmtTest
                         .execute()
                         .evaluate();
         assertEquals(evaluator.get(1), "?? - TestStatusGroup/Key.Status.Open - ??");
+    }
+
+    @Test
+    public void testTypeSimpleType()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.ID from %s T0 where T0.ID = 4",
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Object.class)
+            .append(4)
+            .asResult())
+            .build();
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select type",
+                        Mocks.AllAttrType.getId()));
+
+        final Evaluator evaluator = PrintStmt.get(stmt).execute().evaluate();
+        final Type type = evaluator.get(1);
+        assertEquals(Long.valueOf(type.getId()), Mocks.AllAttrType.getId());
+    }
+
+    @Test
+    public void testTypeTypedType()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.ID,T0.TYPE from %s T0 where T0.ID = 4",
+                                        Mocks.TypedTypeSQLTable.getSqlTableName(),
+                                        Mocks.TypedType.getId());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(Object.class, Object.class)
+                    .append(4, Mocks.TypedType.getId())
+                    .asResult())
+            .build();
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select type",
+                        Mocks.TypedType.getId()));
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        final Type type = evaluator.get(1);
+        assertEquals(Long.valueOf(type.getId()), Mocks.TypedType.getId());
+    }
+
+    @Test
+    public void testTypeLabel()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.ID,T0.TYPE from %s T0 where T0.ID = 4",
+                                        Mocks.TypedTypeSQLTable.getSqlTableName(),
+                                        Mocks.TypedType.getId());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(Object.class, Object.class)
+                    .append(4, Mocks.TypedType.getId())
+                    .asResult())
+            .build();
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select type.label",
+                        Mocks.TypedType.getId()));
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertEquals(evaluator.get(1), "?? - " + Mocks.TypedType.getName() + ".Label - ??");
     }
 }
 

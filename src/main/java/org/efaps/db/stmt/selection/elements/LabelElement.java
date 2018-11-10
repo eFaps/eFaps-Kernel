@@ -18,6 +18,7 @@
 package org.efaps.db.stmt.selection.elements;
 
 import org.efaps.admin.datamodel.Status;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.util.EFapsException;
 
 public class LabelElement
@@ -36,8 +37,12 @@ public class LabelElement
         throws EFapsException
     {
         Object object = _row == null ? null : _row[0];
-        if (object != null && object instanceof Status) {
-            object = ((Status) object).getLabel();
+        if (object != null) {
+            if (object instanceof Status) {
+                object = ((Status) object).getLabel();
+            } else if (object instanceof Type) {
+                object = ((Type) object).getLabel();
+            }
         }
         return object;
     }

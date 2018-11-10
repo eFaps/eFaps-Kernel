@@ -16,6 +16,7 @@
  */
 package org.efaps.db.stmt.selection.elements;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.efaps.admin.datamodel.DBTable;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -53,6 +54,19 @@ public abstract class AbstractDataElement<T>
     {
         this.table = _table;
         return getThis();
+    }
+
+    protected Long getLongValue(final Object _object)
+    {
+        final Long ret;
+        if (_object == null) {
+            ret = null;
+        } else if (_object instanceof Number) {
+            ret = ((Number) _object).longValue();
+        } else {
+            ret = NumberUtils.toLong(_object.toString());
+        }
+        return ret;
     }
 
     /**
