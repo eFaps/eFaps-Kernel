@@ -36,6 +36,7 @@ import org.efaps.db.stmt.selection.elements.AttributeElement;
 import org.efaps.db.stmt.selection.elements.ClassElement;
 import org.efaps.db.stmt.selection.elements.ExecElement;
 import org.efaps.db.stmt.selection.elements.FormatElement;
+import org.efaps.db.stmt.selection.elements.IDElement;
 import org.efaps.db.stmt.selection.elements.IPrimed;
 import org.efaps.db.stmt.selection.elements.InstanceElement;
 import org.efaps.db.stmt.selection.elements.KeyElement;
@@ -161,6 +162,9 @@ public final class Selection
                             break;
                         case NAME:
                             select.addElement(new NameElement());
+                            break;
+                        case ID:
+                            select.addElement(new IDElement());
                             break;
                         default:
                             break;
