@@ -844,5 +844,30 @@ public class PrintObjectStmtTest
                         .evaluate();
         assertEquals(evaluator.get(1), "Open");
     }
+
+    @Test
+    public void testStatusLabel()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+                                        Mocks.StatusAttribute.getSQLColumnName(),
+                                        Mocks.StatusTypeSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Object.class)
+                    .append(Mocks.StatusGrp.getStatusId("Open"))
+                    .asResult())
+            .build();
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select status.label",
+                        Mocks.StatusType.getId()));
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertEquals(evaluator.get(1), "?? - TestStatusGroup/Key.Status.Open - ??");
+    }
 }
 
