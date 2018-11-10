@@ -18,28 +18,15 @@
 package org.efaps.db.stmt.selection.elements;
 
 import org.efaps.admin.datamodel.Type;
-import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
-/**
- * The Class OIDElement.
- */
-public class OIDElement
-    extends AbstractInstanceElement<OIDElement>
+public class NameElement
+    extends AbstractElement<NameElement>
+    implements IAuxillary
 {
 
-    /**
-     * Instantiates a new OID element.
-     *
-     * @param _type the type
-     */
-    public OIDElement(final Type _type)
-    {
-        super(_type);
-    }
-
     @Override
-    public OIDElement getThis()
+    public NameElement getThis()
     {
         return this;
     }
@@ -48,7 +35,10 @@ public class OIDElement
     public Object getObject(final Object[] _row)
         throws EFapsException
     {
-        final Object object = super.getObject(_row);
-        return object == null ? null : ((Instance) object).getOid();
+        Object object = _row == null ? null : _row[0];
+        if (object != null && object instanceof Type) {
+            object = ((Type) object).getName();
+        }
+        return object;
     }
 }

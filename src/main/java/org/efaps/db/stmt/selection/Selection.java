@@ -42,6 +42,7 @@ import org.efaps.db.stmt.selection.elements.KeyElement;
 import org.efaps.db.stmt.selection.elements.LabelElement;
 import org.efaps.db.stmt.selection.elements.LinkfromElement;
 import org.efaps.db.stmt.selection.elements.LinktoElement;
+import org.efaps.db.stmt.selection.elements.NameElement;
 import org.efaps.db.stmt.selection.elements.OIDElement;
 import org.efaps.db.stmt.selection.elements.PrimedElement;
 import org.efaps.db.stmt.selection.elements.StatusElement;
@@ -149,14 +150,17 @@ public final class Selection
                         case STATUS:
                             select.addElement(new StatusElement(currentType));
                             break;
+                        case TYPE:
+                            select.addElement(new TypeElement(currentType));
+                            break;
                         case KEY:
                             select.addElement(new KeyElement());
                             break;
                         case LABEL:
                             select.addElement(new LabelElement());
                             break;
-                        case TYPE:
-                            select.addElement(new TypeElement(currentType));
+                        case NAME:
+                            select.addElement(new NameElement());
                             break;
                         default:
                             break;
