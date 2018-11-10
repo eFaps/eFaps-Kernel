@@ -29,7 +29,7 @@ import org.efaps.util.EFapsException;
  * The Class InstanceElement.
  */
 public class StatusElement
-    extends AbstractDataElement<StatusElement>
+    extends AbstractAttributeElement<StatusElement>
 {
 
     /** The type id. */
@@ -65,34 +65,7 @@ public class StatusElement
         throws EFapsException
     {
         if (getTable() instanceof SQLTable) {
-            final TableIdx tableIdx;
-            final SQLTable mainTable = ((SQLTable) getTable()).getMainTable();
-            if (mainTable != null) {
-                final TableIdx mainTableIdx;
-                if (getPrevious() != null && getPrevious() instanceof IJoinTableIdx) {
-                    mainTableIdx = ((IJoinTableIdx) getPrevious()).getJoinTableIdx(_sqlSelect);
-                } else {
-                    mainTableIdx = _sqlSelect.getIndexer().getTableIdx(mainTable.getSqlTable());
-                }
-                if (mainTableIdx.isCreated()) {
-                    _sqlSelect.from(mainTableIdx.getTable(), mainTableIdx.getIdx());
-                }
-                tableIdx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable(),
-                                mainTable.getSqlTable(), "ID");
-                if (tableIdx.isCreated()) {
-                    _sqlSelect.leftJoin(tableIdx.getTable(), tableIdx.getIdx(), "ID", mainTableIdx.getIdx(), "ID");
-                }
-            } else {
-                if (getPrevious() != null && getPrevious() instanceof IJoinTableIdx) {
-                    tableIdx = ((IJoinTableIdx) getPrevious()).getJoinTableIdx(_sqlSelect);
-                } else {
-                    tableIdx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable());
-                }
-                if (tableIdx.isCreated()) {
-                    _sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
-                }
-            }
-
+            final TableIdx tableIdx = getTableIdx(_sqlSelect);
             final String colName = Type.get(this.typeId).getStatusAttribute().getSqlColNames().get(0);
             this.colIdx = _sqlSelect.columnIndex(tableIdx.getIdx(), colName);
         }
@@ -103,7 +76,7 @@ public class StatusElement
         throws EFapsException
     {
         final Long statusId = getValue(_row[this.colIdx]);
-        return Status.get(statusId);
+        return callAuxillary(Status.get(statusId));
     }
 
     /**

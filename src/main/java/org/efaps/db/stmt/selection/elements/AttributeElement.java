@@ -31,7 +31,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  */
 public class AttributeElement
-    extends AbstractDataElement<AttributeElement>
+    extends AbstractAttributeElement<AttributeElement>
 {
 
     /** The col idxs. */
@@ -74,34 +74,7 @@ public class AttributeElement
         throws EFapsException
     {
         if (getTable() instanceof SQLTable) {
-            final TableIdx tableIdx;
-            final SQLTable mainTable = ((SQLTable) getTable()).getMainTable();
-            if (mainTable != null) {
-                final TableIdx mainTableIdx;
-                if (getPrevious() != null && getPrevious() instanceof IJoinTableIdx) {
-                    mainTableIdx = ((IJoinTableIdx) getPrevious()).getJoinTableIdx(_sqlSelect);
-                } else {
-                    mainTableIdx = _sqlSelect.getIndexer().getTableIdx(mainTable.getSqlTable());
-                }
-                if (mainTableIdx.isCreated()) {
-                    _sqlSelect.from(mainTableIdx.getTable(), mainTableIdx.getIdx());
-                }
-                tableIdx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable(),
-                                mainTable.getSqlTable(), "ID");
-                if (tableIdx.isCreated()) {
-                    _sqlSelect.leftJoin(tableIdx.getTable(), tableIdx.getIdx(), "ID", mainTableIdx.getIdx(), "ID");
-                }
-            } else {
-                if (getPrevious() != null && getPrevious() instanceof IJoinTableIdx) {
-                    tableIdx = ((IJoinTableIdx) getPrevious()).getJoinTableIdx(_sqlSelect);
-                } else {
-                    tableIdx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable());
-                }
-                if (tableIdx.isCreated()) {
-                    _sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
-                }
-            }
-
+            final TableIdx tableIdx =getTableIdx(_sqlSelect);
             for (final String colName : this.attribute.getSqlColNames()) {
                 this.colIdxs = ArrayUtils.add(this.colIdxs, _sqlSelect.columnIndex(tableIdx.getIdx(), colName));
             }
@@ -129,10 +102,6 @@ public class AttributeElement
                 ((Object[]) ret)[i] = this.colIdxs[i];
             }
         }
-        Object temp = this.attribute.readDBValue(Collections.singletonList(ret));
-        if (getNext() != null && getNext() instanceof IAuxillary) {
-            temp = getNext().getObject(new Object[] { temp });
-        }
-        return temp;
+        return callAuxillary(this.attribute.readDBValue(Collections.singletonList(ret)));
     }
 }

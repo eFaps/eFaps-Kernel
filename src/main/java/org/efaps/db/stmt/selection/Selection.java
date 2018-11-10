@@ -38,6 +38,7 @@ import org.efaps.db.stmt.selection.elements.ExecElement;
 import org.efaps.db.stmt.selection.elements.FormatElement;
 import org.efaps.db.stmt.selection.elements.IPrimed;
 import org.efaps.db.stmt.selection.elements.InstanceElement;
+import org.efaps.db.stmt.selection.elements.KeyElement;
 import org.efaps.db.stmt.selection.elements.LinkfromElement;
 import org.efaps.db.stmt.selection.elements.LinktoElement;
 import org.efaps.db.stmt.selection.elements.OIDElement;
@@ -145,6 +146,9 @@ public final class Selection
                             break;
                         case STATUS:
                             select.addElement(new StatusElement(currentType));
+                            break;
+                        case KEY:
+                            select.addElement(new KeyElement());
                             break;
                         default:
                             break;

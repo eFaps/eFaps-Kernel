@@ -795,7 +795,7 @@ public class PrintObjectStmtTest
     }
 
     @Test
-    public void testStatusType()
+    public void testStatus()
         throws EFapsException
     {
         final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
@@ -818,6 +818,31 @@ public class PrintObjectStmtTest
                         .evaluate();
         final Status status = evaluator.get(1);
         assertEquals(Long.valueOf(status.getId()), Mocks.StatusGrp.getStatusId("Open"));
+    }
+
+    @Test
+    public void testStatusKey()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+                                        Mocks.StatusAttribute.getSQLColumnName(),
+                                        Mocks.StatusTypeSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList1(Object.class)
+                    .append(Mocks.StatusGrp.getStatusId("Open"))
+                    .asResult())
+            .build();
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+                        String.format("print obj %s.4 select status.key",
+                        Mocks.StatusType.getId()));
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertEquals(evaluator.get(1), "Open");
     }
 }
 
