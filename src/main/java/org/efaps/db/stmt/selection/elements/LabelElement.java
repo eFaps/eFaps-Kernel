@@ -20,11 +20,15 @@ package org.efaps.db.stmt.selection.elements;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LabelElement
     extends AbstractElement<LabelElement>
     implements IAuxillary
 {
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(LabelElement.class);
 
     @Override
     public LabelElement getThis()
@@ -42,6 +46,8 @@ public class LabelElement
                 object = ((Status) object).getLabel();
             } else if (object instanceof Type) {
                 object = ((Type) object).getLabel();
+            } else {
+                LOG.warn("LabelElement was called with unexpected Object: {}", object);
             }
         }
         return object;

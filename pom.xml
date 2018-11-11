@@ -785,20 +785,14 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <!-- connection Pooling, used as J2EE resource -->
          <dependency>
             <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-testng-agent</artifactId>
-            <version>1.7.4</version>
+            <artifactId>powermock-module-testng</artifactId>
+            <version>2.0.0-RC.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-easymock</artifactId>
-            <version>1.7.4</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
-            <version>4.0.1</version>
+            <version>2.0.0-RC.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>

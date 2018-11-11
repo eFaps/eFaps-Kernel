@@ -19,11 +19,16 @@ package org.efaps.db.stmt.selection.elements;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NameElement
     extends AbstractElement<NameElement>
     implements IAuxillary
 {
+
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(NameElement.class);
 
     @Override
     public NameElement getThis()
@@ -36,8 +41,12 @@ public class NameElement
         throws EFapsException
     {
         Object object = _row == null ? null : _row[0];
-        if (object != null && object instanceof Type) {
-            object = ((Type) object).getName();
+        if (object != null) {
+            if (object instanceof Type) {
+                object = ((Type) object).getName();
+            } else {
+                LOG.warn("LabelElement was called with unexpected Object: {}", object);
+            }
         }
         return object;
     }
