@@ -67,19 +67,22 @@ public abstract class AbstractInstanceElement<T>
     public Object getObject(final Object[] _row)
         throws EFapsException
     {
-        final Long idObject = getLongValue(_row[this.idColIdxs]);
-        final Type type;
-        Object ret;
-        if (idObject == null) {
-            ret = null;
-        } else {
-            if (this.typeColIdxs > -1) {
-                final Long typeIdTemp = getLongValue(_row[this.typeColIdxs]);
-                type = Type.get(typeIdTemp);
+        Object ret = null;
+        if (_row != null) {
+            final Long idObject = getLongValue(_row[this.idColIdxs]);
+            final Type type;
+
+            if (idObject == null) {
+                ret = null;
             } else {
-                type = Type.get(this.typeId);
+                if (this.typeColIdxs > -1) {
+                    final Long typeIdTemp = getLongValue(_row[this.typeColIdxs]);
+                    type = Type.get(typeIdTemp);
+                } else {
+                    type = Type.get(this.typeId);
+                }
+                ret = Instance.get(type, idObject);
             }
-            ret = Instance.get(type, idObject);
         }
         return ret;
     }
