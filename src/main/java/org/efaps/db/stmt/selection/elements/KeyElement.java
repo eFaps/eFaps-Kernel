@@ -19,11 +19,16 @@ package org.efaps.db.stmt.selection.elements;
 
 import org.efaps.admin.datamodel.Status;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KeyElement
     extends AbstractElement<KeyElement>
     implements IAuxillary
 {
+
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(KeyElement.class);
 
     @Override
     public KeyElement getThis()
@@ -36,8 +41,12 @@ public class KeyElement
         throws EFapsException
     {
         Object object = _row == null ? null : _row[0];
-        if (object != null && object instanceof Status) {
-            object = ((Status) object).getKey();
+        if (object != null) {
+            if (object instanceof Status) {
+                object = ((Status) object).getKey();
+            } else {
+                LOG.warn("KeyElement was called with unexpected Object: {}", object);
+            }
         }
         return object;
     }

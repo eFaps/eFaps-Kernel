@@ -34,55 +34,56 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
-public class NameElementTest
+public class UUIDElementTest
     extends AbstractTest
 {
 
     @Test
     public void testGetThis()
     {
-        final NameElement nameElement = new NameElement();
-        assertEquals(nameElement.getThis(), nameElement);
+        final UUIDElement uuidElement = new UUIDElement();
+        assertEquals(uuidElement.getThis(), uuidElement);
     }
 
     @Test
     public void testGetObjectNull()
         throws EFapsException
     {
-        final NameElement nameElement = new NameElement();
-        assertNull(nameElement.getObject(null));
+        final UUIDElement uuidElement = new UUIDElement();
+        assertNull(uuidElement.getObject(null));
     }
 
     @Test
     public void testGetObjectNullArray()
         throws EFapsException
     {
-        final NameElement nameElement = new NameElement();
-        assertNull(nameElement.getObject(new Object[] { null }));
+        final UUIDElement uuidElement = new UUIDElement();
+        assertNull(uuidElement.getObject(new Object[] { null }));
     }
 
     @Test
     public void testGetObject4Type()
         throws EFapsException
     {
-        final NameElement nameElement = new NameElement();
+        final UUIDElement uuidElement = new UUIDElement();
         final Type type = Type.get(Mocks.TypedType.getId());
-        assertEquals(type.getName(), nameElement.getObject(new Object[] { type }));
+        assertEquals(type.getUUID(), uuidElement.getObject(new Object[] { type }));
     }
 
     @Test
-    @PrepareForTest({NameElement.class, LoggerFactory.class})
+    @PrepareForTest({UUIDElement.class, LoggerFactory.class})
     public void testGetObject4UnexpectedObject()
         throws EFapsException
     {
         final Logger mockLogger = createMock(Logger.class);
-        Whitebox.setInternalState(NameElement.class, mockLogger);
+        Whitebox.setInternalState(UUIDElement.class, mockLogger);
         final String unexpectedObject = "Should just be returned";
         mockLogger.warn(anyString(), eq(unexpectedObject));
         replay(mockLogger);
 
-        final NameElement nameElement = new NameElement();
-        assertEquals(unexpectedObject, nameElement.getObject(new Object[] { unexpectedObject }));
+        final UUIDElement uuidElement = new UUIDElement();
+        assertEquals(unexpectedObject, uuidElement.getObject(new Object[] { unexpectedObject }));
         verify(mockLogger);
     }
+
 }

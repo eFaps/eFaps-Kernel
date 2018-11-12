@@ -24,7 +24,7 @@ import static org.powermock.api.easymock.PowerMock.verify;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 
-import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.Status;
 import org.efaps.mock.Mocks;
 import org.efaps.test.AbstractTest;
 import org.efaps.util.EFapsException;
@@ -34,55 +34,55 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
-public class NameElementTest
+public class KeyElementTest
     extends AbstractTest
 {
 
     @Test
     public void testGetThis()
     {
-        final NameElement nameElement = new NameElement();
-        assertEquals(nameElement.getThis(), nameElement);
+        final KeyElement keyElement = new KeyElement();
+        assertEquals(keyElement.getThis(), keyElement);
     }
 
     @Test
     public void testGetObjectNull()
         throws EFapsException
     {
-        final NameElement nameElement = new NameElement();
-        assertNull(nameElement.getObject(null));
+        final KeyElement keyElement = new KeyElement();
+        assertNull(keyElement.getObject(null));
     }
 
     @Test
     public void testGetObjectNullArray()
         throws EFapsException
     {
-        final NameElement nameElement = new NameElement();
-        assertNull(nameElement.getObject(new Object[] { null }));
+        final KeyElement keyElement = new KeyElement();
+        assertNull(keyElement.getObject(new Object[] { null }));
     }
 
     @Test
-    public void testGetObject4Type()
+    public void testGetObject4Status()
         throws EFapsException
     {
-        final NameElement nameElement = new NameElement();
-        final Type type = Type.get(Mocks.TypedType.getId());
-        assertEquals(type.getName(), nameElement.getObject(new Object[] { type }));
+        final KeyElement keyElement = new KeyElement();
+        final Status status = Status.get(Mocks.StatusGrp.getStatusId("Open"));
+        assertEquals(status.getKey(), keyElement.getObject(new Object[] { status }));
     }
 
     @Test
-    @PrepareForTest({NameElement.class, LoggerFactory.class})
+    @PrepareForTest({KeyElement.class, LoggerFactory.class})
     public void testGetObject4UnexpectedObject()
         throws EFapsException
     {
         final Logger mockLogger = createMock(Logger.class);
-        Whitebox.setInternalState(NameElement.class, mockLogger);
+        Whitebox.setInternalState(KeyElement.class, mockLogger);
         final String unexpectedObject = "Should just be returned";
         mockLogger.warn(anyString(), eq(unexpectedObject));
         replay(mockLogger);
 
-        final NameElement nameElement = new NameElement();
-        assertEquals(unexpectedObject, nameElement.getObject(new Object[] { unexpectedObject }));
+        final KeyElement keyElement = new KeyElement();
+        assertEquals(unexpectedObject, keyElement.getObject(new Object[] { unexpectedObject }));
         verify(mockLogger);
     }
 }

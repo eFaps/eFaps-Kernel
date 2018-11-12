@@ -16,6 +16,7 @@
  */
 
 package org.efaps.db.stmt.selection.elements;
+
 import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.replay;
@@ -24,65 +25,72 @@ import static org.powermock.api.easymock.PowerMock.verify;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 
-import org.efaps.admin.datamodel.Type;
-import org.efaps.mock.Mocks;
 import org.efaps.test.AbstractTest;
 import org.efaps.util.EFapsException;
+import org.joda.time.DateTime;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
-public class NameElementTest
+public class FormatElementTest
     extends AbstractTest
 {
-
     @Test
     public void testGetThis()
     {
-        final NameElement nameElement = new NameElement();
-        assertEquals(nameElement.getThis(), nameElement);
+        final FormatElement formatElement = new FormatElement();
+        assertEquals(formatElement.getThis(), formatElement);
     }
 
     @Test
     public void testGetObjectNull()
         throws EFapsException
     {
-        final NameElement nameElement = new NameElement();
-        assertNull(nameElement.getObject(null));
+        final FormatElement formatElement = new FormatElement();
+        assertNull(formatElement.getObject(null));
     }
 
     @Test
     public void testGetObjectNullArray()
         throws EFapsException
     {
-        final NameElement nameElement = new NameElement();
-        assertNull(nameElement.getObject(new Object[] { null }));
+        final FormatElement formatElement = new FormatElement();
+        assertNull(formatElement.getObject(new Object[] { null }));
     }
 
     @Test
-    public void testGetObject4Type()
+    public void testGetObject4DateTimeDefaultFormat()
         throws EFapsException
     {
-        final NameElement nameElement = new NameElement();
-        final Type type = Type.get(Mocks.TypedType.getId());
-        assertEquals(type.getName(), nameElement.getObject(new Object[] { type }));
+        final FormatElement formatElement = new FormatElement();
+        final DateTime date = new DateTime();
+        assertEquals(date.toString(), formatElement.getObject(new Object[] { date }));
     }
 
     @Test
-    @PrepareForTest({NameElement.class, LoggerFactory.class})
+    public void testGetObject4DateTime()
+        throws EFapsException
+    {
+        final FormatElement formatElement = new FormatElement().setPattern("YYYY");
+        final DateTime date = new DateTime();
+        assertEquals(date.toString("YYYY"), formatElement.getObject(new Object[] { date }));
+    }
+
+    @Test
+    @PrepareForTest({FormatElement.class, LoggerFactory.class})
     public void testGetObject4UnexpectedObject()
         throws EFapsException
     {
         final Logger mockLogger = createMock(Logger.class);
-        Whitebox.setInternalState(NameElement.class, mockLogger);
+        Whitebox.setInternalState(UUIDElement.class, mockLogger);
         final String unexpectedObject = "Should just be returned";
         mockLogger.warn(anyString(), eq(unexpectedObject));
         replay(mockLogger);
 
-        final NameElement nameElement = new NameElement();
-        assertEquals(unexpectedObject, nameElement.getObject(new Object[] { unexpectedObject }));
+        final FormatElement formatElement = new FormatElement();
+        assertEquals(unexpectedObject, formatElement.getObject(new Object[] { unexpectedObject }));
         verify(mockLogger);
     }
 }

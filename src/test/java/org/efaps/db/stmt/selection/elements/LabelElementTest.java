@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
-@PrepareForTest({LabelElement.class, LoggerFactory.class})
 public class LabelElementTest
     extends AbstractTest
 {
@@ -82,6 +81,7 @@ public class LabelElementTest
     }
 
     @Test
+    @PrepareForTest({LabelElement.class, LoggerFactory.class})
     public void testGetObject4UnexpectedObject()
         throws EFapsException
     {
@@ -95,5 +95,4 @@ public class LabelElementTest
         assertEquals(unexpectedObject, labelElement.getObject(new Object[] { unexpectedObject }));
         verify(mockLogger);
     }
-
 }

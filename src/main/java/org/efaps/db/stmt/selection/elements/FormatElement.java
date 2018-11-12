@@ -20,11 +20,16 @@ package org.efaps.db.stmt.selection.elements;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 import org.joda.time.base.AbstractDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FormatElement
     extends AbstractElement<FormatElement>
     implements IAuxillary
 {
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(FormatElement.class);
+
     private String pattern;
 
     @Override
@@ -38,8 +43,12 @@ public class FormatElement
         throws EFapsException
     {
         Object object = _row == null ? null : _row[0];
-        if (object != null && object instanceof AbstractDateTime) {
-            object = ((AbstractDateTime) object).toString(this.pattern, Context.getThreadContext().getLocale());
+        if (object != null) {
+            if (object instanceof AbstractDateTime) {
+                object = ((AbstractDateTime) object).toString(this.pattern, Context.getThreadContext().getLocale());
+            } else {
+                LOG.warn("FormatElement was called with unexpected Object: {}", object);
+            }
         }
         return object;
     }
