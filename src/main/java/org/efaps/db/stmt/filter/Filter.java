@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,25 +20,36 @@ package org.efaps.db.stmt.filter;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.IAttributeType;
 import org.efaps.admin.datamodel.SQLTable;
+import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.LongType;
+import org.efaps.admin.datamodel.attributetype.StatusType;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLWhere;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
+import org.efaps.eql2.IAttributeSelectElement;
+import org.efaps.eql2.IBaseSelectElement;
+import org.efaps.eql2.ISelectElement;
 import org.efaps.eql2.IWhere;
 import org.efaps.eql2.IWhereElement;
 import org.efaps.eql2.IWhereElementTerm;
+import org.efaps.eql2.IWhereSelect;
 import org.efaps.eql2.IWhereTerm;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class Filter.
  */
 public class Filter
 {
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(Filter.class);
 
     /** The i where. */
     private IWhere iWhere;
@@ -72,18 +83,31 @@ public class Filter
             for (final IWhereTerm<?> term : this.iWhere.getTerms()) {
                 if (term instanceof IWhereElementTerm) {
                     final IWhereElement element = ((IWhereElementTerm) term).getElement();
-                    final String attrName = element.getAttribute();
-                    if (attrName != null) {
+                    if (element.getAttribute() != null)
+                    {
+                        final String attrName = element.getAttribute();
                         for (final Type type : this.types) {
-                            final Attribute attr = type.getAttribute(attrName);
-                            if (attr != null) {
-                                final SQLTable table = attr.getTable();
-                                final String tableName = table.getSqlTable();
-                                final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName);
-                                final IAttributeType attrType = attr.getAttributeType().getDbAttrType();
-                                final boolean noEscape = attrType instanceof LongType;
-                                sqlWhere.addCriteria(tableidx.getIdx(), attr.getSqlColNames(), element.getComparison(),
-                                                element.getValues(), !noEscape, term.getConnection());
+                            addAttr(_sqlSelect, sqlWhere, type.getAttribute(attrName), term, element);
+                        }
+                    } else if (element.getSelect() != null) {
+                        final IWhereSelect select = element.getSelect();
+                        for (final ISelectElement ele : select.getElements()) {
+                            if (ele instanceof IBaseSelectElement) {
+                                switch (((IBaseSelectElement) ele).getElement()) {
+                                    case STATUS:
+                                        for (final Type type : this.types) {
+                                            final Attribute attr = type.getStatusAttribute();
+                                            addAttr(_sqlSelect, sqlWhere, attr, term, element);
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            } else if (ele instanceof IAttributeSelectElement) {
+                                final String attrName = ((IAttributeSelectElement) ele).getName();
+                                for (final Type type : this.types) {
+                                    addAttr(_sqlSelect, sqlWhere, type.getAttribute(attrName), term, element);
+                                }
                             }
                         }
                     }
@@ -91,6 +115,52 @@ public class Filter
             }
             _sqlSelect.where(sqlWhere);
         }
+    }
+
+    protected void addAttr(final SQLSelect _sqlSelect, final SQLWhere _sqlWhere, final Attribute _attr,
+                           final IWhereTerm<?> _term, final IWhereElement _element)
+    {
+        if (_attr != null) {
+            final SQLTable table = _attr.getTable();
+            final String tableName = table.getSqlTable();
+            final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName);
+            final IAttributeType attrType = _attr.getAttributeType().getDbAttrType();
+
+            final boolean noEscape;
+            final String[] values;
+            if (attrType instanceof StatusType) {
+                values = _element.getValuesList().stream()
+                                .map(val -> convertStatusValue(_attr, val))
+                                .toArray(String[]::new);
+                noEscape = true;
+            } else {
+                noEscape = attrType instanceof LongType;
+                values = _element.getValues();
+            }
+            _sqlWhere.addCriteria(tableidx.getIdx(), _attr.getSqlColNames(), _element.getComparison(), values,
+                            !noEscape, _term.getConnection());
+        }
+    }
+
+    protected String convertStatusValue(final Attribute _attr, final String _val)
+    {
+        String ret;
+        if (StringUtils.isNumeric(_val)) {
+            ret = _val;
+        } else {
+            Status status = null;
+            try {
+                status = Status.find(_attr.getLink().getUUID(), _val);
+            } catch (final CacheReloadException e) {
+                LOG.error("Cathed error:", e);
+            } finally {
+                if (status == null) {
+                    LOG.warn("No Status could be found for the given key {} on {}", _val, _attr);
+                }
+                ret = status == null ? _val : String.valueOf(status.getId());
+            }
+        }
+        return ret;
     }
 
     /**

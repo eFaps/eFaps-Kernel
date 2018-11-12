@@ -63,14 +63,14 @@ public class PrintQueryStmtTest
                         Mocks.SimpleType.getName(), Mocks.TestAttribute.getName());
         final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
         final PrintStmt printStmt = PrintStmt.get(stmt);
-        final Evaluator evalutor = printStmt.evaluate();
-        assertTrue(evalutor.next());
-        assertEquals(evalutor.get(1), "Val1");
-        assertTrue(evalutor.next());
-        assertEquals(evalutor.get(1), "Val2");
-        assertTrue(evalutor.next());
-        assertEquals(evalutor.get(1), "Val3");
-        assertFalse(evalutor.next());
+        final Evaluator evaluator = printStmt.evaluate();
+        assertTrue(evaluator.next());
+        assertEquals(evaluator.get(1), "Val1");
+        assertTrue(evaluator.next());
+        assertEquals(evaluator.get(1), "Val2");
+        assertTrue(evaluator.next());
+        assertEquals(evaluator.get(1), "Val3");
+        assertFalse(evaluator.next());
     }
 
     @Test
@@ -99,14 +99,178 @@ public class PrintQueryStmtTest
                         Mocks.AbstractType.getName(), Mocks.AbstractTypeStringAttribute.getName());
         final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
         final PrintStmt printStmt = PrintStmt.get(stmt);
-        final Evaluator evalutor = printStmt.evaluate();
-        assertTrue(evalutor.next());
-        assertEquals(evalutor.get(1), "Val1");
-        assertTrue(evalutor.next());
-        assertEquals(evalutor.get(1), "Val2");
-        assertTrue(evalutor.next());
-        assertEquals(evalutor.get(1), "Val3");
-        assertFalse(evalutor.next());
+        final Evaluator evaluator = printStmt.evaluate();
+        assertTrue(evaluator.next());
+        assertEquals(evaluator.get(1), "Val1");
+        assertTrue(evaluator.next());
+        assertEquals(evaluator.get(1), "Val2");
+        assertTrue(evaluator.next());
+        assertEquals(evaluator.get(1), "Val3");
+        assertFalse(evaluator.next());
+    }
+
+    @Test(dataProvider = "status")
+    public void testTypeWithStatusFilterWithKey(final String _statusFilter)
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.%s = %s",
+                        Mocks.StatusStringAttribute.getSQLColumnName(),
+                        Mocks.StatusTypeSQLTable.getSqlTableName(),
+                        Mocks.StatusAttribute.getSQLColumnName(),
+                        Mocks.StatusGrp.getStatusId("Open"));
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(String.class, Long.class)
+                            .append("Val1", 6L)
+                            .append("Val2", 8L)
+                            .append("Val3", 11L)
+                            .asResult())
+            .build();
+
+        final String stmtStr = String.format("print query type %s where %s = \"Open\" select attribute[%s]",
+                        Mocks.StatusType.getName(), _statusFilter, Mocks.StatusStringAttribute.getName());
+
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertTrue(evaluator.next());
+    }
+
+    @Test(dataProvider = "status")
+    public void testTypeWithStatusFilterWithKeys(final String _statusFilter)
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.%s in (%s,%s)",
+                        Mocks.StatusStringAttribute.getSQLColumnName(),
+                        Mocks.StatusTypeSQLTable.getSqlTableName(),
+                        Mocks.StatusAttribute.getSQLColumnName(),
+                        Mocks.StatusGrp.getStatusId("Open"),
+                        Mocks.StatusGrp.getStatusId("Closed"));
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(String.class, Long.class)
+                            .append("Val1", 6L)
+                            .append("Val2", 8L)
+                            .append("Val3", 11L)
+                            .asResult())
+            .build();
+
+        final String stmtStr = String.format("print query type %s where %s in (\"Open\",\"Closed\") "
+                        + "select attribute[%s]",
+                        Mocks.StatusType.getName(), _statusFilter, Mocks.StatusStringAttribute.getName());
+
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertTrue(evaluator.next());
+    }
+
+    @Test(dataProvider = "status")
+    public void testTypeWithStatusFilterWithId(final String _statusFilter)
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.%s = %s",
+                        Mocks.StatusStringAttribute.getSQLColumnName(),
+                        Mocks.StatusTypeSQLTable.getSqlTableName(),
+                        Mocks.StatusAttribute.getSQLColumnName(),
+                        Mocks.StatusGrp.getStatusId("Open"));
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(String.class, Long.class)
+                            .append("Val1", 6L)
+                            .append("Val2", 8L)
+                            .append("Val3", 11L)
+                            .asResult())
+            .build();
+
+        final String stmtStr = String.format("print query type %s where %s = %s select attribute[%s]",
+                        Mocks.StatusType.getName(),
+                        _statusFilter,
+                        Mocks.StatusGrp.getStatusId("Open"),
+                        Mocks.StatusStringAttribute.getName());
+
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertTrue(evaluator.next());
+    }
+
+    @Test(dataProvider = "status")
+    public void testTypeWithStatusFilterWithIds(final String _statusFilter)
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.%s in (%s,%s)",
+                        Mocks.StatusStringAttribute.getSQLColumnName(),
+                        Mocks.StatusTypeSQLTable.getSqlTableName(),
+                        Mocks.StatusAttribute.getSQLColumnName(),
+                        Mocks.StatusGrp.getStatusId("Open"),
+                        Mocks.StatusGrp.getStatusId("Closed"));
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(String.class, Long.class)
+                            .append("Val1", 6L)
+                            .append("Val2", 8L)
+                            .append("Val3", 11L)
+                            .asResult())
+            .build();
+
+        final String stmtStr = String.format("print query type %s where %s in (%s,%s) select attribute[%s]",
+                        Mocks.StatusType.getName(),
+                        _statusFilter,
+                        Mocks.StatusGrp.getStatusId("Open"),
+                        Mocks.StatusGrp.getStatusId("Closed"),
+                        Mocks.StatusStringAttribute.getName());
+
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertTrue(evaluator.next());
+    }
+
+    @Test(dataProvider = "status")
+    public void testTypeWithStatusFilterMixed(final String _statusFilter)
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.%s in (%s,%s)",
+                        Mocks.StatusStringAttribute.getSQLColumnName(),
+                        Mocks.StatusTypeSQLTable.getSqlTableName(),
+                        Mocks.StatusAttribute.getSQLColumnName(),
+                        Mocks.StatusGrp.getStatusId("Open"),
+                        Mocks.StatusGrp.getStatusId("Closed"));
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList2(String.class, Long.class)
+                            .append("Val1", 6L)
+                            .append("Val2", 8L)
+                            .append("Val3", 11L)
+                            .asResult())
+            .build();
+
+        final String stmtStr = String.format("print query type %s where %s in (\"Open\",%s) select attribute[%s]",
+                        Mocks.StatusType.getName(),
+                        _statusFilter,
+                        Mocks.StatusGrp.getStatusId("Closed"),
+                        Mocks.StatusStringAttribute.getName());
+
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+                        .execute()
+                        .evaluate();
+        assertTrue(evaluator.next());
     }
 
     @Test(description = "Exec select without any other selects")
@@ -282,5 +446,14 @@ public class PrintQueryStmtTest
         ret.add(String.format("%s in ('ABC', 'DEF')", _attributeName));
         ret.add(String.format("%s not in ('ABC', 'DEF')", _attributeName));
         return ret;
+    }
+
+    @DataProvider(name = "status")
+    static public Object[][] statusDataProvider() {
+        return new Object[][] {
+            new Object[] { "status" },
+            new Object[] { Mocks.StatusAttribute.getName() },
+            new Object[] { "attribute["+  Mocks.StatusAttribute.getName() + "]" },
+        };
     }
 }

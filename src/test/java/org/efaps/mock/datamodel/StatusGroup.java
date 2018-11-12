@@ -52,6 +52,11 @@ public class StatusGroup
         this.type = _builder.type;
     }
 
+    public Long getId()
+    {
+        return this.type.getId();
+    }
+
     public Long getStatusId(final String _key)
     {
         return this.keys.getKey(_key);

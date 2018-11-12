@@ -521,5 +521,14 @@ public interface Mocks
                     .withDataModelTypeId(StatusType.getId())
                     .withSqlTableId(StatusTypeSQLTable.getId())
                     .withAttributeTypeId(IDataModel.StatusType.getId())
+                    .withLinkTypeId(StatusGrp.getId())
                     .build();
+
+    Attribute StatusStringAttribute = Attribute.builder()
+                    .withName("StatusStringAttribute")
+                    .withDataModelTypeId(StatusType.getId())
+                    .withSqlTableId(StatusTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.StringType.getId())
+                    .build();
+
 }
