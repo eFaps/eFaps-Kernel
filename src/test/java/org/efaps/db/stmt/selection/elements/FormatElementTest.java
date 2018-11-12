@@ -37,6 +37,7 @@ import org.testng.annotations.Test;
 public class FormatElementTest
     extends AbstractTest
 {
+
     @Test
     public void testGetThis()
     {
@@ -79,12 +80,12 @@ public class FormatElementTest
     }
 
     @Test
-    @PrepareForTest({FormatElement.class, LoggerFactory.class})
+    @PrepareForTest({ FormatElement.class, LoggerFactory.class })
     public void testGetObject4UnexpectedObject()
         throws EFapsException
     {
         final Logger mockLogger = createMock(Logger.class);
-        Whitebox.setInternalState(UUIDElement.class, mockLogger);
+        Whitebox.setInternalState(FormatElement.class, mockLogger);
         final String unexpectedObject = "Should just be returned";
         mockLogger.warn(anyString(), eq(unexpectedObject));
         replay(mockLogger);

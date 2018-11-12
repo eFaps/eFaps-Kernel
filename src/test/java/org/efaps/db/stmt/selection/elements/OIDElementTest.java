@@ -55,7 +55,7 @@ public class OIDElementTest
         final OIDElement oidElement = new OIDElement(Type.get(Mocks.SimpleType.getId()));
         Whitebox.setInternalState(oidElement, "idColIdxs", 0);
         Whitebox.setInternalState(oidElement, "typeColIdxs", 1);
-        assertEquals(String.format("%s.%s", 33L, Mocks.SimpleType.getId()), oidElement.getObject(new Object[] { 33L,
+        assertEquals(String.format("%s.%s", Mocks.SimpleType.getId(), 33l), oidElement.getObject(new Object[] { 33L,
                         Mocks.SimpleType.getId() }));
     }
 
