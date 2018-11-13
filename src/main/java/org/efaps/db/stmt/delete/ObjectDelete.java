@@ -19,13 +19,17 @@ package org.efaps.db.stmt.delete;
 
 import org.efaps.db.Instance;
 import org.efaps.eql2.IDeleteObjectStatement;
+import org.efaps.util.EFapsException;
 
 public class ObjectDelete
     extends AbstractDelete
 {
+
     public ObjectDelete(final IDeleteObjectStatement _eqlStmt)
+        throws EFapsException
     {
         super(_eqlStmt);
         getInstances().add(Instance.get(_eqlStmt.getOid()));
+        checkAccess();
     }
 }

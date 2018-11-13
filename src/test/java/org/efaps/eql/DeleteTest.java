@@ -17,8 +17,10 @@
 
 package org.efaps.eql;
 
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
 import org.efaps.mock.Mocks;
+import org.efaps.mock.esjp.AccessCheck;
 import org.efaps.test.AbstractTest;
 import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
@@ -110,5 +112,29 @@ public class DeleteTest
             .execute();
         verify1.verify();
         verify2.verify();
+    }
+
+    @Test(expectedExceptions = { EFapsException.class })
+    public void testDeleteInstanceNoAccess()
+        throws EFapsException
+    {
+        final Instance inst = Instance.get(Type.get(Mocks.AccessType.getId()), 4L);
+        AccessCheck.RESULTS.put(inst, false);
+        EQL.delete(inst.getOid())
+            .stmt()
+            .execute();
+    }
+
+    @Test(expectedExceptions = { EFapsException.class })
+    public void testDeleteInstancesNoAccess()
+        throws EFapsException
+    {
+        final Instance inst1 = Instance.get(Type.get(Mocks.AccessType.getId()), 3L);
+        final Instance inst2 = Instance.get(Type.get(Mocks.AccessType.getId()), 4L);
+        AccessCheck.RESULTS.put(inst1, false);
+        AccessCheck.RESULTS.put(inst2, false);
+        EQL.delete(inst1, inst2)
+            .stmt()
+            .execute();
     }
 }

@@ -19,15 +19,18 @@ package org.efaps.db.stmt.delete;
 
 import org.efaps.db.Instance;
 import org.efaps.eql2.IDeleteListStatement;
+import org.efaps.util.EFapsException;
 
 public class ListDelete
     extends AbstractDelete
 {
 
     public ListDelete(final IDeleteListStatement _eqlStmt)
+        throws EFapsException
     {
         super(_eqlStmt);
         _eqlStmt.getOidsList().forEach(oid -> getInstances().add(Instance.get(oid)));
+        checkAccess();
     }
 
 }
