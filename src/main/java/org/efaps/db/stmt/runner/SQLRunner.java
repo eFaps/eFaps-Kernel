@@ -20,6 +20,7 @@ package org.efaps.db.stmt.runner;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,14 +33,19 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.MultiMapUtils;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.dbutils.handlers.ArrayListHandler;
+import org.efaps.admin.access.user.AccessCache;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.ConsortiumLinkType;
+import org.efaps.admin.index.Queue;
 import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
+import org.efaps.db.GeneralInstance;
+import org.efaps.db.Instance;
 import org.efaps.db.stmt.StmtFlag;
+import org.efaps.db.stmt.delete.AbstractDelete;
 import org.efaps.db.stmt.filter.Filter;
 import org.efaps.db.stmt.print.AbstractPrint;
 import org.efaps.db.stmt.print.ListPrint;
@@ -53,8 +59,11 @@ import org.efaps.db.stmt.update.AbstractObjectUpdate;
 import org.efaps.db.stmt.update.AbstractUpdate;
 import org.efaps.db.stmt.update.Insert;
 import org.efaps.db.stmt.update.ObjectUpdate;
+import org.efaps.db.store.Resource;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
+import org.efaps.db.wrapper.SQLDelete;
+import org.efaps.db.wrapper.SQLDelete.DeleteDefintion;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
@@ -99,9 +108,17 @@ public class SQLRunner
             preparePrint((AbstractPrint) _runnable);
         } else if (isInsert()) {
             prepareInsert();
+        } else if (isDelete()){
+            prepareDelete();
         } else {
             prepareUpdate();
         }
+    }
+
+    private void prepareDelete()
+        throws EFapsException
+    {
+        // Nothing to do yet
     }
 
     private void prepareUpdate()
@@ -231,6 +248,10 @@ public class SQLRunner
 
     private boolean isInsert() {
         return this.runnable instanceof Insert;
+    }
+
+    private boolean isDelete() {
+        return this.runnable instanceof AbstractDelete;
     }
 
     /**
@@ -417,8 +438,56 @@ public class SQLRunner
             executeSQLStmt((ISelectionProvider) this.runnable, this.sqlSelect.getSQL());
         } else if (isInsert()) {
             executeInserts();
+        } else if (isDelete()) {
+            executeDeletes();
         } else {
             executeUpdates();
+        }
+    }
+
+    /**
+     * Execute the inserts.
+     *
+     * @throws EFapsException the e faps exception
+     */
+    private void executeDeletes()
+        throws EFapsException
+    {
+        final AbstractDelete delete = (AbstractDelete) this.runnable;
+        for (final Instance instance : delete.getInstances()) {
+            final Context context = Context.getThreadContext();
+            final ConnectionResource con = context.getConnectionResource();
+            // first remove the storeresource, because the information needed
+            // from the general
+            // instance to actually delete will be removed in the second step
+            Resource storeRsrc = null;
+            try {
+                if (instance.getType().hasStore()) {
+                    storeRsrc = context.getStoreResource(instance, Resource.StoreEvent.DELETE);
+                    storeRsrc.delete();
+                }
+            } finally {
+                if (storeRsrc != null && storeRsrc.isOpened()) {
+                }
+            }
+            try {
+                final List<DeleteDefintion> defs = new ArrayList<>();
+                defs.addAll(GeneralInstance.getDeleteDefintion(instance, con));
+                final SQLTable mainTable = instance.getType().getMainTable();
+                for (final SQLTable curTable : instance.getType().getTables()) {
+                    if (!curTable.equals(mainTable) && !curTable.isReadOnly()) {
+                        defs.add(new DeleteDefintion(curTable.getSqlTable(), curTable.getSqlColId(), instance.getId()));
+                    }
+                }
+                defs.add(new DeleteDefintion(mainTable.getSqlTable(), mainTable.getSqlColId(), instance.getId()));
+                final SQLDelete sqlDelete = Context.getDbType().newDelete(defs.toArray(new DeleteDefintion[defs
+                                .size()]));
+                sqlDelete.execute(con);
+                AccessCache.registerUpdate(instance);
+                Queue.registerUpdate(instance);
+            } catch (final SQLException e) {
+                throw new EFapsException(getClass(), "executeWithoutAccessCheck.SQLException", e, instance);
+            }
         }
     }
 

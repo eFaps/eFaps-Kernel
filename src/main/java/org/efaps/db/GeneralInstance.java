@@ -195,7 +195,7 @@ public final class GeneralInstance
      * @return List of DeleteDefintion
      * @throws EFapsException on error
      */
-    protected static Collection<? extends DeleteDefintion> getDeleteDefintion(final Instance _instance,
+    public static Collection<? extends DeleteDefintion> getDeleteDefintion(final Instance _instance,
                                                                               final ConnectionResource _con)
         throws EFapsException
     {

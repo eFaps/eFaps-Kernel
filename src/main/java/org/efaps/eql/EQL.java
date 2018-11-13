@@ -23,6 +23,7 @@ import org.efaps.ci.CIType;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.AbstractStmt;
 import org.efaps.db.stmt.PrintStmt;
+import org.efaps.eql.builder.Delete;
 import org.efaps.eql.builder.Insert;
 import org.efaps.eql.builder.Print;
 import org.efaps.eql.builder.Query;
@@ -31,6 +32,7 @@ import org.efaps.eql.builder.Update;
 import org.efaps.eql.builder.Where;
 import org.efaps.eql2.IPrintStatement;
 import org.efaps.eql2.IStatement;
+import org.efaps.eql2.bldr.AbstractDeleteEQLBuilder;
 import org.efaps.eql2.bldr.AbstractInsertEQLBuilder;
 import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
 import org.efaps.eql2.bldr.AbstractQueryEQLBuilder;
@@ -62,6 +64,12 @@ public final class EQL
     protected AbstractInsertEQLBuilder<?> getInsert()
     {
         return new Insert();
+    }
+
+    @Override
+    protected AbstractDeleteEQLBuilder<?> getDelete()
+    {
+        return new Delete();
     }
 
     @Override
@@ -182,6 +190,30 @@ public final class EQL
     public static Update update(final String _oid)
     {
         return  (Update) org.efaps.eql2.EQL.update(_oid);
+    }
+
+    /**
+     * Delete.
+     *
+     * @param _instance the instance
+     * @return the delete
+     */
+    public static Delete delete(final Instance... _instances)
+    {
+        return delete(Arrays.stream(_instances)
+                        .map(instance -> instance.getOid())
+                        .toArray(String[]::new));
+    }
+
+    /**
+     * Delete.
+     *
+     * @param _instance the instance
+     * @return the delete
+     */
+    public static Delete delete(final String... _oids)
+    {
+        return (Delete) org.efaps.eql2.EQL.delete(_oids);
     }
 
     /**
