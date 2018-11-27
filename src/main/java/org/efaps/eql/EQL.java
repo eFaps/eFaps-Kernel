@@ -22,7 +22,10 @@ import java.util.Arrays;
 import org.efaps.ci.CIType;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.AbstractStmt;
+import org.efaps.db.stmt.DeleteStmt;
+import org.efaps.db.stmt.InsertStmt;
 import org.efaps.db.stmt.PrintStmt;
+import org.efaps.db.stmt.UpdateStmt;
 import org.efaps.eql.builder.Delete;
 import org.efaps.eql.builder.Insert;
 import org.efaps.eql.builder.Print;
@@ -30,8 +33,11 @@ import org.efaps.eql.builder.Query;
 import org.efaps.eql.builder.Selectables;
 import org.efaps.eql.builder.Update;
 import org.efaps.eql.builder.Where;
+import org.efaps.eql2.IDeleteStatement;
+import org.efaps.eql2.IInsertStatement;
 import org.efaps.eql2.IPrintStatement;
 import org.efaps.eql2.IStatement;
+import org.efaps.eql2.IUpdateStatement;
 import org.efaps.eql2.bldr.AbstractDeleteEQLBuilder;
 import org.efaps.eql2.bldr.AbstractInsertEQLBuilder;
 import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
@@ -222,11 +228,18 @@ public final class EQL
      * @param _stmt the stmt
      * @return the abstract stmt
      */
-    public static AbstractStmt getStatement(final CharSequence _stmt) {
+    public static AbstractStmt getStatement(final CharSequence _stmt)
+    {
         AbstractStmt ret = null;
         final IStatement<?> stmt = parse(_stmt);
         if (stmt instanceof IPrintStatement) {
             ret = PrintStmt.get((IPrintStatement<?>) stmt);
+        } else if (stmt instanceof IDeleteStatement) {
+            ret = DeleteStmt.get((IDeleteStatement<?>) stmt);
+        } else if (stmt instanceof IInsertStatement) {
+            ret = InsertStmt.get((IInsertStatement) stmt);
+        } else if (stmt instanceof IUpdateStatement) {
+            ret = UpdateStmt.get((IUpdateStatement<?>) stmt);
         }
         return ret;
     }
