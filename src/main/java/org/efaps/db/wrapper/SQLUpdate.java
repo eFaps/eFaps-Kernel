@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p><b>Example:</b><br/>
  * <pre>
- * SQLUpdate insert = Context.getDbType().newUpdate("MYTABLE", "ID", 12);
+ * SQLUpdate insert = Context.getDbType().newUpdate("MYTABLE", "ID", 12, 14, 15);
  * </pre></p>
  *
  * @author The eFaps Team
@@ -56,10 +56,9 @@ public class SQLUpdate
     private static final Logger LOG = LoggerFactory.getLogger(SQLUpdate.class);
 
     /**
-     * Id of the row which is updated.
+     * Ids of the rows to be updated.
      */
-    private final long id;
-
+    private final Long[] ids;
 
     /**
      * Initializes this update. Do not call the constructor directly, instead
@@ -69,14 +68,14 @@ public class SQLUpdate
      *
      * @param _tableName    name of the table to update
      * @param _idCol        name of the column with the id
-     * @param _id           id to update
+     * @param _ids          ids to update
      */
     public SQLUpdate(final String _tableName,
                      final String _idCol,
-                     final long _id)
+                     final Long...  _ids)
     {
         super(_tableName, _idCol);
-        this.id = _id;
+        this.ids = _ids;
     }
 
     /**
@@ -91,7 +90,7 @@ public class SQLUpdate
         throws SQLException
     {
         final Set<String> ret = new HashSet<>();
-        if (checkUpdateRequired(_con)) {
+        if (getIds().length > 1 || checkUpdateRequired(_con)) {
             final StringBuilder cmd = new StringBuilder()
                 .append(Context.getDbType().getSQLPart(SQLPart.UPDATE)).append(" ")
                 .append(Context.getDbType().getTableQuote())
@@ -133,9 +132,25 @@ public class SQLUpdate
             cmd.append(" ").append(Context.getDbType().getSQLPart(SQLPart.WHERE)).append(" ")
                 .append(Context.getDbType().getColumnQuote())
                 .append(getIdColumn())
-                .append(Context.getDbType().getColumnQuote())
-                .append(Context.getDbType().getSQLPart(SQLPart.EQUAL))
-                .append("?");
+                .append(Context.getDbType().getColumnQuote());
+
+            if (this.ids.length == 1) {
+                cmd.append(Context.getDbType().getSQLPart(SQLPart.EQUAL))
+                    .append("?");
+            } else {
+                cmd.append(" ").append(Context.getDbType().getSQLPart(SQLPart.IN)).append(" ")
+                    .append(Context.getDbType().getSQLPart(SQLPart.PARENTHESIS_OPEN));
+                first = true;
+                for (@SuppressWarnings("unused") final long id : this.ids) {
+                    if (first)  {
+                        first = false;
+                    } else  {
+                        cmd.append(Context.getDbType().getSQLPart(SQLPart.COMMA));
+                    }
+                    cmd.append("?");
+                }
+                cmd.append(Context.getDbType().getSQLPart(SQLPart.PARENTHESIS_CLOSE));
+            }
 
             if (SQLUpdate.LOG.isDebugEnabled()) {
                 SQLUpdate.LOG.debug(cmd.toString());
@@ -150,16 +165,16 @@ public class SQLUpdate
                 col.set(index++, stmt);
             }
 
-            if (SQLUpdate.LOG.isDebugEnabled()) {
-                SQLUpdate.LOG.debug("    " + index + " = " + this.id);
+            for (final long id : this.ids) {
+                SQLUpdate.LOG.debug("    " + index + " = " + id);
+                stmt.setLong(index++, id);
             }
-            stmt.setLong(index, this.id);
 
             try  {
                 final int rows = stmt.executeUpdate();
                 if (rows == 0) {
                     throw new SQLException("Object for SQL table '" + getTableName()
-                            + "' with id '" + this.id + "' does not exists and was not updated.");
+                            + "' with ids '" + this.ids + "' does not exists and was not updated.");
                 }
             } finally  {
                 stmt.close();
@@ -183,7 +198,7 @@ public class SQLUpdate
         }
         select.from(getTableName());
         select.addPart(SQLPart.WHERE).addColumnPart(null, "ID")
-                        .addPart(SQLPart.EQUAL).addValuePart(getId());
+                        .addPart(SQLPart.EQUAL).addValuePart(getIds()[0]);
 
         final Statement stmt = _con.createStatement();
         final ResultSet rs = stmt.executeQuery(select.getSQL());
@@ -249,12 +264,12 @@ public class SQLUpdate
     }
 
     /**
-     * Getter method for the instance variable {@link #id}.
+     * Getter method for the instance variable {@link #ids}.
      *
-     * @return value of instance variable {@link #id}
+     * @return value of instance variable {@link #ids}
      */
-    public long getId()
+    public Long[] getIds()
     {
-        return this.id;
+        return this.ids;
     }
 }

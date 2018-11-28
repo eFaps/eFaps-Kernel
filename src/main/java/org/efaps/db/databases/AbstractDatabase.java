@@ -285,14 +285,14 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      *
      * @param _tableName name of the table to insert
      * @param _idCol column holding the id
-     * @param _id id to update
-     * @return new SQL insert statement
+     * @param _ids ids to update
+     * @return new SQL update statement
      */
     public SQLUpdate newUpdate(final String _tableName,
                                final String _idCol,
-                               final long _id)
+                               final Long... _ids)
     {
-        return new SQLUpdate(_tableName, _idCol, _id);
+        return new SQLUpdate(_tableName, _idCol, _ids);
     }
 
     /**
@@ -1189,7 +1189,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                 final String tableName = rs.getString("TABLE_NAME").toUpperCase();
                 // ignore the tables managed by hibernate
                 if (!tableName.startsWith(NamingStrategy.HIBERNATEPREFIX.toUpperCase())
-                                && (tableName.startsWith("T_") || (tableName.startsWith("V_")))) {
+                                && (tableName.startsWith("T_") || tableName.startsWith("V_"))) {
                     _cache4Name.put(tableName, new TableInformation(tableName));
                 }
             }

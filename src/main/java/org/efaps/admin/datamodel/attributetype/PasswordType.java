@@ -72,7 +72,7 @@ public class PasswordType
         throws SQLException
     {
         if (_insertUpdate instanceof SQLUpdate) {
-            final long id = ((SQLUpdate) _insertUpdate).getId();
+            final long id = ((SQLUpdate) _insertUpdate).getIds()[0];
             final SQLSelect sel = new SQLSelect();
             sel.column(0, _attribute.getSqlColNames().get(0))
                 .from(_attribute.getTable().getSqlTable(), 0)

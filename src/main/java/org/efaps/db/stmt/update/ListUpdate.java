@@ -17,15 +17,31 @@
 
 package org.efaps.db.stmt.update;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.efaps.admin.access.user.AccessCache;
+import org.efaps.db.Instance;
 import org.efaps.eql2.IUpdateListStatement;
 
 public class ListUpdate
     extends AbstractUpdate
 {
+    final List<Instance> instances;
 
     public ListUpdate(final IUpdateListStatement _eqlStmt)
     {
         super(_eqlStmt);
+        this.instances = _eqlStmt.getOidsList().stream()
+                        .map(oid -> Instance.get(oid))
+                        .collect(Collectors.toList());
+        this.instances.stream().collect(Collectors.groupingBy(Instance::getType));
+        this.instances.forEach(instance -> AccessCache.registerUpdate(instance));
     }
 
+    public List<Instance> getInstances()
+    {
+        return Collections.unmodifiableList(this.instances);
+    }
 }

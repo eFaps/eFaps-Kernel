@@ -28,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.MultiMapUtils;
@@ -58,6 +59,7 @@ import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.update.AbstractObjectUpdate;
 import org.efaps.db.stmt.update.AbstractUpdate;
 import org.efaps.db.stmt.update.Insert;
+import org.efaps.db.stmt.update.ListUpdate;
 import org.efaps.db.stmt.update.ObjectUpdate;
 import org.efaps.db.store.Resource;
 import org.efaps.db.transaction.ConnectionResource;
@@ -124,8 +126,18 @@ public class SQLRunner
     private void prepareUpdate()
         throws EFapsException
     {
-        final ObjectUpdate update = (ObjectUpdate) this.runnable;
-        prepareUpdate(update.getInstance().getType(), false);
+        if (this.runnable instanceof ObjectUpdate) {
+            final ObjectUpdate update = (ObjectUpdate) this.runnable;
+            prepareUpdate(update.getInstance().getType(), false);
+        } else if (this.runnable instanceof ListUpdate) {
+            final ListUpdate update = (ListUpdate) this.runnable;
+            final Set<Type> types = update.getInstances()
+                            .stream().map(instance -> instance.getType())
+                            .collect(Collectors.toSet());
+            for (final Type type : types) {
+                prepareUpdate(type, false);
+            }
+        }
     }
 
     private void prepareInsert()
@@ -153,7 +165,7 @@ public class SQLRunner
                         final SQLInsert sqlInsert = getSQLInsert(sqlTable);
                         attr.prepareDBInsert(sqlInsert);
                     } else {
-                        final SQLUpdate sqlUpdate = getSQLUpdate(sqlTable);
+                        final SQLUpdate sqlUpdate = getSQLUpdate(_type, sqlTable);
                         attr.prepareDBUpdate(sqlUpdate);
                     }
                 } catch (final SQLException e) {
@@ -171,7 +183,7 @@ public class SQLRunner
                     final SQLInsert sqlInsert = getSQLInsert(sqlTable);
                     attr.prepareDBInsert(sqlInsert, element.getValue());
                 } else {
-                    final SQLUpdate sqlUpdate = getSQLUpdate(sqlTable);
+                    final SQLUpdate sqlUpdate = getSQLUpdate(_type, sqlTable);
                     attr.prepareDBUpdate(sqlUpdate, element.getValue());
                 }
             } catch (final SQLException e) {
@@ -193,18 +205,25 @@ public class SQLRunner
         return ret;
     }
 
-    private SQLUpdate getSQLUpdate(final SQLTable _sqlTable)
+    private SQLUpdate getSQLUpdate(final Type _type, final SQLTable _sqlTable)
     {
         SQLUpdate ret;
         if (this.updatemap.containsKey(_sqlTable)) {
             ret = (SQLUpdate) this.updatemap.get(_sqlTable);
         } else {
             final AbstractUpdate update = (AbstractUpdate) this.runnable;
-            long id = 0;
+            final Long[] ids;
             if (update instanceof AbstractObjectUpdate) {
-                id = ((AbstractObjectUpdate) update).getInstance().getId();
+                ids = new Long[] { ((AbstractObjectUpdate) update).getInstance().getId()};
+            } else if (update instanceof ListUpdate) {
+                ids = ((ListUpdate) update).getInstances().stream()
+                                .filter(instance -> instance.getType().equals(_type))
+                                .map(instance -> instance.getId())
+                                .toArray(Long[]::new);
+            } else {
+                ids = new Long[] { 0L };
             }
-            ret = Context.getDbType().newUpdate(_sqlTable.getSqlTable(), _sqlTable.getSqlColId(), id);
+            ret = Context.getDbType().newUpdate(_sqlTable.getSqlTable(), _sqlTable.getSqlColId(), ids);
             this.updatemap.put(_sqlTable, ret);
         }
         return ret;
@@ -492,7 +511,7 @@ public class SQLRunner
     }
 
     /**
-     * Execute the inserts.
+     * Execute the update.
      *
      * @throws EFapsException the e faps exception
      */
