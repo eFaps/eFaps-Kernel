@@ -19,25 +19,42 @@ package org.efaps.db.stmt.update;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.access.user.AccessCache;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.eql2.IUpdateListStatement;
+import org.efaps.util.EFapsException;
 
 public class ListUpdate
     extends AbstractUpdate
 {
+
     final List<Instance> instances;
 
     public ListUpdate(final IUpdateListStatement _eqlStmt)
+                    throws EFapsException
     {
         super(_eqlStmt);
-        this.instances = _eqlStmt.getOidsList().stream()
-                        .map(oid -> Instance.get(oid))
-                        .collect(Collectors.toList());
-        this.instances.stream().collect(Collectors.groupingBy(Instance::getType));
+        this.instances = _eqlStmt.getOidsList().stream().map(oid -> Instance.get(oid)).collect(Collectors.toList());
+
         this.instances.forEach(instance -> AccessCache.registerUpdate(instance));
+
+        final Map<Type, List<Instance>> typeMap = this.instances.stream().collect(Collectors.groupingBy(
+                        Instance::getType));
+
+        for (final Entry<Type, List<Instance>> entry : typeMap.entrySet()) {
+            final Map<Instance, Boolean> access = entry.getKey().checkAccess(entry.getValue(), AccessTypeEnums.MODIFY
+                            .getAccessType());
+            if (access.values().contains(Boolean.FALSE)) {
+                throw new EFapsException(getClass(), "execute.NoAccess", Context.getThreadContext().getPerson());
+            }
+        }
     }
 
     public List<Instance> getInstances()
