@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -417,12 +417,7 @@ public final class RunLevel
                     m.invoke(cls);
                 }
             } catch (final ClassNotFoundException e) {
-                RunLevel.LOG.error("class '" + this.className + "' not found", e);
-                throw new EFapsException(getClass(),
-                                         "callMethod.ClassNotFoundException",
-                                         null,
-                                         e,
-                                         this.className);
+                RunLevel.LOG.error("class '{}' not found", this.className);
             } catch (final NoSuchMethodException e) {
                 RunLevel.LOG.error("class '" + this.className + "' does not own method '" + this.methodName + "'", e);
                 throw new EFapsException(getClass(),
