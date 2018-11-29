@@ -33,7 +33,6 @@ import javax.naming.NamingException;
 
 import org.apache.commons.dbutils.RowProcessor;
 import org.apache.commons.lang3.StringUtils;
-import org.efaps.bpm.NamingStrategy;
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.TableInformation;
 import org.efaps.db.transaction.ConnectionResource;

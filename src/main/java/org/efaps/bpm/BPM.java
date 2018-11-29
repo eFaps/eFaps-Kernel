@@ -67,6 +67,7 @@ import org.efaps.db.Checkout;
 import org.efaps.db.Context;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
+import org.efaps.db.databases.NamingStrategy;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.hibernate.cfg.AvailableSettings;

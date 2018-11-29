@@ -15,7 +15,7 @@
  *
  */
 
-package org.efaps.bpm;
+package org.efaps.db.databases;
 
 import org.hibernate.cfg.ImprovedNamingStrategy;
 
