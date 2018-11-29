@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -493,7 +493,148 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public void addListener(final Object _arg0, final KeyFilter<? super K> _arg1)
+    public V compute(final K _key, final BiFunction<? super K, ? super V, ? extends V> _remappingFunction,
+                     final long _lifespan, final TimeUnit _lifespanUnit)
+    {
+        return null;
+    }
+
+    @Override
+    public V compute(final K _key, final BiFunction<? super K, ? super V, ? extends V> _remappingFunction,
+                     final long _lifespan, final TimeUnit _lifespanUnit, final long _maxIdleTime,
+                     final TimeUnit _maxIdleTimeUnit)
+    {
+        return null;
+    }
+
+    @Override
+    public V computeIfPresent(final K _key, final BiFunction<? super K, ? super V, ? extends V> _remappingFunction,
+                              final long _lifespan, final TimeUnit _lifespanUnit)
+    {
+        return null;
+    }
+
+    @Override
+    public V computeIfPresent(final K _key, final BiFunction<? super K, ? super V, ? extends V> _remappingFunction,
+                              final long _lifespan, final TimeUnit _lifespanUnit, final long _maxIdleTime,
+                              final TimeUnit _maxIdleTimeUnit)
+    {
+        return null;
+    }
+
+    @Override
+    public V computeIfAbsent(final K _key, final Function<? super K, ? extends V> _mappingFunction,
+                             final long _lifespan, final TimeUnit _lifespanUnit)
+    {
+        return null;
+    }
+
+    @Override
+    public V computeIfAbsent(final K _key, final Function<? super K, ? extends V> _mappingFunction,
+                             final long _lifespan, final TimeUnit _lifespanUnit, final long _maxIdleTime,
+                             final TimeUnit _maxIdleTimeUnit)
+    {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<V> computeAsync(final K _key,
+                                             final BiFunction<? super K, ? super V, ? extends V> _remappingFunction)
+    {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<V> computeAsync(final K _key,
+                                             final BiFunction<? super K, ? super V, ? extends V> _remappingFunction,
+                                             final long _lifespan, final TimeUnit _lifespanUnit)
+    {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<V> computeAsync(final K _key,
+                                             final BiFunction<? super K, ? super V, ? extends V> _remappingFunction,
+                                             final long _lifespan, final TimeUnit _lifespanUnit, final long _maxIdle,
+                                             final TimeUnit _maxIdleUnit)
+    {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<V> computeIfAbsentAsync(final K _key,
+                                                     final Function<? super K, ? extends V> _mappingFunction)
+    {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<V> computeIfAbsentAsync(final K _key,
+                                                     final Function<? super K, ? extends V> _mappingFunction,
+                                                     final long _lifespan, final TimeUnit _lifespanUnit)
+    {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<V> computeIfAbsentAsync(final K _key,
+                                                     final Function<? super K, ? extends V> _mappingFunction,
+                                                     final long _lifespan, final TimeUnit _lifespanUnit,
+                                                     final long _maxIdle, final TimeUnit _maxIdleUnit)
+    {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<V> computeIfPresentAsync(final K _key,
+                                              final BiFunction<? super K, ? super V, ? extends V> _remappingFunction)
+    {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<V> computeIfPresentAsync(final K _key,
+                                              final BiFunction<? super K, ? super V, ? extends V> _remappingFunction,
+                                                      final long _lifespan, final TimeUnit _lifespanUnit)
+    {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<V> computeIfPresentAsync(final K _key,
+                                              final BiFunction<? super K, ? super V, ? extends V> _remappingFunction,
+                                                      final long _lifespan, final TimeUnit _lifespanUnit,
+                                                      final long _maxIdle, final TimeUnit _maxIdleUnit)
+    {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<V> mergeAsync(final K _key, final V _value,
+                                           final BiFunction<? super V, ? super V, ? extends V> _remappingFunction)
+    {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<V> mergeAsync(final K _key, final V _value,
+                                           final BiFunction<? super V, ? super V, ? extends V> _remappingFunction,
+                                           final long _lifespan, final TimeUnit _lifespanUnit)
+    {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<V> mergeAsync(final K _key, final V _value,
+                                           final BiFunction<? super V, ? super V, ? extends V> _remappingFunction,
+                                           final long _lifespan, final TimeUnit _lifespanUnit, final long _maxIdle,
+                                           final TimeUnit _maxIdleUnit)
+    {
+        return null;
+    }
+
+    @Override
+    public void addListener(final Object _listener, final KeyFilter<? super K> _filter)
     {
     }
 }

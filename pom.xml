@@ -406,7 +406,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <artifactId>batik-bridge</artifactId>
             <version>1.9.1</version>
         </dependency>
-        <!--  replacing the lucene from jasperreport with the one used by infinispan-->
+        <!--  replacing the lucene from Jasperreport with the one used by infinispan-->
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-queryparser</artifactId>
@@ -418,7 +418,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <version>5.5.5</version>
         </dependency>
 
-        <!--  to be able to export to excel formats/ Jasperreport 6.4.1 needs 3.15 -->
+        <!--  to be able to export to excel formats/ Jasperreport 6.7.0 needs 3.15 -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
@@ -548,7 +548,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.infinispan</groupId>
             <artifactId>infinispan-query</artifactId>
-            <version>9.3.2.Final</version>
+            <version>9.4.2.Final</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hibernate-jpa-2.0-api</artifactId>
