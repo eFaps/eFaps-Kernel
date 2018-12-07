@@ -347,11 +347,17 @@ public class PrintQueryStmtTest
             ret.add(String.format("print query type %s where %s and %s select attribute[%s]",
                             Mocks.SimpleType.getName(), val, val, Mocks.TestAttribute.getName()));
         }
-        final Iterator<String> iter3 = getStmtWheres(Mocks.TypedTypeTestAttr.getName()).iterator();
+        final Iterator<String> iter2 = getStmtWheres(Mocks.TypedTypeTestAttr.getName()).iterator();
+        while (iter2.hasNext()) {
+            final String val = iter2.next();
+            ret.add(String.format("print query type %s where %s and %s select attribute[%s]",
+                            Mocks.TypedType.getName(), val, val, Mocks.TypedTypeTestAttr.getName()));
+        }
+        final Iterator<String> iter3 = getStmtWheres(Mocks.AbstractTypeStringAttribute.getName()).iterator();
         while (iter3.hasNext()) {
             final String val = iter3.next();
             ret.add(String.format("print query type %s where %s and %s select attribute[%s]",
-                            Mocks.TypedType.getName(), val, val, Mocks.TypedTypeTestAttr.getName()));
+                            Mocks.AbstractType.getName(), val, val, Mocks.AbstractTypeStringAttribute.getName()));
         }
         return ret;
     }
@@ -370,6 +376,18 @@ public class PrintQueryStmtTest
             ret.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE = %s and T0.%s and T0.%s",
                             Mocks.TypedTypeTestAttr.getSQLColumnName(), Mocks.TypedTypeSQLTable.getSqlTableName(),
                             Mocks.TypedType.getId(), val, val));
+        }
+        final Iterator<String> iter3 = getSQLWheres(Mocks.AbstractTypeStringAttribute.getSQLColumnName()).iterator();
+        while (iter3.hasNext()) {
+            final String val = iter3.next();
+            ret.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE in ( %s , %s ) "
+                            + "and T0.%s and T0.%s",
+                            Mocks.AbstractTypeStringAttribute.getSQLColumnName(),
+                            Mocks.AbstractTypeSQLTable.getSqlTableName(),
+                            Mocks.ChildType1.getId() < Mocks.ChildType2.getId()
+                                ? Mocks.ChildType1.getId() : Mocks.ChildType2.getId(),
+                            Mocks.ChildType1.getId() < Mocks.ChildType2.getId()
+                                ? Mocks.ChildType2.getId() : Mocks.ChildType1.getId(), val, val));
         }
         return ret;
     }
@@ -399,6 +417,16 @@ public class PrintQueryStmtTest
                             Mocks.TypedTypeTestAttr.getSQLColumnName(), Mocks.TypedTypeSQLTable.getSqlTableName(),
                             Mocks.TypedType.getId(), iter2.next()));
         }
+        final Iterator<String> iter3 = getSQLWheres(Mocks.AbstractTypeStringAttribute.getSQLColumnName()).iterator();
+        while (iter3.hasNext()) {
+            ret.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE in ( %s , %s ) and T0.%s",
+                            Mocks.AbstractTypeStringAttribute.getSQLColumnName(),
+                            Mocks.AbstractTypeSQLTable.getSqlTableName(),
+                            Mocks.ChildType1.getId() < Mocks.ChildType2.getId()
+                                ? Mocks.ChildType1.getId() : Mocks.ChildType2.getId(),
+                            Mocks.ChildType1.getId() < Mocks.ChildType2.getId()
+                                ? Mocks.ChildType2.getId() : Mocks.ChildType1.getId(), iter3.next()));
+        }
         return ret;
     }
 
@@ -414,6 +442,11 @@ public class PrintQueryStmtTest
         while (iter2.hasNext()) {
             ret.add(String.format("print query type %s where %s select attribute[%s]",
                             Mocks.TypedType.getName(), iter2.next(), Mocks.TypedTypeTestAttr.getName()));
+        }
+        final Iterator<String> iter3 = getStmtWheres(Mocks.AbstractTypeStringAttribute.getName()).iterator();
+        while (iter3.hasNext()) {
+            ret.add(String.format("print query type %s where %s select attribute[%s]",
+                            Mocks.AbstractType.getName(), iter3.next(), Mocks.AbstractTypeStringAttribute.getName()));
         }
         return ret;
     }

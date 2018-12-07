@@ -87,7 +87,11 @@ public class Filter
                     {
                         final String attrName = element.getAttribute();
                         for (final Type type : this.types) {
-                            addAttr(_sqlSelect, sqlWhere, type.getAttribute(attrName), term, element);
+                            final Attribute attr = type.getAttribute(attrName);
+                            if (attr != null) {
+                                addAttr(_sqlSelect, sqlWhere, attr, term, element);
+                                break;
+                            }
                         }
                     } else if (element.getSelect() != null) {
                         final IWhereSelect select = element.getSelect();
@@ -97,7 +101,10 @@ public class Filter
                                     case STATUS:
                                         for (final Type type : this.types) {
                                             final Attribute attr = type.getStatusAttribute();
-                                            addAttr(_sqlSelect, sqlWhere, attr, term, element);
+                                            if (attr != null) {
+                                                addAttr(_sqlSelect, sqlWhere, attr, term, element);
+                                                break;
+                                            }
                                         }
                                         break;
                                     default:
