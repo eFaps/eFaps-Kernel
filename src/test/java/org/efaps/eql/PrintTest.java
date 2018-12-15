@@ -185,7 +185,7 @@ public class PrintTest
                         company.getId());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(CI.CompanyType)
+        EQL.printQuery(CI.CompanyType)
             .attribute(CI.CompanyType.StringAttribute)
             .stmt()
             .execute();
@@ -211,7 +211,7 @@ public class PrintTest
                         company.getId());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(CI.CompanyType)
+        EQL.printQuery(CI.CompanyType)
             .with(StmtFlag.COMPANYINDEPENDENT)
             .attribute(CI.CompanyType.StringAttribute)
             .stmt()
@@ -243,7 +243,7 @@ public class PrintTest
                         company2.getId());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(CI.CompanyType)
+        EQL.printQuery(CI.CompanyType)
             .with(StmtFlag.COMPANYINDEPENDENT)
             .attribute(CI.CompanyType.StringAttribute)
             .stmt()

@@ -137,10 +137,21 @@ public final class EQL
      * @param _queryBuilder the query builder
      * @return the prints the
      */
-    public static Print print(final CIType... _ciTypes)
+    public static Print printQuery(final CIType... _ciTypes)
     {
         return (Print) org.efaps.eql2.EQL.print(query(Arrays.stream(_ciTypes)
                         .map(ciType -> ciType.uuid.toString()).toArray(String[]::new)));
+    }
+
+    /**
+     * Prints the.
+     *
+     * @param _queryBuilder the query builder
+     * @return the prints the
+     */
+    public static Print printQuery(final String... _types)
+    {
+        return (Print) org.efaps.eql2.EQL.print(query(_types));
     }
 
     /**
