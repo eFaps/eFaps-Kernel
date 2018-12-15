@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,18 @@
  * limitations under the License.
  *
  */
+package org.efaps.eql;
 
-package org.efaps.eql.builder;
+import static org.testng.Assert.assertTrue;
 
-import java.util.List;
+import org.efaps.eql.builder.Where;
+import org.testng.annotations.Test;
 
-import org.efaps.db.Instance;
-import org.efaps.eql2.bldr.AbstractWhereBuilder;
-
-
-public class Where
-    extends AbstractWhereBuilder<Where>
+public class EQLTest
 {
-    @Override
-    protected Where getThis()
-    {
-        return this;
-    }
-
-    public Where in(final List<Instance> _instances)
-    {
-        in(_instances.stream().map(inst -> inst.getId()).toArray(Long[]::new));
-        return getThis();
+    @Test(description = "EQL instanciates correct Where")
+    public void testWhere() {
+        final Where where = EQL.where();
+        assertTrue(where instanceof Where);
     }
 }

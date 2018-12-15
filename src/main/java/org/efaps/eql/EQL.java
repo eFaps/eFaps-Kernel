@@ -234,6 +234,17 @@ public final class EQL
     }
 
     /**
+     * Delete.
+     *
+     * @param _instance the instance
+     * @return the delete
+     */
+    public static Where where()
+    {
+        return (Where) org.efaps.eql2.EQL.where();
+    }
+
+    /**
      * Parses the stmt.
      *
      * @param _stmt the stmt
