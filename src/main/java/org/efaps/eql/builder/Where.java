@@ -17,7 +17,7 @@
 
 package org.efaps.eql.builder;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.efaps.db.Instance;
 import org.efaps.eql2.bldr.AbstractWhereBuilder;
@@ -32,7 +32,7 @@ public class Where
         return this;
     }
 
-    public Where in(final List<Instance> _instances)
+    public Where in(final Collection<Instance> _instances)
     {
         in(_instances.stream().map(inst -> inst.getId()).toArray(Long[]::new));
         return getThis();
