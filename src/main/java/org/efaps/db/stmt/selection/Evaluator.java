@@ -33,9 +33,11 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListValuedMap;
 import org.apache.commons.collections4.MultiMapUtils;
 import org.efaps.admin.access.AccessTypeEnums;
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.ci.CIAttribute;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
+import org.efaps.db.stmt.selection.elements.AttributeElement;
 import org.efaps.db.stmt.selection.elements.IAuxillary;
 import org.efaps.eql.JSONData;
 import org.efaps.eql.builder.Print;
@@ -185,10 +187,78 @@ public final class Evaluator
         return (T) ret;
     }
 
+    /**
+     * Gets the.
+     *
+     * @param <T> the generic type
+     * @param _ciAttr the ci attr
+     * @return the t
+     * @throws EFapsException the e faps exception
+     */
     public <T> T get(final CIAttribute _ciAttr)
         throws EFapsException
     {
         return get(Print.getDefaultAlias(_ciAttr));
+    }
+
+    /**
+     * Attribute.
+     *
+     * @param _idx the idx
+     * @return the attribute
+     * @throws EFapsException the e faps exception
+     */
+    public Attribute attribute(final int _idx)
+        throws EFapsException
+    {
+        initialize(true);
+        Attribute ret = null;
+        final int idx = _idx - 1;
+        if (this.selection.getSelects().size() > idx) {
+            final Select select = this.selection.getSelects().get(idx);
+            ret = attribute(select);
+        }
+        return ret;
+    }
+
+    /**
+     * Attribute.
+     *
+     * @param _alias the alias
+     * @return the attribute
+     * @throws EFapsException the e faps exception
+     */
+    public Attribute attribute(final String _alias)
+        throws EFapsException
+    {
+        initialize(true);
+        Attribute ret = null;
+        final Optional<Select> selectOpt = this.selection.getSelects()
+                        .stream()
+                        .filter(select -> _alias.equals(select.getAlias()))
+                        .findFirst();
+        if (selectOpt.isPresent()) {
+            ret = attribute(selectOpt.get());
+        }
+        return ret;
+    }
+
+    /**
+     * Attribute.
+     *
+     * @param _select the select
+     * @return the attribute
+     * @throws EFapsException the e faps exception
+     */
+    protected Attribute attribute(final Select _select)
+        throws EFapsException
+    {
+        Attribute ret = null;
+        final AbstractElement<?> element = _select.getElements().get(_select.getElements().size() - 1);
+        if (element instanceof AttributeElement) {
+            ret = ((AttributeElement) element).getAttribute();
+        }
+        return ret;
     }
 
     /**

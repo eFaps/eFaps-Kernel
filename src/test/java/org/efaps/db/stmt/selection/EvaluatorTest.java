@@ -632,4 +632,57 @@ public class EvaluatorTest
         assertEquals(eval.get("Bethoven"), "StringValue1");
         assertEquals(eval.get(CI.AllAttrType.LongAttribute), Long.valueOf(1));
     }
+
+    @Test
+    public void testGetAttributeByIndex()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T0.%s,T0.ID from %s T0",
+                        Mocks.AllAttrStringAttribute.getSQLColumnName(),
+                        Mocks.AllAttrLongAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList3(Object.class, Object.class, Object.class)
+                .append("StringValue1", 1L, 234L)
+                .asResult())
+            .build();
+
+        final Evaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+            .attribute(CI.AllAttrType.StringAttribute, CI.AllAttrType.LongAttribute)
+            .stmt()
+            .evaluate();
+        eval.next();
+        assertEquals(eval.attribute(1).getName(), CI.AllAttrType.StringAttribute.name);
+        assertEquals(eval.attribute(2).getName(), CI.AllAttrType.LongAttribute.name);
+    }
+
+    @Test
+    public void testGetAttributeByAlias()
+        throws EFapsException
+    {
+        final String sql = String.format("select T0.%s,T0.%s,T0.ID from %s T0",
+                        Mocks.AllAttrStringAttribute.getSQLColumnName(),
+                        Mocks.AllAttrLongAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTypeSQLTable.getSqlTableName());
+
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList3(Object.class, Object.class, Object.class)
+                .append("StringValue1", 1L, 234L)
+                .asResult())
+            .build();
+
+        final Evaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+            .attribute(CI.AllAttrType.StringAttribute).as("alias1")
+            .attribute(CI.AllAttrType.LongAttribute).as("alias2")
+            .stmt()
+            .evaluate();
+        eval.next();
+        assertEquals(eval.attribute("alias1").getName(), CI.AllAttrType.StringAttribute.name);
+        assertEquals(eval.attribute("alias2").getName(), CI.AllAttrType.LongAttribute.name);
+    }
+
+
 }
