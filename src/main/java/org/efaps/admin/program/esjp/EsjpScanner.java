@@ -148,11 +148,14 @@ public class EsjpScanner
         {
             final Set<File> files = new HashSet<>();
             try {
-                final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.JavaClass);
-                final InstanceQuery query = queryBldr.getQuery();
-                query.executeWithoutAccessCheck();
-                while (query.next()) {
-                    files.add(new EsjpFile(query.getCurrentValue()));
+                // check required during source-install maven target
+                if (CIAdminProgram.JavaClass.getType() != null) {
+                    final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.JavaClass);
+                    final InstanceQuery query = queryBldr.getQuery();
+                    query.executeWithoutAccessCheck();
+                    while (query.next()) {
+                        files.add(new EsjpFile(query.getCurrentValue()));
+                    }
                 }
             } catch (final EFapsException e) {
                 e.printStackTrace();
