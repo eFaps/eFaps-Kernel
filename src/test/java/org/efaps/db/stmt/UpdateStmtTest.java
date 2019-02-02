@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.efaps.db.stmt;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
-import org.efaps.eql2.EQL;
+import org.efaps.eql2.EQL2;
 import org.efaps.eql2.IUpdateListStatement;
 import org.efaps.eql2.IUpdateObjectStatement;
 import org.efaps.mock.Mocks;
@@ -45,7 +45,7 @@ public class UpdateStmtTest
         final String eql = String.format("update obj %s.4 set attribute[%s] = \"Hello World\"",
                         Mocks.SimpleType.getId(), Mocks.TestAttribute.getName());
 
-        final IUpdateObjectStatement stmt = (IUpdateObjectStatement) EQL.parse(eql);
+        final IUpdateObjectStatement stmt = (IUpdateObjectStatement) EQL2.parse(eql);
         final UpdateStmt updateStmt = UpdateStmt.get(stmt);
         updateStmt.execute();
         verify.verify();
@@ -66,7 +66,7 @@ public class UpdateStmtTest
         final String eql = String.format("update obj %s.4 set attribute[%s] = \"Hello World\"",
                         Mocks.AccessType.getId(), Mocks.AccessTypeStringAttribute.getName());
 
-        final IUpdateObjectStatement stmt = (IUpdateObjectStatement) EQL.parse(eql);
+        final IUpdateObjectStatement stmt = (IUpdateObjectStatement) EQL2.parse(eql);
         final UpdateStmt updateStmt = UpdateStmt.get(stmt);
         updateStmt.execute();
         verify.verify();
@@ -81,7 +81,7 @@ public class UpdateStmtTest
         final String eql = String.format("update obj %s.4 set attribute[%s] = \"Hello World\"",
                         Mocks.AccessType.getId(), Mocks.AccessTypeStringAttribute.getName());
 
-        final IUpdateObjectStatement stmt = (IUpdateObjectStatement) EQL.parse(eql);
+        final IUpdateObjectStatement stmt = (IUpdateObjectStatement) EQL2.parse(eql);
         final UpdateStmt updateStmt = UpdateStmt.get(stmt);
         updateStmt.execute();
     }
@@ -99,7 +99,7 @@ public class UpdateStmtTest
         final String eql = String.format("update list (%1$s.4,%1$s.5,%1$s.6) set attribute[%2$s] = \"Hello World\"",
                         Mocks.SimpleType.getId(), Mocks.TestAttribute.getName());
 
-        final IUpdateListStatement stmt = (IUpdateListStatement) EQL.parse(eql);
+        final IUpdateListStatement stmt = (IUpdateListStatement) EQL2.parse(eql);
         final UpdateStmt updateStmt = UpdateStmt.get(stmt);
         updateStmt.execute();
         verify.verify();
@@ -122,7 +122,7 @@ public class UpdateStmtTest
         final String eql = String.format("update list (%1$s.4,%1$s.5,%1$s.6) set attribute[%2$s] = \"Hello World\"",
                         Mocks.AccessType.getId(), Mocks.AccessTypeStringAttribute.getName());
 
-        final IUpdateListStatement stmt = (IUpdateListStatement) EQL.parse(eql);
+        final IUpdateListStatement stmt = (IUpdateListStatement) EQL2.parse(eql);
         final UpdateStmt updateStmt = UpdateStmt.get(stmt);
         updateStmt.execute();
         verify.verify();
@@ -139,7 +139,7 @@ public class UpdateStmtTest
         final String eql = String.format("update list (%1$s.4,%1$s.5,%1$s.6) set attribute[%2$s] = \"Hello World\"",
                         Mocks.AccessType.getId(), Mocks.AccessTypeStringAttribute.getName());
 
-        final IUpdateListStatement stmt = (IUpdateListStatement) EQL.parse(eql);
+        final IUpdateListStatement stmt = (IUpdateListStatement) EQL2.parse(eql);
         final UpdateStmt updateStmt = UpdateStmt.get(stmt);
         updateStmt.execute();
     }

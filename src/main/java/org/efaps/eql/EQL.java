@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.efaps.eql.builder.Query;
 import org.efaps.eql.builder.Selectables;
 import org.efaps.eql.builder.Update;
 import org.efaps.eql.builder.Where;
+import org.efaps.eql2.EQL2;
 import org.efaps.eql2.IDeleteStatement;
 import org.efaps.eql2.IInsertStatement;
 import org.efaps.eql2.IPrintStatement;
@@ -52,7 +53,7 @@ import org.efaps.eql2.bldr.AbstractWhereBuilder;
  * @author The eFaps Team
  */
 public final class EQL
-    extends org.efaps.eql2.EQL
+    extends EQL2
 {
     @Override
     protected AbstractPrintEQLBuilder<?> getPrint()
@@ -117,7 +118,7 @@ public final class EQL
      */
     public static Print print(final String... _oid)
     {
-        return (Print) org.efaps.eql2.EQL.print(_oid);
+        return (Print) org.efaps.eql2.EQL2.print(_oid);
     }
 
     /**
@@ -128,7 +129,7 @@ public final class EQL
      */
     public static Print print(final Query  _queryBuilder)
     {
-        return (Print) org.efaps.eql2.EQL.print(_queryBuilder);
+        return (Print) org.efaps.eql2.EQL2.print(_queryBuilder);
     }
 
     /**
@@ -139,7 +140,7 @@ public final class EQL
      */
     public static Print printQuery(final CIType... _ciTypes)
     {
-        return (Print) org.efaps.eql2.EQL.print(query(Arrays.stream(_ciTypes)
+        return (Print) org.efaps.eql2.EQL2.print(query(Arrays.stream(_ciTypes)
                         .map(ciType -> ciType.uuid.toString()).toArray(String[]::new)));
     }
 
@@ -151,7 +152,7 @@ public final class EQL
      */
     public static Print printQuery(final String... _types)
     {
-        return (Print) org.efaps.eql2.EQL.print(query(_types));
+        return (Print) EQL2.print(query(_types));
     }
 
     /**
@@ -162,7 +163,7 @@ public final class EQL
      */
     public static Query query(final String... _types)
     {
-        return (Query) org.efaps.eql2.EQL.query(_types);
+        return (Query) EQL2.query(_types);
     }
 
     /**
@@ -173,7 +174,7 @@ public final class EQL
      */
     public static Insert insert(final String _typeName)
     {
-        return (Insert) org.efaps.eql2.EQL.insert(_typeName);
+        return (Insert) EQL2.insert(_typeName);
     }
 
     /**
@@ -184,7 +185,7 @@ public final class EQL
      */
     public static Insert insert(final CIType _ciType)
     {
-        return (Insert) org.efaps.eql2.EQL.insert(_ciType.getType().getName());
+        return (Insert) EQL2.insert(_ciType.getType().getName());
     }
 
     /**
@@ -206,7 +207,7 @@ public final class EQL
      */
     public static Update update(final String _oid)
     {
-        return  (Update) org.efaps.eql2.EQL.update(_oid);
+        return  (Update) EQL2.update(_oid);
     }
 
     /**
@@ -230,7 +231,7 @@ public final class EQL
      */
     public static Delete delete(final String... _oids)
     {
-        return (Delete) org.efaps.eql2.EQL.delete(_oids);
+        return (Delete) EQL2.delete(_oids);
     }
 
     /**
@@ -241,7 +242,7 @@ public final class EQL
      */
     public static Where where()
     {
-        return (Where) org.efaps.eql2.EQL.where();
+        return (Where) EQL2.where();
     }
 
     /**

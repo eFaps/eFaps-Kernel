@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.Evaluator;
-import org.efaps.eql2.EQL;
+import org.efaps.eql2.EQL2;
 import org.efaps.eql2.IPrintQueryStatement;
 import org.efaps.mock.MockResult;
 import org.efaps.mock.Mocks;
@@ -61,7 +61,7 @@ public class PrintQueryStmtTest
 
         final String stmtStr = String.format("print query type %s select attribute[%s]",
                         Mocks.SimpleType.getName(), Mocks.TestAttribute.getName());
-        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL2.parse(stmtStr);
         final PrintStmt printStmt = PrintStmt.get(stmt);
         final Evaluator evaluator = printStmt.evaluate();
         assertTrue(evaluator.next());
@@ -97,7 +97,7 @@ public class PrintQueryStmtTest
 
         final String stmtStr = String.format("print query type %s select attribute[%s]",
                         Mocks.AbstractType.getName(), Mocks.AbstractTypeStringAttribute.getName());
-        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL2.parse(stmtStr);
         final PrintStmt printStmt = PrintStmt.get(stmt);
         final Evaluator evaluator = printStmt.evaluate();
         assertTrue(evaluator.next());
@@ -131,7 +131,7 @@ public class PrintQueryStmtTest
         final String stmtStr = String.format("print query type %s where %s = \"Open\" select attribute[%s]",
                         Mocks.StatusType.getName(), _statusFilter, Mocks.StatusStringAttribute.getName());
 
-        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL2.parse(stmtStr);
 
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
@@ -163,7 +163,7 @@ public class PrintQueryStmtTest
                         + "select attribute[%s]",
                         Mocks.StatusType.getName(), _statusFilter, Mocks.StatusStringAttribute.getName());
 
-        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL2.parse(stmtStr);
 
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
@@ -196,7 +196,7 @@ public class PrintQueryStmtTest
                         Mocks.StatusGrp.getStatusId("Open"),
                         Mocks.StatusStringAttribute.getName());
 
-        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL2.parse(stmtStr);
 
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
@@ -231,7 +231,7 @@ public class PrintQueryStmtTest
                         Mocks.StatusGrp.getStatusId("Closed"),
                         Mocks.StatusStringAttribute.getName());
 
-        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL2.parse(stmtStr);
 
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
@@ -265,7 +265,7 @@ public class PrintQueryStmtTest
                         Mocks.StatusGrp.getStatusId("Closed"),
                         Mocks.StatusStringAttribute.getName());
 
-        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL2.parse(stmtStr);
 
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
@@ -289,7 +289,7 @@ public class PrintQueryStmtTest
 
         final String stmtStr = String.format("print query type %s select exec %s as barcode",
                         Mocks.SimpleType.getName(), org.efaps.mock.esjp.SimpleSelect.class.getName());
-        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(stmtStr);
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL2.parse(stmtStr);
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluate();
@@ -308,7 +308,7 @@ public class PrintQueryStmtTest
     public void testSingleWheres(final String _stmt, final String _sql)
         throws EFapsException
     {
-        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(_stmt);
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL2.parse(_stmt);
         final PrintStmt printStmt = PrintStmt.get(stmt);
         final SQLVerify verify = SQLVerify.builder().withSql(_sql).build();
         printStmt.execute();
@@ -319,7 +319,7 @@ public class PrintQueryStmtTest
     public void testTwoWheres(final String _stmt, final String _sql)
         throws EFapsException
     {
-        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL.parse(_stmt);
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL2.parse(_stmt);
         final PrintStmt printStmt = PrintStmt.get(stmt);
         final SQLVerify verify = SQLVerify.builder().withSql(_sql).build();
         printStmt.execute();

@@ -26,7 +26,7 @@ import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.Evaluator;
-import org.efaps.eql2.EQL;
+import org.efaps.eql2.EQL2;
 import org.efaps.eql2.IPrintObjectStatement;
 import org.efaps.mock.MockResult;
 import org.efaps.mock.Mocks;
@@ -50,7 +50,7 @@ public class PrintObjectStmtTest
     public void testSimplePrintObject()
         throws EFapsException
     {
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select attribute[%s]",
                         Mocks.SimpleType.getId(), Mocks.TestAttribute.getName()));
         final PrintStmt printStmt = PrintStmt.get(stmt);
@@ -75,7 +75,7 @@ public class PrintObjectStmtTest
                         .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select attribute[%s]",
                         Mocks.TypedType.getId(), Mocks.TypedTypeTestAttr.getName()));
 
@@ -100,7 +100,7 @@ public class PrintObjectStmtTest
                         .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrStringAttribute.getName()));
 
@@ -125,7 +125,7 @@ public class PrintObjectStmtTest
                         .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrLongAttribute.getName()));
 
@@ -150,7 +150,7 @@ public class PrintObjectStmtTest
                         .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrIntegerAttribute.getName()));
 
@@ -175,7 +175,7 @@ public class PrintObjectStmtTest
                         .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrBooleanAttribute.getName()));
 
@@ -201,7 +201,7 @@ public class PrintObjectStmtTest
                         .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrDateAttribute.getName()));
 
@@ -227,7 +227,7 @@ public class PrintObjectStmtTest
                         .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrTimeAttribute.getName()));
 
@@ -253,7 +253,7 @@ public class PrintObjectStmtTest
                         .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrDateTimeAttribute.getName()));
 
@@ -279,7 +279,7 @@ public class PrintObjectStmtTest
                         .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrCreatedAttribute.getName()));
 
@@ -305,7 +305,7 @@ public class PrintObjectStmtTest
                         .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrModifiedAttribute.getName()));
 
@@ -333,7 +333,7 @@ public class PrintObjectStmtTest
                     .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select linkto[%s].attribute[%s]",
                     Mocks.AllAttrType.getId(), Mocks.AllAttrLinkAttribute.getName(), Mocks.TestAttribute.getName()));
 
@@ -360,7 +360,7 @@ public class PrintObjectStmtTest
             .build();
         final String alias = "AliasName";
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select attribute[%s] as %s",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrStringAttribute.getName(), alias));
 
@@ -385,7 +385,7 @@ public class PrintObjectStmtTest
             .build();
 
         final Instance instance = Instance.get(Mocks.AllAttrType.getName(), "4");
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select instance",
                         Mocks.AllAttrType.getId()));
 
@@ -411,7 +411,7 @@ public class PrintObjectStmtTest
             .build();
 
         final Instance instance = Instance.get(Mocks.TypedType.getName(), "4");
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select instance",
                         Mocks.TypedType.getId()));
 
@@ -438,7 +438,7 @@ public class PrintObjectStmtTest
             .build();
 
         final Instance instance = Instance.get(Mocks.SimpleType.getName(), "4");
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select linkto[%s].instance",
                     Mocks.AllAttrType.getId(), Mocks.AllAttrLinkAttribute.getName()));
 
@@ -467,7 +467,7 @@ public class PrintObjectStmtTest
             .build();
 
         final Instance instance = Instance.get(Mocks.TypedType.getName(), "4");
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select linkto[%s].instance",
                     Mocks.AllAttrType.getId(), Mocks.AllAttrLinkAttributeTyped.getName()));
 
@@ -493,7 +493,7 @@ public class PrintObjectStmtTest
             .build();
 
         final Instance instance = Instance.get(Mocks.AllAttrType.getName(), "4");
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select oid",
                         Mocks.AllAttrType.getId()));
 
@@ -519,7 +519,7 @@ public class PrintObjectStmtTest
             .build();
 
         final Instance instance = Instance.get(Mocks.TypedType.getName(), "4");
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(String.format("print obj %s.4 select oid",
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(String.format("print obj %s.4 select oid",
                         Mocks.TypedType.getId()));
 
         final Evaluator evaluator = PrintStmt.get(stmt)
@@ -543,7 +543,7 @@ public class PrintObjectStmtTest
         final Instance instance = Instance.get(Mocks.SimpleType.getName(), "4");
         final String stmtStr = String.format("print obj %s select exec %s as barcode",
                         instance.getOid(), org.efaps.mock.esjp.SimpleSelect.class.getName());
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(stmtStr);
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(stmtStr);
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluate();
@@ -570,7 +570,7 @@ public class PrintObjectStmtTest
         final String stmtStr = String.format("print obj %s select attribute[%s], exec %s as barcode",
                         instance.getOid(),  Mocks.TestAttribute.getName(),
                         org.efaps.mock.esjp.SimpleSelect.class.getName());
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(stmtStr);
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(stmtStr);
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluate();
@@ -600,7 +600,7 @@ public class PrintObjectStmtTest
         final Instance instance = Instance.get(Mocks.SimpleType.getName(), "4");
         final String stmtStr = String.format("print obj %s select class[%s].attribute[%s]",
                         instance.getOid(), Mocks.ClassType.getName(), Mocks.ClassTypeStringAttribute.getName());
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(stmtStr);
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(stmtStr);
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluate();
@@ -634,7 +634,7 @@ public class PrintObjectStmtTest
         final String stmtStr = String.format("print obj %s select linkto[%s].class[%s].attribute[%s]",
                         instance.getOid(), Mocks.AllAttrLinkAttribute.getName(), Mocks.ClassType.getName(),
                         Mocks.ClassTypeStringAttribute.getName());
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(stmtStr);
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(stmtStr);
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluate();
@@ -660,7 +660,7 @@ public class PrintObjectStmtTest
                         .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrInChildSQLAttribute.getName()));
 
@@ -690,7 +690,7 @@ public class PrintObjectStmtTest
                         .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select attribute[%s], attribute[%s]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrDecimalAttribute.getName(),
                         Mocks.AllAttrInChildSQLAttribute.getName()));
@@ -729,7 +729,7 @@ public class PrintObjectStmtTest
         final String stmtStr = String.format("print obj %s select linkto[%s].attribute[%s]",
                         instance.getOid(), Mocks.AllAttrLinkAttribute.getName(),
                         Mocks.SimpleTypeInChildSQLAttribute.getName());
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(stmtStr);
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(stmtStr);
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluate();
@@ -762,7 +762,7 @@ public class PrintObjectStmtTest
         final String stmtStr = String.format("print obj %s select linkto[%s].attribute[%s]",
                         instance.getOid(), Mocks.AllAttrLinkInChildSQLAttribute.getName(),
                         Mocks.TestAttribute.getName());
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(stmtStr);
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(stmtStr);
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluate();
@@ -785,7 +785,7 @@ public class PrintObjectStmtTest
                         .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select attribute[%s].format[YYYY]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrDateAttribute.getName()));
 
@@ -810,7 +810,7 @@ public class PrintObjectStmtTest
                     .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select status",
                         Mocks.StatusType.getId()));
 
@@ -836,7 +836,7 @@ public class PrintObjectStmtTest
                     .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select status.key",
                         Mocks.StatusType.getId()));
 
@@ -861,7 +861,7 @@ public class PrintObjectStmtTest
                     .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select status.label",
                         Mocks.StatusType.getId()));
 
@@ -885,7 +885,7 @@ public class PrintObjectStmtTest
             .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select type",
                         Mocks.AllAttrType.getId()));
 
@@ -909,7 +909,7 @@ public class PrintObjectStmtTest
                     .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select type",
                         Mocks.TypedType.getId()));
 
@@ -935,7 +935,7 @@ public class PrintObjectStmtTest
                     .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select type.label",
                         Mocks.TypedType.getId()));
 
@@ -960,7 +960,7 @@ public class PrintObjectStmtTest
                     .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select type.name",
                         Mocks.TypedType.getId()));
 
@@ -985,7 +985,7 @@ public class PrintObjectStmtTest
                     .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select type.id",
                         Mocks.TypedType.getId()));
 
@@ -1010,7 +1010,7 @@ public class PrintObjectStmtTest
                     .asResult())
             .build();
 
-        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL.parse(
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
                         String.format("print obj %s.4 select type.uuid",
                         Mocks.TypedType.getId()));
 

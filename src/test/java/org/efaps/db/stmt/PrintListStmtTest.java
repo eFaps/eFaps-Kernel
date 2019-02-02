@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import org.efaps.db.stmt.selection.Evaluator;
-import org.efaps.eql2.EQL;
+import org.efaps.eql2.EQL2;
 import org.efaps.eql2.IPrintListStatement;
 import org.efaps.mock.MockResult;
 import org.efaps.mock.Mocks;
@@ -53,7 +53,7 @@ public class PrintListStmtTest
         final String stmtStr = String.format("print list (%1$s.456, %1$s.457, %1$s.458) select attribute[%2$s]",
                         Mocks.SimpleType.getId(), Mocks.TestAttribute.getName());
 
-        final IPrintListStatement stmt = (IPrintListStatement) EQL.parse(stmtStr);
+        final IPrintListStatement stmt = (IPrintListStatement) EQL2.parse(stmtStr);
         final PrintStmt printStmt = PrintStmt.get(stmt);
         final Evaluator evalutor = printStmt.evaluate();
         assertTrue(evalutor.next());
