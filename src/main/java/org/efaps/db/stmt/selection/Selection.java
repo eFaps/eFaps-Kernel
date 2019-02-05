@@ -39,7 +39,6 @@ import org.efaps.db.stmt.selection.elements.ClassElement;
 import org.efaps.db.stmt.selection.elements.ExecElement;
 import org.efaps.db.stmt.selection.elements.FormatElement;
 import org.efaps.db.stmt.selection.elements.IDElement;
-import org.efaps.db.stmt.selection.elements.IPrimed;
 import org.efaps.db.stmt.selection.elements.InstanceElement;
 import org.efaps.db.stmt.selection.elements.KeyElement;
 import org.efaps.db.stmt.selection.elements.LabelElement;
@@ -47,7 +46,6 @@ import org.efaps.db.stmt.selection.elements.LinkfromElement;
 import org.efaps.db.stmt.selection.elements.LinktoElement;
 import org.efaps.db.stmt.selection.elements.NameElement;
 import org.efaps.db.stmt.selection.elements.OIDElement;
-import org.efaps.db.stmt.selection.elements.PrimedElement;
 import org.efaps.db.stmt.selection.elements.StatusElement;
 import org.efaps.db.stmt.selection.elements.TypeElement;
 import org.efaps.db.stmt.selection.elements.UUIDElement;
@@ -59,7 +57,6 @@ import org.efaps.eql2.IExecSelectElement;
 import org.efaps.eql2.IFormatSelectElement;
 import org.efaps.eql2.ILinkfromSelectElement;
 import org.efaps.eql2.ILinktoSelectElement;
-import org.efaps.eql2.IPrintQueryStatement;
 import org.efaps.eql2.IPrintStatement;
 import org.efaps.eql2.ISelect;
 import org.efaps.eql2.ISelectElement;
@@ -101,13 +98,10 @@ public final class Selection
     {
         final Type type = evalMainType(_stmtProvider.getTypes());
         final IStatement<?> stmt = _stmtProvider.getStmt();
-        final boolean evalInst = stmt instanceof IPrintQueryStatement;
         for (final ISelect sel : ((IPrintStatement<?>) stmt).getSelection().getSelects()) {
             final Select select = Select.get(sel.getAlias());
             if (this.selects.isEmpty()) {
-                this.instSelects.put(BASEPATH, Select.get().addElement(evalInst
-                                ? new InstanceElement(type)
-                                : new PrimedElement(((IPrimed) _stmtProvider).getObjects())));
+                this.instSelects.put(BASEPATH, Select.get().addElement(new InstanceElement(type)));
             }
             this.selects.add(select);
             Type currentType = type;
