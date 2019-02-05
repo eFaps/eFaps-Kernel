@@ -38,6 +38,7 @@ import org.efaps.ci.CIAttribute;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.selection.elements.AttributeElement;
+import org.efaps.db.stmt.selection.elements.AttributeSetElement;
 import org.efaps.db.stmt.selection.elements.IAuxillary;
 import org.efaps.eql.JSONData;
 import org.efaps.eql.builder.Print;
@@ -101,7 +102,7 @@ public final class Evaluator
     private void squash()
         throws EFapsException
     {
-        if (!this.selection.getSelects().stream().anyMatch(Select::isSquashable)) {
+        if (this.selection.getSelects().stream().anyMatch(Select::isSquash)) {
             final Select select = this.selection.getInstSelects().get(Selection.BASEPATH);
             final List<Object> instances = select.getObjects(null);
             Integer idx = 0;
@@ -341,26 +342,31 @@ public final class Evaluator
                 final AbstractElement<?> element = _select.getElements().get(idx);
                 idx++;
                 final Select instSelect = this.selection.getInstSelects().get(element.getPath());
-                if (instSelect == null) {
-                    LOG.error("Could not retrieve Instance Select for Path {}", element.getPath());
-                }
-                final Object obj = instSelect.getCurrent();
-                if (obj instanceof Instance) {
-                    accessTemp = this.access.hasAccess((Instance) obj);
-                    ret.clear();
-                    ret.add(accessTemp);
-                } else if (obj instanceof List) {
-                    if (ret.isEmpty()) {
-                        ret = ((List<?>) obj).stream()
-                                        .map(ele -> this.access.hasAccess((Instance) ele))
-                                        .collect(Collectors.toList());
-                    } else {
-                        final Iterator<Boolean> iter = ret.iterator();
-                        ret = ((List<?>) obj).stream()
-                                        .map(ele -> iter.next() && this.access.hasAccess((Instance) ele))
-                                        .collect(Collectors.toList());
+                if (element instanceof AttributeSetElement) {
+                    idx = size;
+                    LOG.trace("No Access check for Path {}", element.getPath());
+                } else {
+                    if (instSelect == null) {
+                        LOG.error("Could not retrieve Instance Select for Path {}", element.getPath());
                     }
-                    accessTemp = ret.contains(true);
+                    final Object obj = instSelect.getCurrent();
+                    if (obj instanceof Instance) {
+                        accessTemp = this.access.hasAccess((Instance) obj);
+                        ret.clear();
+                        ret.add(accessTemp);
+                    } else if (obj instanceof List) {
+                        if (ret.isEmpty()) {
+                            ret = ((List<?>) obj).stream()
+                                            .map(ele -> this.access.hasAccess((Instance) ele))
+                                            .collect(Collectors.toList());
+                        } else {
+                            final Iterator<Boolean> iter = ret.iterator();
+                            ret = ((List<?>) obj).stream()
+                                            .map(ele -> iter.next() && this.access.hasAccess((Instance) ele))
+                                            .collect(Collectors.toList());
+                        }
+                        accessTemp = ret.contains(true);
+                    }
                 }
             }
         }

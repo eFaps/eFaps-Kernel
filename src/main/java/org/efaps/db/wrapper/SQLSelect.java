@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -485,8 +485,21 @@ public class SQLSelect
      */
     public SQLSelect where(final SQLWhere _where)
     {
-        this.where = _where;
+        this.where = _where.select(this);
         return this;
+    }
+
+    /**
+     * Gets the where.
+     *
+     * @return the where
+     */
+    public SQLWhere getWhere()
+    {
+        if (this.where == null) {
+            this.where = new SQLWhere().select(this);
+        }
+        return this.where;
     }
 
     @Override

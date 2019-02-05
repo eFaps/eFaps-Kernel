@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@
 
 package org.efaps.db.stmt.selection.elements;
 
-import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.Classification;
+import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.wrapper.SQLSelect;
@@ -33,27 +32,25 @@ import org.efaps.util.EFapsException;
 /**
  * The Class ClassElement.
  */
-public class ClassElement
-    extends AbstractDataElement<ClassElement>
-    implements IJoinTableIdx
+public class AttributeSetElement
+    extends AbstractDataElement<AttributeSetElement>
+    implements IJoinTableIdx, ISquash
 {
     /** The type. */
-    private Classification classification;
+    private AttributeSet attributeSet;
 
     /** The type. */
     private Type type;
 
-    /** The added. */
-    private boolean added = false;
-
-    public Classification getClassification()
+    public AttributeSet getAttributeSet()
     {
-        return this.classification;
+        return this.attributeSet;
     }
 
-    public ClassElement setClassification(final Classification _classification)
+    public AttributeSetElement setAttributeSet(final AttributeSet _attributeSet)
     {
-        this.classification = _classification;
+        this.attributeSet = _attributeSet;
+        setDBTable(this.attributeSet.getMainTable());
         return this;
     }
 
@@ -62,10 +59,9 @@ public class ClassElement
         return this.type;
     }
 
-    public ClassElement setType(final Type _type)
+    public AttributeSetElement setType(final Type _type)
     {
         this.type = _type;
-        setDBTable(this.type.getMainTable());
         return this;
     }
 
@@ -74,8 +70,8 @@ public class ClassElement
         throws EFapsException
     {
         final String tableName = ((SQLTable) getTable()).getSqlTable();
-        final String joinTableName = this.classification.getMainTable().getSqlTable();
-        return _sqlSelect.getIndexer().getTableIdx(joinTableName, tableName, "ID");
+        final String joinTableName = this.attributeSet.getMainTable().getSqlTable();
+        return _sqlSelect.getIndexer().getTableIdx(joinTableName, tableName, this.attributeSet.getName());
     }
 
     @Override
@@ -83,7 +79,7 @@ public class ClassElement
         throws EFapsException
     {
         if (getTable() instanceof SQLTable) {
-            appendBaseTable(_sqlSelect, (SQLTable) getTable());
+            appendBaseTable(_sqlSelect, getType().getMainTable());
 
             final TableIdx joinTableidx = getJoinTableIdx(_sqlSelect);
             if (joinTableidx.isCreated()) {
@@ -93,12 +89,33 @@ public class ClassElement
                 } else {
                     tableidx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable());
                 }
-                final Attribute joinAttr = this.classification.getAttribute(this.classification.getLinkAttributeName());
-                final String joinTableName = joinAttr.getTable().getSqlTable();
+                final String joinTableName = this.attributeSet.getMainTable().getSqlTable();
                 final String linktoColName = this.type.getAttribute("ID").getSqlColNames().get(0);
-                _sqlSelect.leftJoin(joinTableName, joinTableidx.getIdx(), joinAttr.getSqlColNames().get(0),
+                _sqlSelect.leftJoin(joinTableName, joinTableidx.getIdx(), this.attributeSet.getSqlColNames().get(0),
                                 tableidx.getIdx(), linktoColName);
             }
+        }
+    }
+
+    @Override
+    public void append2SQLWhere(final SQLWhere _sqlWhere)
+        throws EFapsException
+    {
+        if (((SQLTable) getTable()).getSqlColType() != null) {
+            final TableIdx tableidx = getJoinTableIdx(_sqlWhere.getSqlSelect());
+            final Group group = new Group().setConnection(Connection.AND);
+            group.add(new Criteria()
+                            .tableIndex(tableidx.getIdx())
+                            .colName(((SQLTable) getTable()).getSqlColType())
+                            .comparison(Comparison.EQUAL)
+                            .value(String.valueOf(getAttributeSet().getId()))
+                            .connection(Connection.OR));
+            group.add(new Criteria()
+                            .tableIndex(tableidx.getIdx())
+                            .colName(((SQLTable) getTable()).getSqlColType())
+                            .comparison(Comparison.EQUAL)
+                            .connection(Connection.OR));
+            _sqlWhere.section(group);
         }
     }
 
@@ -119,29 +136,6 @@ public class ClassElement
     }
 
     @Override
-    public void append2SQLWhere(final SQLWhere _sqlWhere)
-        throws EFapsException
-    {
-        if (getClassification().getMainTable().getSqlColType() != null && !this.added) {
-            this.added = true;
-            final TableIdx tableidx = getJoinTableIdx(_sqlWhere.getSqlSelect());
-            final Group group = new Group().setConnection(Connection.AND);
-            group.add(new Criteria()
-                            .tableIndex(tableidx.getIdx())
-                            .colName(((SQLTable) getTable()).getSqlColType())
-                            .comparison(Comparison.EQUAL)
-                            .value(String.valueOf(getClassification().getId()))
-                            .connection(Connection.OR));
-            group.add(new Criteria()
-                            .tableIndex(tableidx.getIdx())
-                            .colName(((SQLTable) getTable()).getSqlColType())
-                            .comparison(Comparison.EQUAL)
-                            .connection(Connection.OR));
-            _sqlWhere.section(group);
-        }
-    }
-
-    @Override
     public Object getObject(final Object[] _row)
         throws EFapsException
     {
@@ -151,11 +145,11 @@ public class ClassElement
     @Override
     public String getPath()
     {
-        return super.getPath() + "->CLASS-" + this.classification.getName();
+        return super.getPath() + "->ATTRIBUTESET-" + this.attributeSet.getName();
     }
 
     @Override
-    public ClassElement getThis()
+    public AttributeSetElement getThis()
     {
         return this;
     }

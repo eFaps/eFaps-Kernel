@@ -21,7 +21,10 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLWhere;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
+import org.efaps.eql2.Comparison;
+import org.efaps.eql2.Connection;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -30,7 +33,7 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public class LinkfromElement
     extends AbstractDataElement<LinkfromElement>
-    implements IJoinTableIdx
+    implements IJoinTableIdx, ISquash
 {
     /** The attribute. */
     private Attribute attribute;
@@ -131,6 +134,17 @@ public class LinkfromElement
         final String tableName = ((SQLTable) getTable()).getSqlTable();
         return _sqlSelect.getIndexer().getTableIdx(tableName, this.attribute.getName(),
                         this.startType.getMainTable().getSqlTable());
+    }
+
+    @Override
+    public void append2SQLWhere(final SQLWhere _sqlWhere)
+        throws EFapsException
+    {
+        if (((SQLTable) getTable()).getSqlColType() != null) {
+            final TableIdx tableidx = getJoinTableIdx(_sqlWhere.getSqlSelect());
+            _sqlWhere.addCriteria(tableidx.getIdx(), ((SQLTable) getTable()).getSqlColType(), Comparison.EQUAL,
+                            String.valueOf(getAttribute().getParent().getId()), Connection.AND);
+        }
     }
 
     /**

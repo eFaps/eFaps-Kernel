@@ -18,7 +18,10 @@
 package org.efaps.db.stmt.filter;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.Attribute;
@@ -134,15 +137,15 @@ public class Filter
             final IAttributeType attrType = _attr.getAttributeType().getDbAttrType();
 
             final boolean noEscape;
-            final String[] values;
+            final Set<String> values;
             if (attrType instanceof StatusType) {
                 values = _element.getValuesList().stream()
                                 .map(val -> convertStatusValue(_attr, val))
-                                .toArray(String[]::new);
+                                .collect(Collectors.toSet());
                 noEscape = true;
             } else {
                 noEscape = attrType instanceof LongType;
-                values = _element.getValues();
+                values =  new HashSet<>(Arrays.asList(_element.getValues()));
             }
             _sqlWhere.addCriteria(tableidx.getIdx(), _attr.getSqlColNames(), _element.getComparison(), values,
                             !noEscape, _term.getConnection());

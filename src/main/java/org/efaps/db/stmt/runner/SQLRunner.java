@@ -71,7 +71,11 @@ import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLSelect.SQLSelectPart;
 import org.efaps.db.wrapper.SQLUpdate;
+import org.efaps.db.wrapper.SQLWhere;
+import org.efaps.db.wrapper.SQLWhere.Criteria;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
+import org.efaps.eql2.Comparison;
+import org.efaps.eql2.Connection;
 import org.efaps.eql2.IUpdateElement;
 import org.efaps.eql2.IUpdateElementsStmt;
 import org.efaps.util.EFapsException;
@@ -244,6 +248,13 @@ public class SQLRunner
             }
         }
         if (this.sqlSelect.getColumns().size() > 0) {
+            for (final Select select : _print.getSelection().getAllSelects()) {
+                for (final AbstractElement<?> element : select.getElements()) {
+                    if (element instanceof AbstractDataElement) {
+                        ((AbstractDataElement<?>) element).append2SQLWhere(this.sqlSelect.getWhere());
+                    }
+                }
+            }
             if (_print instanceof ObjectPrint) {
                 addWhere4ObjectPrint((ObjectPrint) _print);
             } else if (_print instanceof ListPrint) {
@@ -378,26 +389,19 @@ public class SQLRunner
             }
         }
         if (!typeCriterias.isEmpty()) {
-            final SQLSelectPart currentPart = this.sqlSelect.getCurrentPart();
-            if (currentPart == null) {
-                this.sqlSelect.addPart(SQLPart.WHERE);
-            } else {
-                this.sqlSelect.addPart(SQLPart.AND);
-            }
+            final SQLWhere where = this.sqlSelect.getWhere();
+
             for (final TableIdx tableIdx : typeCriterias.keySet()) {
                 final Collection<TypeCriteria> criterias = typeCriterias.get(tableIdx);
                 final Iterator<TypeCriteria> iter = criterias.iterator();
-                final TypeCriteria criteria = iter.next();
-                this.sqlSelect.addColumnPart(tableIdx.getIdx(), criteria.sqlColType);
-                if (criterias.size() == 1) {
-                    this.sqlSelect .addPart(SQLPart.EQUAL).addValuePart(criteria.id);
-                } else {
-                    this.sqlSelect.addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
-                    this.sqlSelect.addValuePart(criteria.id);
-                    while (iter.hasNext()) {
-                        this.sqlSelect.addPart(SQLPart.COMMA).addValuePart(iter.next().id);
-                    }
-                    this.sqlSelect.addPart(SQLPart.PARENTHESIS_CLOSE);
+                final TypeCriteria typeCriteria = iter.next();
+                this.sqlSelect.addColumnPart(tableIdx.getIdx(), typeCriteria.sqlColType);
+
+                final Criteria criteria = where.addCriteria(tableIdx.getIdx(), typeCriteria.sqlColType,
+                                Comparison.EQUAL, String.valueOf(typeCriteria.id), Connection.AND);
+
+                while (iter.hasNext()) {
+                    criteria.value(String.valueOf(iter.next().id));
                 }
             }
         }
@@ -419,14 +423,8 @@ public class SQLRunner
      */
     private void addWhere4ObjectPrint(final ObjectPrint _print)
     {
-        final SQLSelectPart currentPart = this.sqlSelect.getCurrentPart();
-        if (currentPart == null) {
-            this.sqlSelect.addPart(SQLPart.WHERE);
-        } else {
-            this.sqlSelect.addPart(SQLPart.AND);
-        }
-        this.sqlSelect.addColumnPart(0, "ID").addPart(SQLPart.EQUAL)
-            .addValuePart(_print.getInstance().getId());
+        final SQLWhere where = this.sqlSelect.getWhere();
+        where.addCriteria(0, "ID", Comparison.EQUAL, String.valueOf(_print.getInstance().getId()), Connection.AND);
     }
 
     /**

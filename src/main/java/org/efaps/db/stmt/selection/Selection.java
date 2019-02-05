@@ -28,11 +28,13 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.stmt.selection.elements.AbstractDataElement;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.selection.elements.AttributeElement;
+import org.efaps.db.stmt.selection.elements.AttributeSetElement;
 import org.efaps.db.stmt.selection.elements.ClassElement;
 import org.efaps.db.stmt.selection.elements.ExecElement;
 import org.efaps.db.stmt.selection.elements.FormatElement;
@@ -50,6 +52,7 @@ import org.efaps.db.stmt.selection.elements.StatusElement;
 import org.efaps.db.stmt.selection.elements.TypeElement;
 import org.efaps.db.stmt.selection.elements.UUIDElement;
 import org.efaps.eql2.IAttributeSelectElement;
+import org.efaps.eql2.IAttributeSetSelectElement;
 import org.efaps.eql2.IBaseSelectElement;
 import org.efaps.eql2.IClassSelectElement;
 import org.efaps.eql2.IExecSelectElement;
@@ -141,6 +144,14 @@ public final class Selection
                     select.addElement(element);
                     addInstSelect(select, element, classification, currentType);
                     currentType = classification;
+                } else if (ele instanceof IAttributeSetSelectElement) {
+                    final String attrSetName = ((IAttributeSetSelectElement) ele).getName();
+                    final AttributeSet attributeSet = AttributeSet.find(currentType.getName(), attrSetName);
+                    final AttributeSetElement element = new AttributeSetElement().setAttributeSet(attributeSet)
+                                    .setType(currentType);
+                    select.addElement(element);
+                    //addInstSelect(select, element, classification, currentType);
+                    currentType = attributeSet;
                 } else if (ele instanceof IBaseSelectElement) {
                     switch (((IBaseSelectElement) ele).getElement()) {
                         case INSTANCE:

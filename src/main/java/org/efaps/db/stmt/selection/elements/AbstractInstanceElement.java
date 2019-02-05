@@ -20,6 +20,7 @@ import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLWhere;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.util.EFapsException;
 
@@ -85,5 +86,12 @@ public abstract class AbstractInstanceElement<T>
             }
         }
         return ret;
+    }
+
+
+    @Override
+    public void append2SQLWhere(final SQLWhere _sqlWhere)
+        throws EFapsException
+    {
     }
 }

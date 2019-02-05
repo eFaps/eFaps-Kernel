@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLWhere;
 import org.efaps.util.EFapsException;
 
 /**
+ * An element that already has values and therefore does not add
+ * anything to the actual query.
+ *
  * The Class ObjectElement.
  */
 public class PrimedElement
@@ -53,11 +57,17 @@ public class PrimedElement
     public Object getObject(final Object[] _row)
         throws EFapsException
     {
-        return this.objects.next();
+        return this.objects.hasNext() ? this.objects.next() : null;
     }
 
     @Override
     public void append2SQLSelect(final SQLSelect _sqlSelect)
+        throws EFapsException
+    {
+    }
+
+    @Override
+    public void append2SQLWhere(final SQLWhere _sqlWhere)
         throws EFapsException
     {
     }

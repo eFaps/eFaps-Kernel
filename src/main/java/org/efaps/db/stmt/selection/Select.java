@@ -30,7 +30,7 @@ import org.apache.commons.collections4.multimap.AbstractListValuedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
-import org.efaps.db.stmt.selection.elements.LinkfromElement;
+import org.efaps.db.stmt.selection.elements.ISquash;
 import org.efaps.util.EFapsException;
 
 /**
@@ -57,7 +57,7 @@ public final class Select
     private Object current;
 
     /** The squash able. */
-    private boolean squashable = true;
+    private boolean noSquashRequired = true;
 
     /**
      * Instantiates a new select.
@@ -77,7 +77,7 @@ public final class Select
      */
     protected Select addElement(final AbstractElement<?> _element)
     {
-        this.squashable = this.squashable && !(_element instanceof LinkfromElement);
+        this.noSquashRequired = this.noSquashRequired && !(_element instanceof ISquash);
         if (!this.elements.isEmpty()) {
             final AbstractElement<?> prev = this.elements.get(this.elements.size() - 1);
             _element.setPrevious(prev);
@@ -91,9 +91,9 @@ public final class Select
      *
      * @return the squash able
      */
-    protected boolean isSquashable()
+    protected boolean isSquash()
     {
-        return this.squashable;
+        return !this.noSquashRequired;
     }
 
     /**
@@ -108,14 +108,14 @@ public final class Select
         for (final Object object : this.objects) {
             if (_address.get(idx) < 0) {
                 map.put(idx, object);
-            } else if (!this.squashable) {
+            } else if (!this.noSquashRequired) {
                 map.put(_address.get(idx), object);
             }
             idx++;
         }
         final List<Object> tmpObjects = new ArrayList<>();
         for (final Collection<Object> col : map.asMap().values()) {
-            if (this.squashable) {
+            if (this.noSquashRequired) {
                 tmpObjects.add(col.iterator().next());
             } else {
                 tmpObjects.add(col);
