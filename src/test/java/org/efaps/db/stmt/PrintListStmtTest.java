@@ -39,14 +39,14 @@ public class PrintListStmtTest
     public void testSimplePrintObject()
         throws EFapsException
     {
-        final String sql = "select T0.TestAttribute_COL from T_DEMO T0 where T0.ID in ( 456,457,458 )";
+        final String sql = "select T0.TestAttribute_COL,T0.ID from T_DEMO T0 where T0.ID in ( 456,457,458 )";
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(String.class)
-                .append("Val1")
-                .append("Val2")
-                .append("Val3")
+            .withResult(RowLists.rowList2(String.class, Long.class)
+                .append("Val1", 456L)
+                .append("Val2", 457L)
+                .append("Val3", 458L)
                 .asResult())
             .build();
 

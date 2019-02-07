@@ -78,7 +78,7 @@ public class PrintQueryStmtTest
         throws EFapsException
     {
         final String sql = String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 "
-                        + "where T0.TYPE in ( %s , %s )",
+                        + "where T0.TYPE in (%s,%s)",
                         Mocks.AbstractTypeStringAttribute.getSQLColumnName(),
                         Mocks.AbstractTypeSQLTable.getSqlTableName(),
                         Mocks.ChildType1.getId() < Mocks.ChildType2.getId()
@@ -380,7 +380,7 @@ public class PrintQueryStmtTest
         final Iterator<String> iter3 = getSQLWheres(Mocks.AbstractTypeStringAttribute.getSQLColumnName()).iterator();
         while (iter3.hasNext()) {
             final String val = iter3.next();
-            ret.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE in ( %s , %s ) "
+            ret.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE in (%s,%s) "
                             + "and T0.%s and T0.%s",
                             Mocks.AbstractTypeStringAttribute.getSQLColumnName(),
                             Mocks.AbstractTypeSQLTable.getSqlTableName(),
@@ -419,7 +419,7 @@ public class PrintQueryStmtTest
         }
         final Iterator<String> iter3 = getSQLWheres(Mocks.AbstractTypeStringAttribute.getSQLColumnName()).iterator();
         while (iter3.hasNext()) {
-            ret.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE in ( %s , %s ) and T0.%s",
+            ret.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE in (%s,%s) and T0.%s",
                             Mocks.AbstractTypeStringAttribute.getSQLColumnName(),
                             Mocks.AbstractTypeSQLTable.getSqlTableName(),
                             Mocks.ChildType1.getId() < Mocks.ChildType2.getId()

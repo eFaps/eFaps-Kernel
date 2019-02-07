@@ -25,9 +25,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -318,7 +318,7 @@ public class SQLRunner
             for (final Entry<TableIdx, CompanyCriteria> entry : companyCriterias.entrySet()) {
                 final boolean isConsortium = Type.get(entry.getValue().id).getCompanyAttribute()
                                 .getAttributeType().getClassRepr().equals(ConsortiumLinkType.class);
-                Set<String> ids;
+                List<String> ids;
                 if (_print.has(StmtFlag.COMPANYINDEPENDENT)) {
                     if (isConsortium) {
                        ids = Context.getThreadContext().getPerson().getCompanies().stream()
@@ -330,25 +330,26 @@ public class SQLRunner
                                 }
                             })
                             .map(id -> String.valueOf(id))
-                            .collect(Collectors.toSet());
+                            .collect(Collectors.toList());
                     } else {
                         ids = Context.getThreadContext().getPerson().getCompanies().stream()
                             .map(id -> String.valueOf(id))
-                            .collect(Collectors.toSet());
+                            .collect(Collectors.toList());
                     }
                 } else {
                     if (isConsortium) {
                         ids =  Context.getThreadContext().getCompany().getConsortiums().stream()
                                         .map(id -> String.valueOf(id))
-                                        .collect(Collectors.toSet());
+                                        .collect(Collectors.toList());
                     } else {
-                        ids = new HashSet<>();
+                        ids = new ArrayList<>();
                         ids.add(String.valueOf(Context.getThreadContext().getCompany().getId()));
                     }
                 }
                 where.addCriteria(entry.getKey().getIdx(),
                                 Collections.singletonList(entry.getValue().sqlColCompany),
-                                ids.size() > 1 ? Comparison.IN : Comparison.EQUAL, ids, false, Connection.AND);
+                                ids.size() > 1 ? Comparison.IN : Comparison.EQUAL, new LinkedHashSet<>(ids),
+                                                false, Connection.AND);
             }
         }
     }
@@ -381,10 +382,10 @@ public class SQLRunner
                 final Collection<TypeCriteria> criterias = typeCriterias.get(tableIdx);
                 final Iterator<TypeCriteria> iter = criterias.iterator();
                 final TypeCriteria typeCriteria = iter.next();
-                this.sqlSelect.addColumnPart(tableIdx.getIdx(), typeCriteria.sqlColType);
 
                 final Criteria criteria = where.addCriteria(tableIdx.getIdx(), typeCriteria.sqlColType,
-                                Comparison.EQUAL, String.valueOf(typeCriteria.id), Connection.AND);
+                                iter.hasNext() ? Comparison.IN : Comparison.EQUAL,
+                                                String.valueOf(typeCriteria.id), Connection.AND);
 
                 while (iter.hasNext()) {
                     criteria.value(String.valueOf(iter.next().id));

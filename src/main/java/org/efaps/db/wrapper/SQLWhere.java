@@ -20,6 +20,7 @@ package org.efaps.db.wrapper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -69,8 +70,9 @@ public class SQLWhere
     public Criteria addCriteria(final int _idx, final String _sqlColName, final Comparison _comparison,
                             final String _value, final Connection _connection)
     {
-        return addCriteria(_idx, Collections.singletonList(_sqlColName), _comparison, Collections.singleton(_value),
-                        false, _connection);
+        final Set<String> values = new LinkedHashSet<>();
+        values.add(_value);
+        return addCriteria(_idx, Collections.singletonList(_sqlColName), _comparison, values, false, _connection);
     }
 
     public boolean isStarted()
@@ -112,14 +114,16 @@ public class SQLWhere
     protected void appendSQL(final String _tablePrefix,
                              final StringBuilder _cmd)
     {
-        if (isStarted()) {
-            new SQLSelectPart(SQLPart.AND).appendSQL(_cmd);
-            new SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
-        } else {
-            new SQLSelectPart(SQLPart.WHERE).appendSQL(_cmd);
-            new SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
+        if (this.sections.size() > 0) {
+            if (isStarted()) {
+                new SQLSelectPart(SQLPart.AND).appendSQL(_cmd);
+                new SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
+            } else {
+                new SQLSelectPart(SQLPart.WHERE).appendSQL(_cmd);
+                new SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
+            }
+            addSectionsSQL(_tablePrefix, _cmd, this.sections);
         }
-        addSectionsSQL(_tablePrefix, _cmd, this.sections);
     }
 
     protected void addSectionsSQL(final String _tablePrefix,
@@ -132,6 +136,7 @@ public class SQLWhere
             } else {
                 switch (section.getConnection()) {
                     case AND:
+                    case NONE:
                         new SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
                         new SQLSelect.SQLSelectPart(SQLPart.AND).appendSQL(_cmd);
                         new SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);

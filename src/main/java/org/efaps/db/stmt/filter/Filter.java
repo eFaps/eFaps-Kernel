@@ -18,9 +18,8 @@
 package org.efaps.db.stmt.filter;
 
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -82,7 +81,7 @@ public class Filter
     public void append2SQLSelect(final SQLSelect _sqlSelect)
     {
         if (this.iWhere != null) {
-            final SQLWhere sqlWhere = new SQLWhere();
+            final SQLWhere sqlWhere = _sqlSelect.getWhere();
             for (final IWhereTerm<?> term : this.iWhere.getTerms()) {
                 if (term instanceof IWhereElementTerm) {
                     final IWhereElement element = ((IWhereElementTerm) term).getElement();
@@ -123,7 +122,6 @@ public class Filter
                     }
                 }
             }
-            _sqlSelect.where(sqlWhere);
         }
     }
 
@@ -137,18 +135,18 @@ public class Filter
             final IAttributeType attrType = _attr.getAttributeType().getDbAttrType();
 
             final boolean noEscape;
-            final Set<String> values;
+            final List<String> values;
             if (attrType instanceof StatusType) {
                 values = _element.getValuesList().stream()
                                 .map(val -> convertStatusValue(_attr, val))
-                                .collect(Collectors.toSet());
+                                .collect(Collectors.toList());
                 noEscape = true;
             } else {
                 noEscape = attrType instanceof LongType;
-                values =  new HashSet<>(Arrays.asList(_element.getValues()));
+                values = Arrays.asList(_element.getValues());
             }
-            _sqlWhere.addCriteria(tableidx.getIdx(), _attr.getSqlColNames(), _element.getComparison(), values,
-                            !noEscape, _term.getConnection());
+            _sqlWhere.addCriteria(tableidx.getIdx(), _attr.getSqlColNames(), _element.getComparison(),
+                            new LinkedHashSet<>(values), !noEscape, _term.getConnection());
         }
     }
 

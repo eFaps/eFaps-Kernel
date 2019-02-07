@@ -55,7 +55,7 @@ public class PrintObjectStmtTest
                         Mocks.SimpleType.getId(), Mocks.TestAttribute.getName()));
         final PrintStmt printStmt = PrintStmt.get(stmt);
         final SQLVerify verify = SQLVerify.builder()
-            .withSql("select T0.TestAttribute_COL from T_DEMO T0 where T0.ID = 4")
+            .withSql("select T0.TestAttribute_COL,T0.ID from T_DEMO T0 where T0.ID = 4")
             .build();
         printStmt.execute();
         verify.verify();
@@ -65,13 +65,13 @@ public class PrintObjectStmtTest
     public void testSimplePrintObjectValue()
         throws EFapsException
     {
-        final String sql = String.format("select T0.TestAttr_COL from T_DEMO T0 where T0.ID = 4",
+        final String sql = String.format("select T0.TestAttr_COL,T0.ID,T0.TYPE from T_DEMO T0 where T0.ID = 4",
                         Mocks.TypedType.getId());
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(String.class)
-                        .append("A Value")
+            .withResult(RowLists.rowList3(String.class, Long.class, Long.class)
+                        .append("A Value", 4L, Mocks.TypedType.getId())
                         .asResult())
             .build();
 
@@ -89,14 +89,14 @@ public class PrintObjectStmtTest
     public void testStringAttribute()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.AllAttrStringAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(String.class)
-                        .append("A Value")
+            .withResult(RowLists.rowList2(String.class, Long.class)
+                        .append("A Value", 4L)
                         .asResult())
             .build();
 
@@ -114,14 +114,14 @@ public class PrintObjectStmtTest
     public void testLongAttribute()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.AllAttrLongAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(Object.class)
-                        .append(100)
+            .withResult(RowLists.rowList2(Object.class, Long.class)
+                        .append(100, 4L)
                         .asResult())
             .build();
 
@@ -139,14 +139,14 @@ public class PrintObjectStmtTest
     public void testIntegerAttribute()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.AllAttrIntegerAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(Object.class)
-                        .append(101)
+            .withResult(RowLists.rowList2(Object.class, Long.class)
+                        .append(101, 4L)
                         .asResult())
             .build();
 
@@ -164,14 +164,14 @@ public class PrintObjectStmtTest
     public void testBooleanAttribute()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.AllAttrBooleanAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(Object.class)
-                        .append(true)
+            .withResult(RowLists.rowList2(Object.class, Long.class)
+                        .append(true, 4L)
                         .asResult())
             .build();
 
@@ -189,15 +189,15 @@ public class PrintObjectStmtTest
     public void testDateAttribute()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.AllAttrDateAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         final DateTime date = new DateTime();
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(Object.class)
-                        .append(date.toDate())
+            .withResult(RowLists.rowList2(Object.class, Long.class)
+                        .append(date.toDate(), 4L)
                         .asResult())
             .build();
 
@@ -215,15 +215,15 @@ public class PrintObjectStmtTest
     public void testTimeAttribute()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.AllAttrTimeAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         final DateTime date = new DateTime();
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(Object.class)
-                        .append(date.toDate())
+            .withResult(RowLists.rowList2(Object.class, Long.class)
+                        .append(date.toDate(), 4L)
                         .asResult())
             .build();
 
@@ -241,15 +241,15 @@ public class PrintObjectStmtTest
     public void testDateTimeAttribute()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.AllAttrDateTimeAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         final DateTime date = new DateTime();
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(Object.class)
-                        .append(date.toDate())
+            .withResult(RowLists.rowList2(Object.class, Long.class)
+                        .append(date.toDate(), 4L)
                         .asResult())
             .build();
 
@@ -267,15 +267,15 @@ public class PrintObjectStmtTest
     public void testCreatedAttribute()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.AllAttrCreatedAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         final DateTime date = new DateTime();
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(Object.class)
-                        .append(date.toDate())
+            .withResult(RowLists.rowList2(Object.class, Long.class)
+                        .append(date.toDate(), 4L)
                         .asResult())
             .build();
 
@@ -293,15 +293,15 @@ public class PrintObjectStmtTest
     public void testModifiedAttribute()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.AllAttrModifiedAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         final DateTime date = new DateTime();
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(Object.class)
-                        .append(date.toDate())
+            .withResult(RowLists.rowList2(Object.class, Long.class)
+                        .append(date.toDate(), 4L)
                         .asResult())
             .build();
 
@@ -319,7 +319,7 @@ public class PrintObjectStmtTest
     public void testLinkto()
         throws EFapsException
     {
-        final String sql = String.format("select T1.%s,T1.ID from %s T0 "
+        final String sql = String.format("select T1.%s,T0.ID,T1.ID from %s T0 "
                         + "left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
                         Mocks.TestAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName(),
@@ -328,8 +328,8 @@ public class PrintObjectStmtTest
         final String strValue = RandomUtil.random(8);
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList2(Object.class, Object.class)
-                    .append(strValue, 1L)
+            .withResult(RowLists.rowList3(Object.class, Long.class, Object.class)
+                    .append(strValue, 4L, 1L)
                     .asResult())
             .build();
 
@@ -348,14 +348,14 @@ public class PrintObjectStmtTest
     public void testAttributeWithAliase()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.AllAttrStringAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(String.class)
-                        .append("A Value")
+            .withResult(RowLists.rowList2(String.class, Long.class)
+                        .append("A Value", 4L)
                         .asResult())
             .build();
         final String alias = "AliasName";
@@ -425,15 +425,16 @@ public class PrintObjectStmtTest
     public void testLinktoInstanceSimpleType()
         throws EFapsException
     {
-        final String sql = String.format("select T1.ID from %s T0 left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
+        final String sql = String.format("select T1.ID,T0.ID "
+                        + "from %s T0 left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
                         Mocks.AllAttrTypeSQLTable.getSqlTableName(),
                         Mocks.SimpleTypeSQLTable.getSqlTableName(),
                         Mocks.AllAttrLinkAttribute.getSQLColumnName());
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(Object.class)
-                    .append(4)
+            .withResult(RowLists.rowList2(Object.class, Long.class)
+                    .append(4, 4L)
                     .asResult())
             .build();
 
@@ -453,7 +454,7 @@ public class PrintObjectStmtTest
     public void testLinktoInstanceTypedType()
         throws EFapsException
     {
-        final String sql = String.format("select T1.ID,T1.TYPE from %s T0 left join %s T1 on T0.%s=T1.ID "
+        final String sql = String.format("select T1.ID,T1.TYPE,T0.ID from %s T0 left join %s T1 on T0.%s=T1.ID "
                         + "where T0.ID = 4",
                         Mocks.AllAttrTypeSQLTable.getSqlTableName(),
                         Mocks.TypedTypeSQLTable.getSqlTableName(),
@@ -461,8 +462,8 @@ public class PrintObjectStmtTest
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList2(Object.class, Object.class)
-                    .append(4, Mocks.TypedType.getId())
+            .withResult(RowLists.rowList3(Object.class, Object.class, Long.class)
+                    .append(4, Mocks.TypedType.getId(), 4L)
                     .asResult())
             .build();
 
@@ -583,7 +584,8 @@ public class PrintObjectStmtTest
     public void testSelectClass()
         throws EFapsException
     {
-        final String sql = String.format("select T1.%s,T1.ID from %s T0 left join %s T1 on T0.%s=T1.%s where T0.ID = 4",
+        final String sql = String.format("select T1.%s,T0.ID,T1.ID "
+                        + "from %s T0 left join %s T1 on T0.%s=T1.%s where T0.ID = 4",
                         Mocks.ClassTypeStringAttribute.getSQLColumnName(),
                         Mocks.SimpleTypeSQLTable.getSqlTableName(),
                         Mocks.ClassTypeSQLTable.getSqlTableName(),
@@ -592,8 +594,8 @@ public class PrintObjectStmtTest
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList2(String.class, Long.class)
-                    .append("A Value", 4L)
+            .withResult(RowLists.rowList3(String.class, Long.class, Long.class)
+                    .append("A Value", 4L, 4L)
                     .asResult())
             .build();
 
@@ -611,7 +613,7 @@ public class PrintObjectStmtTest
     public void testLinktoSelectClass()
         throws EFapsException
     {
-        final String sql = String.format("select T2.%s,T1.ID,T2.ID "
+        final String sql = String.format("select T2.%s,T0.ID,T1.ID,T2.ID "
                         + "from %s T0 "
                         + "left join %s T1 on T0.%s=T1.ID "
                         + "left join %s T2 on T1.%s=T2.%s where T0.ID = 4",
@@ -625,8 +627,8 @@ public class PrintObjectStmtTest
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList3(String.class, Long.class, Long.class)
-                    .append("A Value", 14L, 33L)
+            .withResult(RowLists.rowList4(String.class, Long.class, Long.class, Long.class)
+                    .append("A Value", 4L, 14L, 33L)
                     .asResult())
             .build();
 
@@ -645,7 +647,7 @@ public class PrintObjectStmtTest
     public void testAttributeInChildTable()
         throws EFapsException
     {
-        final String sql = String.format("select T1.%s "
+        final String sql = String.format("select T1.%s,T0.ID "
                         + "from %s T0 "
                         + "left join %s T1 on T0.ID=T1.ID "
                         + "where T0.ID = 4",
@@ -655,8 +657,8 @@ public class PrintObjectStmtTest
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(String.class)
-                        .append("A Value in Child SQL Table")
+            .withResult(RowLists.rowList2(String.class, Long.class)
+                        .append("A Value in Child SQL Table", 4L)
                         .asResult())
             .build();
 
@@ -674,7 +676,7 @@ public class PrintObjectStmtTest
     public void testAttributeInChildTable2()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s,T1.%s "
+        final String sql = String.format("select T0.%s,T1.%s,T0.ID "
                         + "from %s T0 "
                         + "left join %s T1 on T0.ID=T1.ID "
                         + "where T0.ID = 4",
@@ -685,8 +687,8 @@ public class PrintObjectStmtTest
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList2(BigDecimal.class, String.class)
-                        .append(BigDecimal.ZERO, "A Value in Child SQL Table")
+            .withResult(RowLists.rowList3(BigDecimal.class, String.class, Long.class)
+                        .append(BigDecimal.ZERO, "A Value in Child SQL Table", 4L)
                         .asResult())
             .build();
 
@@ -707,7 +709,7 @@ public class PrintObjectStmtTest
     public void testLinktoAttributeInChildTable()
         throws EFapsException
     {
-        final String sql = String.format("select T2.%s,T1.ID "
+        final String sql = String.format("select T2.%s,T0.ID,T1.ID "
                         + "from %s T0 "
                         + "left join %s T1 on T0.%s=T1.ID "
                         + "left join %s T2 on T1.ID=T2.ID "
@@ -720,8 +722,8 @@ public class PrintObjectStmtTest
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList2(String.class, Long.class)
-                        .append("A Value in Child SQL Table", 77L)
+            .withResult(RowLists.rowList3(String.class, Long.class, Long.class)
+                        .append("A Value in Child SQL Table", 4L, 77L)
                         .asResult())
             .build();
 
@@ -740,7 +742,7 @@ public class PrintObjectStmtTest
     public void testAttributeLinktoAttributeInChildTable()
         throws EFapsException
     {
-        final String sql = String.format("select T2.%s,T2.ID "
+        final String sql = String.format("select T2.%s,T0.ID,T2.ID "
                         + "from %s T0 "
                         + "left join %s T1 on T0.ID=T1.ID "
                         + "left join %s T2 on T1.AllAttrLinkInChildSQLAttribute_COL=T2.ID "
@@ -753,8 +755,8 @@ public class PrintObjectStmtTest
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList2(String.class, Long.class)
-                        .append("A Value in Child SQL Table", 77L)
+            .withResult(RowLists.rowList3(String.class, Long.class, Long.class)
+                        .append("A Value in Child SQL Table", 4L, 77L)
                         .asResult())
             .build();
 
@@ -773,15 +775,15 @@ public class PrintObjectStmtTest
     public void testAttributeWithFormat()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.AllAttrDateAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         final DateTime date = new DateTime();
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(Object.class)
-                        .append(date.toDate())
+            .withResult(RowLists.rowList2(Object.class, Long.class)
+                        .append(date.toDate(), 4L)
                         .asResult())
             .build();
 
@@ -799,14 +801,14 @@ public class PrintObjectStmtTest
     public void testStatus()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                                         Mocks.StatusAttribute.getSQLColumnName(),
                                         Mocks.StatusTypeSQLTable.getSqlTableName());
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(Object.class)
-                    .append(Mocks.StatusGrp.getStatusId("Open"))
+            .withResult(RowLists.rowList2(Object.class, Long.class)
+                    .append(Mocks.StatusGrp.getStatusId("Open"), 4L)
                     .asResult())
             .build();
 
@@ -825,14 +827,14 @@ public class PrintObjectStmtTest
     public void testStatusKey()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                                         Mocks.StatusAttribute.getSQLColumnName(),
                                         Mocks.StatusTypeSQLTable.getSqlTableName());
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(Object.class)
-                    .append(Mocks.StatusGrp.getStatusId("Open"))
+            .withResult(RowLists.rowList2(Object.class, Long.class)
+                    .append(Mocks.StatusGrp.getStatusId("Open"), 4L)
                     .asResult())
             .build();
 
@@ -850,14 +852,14 @@ public class PrintObjectStmtTest
     public void testStatusLabel()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                                         Mocks.StatusAttribute.getSQLColumnName(),
                                         Mocks.StatusTypeSQLTable.getSqlTableName());
 
         MockResult.builder()
             .withSql(sql)
-            .withResult(RowLists.rowList1(Object.class)
-                    .append(Mocks.StatusGrp.getStatusId("Open"))
+            .withResult(RowLists.rowList2(Object.class, Long.class)
+                    .append(Mocks.StatusGrp.getStatusId("Open"), 4L)
                     .asResult())
             .build();
 

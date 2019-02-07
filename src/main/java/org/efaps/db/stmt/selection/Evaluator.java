@@ -264,7 +264,7 @@ public final class Evaluator
         if (obj instanceof List) {
             final Iterator<Boolean> iter = accessList.iterator();
             ret = ((List<?>) obj).stream()
-                .map(ele -> iter.hasNext() ? ele : null)
+                .map(ele -> iter.hasNext() && iter.next() ? ele : null)
                 .collect(Collectors.toList());
         } else if (accessList.size() == 1 && accessList.get(0)) {
             ret = obj;
