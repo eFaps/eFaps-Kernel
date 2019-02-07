@@ -19,7 +19,6 @@ package org.efaps.db.stmt.selection;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,8 +29,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.ListValuedMap;
-import org.apache.commons.collections4.MultiMapUtils;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.ci.CIAttribute;
@@ -104,27 +101,14 @@ public final class Evaluator
     {
         if (this.selection.getSelects().stream().anyMatch(Select::isSquash)) {
             final Select select = this.selection.getInstSelects().get(Selection.BASEPATH);
-            final List<Object> instances = select.getObjects(null);
-            Integer idx = 0;
-            final ListValuedMap<Object, Integer> map = MultiMapUtils.newListValuedHashMap();
-            for (final Object instance : instances) {
-                map.put(instance, idx);
-                idx++;
+            final Squashing squash = new Squashing(select);
+
+            for (final Entry<String, Select> entry : this.selection.getInstSelects().entrySet()) {
+                squash.execute(entry.getKey(), entry.getValue());
             }
-            final Map<Integer, Integer> address = new HashMap<>();
-            for (final Collection<Integer> set : map.asMap().values()) {
-                Integer current = -1;
-                for (final Integer ele : set) {
-                    if (current < 0) {
-                        address.put(ele, -1);
-                        current = ele;
-                    } else {
-                        address.put(ele, current);
-                    }
-                }
-            }
-            for (final Select currentSelect : this.selection.getAllSelects()) {
-                currentSelect.squash(address);
+
+            for (final Select currentSelect : this.selection.getSelects()) {
+                squash.execute(null, currentSelect);
             }
         }
     }
@@ -280,7 +264,7 @@ public final class Evaluator
         if (obj instanceof List) {
             final Iterator<Boolean> iter = accessList.iterator();
             ret = ((List<?>) obj).stream()
-                .map(ele -> iter.next() ? ele : null)
+                .map(ele -> iter.hasNext() ? ele : null)
                 .collect(Collectors.toList());
         } else if (accessList.size() == 1 && accessList.get(0)) {
             ret = obj;

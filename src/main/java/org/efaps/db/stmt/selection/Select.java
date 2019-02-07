@@ -18,14 +18,11 @@ package org.efaps.db.stmt.selection;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.collections4.ListValuedMap;
 import org.apache.commons.collections4.multimap.AbstractListValuedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.db.Instance;
@@ -33,6 +30,7 @@ import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.selection.elements.ISquash;
 import org.efaps.util.EFapsException;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class Selection.
  *
@@ -58,6 +56,9 @@ public final class Select
 
     /** The squash able. */
     private boolean noSquashRequired = true;
+
+    /** The squash. */
+    private Squashing squash;
 
     /**
      * Instantiates a new select.
@@ -96,33 +97,18 @@ public final class Select
         return !this.noSquashRequired;
     }
 
-    /**
-     * Squash.
-     *
-     * @param _address the address
-     */
-    protected void squash(final Map<Integer, Integer> _address)
+    protected Squashing getSquash()
     {
-        Integer idx = 0;
-        final ListValuedMap<Integer, Object> map = new SortedListValuedMap<>();
-        for (final Object object : this.objects) {
-            if (_address.get(idx) < 0) {
-                map.put(idx, object);
-            } else if (!this.noSquashRequired) {
-                map.put(_address.get(idx), object);
-            }
-            idx++;
-        }
-        final List<Object> tmpObjects = new ArrayList<>();
-        for (final Collection<Object> col : map.asMap().values()) {
-            if (this.noSquashRequired) {
-                tmpObjects.add(col.iterator().next());
-            } else {
-                tmpObjects.add(col);
-            }
-        }
-        this.objects.clear();
-        this.objects.addAll(tmpObjects);
+        return this.squash;
+    }
+
+    protected void setSquash(final Squashing _squash)
+    {
+        this.squash = _squash;
+    }
+
+    protected List<Object> getObjects() {
+        return this.objects;
     }
 
     /**

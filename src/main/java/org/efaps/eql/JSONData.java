@@ -24,6 +24,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.collections4.comparators.ComparatorChain;
@@ -134,7 +136,7 @@ public final class JSONData
     public static AbstractValue<?> getValue(final String _key,
                                             final Object _object)
     {
-        AbstractValue<? extends Object> ret = null;
+        AbstractValue<? extends Object> ret = new NullValue();
         if (_object instanceof String) {
             ret = new StringValue().setValue((String) _object);
         } else if (_object instanceof BigDecimal) {
@@ -152,23 +154,26 @@ public final class JSONData
         } else if (_object instanceof List) {
             final List<?> list = (List<?>) _object;
             if (!list.isEmpty()) {
-                final Object inner = list.get(0);
-                if (inner instanceof String) {
-                    ret = new StringListValue().setValue((List<String>) list);
-                } else if (inner instanceof IBitEnum) {
-                    final List<String> tmpList = new ArrayList<>();
-                    for (final Object obj : list) {
-                        tmpList.add(obj.toString());
+                final Optional<?> optValue = list.stream().filter(Objects::nonNull).findFirst();
+                if (optValue.isPresent()) {
+                    final Object inner = optValue.get();
+                    if (inner instanceof String) {
+                        ret = new StringListValue().setValue((List<String>) list);
+                    } else if (inner instanceof IBitEnum) {
+                        final List<String> tmpList = new ArrayList<>();
+                        for (final Object obj : list) {
+                            tmpList.add(obj.toString());
+                        }
+                        ret = new StringListValue().setValue(tmpList);
                     }
-                    ret = new StringListValue().setValue(tmpList);
+                } else {
+                    ret = new StringListValue().setValue((List<String>) list);
                 }
             }
         } else if (_object instanceof byte[]) {
             ret = new ByteValue().setValue((byte[]) _object);
         } else if (_object != null) {
             ret = new StringValue().setValue(_object.toString());
-        } else {
-            ret = new NullValue();
         }
         if (ret != null) {
             ret.setKey(_key);

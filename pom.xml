@@ -286,7 +286,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-vfs2</artifactId>
-            <version>2.2</version>
+            <version>2.3</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -663,17 +663,16 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <version>${jetty.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- connection Pooling, used as J2EE resource -->
-         <dependency>
+        <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-testng</artifactId>
-            <version>2.0.0-RC.4</version>
+            <version>2.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-easymock</artifactId>
-            <version>2.0.0-RC.4</version>
+            <version>2.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

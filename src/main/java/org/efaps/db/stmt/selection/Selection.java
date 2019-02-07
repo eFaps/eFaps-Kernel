@@ -144,7 +144,7 @@ public final class Selection
                     final AttributeSetElement element = new AttributeSetElement().setAttributeSet(attributeSet)
                                     .setType(currentType);
                     select.addElement(element);
-                    //addInstSelect(select, element, classification, currentType);
+                    addInstSelect(select, element, attributeSet, currentType);
                     currentType = attributeSet;
                 } else if (ele instanceof IBaseSelectElement) {
                     switch (((IBaseSelectElement) ele).getElement()) {
@@ -218,6 +218,10 @@ public final class Selection
                         instSelect.addElement(new ClassElement()
                                         .setClassification(((ClassElement) selectTmp).getClassification())
                                         .setType(((ClassElement) selectTmp).getType()));
+                    } else if (selectTmp instanceof AttributeSetElement) {
+                        instSelect.addElement(new AttributeSetElement()
+                                        .setAttributeSet(((AttributeSetElement) selectTmp).getAttributeSet())
+                                        .setType(((ClassElement) selectTmp).getType()));
                     }
                 }
             }
@@ -229,8 +233,12 @@ public final class Selection
                 instSelect.addElement(new LinktoElement().setAttribute((Attribute) _attrOrClass));
                 instSelect.addElement(new InstanceElement(_currentType));
             } else if (_element instanceof ClassElement) {
-                instSelect.addElement(new ClassElement().setClassification((Classification) _attrOrClass).setType(
-                                _currentType));
+                instSelect.addElement(new ClassElement().setClassification((Classification) _attrOrClass)
+                                .setType(_currentType));
+                instSelect.addElement(new InstanceElement((Type) _attrOrClass));
+            } else if (_element instanceof AttributeSetElement) {
+                instSelect.addElement(new AttributeSetElement().setAttributeSet((AttributeSet) _attrOrClass)
+                                .setType(_currentType));
                 instSelect.addElement(new InstanceElement((Type) _attrOrClass));
             }
             this.instSelects.put(_element.getPath(), instSelect);
