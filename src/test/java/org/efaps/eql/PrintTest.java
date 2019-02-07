@@ -47,7 +47,7 @@ public class PrintTest
     public void testObjPrintOneAttribute()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.TestAttribute.getSQLColumnName(),
                         Mocks.SimpleTypeSQLTable.getSqlTableName());
 
@@ -63,7 +63,7 @@ public class PrintTest
     public void testObjPrintOneAttributeUsingCI()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.TestAttribute.getSQLColumnName(),
                         Mocks.SimpleTypeSQLTable.getSqlTableName());
 
@@ -79,7 +79,7 @@ public class PrintTest
     public void testObjPrintVariousAttributes()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s,T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.AllAttrBooleanAttribute.getSQLColumnName(),
                         Mocks.AllAttrStringAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
@@ -97,7 +97,7 @@ public class PrintTest
     public void testObjPrintVariousAttributes2()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s,T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.AllAttrBooleanAttribute.getSQLColumnName(),
                         Mocks.AllAttrStringAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
@@ -115,7 +115,7 @@ public class PrintTest
     public void testObjPrintAttributeWithAlias()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.AllAttrBooleanAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
@@ -132,7 +132,7 @@ public class PrintTest
     public void testObjPrintAttributesWithAlias()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s,T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.%s,T0.ID from %s T0 where T0.ID = 4",
                         Mocks.AllAttrBooleanAttribute.getSQLColumnName(),
                         Mocks.AllAttrStringAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
@@ -155,7 +155,7 @@ public class PrintTest
                         .build();
         Context.getThreadContext().setCompany(org.efaps.admin.user.Company.get(company.getId()));
 
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4 and T0.%s = %s" ,
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.ID = 4 and T0.%s = %s" ,
                         Mocks.CompanyStringAttribute.getSQLColumnName(),
                         Mocks.CompanyTypeSQLTable.getSqlTableName(),
                         Mocks.CompanyCompanyAttribute.getSQLColumnName(),
@@ -204,7 +204,7 @@ public class PrintTest
         final Person person = Context.getThreadContext().getPerson();
         FieldUtils.writeDeclaredField(person, "companies", Collections.singleton(company.getId()), true);
 
-        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.%s in ( %s )" ,
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.%s = %s" ,
                         Mocks.CompanyStringAttribute.getSQLColumnName(),
                         Mocks.CompanyTypeSQLTable.getSqlTableName(),
                         Mocks.CompanyCompanyAttribute.getSQLColumnName(),
@@ -235,7 +235,7 @@ public class PrintTest
         FieldUtils.writeDeclaredField(person, "companies",
                         new LinkedHashSet<>(Arrays.asList(company.getId(), company2.getId())), true);
 
-        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.%s in ( %s , %s )" ,
+        final String sql = String.format("select T0.%s,T0.ID from %s T0 where T0.%s in (%s,%s)" ,
                         Mocks.CompanyStringAttribute.getSQLColumnName(),
                         Mocks.CompanyTypeSQLTable.getSqlTableName(),
                         Mocks.CompanyCompanyAttribute.getSQLColumnName(),
@@ -255,7 +255,8 @@ public class PrintTest
     public void testLinkto()
         throws EFapsException
     {
-        final String sql = String.format("select T1.%s,T1.ID from %s T0 left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
+        final String sql = String.format("select T1.%s,T0.ID,T1.ID from %s T0 "
+                        + "left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
                         Mocks.TestAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName(),
                         Mocks.SimpleTypeSQLTable.getSqlTableName(),
@@ -274,7 +275,7 @@ public class PrintTest
     public void testAttributeAndLinkto()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s,T1.%s,T1.ID from %s T0 "
+        final String sql = String.format("select T0.%s,T1.%s,T0.ID,T1.ID from %s T0 "
                         + "left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
                         Mocks.AllAttrStringAttribute.getSQLColumnName(),
                         Mocks.TestAttribute.getSQLColumnName(),
@@ -327,7 +328,7 @@ public class PrintTest
     public void testPrintInstanceSelectCIAttr()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.ID = 4",
                         Mocks.TypedTypeTestAttr.getSQLColumnName(),
                         Mocks.TypedTypeSQLTable.getSqlTableName());
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
@@ -342,7 +343,7 @@ public class PrintTest
     public void testPrintInstanceSelectAttr()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.ID = 4",
                         Mocks.TypedTypeTestAttr.getSQLColumnName(),
                         Mocks.TypedTypeSQLTable.getSqlTableName());
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
@@ -357,7 +358,7 @@ public class PrintTest
     public void testPrintInstanceSelectCIAttrs()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s,T0.%s from %s T0 where T0.ID = 4",
+        final String sql = String.format("select T0.%s,T0.%s,T0.ID,T0.TYPE from %s T0 where T0.ID = 4",
                         Mocks.TypedTypeTestAttr.getSQLColumnName(),
                         Mocks.TypedTypeIDAttribute.getSQLColumnName(),
                         Mocks.TypedTypeSQLTable.getSqlTableName());
@@ -373,7 +374,8 @@ public class PrintTest
     public void testPrintInstanceSelectLinkto()
         throws EFapsException
     {
-        final String sql = String.format("select T1.%s,T1.ID from %s T0 left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
+        final String sql = String.format("select T1.%s,T0.ID,T1.ID from %s T0 "
+                        + "left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
                         Mocks.TestAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName(),
                         Mocks.SimpleTypeSQLTable.getSqlTableName(),
@@ -391,7 +393,7 @@ public class PrintTest
     public void testPrintInstanceSelectAttributeAndLinkto()
         throws EFapsException
     {
-        final String sql = String.format("select T0.%s,T1.%s,T1.ID from %s T0 "
+        final String sql = String.format("select T0.%s,T1.%s,T0.ID,T1.ID from %s T0 "
                         + "left join %s T1 on T0.%s=T1.ID where T0.ID = 4",
                         Mocks.AllAttrStringAttribute.getSQLColumnName(),
                         Mocks.TestAttribute.getSQLColumnName(),

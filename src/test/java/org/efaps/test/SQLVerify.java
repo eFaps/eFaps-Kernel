@@ -65,7 +65,7 @@ public class SQLVerify
     public void verify()
     {
         EFapsQueryHandler.get().unregister(getSql());
-        assertEquals(this.counter, 1);
+        assertEquals(this.counter, 1, getSql());
     }
 
     @Override

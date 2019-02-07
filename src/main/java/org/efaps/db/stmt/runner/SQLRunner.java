@@ -21,8 +21,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -311,58 +314,41 @@ public class SQLRunner
             if (Context.getThreadContext().getCompany() == null) {
                 throw new EFapsException(SQLRunner.class, "noCompany");
             }
-            final SQLSelectPart currentPart = this.sqlSelect.getCurrentPart();
-            if (currentPart == null) {
-                this.sqlSelect.addPart(SQLPart.WHERE);
-            } else {
-                this.sqlSelect.addPart(SQLPart.AND);
-            }
+            final SQLWhere where = this.sqlSelect.getWhere();
             for (final Entry<TableIdx, CompanyCriteria> entry : companyCriterias.entrySet()) {
-                this.sqlSelect.addColumnPart(entry.getKey().getIdx(), entry.getValue().sqlColCompany);
-
                 final boolean isConsortium = Type.get(entry.getValue().id).getCompanyAttribute()
                                 .getAttributeType().getClassRepr().equals(ConsortiumLinkType.class);
+                Set<String> ids;
                 if (_print.has(StmtFlag.COMPANYINDEPENDENT)) {
-                    this.sqlSelect.addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
-                    boolean first = true;
-                    for (final Long compId : Context.getThreadContext().getPerson().getCompanies()) {
-                        if (isConsortium) {
-                            for (final Long consortium : Company.get(compId).getConsortiums()) {
-                                if (first) {
-                                    first = false;
-                                } else {
-                                    this.sqlSelect.addPart(SQLPart.COMMA);
+                    if (isConsortium) {
+                       ids = Context.getThreadContext().getPerson().getCompanies().stream()
+                            .map(compId -> {
+                                try {
+                                    return Company.get(compId).getConsortiums().stream();
+                                } catch (final CacheReloadException e) {
+                                    return Arrays.asList(compId).stream();
                                 }
-                                this.sqlSelect.addValuePart(consortium);
-                            }
-                        } else {
-                            if (first) {
-                                first = false;
-                            } else {
-                                this.sqlSelect.addPart(SQLPart.COMMA);
-                            }
-                            this.sqlSelect.addValuePart(compId);
-                        }
+                            })
+                            .map(id -> String.valueOf(id))
+                            .collect(Collectors.toSet());
+                    } else {
+                        ids = Context.getThreadContext().getPerson().getCompanies().stream()
+                            .map(id -> String.valueOf(id))
+                            .collect(Collectors.toSet());
                     }
-                    this.sqlSelect.addPart(SQLPart.PARENTHESIS_CLOSE);
                 } else {
                     if (isConsortium) {
-                        this.sqlSelect.addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
-                        boolean first = true;
-                        for (final Long consortium : Context.getThreadContext().getCompany().getConsortiums()) {
-                            if (first) {
-                                first = false;
-                            } else {
-                                this.sqlSelect.addPart(SQLPart.COMMA);
-                            }
-                            this.sqlSelect.addValuePart(consortium);
-                        }
-                        this.sqlSelect.addPart(SQLPart.PARENTHESIS_CLOSE);
+                        ids =  Context.getThreadContext().getCompany().getConsortiums().stream()
+                                        .map(id -> String.valueOf(id))
+                                        .collect(Collectors.toSet());
                     } else {
-                        this.sqlSelect.addPart(SQLPart.EQUAL).addValuePart(
-                                        Context.getThreadContext().getCompany().getId());
+                        ids = new HashSet<>();
+                        ids.add(String.valueOf(Context.getThreadContext().getCompany().getId()));
                     }
                 }
+                where.addCriteria(entry.getKey().getIdx(),
+                                Collections.singletonList(entry.getValue().sqlColCompany),
+                                ids.size() > 1 ? Comparison.IN : Comparison.EQUAL, ids, false, Connection.AND);
             }
         }
     }

@@ -330,7 +330,7 @@ public class SQLSelect
         for (final SQLSelectPart part : this.parts) {
             part.appendSQL(cmd);
             cmd.append(" ");
-            whereAdded = whereAdded || !whereAdded && part.sqlpart.equals(SQLPart.WHERE);
+            whereAdded = whereAdded || !whereAdded && SQLPart.WHERE.equals(part.sqlpart);
         }
 
         if (this.where != null) {
