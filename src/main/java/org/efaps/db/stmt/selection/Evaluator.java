@@ -19,6 +19,7 @@ package org.efaps.db.stmt.selection;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.ci.CIAttribute;
@@ -36,7 +37,9 @@ import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.selection.elements.AttributeElement;
 import org.efaps.db.stmt.selection.elements.AttributeSetElement;
+import org.efaps.db.stmt.selection.elements.FirstElement;
 import org.efaps.db.stmt.selection.elements.IAuxillary;
+import org.efaps.db.stmt.selection.elements.LastElement;
 import org.efaps.eql.JSONData;
 import org.efaps.eql.builder.Print;
 import org.efaps.json.data.DataList;
@@ -266,10 +269,24 @@ public final class Evaluator
             ret = ((List<?>) obj).stream()
                 .map(ele -> iter.hasNext() && iter.next() ? ele : null)
                 .collect(Collectors.toList());
+            ret = agregate(_select, (List<Object>) ret);
         } else if (accessList.size() == 1 && accessList.get(0)) {
             ret = obj;
         }
         return (T) ret;
+    }
+
+    protected Object agregate(final Select _select, final List<Object> _objects) {
+        Object ret;
+        final AbstractElement<?> lastElement = _select.getElements().get(_select.getElements().size() - 1);
+        if (lastElement instanceof FirstElement) {
+            ret = _objects.get(0);
+        } else if (lastElement instanceof LastElement) {
+            ret = _objects.get(_objects.size() - 1);
+        } else {
+            ret = _objects;
+        }
+        return ret;
     }
 
     /**
@@ -328,7 +345,9 @@ public final class Evaluator
                 final Select instSelect = this.selection.getInstSelects().get(element.getPath());
                 if (element instanceof AttributeSetElement) {
                     idx = size;
-                    LOG.trace("No Access check for Path {}", element.getPath());
+                    if (instSelect.getCurrent() != null && instSelect.getCurrent() instanceof Collection) {
+                        ret = Collections.nCopies(((Collection<?>) instSelect.getCurrent()).size(), true);
+                    }
                 } else {
                     if (instSelect == null) {
                         LOG.error("Could not retrieve Instance Select for Path {}", element.getPath());

@@ -37,11 +37,13 @@ import org.efaps.db.stmt.selection.elements.AttributeElement;
 import org.efaps.db.stmt.selection.elements.AttributeSetElement;
 import org.efaps.db.stmt.selection.elements.ClassElement;
 import org.efaps.db.stmt.selection.elements.ExecElement;
+import org.efaps.db.stmt.selection.elements.FirstElement;
 import org.efaps.db.stmt.selection.elements.FormatElement;
 import org.efaps.db.stmt.selection.elements.IDElement;
 import org.efaps.db.stmt.selection.elements.InstanceElement;
 import org.efaps.db.stmt.selection.elements.KeyElement;
 import org.efaps.db.stmt.selection.elements.LabelElement;
+import org.efaps.db.stmt.selection.elements.LastElement;
 import org.efaps.db.stmt.selection.elements.LinkfromElement;
 import org.efaps.db.stmt.selection.elements.LinktoElement;
 import org.efaps.db.stmt.selection.elements.NameElement;
@@ -174,6 +176,12 @@ public final class Selection
                             break;
                         case UUID:
                             select.addElement(new UUIDElement());
+                            break;
+                        case FIRST:
+                            select.addElement(new FirstElement());
+                            break;
+                        case LAST:
+                            select.addElement(new LastElement());
                             break;
                         default:
                             break;
