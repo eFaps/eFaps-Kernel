@@ -35,10 +35,12 @@ import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FilesCache;
+import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.cache.LRUFilesCache;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs2.provider.FileProvider;
 import org.efaps.db.Instance;
+import org.efaps.db.store.Resource.Compress;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -227,10 +229,11 @@ public class VFSStoreResource
         try {
             final FilesCache filesCache = (FilesCache) Class.forName(filesCacheName).newInstance();
             ret.setFilesCache(filesCache);
-            ret.init();
             final FileProvider fileProvider = (FileProvider) Class.forName(provider).newInstance();
             ret.addProvider(baseName, fileProvider);
-            ret.setBaseFile(fileProvider.findFile(null, baseName, null));
+            final FileObject baseFile = VFS.getManager().resolveFile(baseName);
+            ret.setBaseFile(baseFile);
+            ret.init();
         } catch (final FileSystemException e) {
             throw new EFapsException(VFSStoreResource.class,
                                      "evaluateFileSystemManager.FileSystemException",
@@ -441,7 +444,7 @@ public class VFSStoreResource
                         this.storeFileName + VFSStoreResource.EXTENSION_NORMAL);
                 final FileObject bakFile = this.manager.resolveFile(this.manager.getBaseFile(),
                         this.storeFileName + VFSStoreResource.EXTENSION_BACKUP);
-                if (bakFile.exists() && (this.numberBackup > 0)) {
+                if (bakFile.exists() && this.numberBackup > 0) {
                     backup(bakFile, 0);
                 }
                 if (currentFile.exists()) {
