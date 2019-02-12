@@ -33,6 +33,7 @@ import org.efaps.util.EFapsException;
 public abstract class AbstractLinkType
     extends AbstractType
 {
+
     /**
      * Needed for serialization.
      */
@@ -40,6 +41,7 @@ public abstract class AbstractLinkType
 
     /**
      * Evaluate the value.
+     *
      * @param _value value to be evaluated
      * @return Long value
      */
@@ -48,13 +50,17 @@ public abstract class AbstractLinkType
         final Long ret;
         if (_value == null) {
             ret = null;
-        } else  if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
-            ret = Long.parseLong((String) _value[0]);
+        } else if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
+            if (((String) _value[0]).contains(".")) {
+                ret = Long.parseLong(((String) _value[0]).split("\\.")[1]);
+            } else {
+                ret = Long.parseLong((String) _value[0]);
+            }
         } else if (_value[0] instanceof Long) {
             ret = (Long) _value[0];
         } else if (_value[0] instanceof Integer) {
             ret = ((Integer) _value[0]).longValue();
-        } else  {
+        } else {
             ret = null;
         }
         return ret;
