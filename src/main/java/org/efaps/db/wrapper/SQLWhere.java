@@ -63,7 +63,7 @@ public class SQLWhere
                         .values(_values)
                         .escape(_escape)
                         .connection(_connection);
-        this.sections.add(criteria);
+        sections.add(criteria);
         return criteria;
     }
 
@@ -77,16 +77,16 @@ public class SQLWhere
 
     public boolean isStarted()
     {
-        return this.started;
+        return started;
     }
 
     public void setStarted(final boolean _started)
     {
-        this.started = _started;
+        started = _started;
     }
 
     public SQLWhere select(final SQLSelect _sqlSelect) {
-        this.sqlSelect = _sqlSelect;
+        sqlSelect = _sqlSelect;
         return this;
     }
 
@@ -97,11 +97,11 @@ public class SQLWhere
      */
     public SQLSelect getSqlSelect()
     {
-        return this.sqlSelect;
+        return sqlSelect;
     }
 
     public SQLWhere section(final Section _section) {
-        this.sections.add(_section);
+        sections.add(_section);
         return this;
     }
 
@@ -114,7 +114,7 @@ public class SQLWhere
     protected void appendSQL(final String _tablePrefix,
                              final StringBuilder _cmd)
     {
-        if (this.sections.size() > 0) {
+        if (sections.size() > 0) {
             if (isStarted()) {
                 new SQLSelectPart(SQLPart.AND).appendSQL(_cmd);
                 new SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
@@ -122,7 +122,7 @@ public class SQLWhere
                 new SQLSelectPart(SQLPart.WHERE).appendSQL(_cmd);
                 new SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
             }
-            addSectionsSQL(_tablePrefix, _cmd, this.sections);
+            addSectionsSQL(_tablePrefix, _cmd, sections);
         }
     }
 
@@ -160,6 +160,7 @@ public class SQLWhere
                 for (final String colName : criteria.colNames) {
                     new SQLSelect.Column(_tablePrefix, criteria.tableIndex, colName).appendSQL(_cmd);
                     new SQLSelect.SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
+                    boolean forceParenthesis = false;
                     switch (criteria.comparison) {
                         case EQUAL:
                             if (criteria.values == null) {
@@ -191,18 +192,20 @@ public class SQLWhere
                             break;
                         case IN:
                             new SQLSelect.SQLSelectPart(SQLPart.IN).appendSQL(_cmd);
+                            forceParenthesis = true;
                             break;
                         case NOTIN:
                             new SQLSelect.SQLSelectPart(SQLPart.NOT).appendSQL(_cmd);
                             new SQLSelect.SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
                             new SQLSelect.SQLSelectPart(SQLPart.IN).appendSQL(_cmd);
+                            forceParenthesis = true;
                             break;
                         default:
                             break;
                     }
                     if (criteria.values != null) {
                         new SQLSelect.SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
-                        if (criteria.values.size() > 1) {
+                        if (criteria.values.size() > 1 || forceParenthesis) {
                             new SQLSelect.SQLSelectPart(SQLPart.PARENTHESIS_OPEN).appendSQL(_cmd);
                         }
                         boolean firstValue = true;
@@ -218,7 +221,7 @@ public class SQLWhere
                                 new SQLSelect.Value(value).appendSQL(_cmd);
                             }
                         }
-                        if (criteria.values.size() > 1) {
+                        if (criteria.values.size() > 1 || forceParenthesis) {
                             new SQLSelect.SQLSelectPart(SQLPart.PARENTHESIS_CLOSE).appendSQL(_cmd);
                         }
                     }
@@ -244,12 +247,12 @@ public class SQLWhere
         @Override
         public Connection getConnection()
         {
-            return this.connection;
+            return connection;
         }
 
         public Group setConnection(final Connection _connection)
         {
-            this.connection = _connection;
+            connection = _connection;
             return this;
         }
     }
@@ -267,86 +270,86 @@ public class SQLWhere
 
         public Criteria values(final Set<String> _values)
         {
-            this.values = _values;
+            values = _values;
             return this;
         }
 
         public Criteria value(final String _value)
         {
-            if (this.values == null) {
-                this.values = new HashSet<>();
+            if (values == null) {
+                values = new HashSet<>();
             }
-            this.values.add(_value);
+            values.add(_value);
             return this;
         }
 
         @Override
         public Connection getConnection()
         {
-            return this.connection;
+            return connection;
         }
 
         public int getTableIndex()
         {
-            return this.tableIndex;
+            return tableIndex;
         }
 
         public List<String> getColNames()
         {
-            return this.colNames;
+            return colNames;
         }
 
         public Comparison getComparison()
         {
-            return this.comparison;
+            return comparison;
         }
 
         public Set<String> getValues()
         {
-            return this.values;
+            return values;
         }
 
         public boolean isEscape()
         {
-            return this.escape;
+            return escape;
         }
 
         public Criteria tableIndex(final int _tableIndex)
         {
-            this.tableIndex = _tableIndex;
+            tableIndex = _tableIndex;
             return this;
         }
 
         public Criteria colNames(final List<String> _colNames)
         {
-            this.colNames = _colNames;
+            colNames = _colNames;
             return this;
         }
 
         public Criteria colName(final String _colName)
         {
-            if (this.colNames == null) {
-                this.colNames = new ArrayList<>();
+            if (colNames == null) {
+                colNames = new ArrayList<>();
             }
-            this.colNames.add(_colName);
+            colNames.add(_colName);
             return this;
         }
 
         public Criteria comparison(final Comparison _comparison)
         {
-            this.comparison = _comparison;
+            comparison = _comparison;
             return this;
         }
 
         public Criteria escape(final boolean _escape)
         {
-            this.escape = _escape;
+            escape = _escape;
             return this;
         }
 
         public Criteria connection(final Connection _connection)
         {
-            this.connection = _connection;
+            connection = _connection;
             return this;
         }
     }
