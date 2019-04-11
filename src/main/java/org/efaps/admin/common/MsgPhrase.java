@@ -137,10 +137,10 @@ public final class MsgPhrase
                       final String _uuid,
                       final Long _parentId)
     {
-        this.id = _id;
-        this.uuid = UUID.fromString(_uuid);
-        this.name = _name;
-        this.parentId = _parentId;
+        id = _id;
+        uuid = UUID.fromString(_uuid);
+        name = _name;
+        parentId = _parentId;
     }
 
     /**
@@ -149,7 +149,7 @@ public final class MsgPhrase
     @Override
     public String getName()
     {
-        return this.name;
+        return name;
     }
 
     /**
@@ -158,7 +158,7 @@ public final class MsgPhrase
     @Override
     public UUID getUUID()
     {
-        return this.uuid;
+        return uuid;
     }
 
     /**
@@ -167,7 +167,7 @@ public final class MsgPhrase
     @Override
     public long getId()
     {
-        return this.id;
+        return id;
     }
 
     /**
@@ -190,10 +190,10 @@ public final class MsgPhrase
             if (multi.getCurrentInstance().getType().isCIType(CIAdminCommon.MsgPhraseArgument)) {
                 conf = new Argument();
                 ((Argument) conf).setIndex(multi.<Integer>getAttribute(CIAdminCommon.MsgPhraseConfigAbstract.Int1));
-                this.arguments.add((Argument) conf);
+                arguments.add((Argument) conf);
             } else if (multi.getCurrentInstance().getType().isCIType(CIAdminCommon.MsgPhraseLabel)) {
                 conf = new Label();
-                this.labels.add((Label) conf);
+                labels.add((Label) conf);
             }
             if (conf == null) {
                 LOG.error("Wrong type: ", this);
@@ -330,7 +330,7 @@ public final class MsgPhrase
      */
     public Long getParentId()
     {
-        return this.parentId;
+        return parentId;
     }
 
     /**
@@ -562,7 +562,13 @@ public final class MsgPhrase
      * Object class.
      */
     public abstract static class AbstractConfig
+        implements Serializable
     {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
 
         /**
          * Id of the language.
@@ -587,7 +593,7 @@ public final class MsgPhrase
         public void setCompanyId(final Long _companyId)
         {
             if (_companyId != null) {
-                this.companyId = _companyId;
+                companyId = _companyId;
             }
         }
 
@@ -598,7 +604,7 @@ public final class MsgPhrase
          */
         public long getLanguageId()
         {
-            return this.languageId;
+            return languageId;
         }
 
         /**
@@ -609,7 +615,7 @@ public final class MsgPhrase
         public void setLanguageId(final Long _languageId)
         {
             if (_languageId != null) {
-                this.languageId = _languageId;
+                languageId = _languageId;
             }
         }
 
@@ -620,7 +626,7 @@ public final class MsgPhrase
          */
         public long getCompanyId()
         {
-            return this.companyId;
+            return companyId;
         }
 
         /**
@@ -630,7 +636,7 @@ public final class MsgPhrase
          */
         public String getValue()
         {
-            return this.value;
+            return value;
         }
 
         /**
@@ -640,7 +646,7 @@ public final class MsgPhrase
          */
         public void setValue(final String _value)
         {
-            this.value = _value;
+            value = _value;
         }
 
         /**
@@ -669,6 +675,8 @@ public final class MsgPhrase
         extends AbstractConfig
     {
 
+        private static final long serialVersionUID = 1L;
+
     }
 
     /**
@@ -677,6 +685,8 @@ public final class MsgPhrase
     public static class Argument
         extends AbstractConfig
     {
+
+        private static final long serialVersionUID = 1L;
 
         /**
          * Index.
@@ -690,7 +700,7 @@ public final class MsgPhrase
          */
         public int getIndex()
         {
-            return this.index;
+            return index;
         }
 
         /**
@@ -700,7 +710,7 @@ public final class MsgPhrase
          */
         public void setIndex(final int _index)
         {
-            this.index = _index;
+            index = _index;
         }
     }
 }
