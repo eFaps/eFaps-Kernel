@@ -17,10 +17,10 @@
 
 package org.efaps.admin.ui;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.ci.CIAdminUserInterface;
@@ -46,11 +46,8 @@ public abstract class AbstractMenu
     /**
      * All sub commands or menus are store in the tree map. The tree map is used
      * to sort the commands / menus belonging to their id.
-     *
-     * @see #getCommands
-     * @add
      */
-    private final Map<Long, AbstractCommand> commands = new TreeMap<>();
+    private final Map<Long, Long> commands = new TreeMap<>();
 
     /**
      * Constructor to set the id,uuid and name of the menu object.
@@ -87,7 +84,7 @@ public abstract class AbstractMenu
     public void add(final long _sortId,
                     final AbstractCommand _command)
     {
-        this.commands.put(_sortId, _command);
+        commands.put(_sortId, _command.getId());
     }
 
     /**
@@ -97,7 +94,7 @@ public abstract class AbstractMenu
      */
     public void addAll(final AbstractMenu _menu)
     {
-        this.commands.putAll(_menu.commands);
+        commands.putAll(_menu.commands);
     }
 
     /**
@@ -160,7 +157,9 @@ public abstract class AbstractMenu
      */
     public List<AbstractCommand> getCommands()
     {
-        return new ArrayList<>(this.commands.values());
+        return commands.values().stream()
+                        .map(id -> AbstractCommand.search(id))
+                        .collect(Collectors.toList());
     }
 
     /**

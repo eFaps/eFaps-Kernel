@@ -22,8 +22,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -95,12 +97,7 @@ public abstract class AbstractUserInterfaceObject
      */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Used as <code>null</code> replacement for the cache.
-     */
-    private static AbstractUserInterfaceObject NULL = new AbstractUserInterfaceObject(Long.valueOf(0), null, null) {
-        private static final long serialVersionUID = 1L;
-    };
+    private static Map<Class<?>, AbstractUserInterfaceObject> NULLS = new HashMap<>();
 
     /**
      * The instance variable is an Access HashSet to store all userIds (person,
@@ -298,7 +295,23 @@ public abstract class AbstractUserInterfaceObject
      */
     protected Set<Long> getAccess()
     {
-        return this.access;
+        return access;
+    }
+
+    private static <V extends AbstractUserInterfaceObject> AbstractUserInterfaceObject getNull(final Class<V> _componentType)
+        throws CacheReloadException
+    {
+        if (!NULLS.containsKey(_componentType)) {
+            try {
+                final Constructor<?> uiObjConst = _componentType.getConstructor(Long.class, String.class, String.class);
+                final AbstractUserInterfaceObject uiObj = (AbstractUserInterfaceObject) uiObjConst.newInstance(0L, null, null);
+                NULLS.put(_componentType, uiObj);
+            } catch (final NoSuchMethodException | InstantiationException | IllegalAccessException
+                            | IllegalArgumentException | InvocationTargetException e) {
+                throw new CacheReloadException("NoSuchMethodException", e);
+            }
+        }
+        return NULLS.get(_componentType);
     }
 
     /**
@@ -310,7 +323,7 @@ public abstract class AbstractUserInterfaceObject
      * @throws CacheReloadException on error
      */
     @SuppressWarnings("unchecked")
-    protected static <V> V get(final UUID _uuid,
+    protected static <V extends AbstractUserInterfaceObject> V get(final UUID _uuid,
                                final Class<V> _componentType,
                                final Type _type)
         throws CacheReloadException
@@ -320,10 +333,10 @@ public abstract class AbstractUserInterfaceObject
         if (!cache.containsKey(_uuid)
                         && !AbstractUserInterfaceObject
                                         .readObjectFromDB(_componentType, _type, CIAdmin.Abstract.UUID, _uuid)) {
-            cache.put(_uuid, (V) AbstractUserInterfaceObject.NULL, 100, TimeUnit.SECONDS);
+            cache.put(_uuid, (V) getNull(_componentType), 100, TimeUnit.SECONDS);
         }
         final V ret = cache.get(_uuid);
-        return ret.equals(AbstractUserInterfaceObject.NULL) ? null : ret;
+        return ret.equals(getNull(_componentType)) ? null : ret;
     }
 
     /**
@@ -335,7 +348,7 @@ public abstract class AbstractUserInterfaceObject
      * @throws CacheReloadException on error
      */
     @SuppressWarnings("unchecked")
-    protected static <V> V get(final Long _id,
+    protected static <V extends AbstractUserInterfaceObject> V get(final Long _id,
                                final Class<V> _componentType,
                                final Type _type)
         throws CacheReloadException
@@ -344,10 +357,10 @@ public abstract class AbstractUserInterfaceObject
                         AbstractUserInterfaceObject.getIDCacheName(_componentType));
         if (!cache.containsKey(_id) && !
                         AbstractUserInterfaceObject.readObjectFromDB(_componentType, _type, CIAdmin.Abstract.ID, _id)) {
-            cache.put(_id, (V) AbstractUserInterfaceObject.NULL, 100, TimeUnit.SECONDS);
+            cache.put(_id, (V) getNull(_componentType), 100, TimeUnit.SECONDS);
         }
         final V ret = cache.get(_id);
-        return ret.equals(AbstractUserInterfaceObject.NULL) ? null : ret;
+        return ret.equals(getNull(_componentType)) ? null : ret;
     }
 
     /**
@@ -359,7 +372,7 @@ public abstract class AbstractUserInterfaceObject
      * @throws CacheReloadException on error
      */
     @SuppressWarnings("unchecked")
-    protected static <V> V get(final String _name,
+    protected static <V extends AbstractUserInterfaceObject> V get(final String _name,
                                final Class<V> _componentType,
                                final Type _type)
         throws CacheReloadException
@@ -369,10 +382,10 @@ public abstract class AbstractUserInterfaceObject
         if (!cache.containsKey(_name)
                         && !AbstractUserInterfaceObject.readObjectFromDB(_componentType, _type, CIAdmin.Abstract.Name,
                                         _name)) {
-            cache.put(_name, (V) AbstractUserInterfaceObject.NULL, 100, TimeUnit.SECONDS);
+            cache.put(_name, (V) getNull(_componentType), 100, TimeUnit.SECONDS);
         }
         final V ret = cache.get(_name);
-        return ret.equals(AbstractUserInterfaceObject.NULL) ? null : ret;
+        return ret.equals(getNull(_componentType)) ? null : ret;
     }
 
     /**
@@ -411,17 +424,17 @@ public abstract class AbstractUserInterfaceObject
         final Cache<UUID, AbstractUserInterfaceObject> cache4UUID = InfinispanCache.get()
                         .<UUID, AbstractUserInterfaceObject>getIgnReCache(
                                         AbstractUserInterfaceObject.getUUIDCacheName(_object.getClass()));
-        cache4UUID.putIfAbsent(_object.getUUID(), _object);
+        cache4UUID.put(_object.getUUID(), _object);
 
         final Cache<String, AbstractUserInterfaceObject> nameCache = InfinispanCache.get()
                         .<String, AbstractUserInterfaceObject>getIgnReCache(
                                         AbstractUserInterfaceObject.getNameCacheName(_object.getClass()));
-        nameCache.putIfAbsent(_object.getName(), _object);
+        nameCache.put(_object.getName(), _object);
 
         final Cache<Long, AbstractUserInterfaceObject> idCache = InfinispanCache.get()
                         .<Long, AbstractUserInterfaceObject>getIgnReCache(
                                         AbstractUserInterfaceObject.getIDCacheName(_object.getClass()));
-        idCache.putIfAbsent(_object.getId(), _object);
+        idCache.put(_object.getId(), _object);
     }
 
     /**
@@ -460,6 +473,8 @@ public abstract class AbstractUserInterfaceObject
                                 uuid, name);
                 AbstractUserInterfaceObject.cacheUIObject(uiObje);
                 uiObje.readFromDB();
+                // might have changed therefore store it again
+                AbstractUserInterfaceObject.cacheUIObject(uiObje);
                 ret = true;
             }
         } catch (final NoSuchMethodException e) {

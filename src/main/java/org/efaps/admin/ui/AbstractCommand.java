@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,8 @@ import org.efaps.admin.user.Role;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class represents the Commands which enable the interaction with a User. <br>
@@ -76,8 +78,8 @@ public abstract class AbstractCommand
          */
         SortDirection(final String _value)
         {
-            this.value = _value;
-            AbstractCommand.MAPPER.put(this.value, this);
+            value = _value;
+            AbstractCommand.MAPPER.put(value, this);
         }
 
         /**
@@ -87,7 +89,7 @@ public abstract class AbstractCommand
          */
         public String getValue()
         {
-            return this.value;
+            return value;
         }
 
         /**
@@ -101,6 +103,11 @@ public abstract class AbstractCommand
             return AbstractCommand.MAPPER.get(_value);
         }
     }
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractCommand.class);
 
     /**
      * This map is used as a store by the enum SortDirection for the method
@@ -385,8 +392,8 @@ public abstract class AbstractCommand
                               final String _name)
     {
         super(_id, _uuid, _name);
-        this.label = _name + ".Label";
-        this.targetTitle = _name + ".Title";
+        label = _name + ".Label";
+        targetTitle = _name + ".Title";
     }
 
     /**
@@ -410,7 +417,7 @@ public abstract class AbstractCommand
      */
     public String getIcon()
     {
-        return this.icon;
+        return icon;
     }
 
     /**
@@ -420,7 +427,7 @@ public abstract class AbstractCommand
      */
     public String getLabelProperty()
     {
-        return DBProperties.getProperty(this.label);
+        return DBProperties.getProperty(label);
     }
 
     /**
@@ -432,7 +439,7 @@ public abstract class AbstractCommand
      */
     public String getLabel()
     {
-        return this.label;
+        return label;
     }
 
     /**
@@ -444,7 +451,7 @@ public abstract class AbstractCommand
      */
     public String getReference()
     {
-        return this.reference;
+        return reference;
     }
 
     /**
@@ -456,7 +463,7 @@ public abstract class AbstractCommand
      */
     public Target getTarget()
     {
-        return this.target;
+        return target;
     }
 
     /**
@@ -469,7 +476,7 @@ public abstract class AbstractCommand
      */
     public int getTargetBottomHeight()
     {
-        return this.targetBottomHeight;
+        return targetBottomHeight;
     }
 
     /**
@@ -482,7 +489,7 @@ public abstract class AbstractCommand
     public Attribute getTargetConnectAttribute()
         throws CacheReloadException
     {
-        return Attribute.get(this.targetConnectAttributeId);
+        return Attribute.get(targetConnectAttributeId);
     }
 
     /**
@@ -495,7 +502,7 @@ public abstract class AbstractCommand
     public Type getTargetCreateType()
         throws CacheReloadException
     {
-        return Type.get(this.targetCreateTypeId);
+        return Type.get(targetCreateTypeId);
     }
 
     /**
@@ -506,7 +513,7 @@ public abstract class AbstractCommand
      */
     public boolean hasTargetDefaultMenu()
     {
-        return this.targetDefaultMenu;
+        return targetDefaultMenu;
     }
 
     /**
@@ -518,7 +525,7 @@ public abstract class AbstractCommand
      */
     public Form getTargetForm()
     {
-        return this.targetForm;
+        return targetForm;
     }
 
     /**
@@ -534,12 +541,12 @@ public abstract class AbstractCommand
     public Menu getTargetMenu()
         throws EFapsException
     {
-        Menu ret = this.targetMenu;
-        if (this.targetDefaultMenu
+        Menu ret = targetMenu;
+        if (targetDefaultMenu
                         && EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DEFAULTMENU) != null) {
             // reads the Value from "Common_Main_DefaultMenu"
             if (EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DEFAULTMENU).equals("none")) {
-                ret = this.targetMenu;
+                ret = targetMenu;
             } else {
                 final Properties prop = EFapsSystemConfiguration.get()
                                 .getAttributeValueAsProperties(KernelSettings.DEFAULTMENU);
@@ -551,26 +558,26 @@ public abstract class AbstractCommand
                             // Enable4TableN is not false the default
                             // menu will be added
                             if (prop.getProperty("Enable4Table" + i) == null
-                                            || (prop.getProperty("Enable4Table" + i) != null
-                                            && !"false".equalsIgnoreCase(prop.getProperty("Enable4Table" + i)))) {
-                                if (this.targetMenu == null && ret == null) {
+                                            || prop.getProperty("Enable4Table" + i) != null
+                                            && !"false".equalsIgnoreCase(prop.getProperty("Enable4Table" + i))) {
+                                if (targetMenu == null && ret == null) {
                                     ret = Menu.get(menuname);
                                     break;
                                 } else {
-                                    this.targetMenu.addAll(Menu.get(menuname));
-                                    ret = this.targetMenu;
+                                    targetMenu.addAll(Menu.get(menuname));
+                                    ret = targetMenu;
                                 }
                             }
                         } else if (getTargetForm() != null) {
                             // only if a Enabled4FormN property is set to true the menu will be added
                             if (prop.getProperty("Enable4Form" + i) != null
                                             && "true".equalsIgnoreCase(prop.getProperty("Enable4Form" + i))) {
-                                if (this.targetMenu == null && ret == null) {
+                                if (targetMenu == null && ret == null) {
                                     ret = Menu.get(menuname);
                                     break;
                                 } else {
-                                    this.targetMenu.addAll(Menu.get(menuname));
-                                    ret = this.targetMenu;
+                                    targetMenu.addAll(Menu.get(menuname));
+                                    ret = targetMenu;
                                 }
                             }
                         }
@@ -590,7 +597,7 @@ public abstract class AbstractCommand
      */
     public AbstractCommand getTargetCommand()
     {
-        return this.targetCommand;
+        return targetCommand;
     }
 
     /**
@@ -600,7 +607,7 @@ public abstract class AbstractCommand
      */
     public String getTargetHelp()
     {
-        return this.targeHelp;
+        return targeHelp;
     }
 
     /**
@@ -610,7 +617,7 @@ public abstract class AbstractCommand
      */
     public boolean isTargetCmdRevise()
     {
-        return this.targetCmdRevise;
+        return targetCmdRevise;
     }
 
     /**
@@ -624,7 +631,7 @@ public abstract class AbstractCommand
         for (final String value : values) {
             final Type classification = Type.get(value.trim());
             if (classification != null) {
-                this.targetCreateClassificationIds.add(classification.getId());
+                targetCreateClassificationIds.add(classification.getId());
             }
         }
     }
@@ -639,7 +646,7 @@ public abstract class AbstractCommand
         throws CacheReloadException
     {
         final Set<Classification> ret = new HashSet<>();
-        for (final Long id : this.targetCreateClassificationIds) {
+        for (final Long id : targetCreateClassificationIds) {
             ret.add(Classification.get(id));
         }
         return Collections.unmodifiableSet(ret);
@@ -654,7 +661,7 @@ public abstract class AbstractCommand
      */
     public TargetMode getTargetMode()
     {
-        return this.targetMode;
+        return targetMode;
     }
 
     /**
@@ -667,7 +674,7 @@ public abstract class AbstractCommand
      */
     public Search getTargetSearch()
     {
-        return this.targetSearch;
+        return targetSearch;
     }
 
     /**
@@ -679,7 +686,7 @@ public abstract class AbstractCommand
      */
     public Table getTargetTable()
     {
-        return this.targetTable;
+        return targetTable;
     }
 
     /**
@@ -692,7 +699,7 @@ public abstract class AbstractCommand
      */
     public SortDirection getTargetTableSortDirection()
     {
-        return this.targetTableSortDirection;
+        return targetTableSortDirection;
     }
 
     /**
@@ -705,7 +712,7 @@ public abstract class AbstractCommand
      */
     public String getTargetTableSortKey()
     {
-        return this.targetTableSortKey;
+        return targetTableSortKey;
     }
 
     /**
@@ -717,7 +724,7 @@ public abstract class AbstractCommand
      */
     public String getTargetTitle()
     {
-        return this.targetTitle;
+        return targetTitle;
     }
 
     /**
@@ -747,7 +754,7 @@ public abstract class AbstractCommand
      */
     public int getWindowHeight()
     {
-        return this.windowHeight;
+        return windowHeight;
     }
 
     /**
@@ -759,7 +766,7 @@ public abstract class AbstractCommand
      */
     public int getWindowWidth()
     {
-        return this.windowWidth;
+        return windowWidth;
     }
 
     /**
@@ -771,7 +778,7 @@ public abstract class AbstractCommand
      */
     public boolean isAskUser()
     {
-        return this.askUser;
+        return askUser;
     }
 
     /**
@@ -784,7 +791,7 @@ public abstract class AbstractCommand
      */
     public boolean isDefaultSelected()
     {
-        return this.defaultSelected;
+        return defaultSelected;
     }
 
     /**
@@ -796,7 +803,7 @@ public abstract class AbstractCommand
      */
     public boolean isSubmit()
     {
-        return this.submit;
+        return submit;
     }
 
     /**
@@ -806,7 +813,7 @@ public abstract class AbstractCommand
      */
     public int getSubmitSelectedRows()
     {
-        return this.submitSelectedRows;
+        return submitSelectedRows;
     }
 
     /**
@@ -856,7 +863,7 @@ public abstract class AbstractCommand
      */
     public boolean isTargetShowCheckBoxes()
     {
-        return this.targetShowCheckBoxes;
+        return targetShowCheckBoxes;
     }
 
     /**
@@ -866,7 +873,7 @@ public abstract class AbstractCommand
      */
     public boolean isTargetShowFile()
     {
-        return this.targetShowFile;
+        return targetShowFile;
     }
 
     /**
@@ -876,7 +883,7 @@ public abstract class AbstractCommand
      */
     public boolean isNoUpdateAfterCmd()
     {
-        return this.noUpdateAfterCmd;
+        return noUpdateAfterCmd;
     }
 
     /**
@@ -886,7 +893,7 @@ public abstract class AbstractCommand
      */
     public String getTargetStructurBrowserField()
     {
-        return this.targetStructurBrowserField;
+        return targetStructurBrowserField;
     }
 
     /**
@@ -900,19 +907,19 @@ public abstract class AbstractCommand
         throws EFapsException
     {
         if (_linkTypeUUID.equals(CIAdminUserInterface.LinkIcon.uuid)) {
-            this.icon = _toName;
+            icon = _toName;
         } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetForm.uuid)) {
-            this.targetForm = Form.get(_toId);
+            targetForm = Form.get(_toId);
         } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetMenu.uuid)) {
-            this.targetMenu = Menu.get(_toId);
+            targetMenu = Menu.get(_toId);
         } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetSearch.uuid)) {
-            this.targetSearch = Search.get(_toId);
+            targetSearch = Search.get(_toId);
         } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetTable.uuid)) {
-            this.targetTable = Table.get(_toId);
+            targetTable = Table.get(_toId);
         } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetCommand.uuid)) {
-            this.targetCommand = Command.get(_toId);
+            targetCommand = Command.get(_toId);
         } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetHelp.uuid)) {
-            this.targeHelp = _toName;
+            targeHelp = _toName;
         } else {
             super.setLinkProperty(_linkTypeUUID, _toId, _toTypeUUID, _toName);
         }
@@ -931,76 +938,76 @@ public abstract class AbstractCommand
         throws CacheReloadException
     {
         if ("AskUser".equals(_name)) {
-            this.askUser = "true".equalsIgnoreCase(_value);
+            askUser = "true".equalsIgnoreCase(_value);
         } else if ("DefaultSelected".equals(_name)) {
-            this.defaultSelected = "true".equalsIgnoreCase(_value);
+            defaultSelected = "true".equalsIgnoreCase(_value);
         } else if ("HRef".equals(_name)) {
-            this.reference = _value;
+            reference = _value;
         } else if ("Label".equals(_name)) {
-            this.label = _value;
+            label = _value;
         } else if ("Submit".equals(_name)) {
-            this.submit = "true".equalsIgnoreCase(_value);
+            submit = "true".equalsIgnoreCase(_value);
         } else if ("SubmitSelectedRows".equals(_name)) {
-            this.submitSelectedRows = Integer.parseInt(_value);
+            submitSelectedRows = Integer.parseInt(_value);
         } else if ("Target".equals(_name)) {
             if ("content".equals(_value)) {
-                this.target = AbstractCommand.Target.CONTENT;
+                target = AbstractCommand.Target.CONTENT;
             } else if ("hidden".equals(_value)) {
-                this.target = AbstractCommand.Target.HIDDEN;
+                target = AbstractCommand.Target.HIDDEN;
             } else if ("popup".equals(_value)) {
-                this.target = AbstractCommand.Target.POPUP;
+                target = AbstractCommand.Target.POPUP;
             } else if ("modal".equals(_value)) {
-                this.target = AbstractCommand.Target.MODAL;
+                target = AbstractCommand.Target.MODAL;
             }
         } else if ("TargetBottomHeight".equals(_name)) {
-            this.targetBottomHeight = Integer.parseInt(_value);
+            targetBottomHeight = Integer.parseInt(_value);
         } else if ("TargetCmdRevise".equals(_name)) {
-            this.targetCmdRevise = "TRUE".equalsIgnoreCase(_value);
+            targetCmdRevise = "TRUE".equalsIgnoreCase(_value);
         } else if ("TargetConnectAttribute".equals(_name)) {
             final Attribute attr = Attribute.get(_value);
-            this.targetConnectAttributeId = attr == null ? 0 : attr.getId();
+            targetConnectAttributeId = attr == null ? 0 : attr.getId();
         } else if ("TargetCreateType".equals(_name)) {
             final Type type = Type.get(_value);
-            this.targetCreateTypeId = type == null ? 0 : type.getId();
+            targetCreateTypeId = type == null ? 0 : type.getId();
         } else if (_name != null && _name.startsWith("TargetCreateClassifications")) {
             setTargetCreateClassifications(_value);
         } else if ("TargetDefaultMenu".equals(_name)) {
-            this.targetDefaultMenu = "none".equalsIgnoreCase(_value);
+            targetDefaultMenu = "none".equalsIgnoreCase(_value);
         } else if ("TargetMode".equals(_name)) {
             if ("create".equals(_value)) {
-                this.targetMode = TargetMode.CREATE;
+                targetMode = TargetMode.CREATE;
             } else if ("edit".equals(_value)) {
-                this.targetMode = TargetMode.EDIT;
+                targetMode = TargetMode.EDIT;
             } else if ("connect".equals(_value)) {
-                this.targetMode = TargetMode.CONNECT;
+                targetMode = TargetMode.CONNECT;
             } else if ("search".equals(_value)) {
-                this.targetMode = TargetMode.SEARCH;
+                targetMode = TargetMode.SEARCH;
             } else if ("view".equals(_value)) {
-                this.targetMode = TargetMode.VIEW;
+                targetMode = TargetMode.VIEW;
             }
         } else if ("TargetShowCheckBoxes".equals(_name)) {
-            this.targetShowCheckBoxes = "true".equalsIgnoreCase(_value);
+            targetShowCheckBoxes = "true".equalsIgnoreCase(_value);
         } else if ("TargetTableSortKey".equals(_name)) {
-            this.targetTableSortKey = _value;
-            this.targetTableSortDirection = AbstractCommand.SortDirection.ASCENDING;
+            targetTableSortKey = _value;
+            targetTableSortDirection = AbstractCommand.SortDirection.ASCENDING;
         } else if ("TargetTableSortDirection".equals(_name)) {
             if (AbstractCommand.SortDirection.DESCENDING.value.equals(_value)) {
-                this.targetTableSortDirection = AbstractCommand.SortDirection.DESCENDING;
+                targetTableSortDirection = AbstractCommand.SortDirection.DESCENDING;
             } else {
-                this.targetTableSortDirection = AbstractCommand.SortDirection.ASCENDING;
+                targetTableSortDirection = AbstractCommand.SortDirection.ASCENDING;
             }
         } else if ("TargetTitle".equals(_name)) {
-            this.targetTitle = _value;
+            targetTitle = _value;
         } else if ("TargetShowFile".equals(_name)) {
-            this.targetShowFile = "true".equalsIgnoreCase(_value);
+            targetShowFile = "true".equalsIgnoreCase(_value);
         } else if ("NoUpdateAfterCOMMAND".equals(_name)) {
-            this.noUpdateAfterCmd = "true".equalsIgnoreCase(_value);
+            noUpdateAfterCmd = "true".equalsIgnoreCase(_value);
         } else if ("TargetStructurBrowserField".equals(_name)) {
-            this.targetStructurBrowserField = _value.trim();
+            targetStructurBrowserField = _value.trim();
         } else if ("WindowHeight".equals(_name)) {
-            this.windowHeight = Integer.parseInt(_value);
+            windowHeight = Integer.parseInt(_value);
         } else if ("WindowWidth".equals(_name)) {
-            this.windowWidth = Integer.parseInt(_value);
+            windowWidth = Integer.parseInt(_value);
         } else {
             super.setProperty(_name, _value);
         }
@@ -1022,5 +1029,23 @@ public abstract class AbstractCommand
     public int hashCode()
     {
         return  Long.valueOf(getId()).intValue();
+    }
+
+    protected static AbstractCommand search(final Long _id)
+    {
+        AbstractCommand ret;
+        try {
+            ret = Command.get(_id);
+            if (ret == null) {
+                ret = Menu.get(_id);
+            }
+            if (ret == null) {
+                ret = Search.get(_id);
+            }
+        } catch (final CacheReloadException e) {
+            LOG.error("Catched CacheReloadException", e);
+            ret = null;
+        }
+        return ret;
     }
 }
