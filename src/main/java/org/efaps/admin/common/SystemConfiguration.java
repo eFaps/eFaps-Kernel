@@ -26,7 +26,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
@@ -184,9 +183,9 @@ public final class SystemConfiguration
                                 final String _name,
                                 final String _uuid)
     {
-        this.id = _id;
-        this.uuid = UUID.fromString(_uuid);
-        this.name = _name;
+        id = _id;
+        uuid = UUID.fromString(_uuid);
+        name = _name;
     }
 
     /**
@@ -254,7 +253,7 @@ public final class SystemConfiguration
     @Override
     public long getId()
     {
-        return this.id;
+        return id;
     }
 
     /**
@@ -265,7 +264,7 @@ public final class SystemConfiguration
     @Override
     public UUID getUUID()
     {
-        return this.uuid;
+        return uuid;
     }
 
     /**
@@ -276,7 +275,7 @@ public final class SystemConfiguration
     @Override
     public String getName()
     {
-        return this.name;
+        return name;
     }
 
     /**
@@ -537,20 +536,12 @@ public final class SystemConfiguration
                             final ConfType _type)
         throws EFapsException
     {
-        final List<Value> fv = this.values.stream()
+        final List<Value> fv = values.stream()
                         .filter(p -> p.type.equals(_type))
                         .filter(p -> p.key.equals(_key))
                         .filter(p -> priority(p) > 0)
-                        .sorted(new Comparator<Value>()
-                        {
-
-                            @Override
-                            public int compare(final Value _o1,
-                                               final Value _o2)
-                            {
-                                return Integer.compare(priority(_o2), priority(_o1));
-                            }
-                        }).collect(Collectors.toList());
+                        .sorted((_o1,
+                         _o2) -> Integer.compare(priority(_o2), priority(_o1))).collect(Collectors.toList());
         SystemConfiguration.LOG.debug("Analyzed for key {}: {}", _key, fv);
         final String ret;
         if (fv.isEmpty()) {
@@ -601,9 +592,9 @@ public final class SystemConfiguration
      */
     public void reload()
     {
-        InfinispanCache.get().<UUID, SystemConfiguration>getCache(SystemConfiguration.UUIDCACHE).remove(this.uuid);
-        InfinispanCache.get().<Long, SystemConfiguration>getCache(SystemConfiguration.IDCACHE).remove(this.id);
-        InfinispanCache.get().<String, SystemConfiguration>getCache(SystemConfiguration.NAMECACHE).remove(this.name);
+        InfinispanCache.get().<UUID, SystemConfiguration>getCache(SystemConfiguration.UUIDCACHE).remove(uuid);
+        InfinispanCache.get().<Long, SystemConfiguration>getCache(SystemConfiguration.IDCACHE).remove(id);
+        InfinispanCache.get().<String, SystemConfiguration>getCache(SystemConfiguration.NAMECACHE).remove(name);
     }
 
     /**
@@ -662,7 +653,7 @@ public final class SystemConfiguration
                 } else {
                     confType = ConfType.ATTRIBUTE;
                 }
-                this.values.add(new Value(confType, key, value, companyId, appkey));
+                values.add(new Value(confType, key, value, companyId, appkey));
             }
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read SystemConfiguration attributes", e);
@@ -836,7 +827,10 @@ public final class SystemConfiguration
      * Value class.
      */
     private static class Value
+        implements Serializable
     {
+
+        private static final long serialVersionUID = 1L;
 
         /** The type. */
         private final ConfType type;
@@ -868,11 +862,11 @@ public final class SystemConfiguration
               final Long _companyId,
               final String _appkey)
         {
-            this.type = _confType;
-            this.key = StringUtils.trim(_key);
-            this.value = StringUtils.trim(_value);
-            this.companyId = _companyId;
-            this.appKey = StringUtils.trim(_appkey);
+            type = _confType;
+            key = StringUtils.trim(_key);
+            value = StringUtils.trim(_value);
+            companyId = _companyId;
+            appKey = StringUtils.trim(_appkey);
         }
 
         @Override
@@ -887,8 +881,10 @@ public final class SystemConfiguration
      * <code>null</code>is returnred to use the default values from jasyprt.
      */
     public static final class EFapsPBEConfig
-        implements StringPBEConfig
+        implements StringPBEConfig, Serializable
     {
+        private static final long serialVersionUID = 1L;
+
         /**
          * Password.
          */
@@ -906,16 +902,16 @@ public final class SystemConfiguration
         public void setPassword(final String _password)
         {
             if (_password == null) {
-                this.password = null;
+                password = null;
             } else {
-                this.password = _password.toCharArray();
+                password = _password.toCharArray();
             }
         }
 
         @Override
         public String getPassword()
         {
-            return new String(this.password);
+            return new String(password);
         }
 
         @Override
