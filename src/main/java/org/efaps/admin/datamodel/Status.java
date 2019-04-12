@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO comment!
  *
  * @author The eFaps Team
  *
@@ -133,9 +132,9 @@ public final class Status
     private final String desc;
 
     /**
-     * StatusGroup this Status belongs to.
+     * UUID the StatusGroup this Status belongs to.
      */
-    private final StatusGroup statusGroup;
+    private final UUID statusGroupUUID;
 
     /**
      * @param _statusGroup StatusGroup this Status belongs to
@@ -148,10 +147,10 @@ public final class Status
                    final String _key,
                    final String _desc)
     {
-        this.statusGroup = _statusGroup;
-        this.id = _id;
-        this.key = _key;
-        this.desc = _desc;
+        statusGroupUUID = _statusGroup.getUUID();
+        id = _id;
+        key = _key;
+        desc = _desc;
     }
 
     /**
@@ -162,7 +161,7 @@ public final class Status
     @Override
     public long getId()
     {
-        return this.id;
+        return id;
     }
 
     /**
@@ -190,7 +189,7 @@ public final class Status
      */
     public String getKey()
     {
-        return this.key;
+        return key;
     }
 
     /**
@@ -200,7 +199,7 @@ public final class Status
      */
     public String getDescription()
     {
-        return this.desc;
+        return desc;
     }
 
     /**
@@ -211,7 +210,7 @@ public final class Status
     public String getLabelKey()
     {
         final StringBuilder keyStr = new StringBuilder();
-        return keyStr.append(this.statusGroup.getName()).append("/Key.Status.").append(this.key).toString();
+        return keyStr.append(getStatusGroup().getName()).append("/Key.Status.").append(key).toString();
     }
 
     /**
@@ -231,7 +230,14 @@ public final class Status
      */
     public StatusGroup getStatusGroup()
     {
-        return this.statusGroup;
+        StatusGroup ret;
+        try {
+            ret = Status.get(statusGroupUUID);
+        } catch (final CacheReloadException e) {
+            LOG.error("Catched CacheReloadException", e);
+            ret = null;
+        }
+        return ret;
     }
 
     /**
@@ -614,9 +620,9 @@ public final class Status
          */
         public StatusGroup(final Type _type)
         {
-            this.uuid = _type.getUUID();
-            this.id = _type.getId();
-            this.name = _type.getName();
+            uuid = _type.getUUID();
+            id = _type.getId();
+            name = _type.getName();
         }
 
         /**
@@ -625,7 +631,7 @@ public final class Status
         @Override
         public long getId()
         {
-            return this.id;
+            return id;
         }
 
         /**
@@ -634,7 +640,7 @@ public final class Status
         @Override
         public String getName()
         {
-            return this.name;
+            return name;
         }
 
         /**
@@ -643,7 +649,7 @@ public final class Status
         @Override
         public UUID getUUID()
         {
-            return this.uuid;
+            return uuid;
         }
     }
 }
