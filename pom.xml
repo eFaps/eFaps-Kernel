@@ -602,6 +602,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <artifactId>javassist</artifactId>
             <version>3.24.1-GA</version>
         </dependency>
+        <dependency>
+            <groupId>org.mnode.ical4j</groupId>
+            <artifactId>ical4j</artifactId>
+            <version>3.0.6</version>
+        </dependency>
 
         <dependency>
             <groupId>org.testng</groupId>
