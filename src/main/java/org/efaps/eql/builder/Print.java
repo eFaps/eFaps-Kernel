@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class Print
      */
     public PrintStmt stmt()
     {
-        return PrintStmt.get((IPrintStatement<?>) getStmt(), this.flags);
+        return PrintStmt.get((IPrintStatement<?>) getStmt(), flags);
     }
 
     @Override
@@ -75,9 +75,14 @@ public class Print
         return getThis();
     }
 
+    public Print linkto(final CIAttribute _ciAttr) {
+        linkto(_ciAttr.name);
+        return getThis();
+    }
+
     public Print with(final StmtFlag... _flags)
     {
-        this.flags = _flags;
+        flags = _flags;
         return getThis();
     }
 

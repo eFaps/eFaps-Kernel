@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ package org.efaps.db;
 import java.util.concurrent.TimeUnit;
 
 /**
- * TODO comment!
  *
  * @author The eFaps Team
  *
@@ -32,21 +31,29 @@ public interface ICacheDefinition
      * @return lifespan of the entry. Negative values are interpreted as
      *         unlimited lifespan. 0 means do not apply
      */
-    long getLifespan();
+    default long getLifespan() {
+        return 0;
+    }
 
     /**
      * @return time unit for lifespan
      */
-    TimeUnit getLifespanUnit();
+    default TimeUnit getLifespanUnit() {
+        return TimeUnit.MINUTES;
+    }
 
     /**
      * @return the maximum amount of time this key is allowed to be idle for
      *         before it is considered as expired. 0 means do not apply
      */
-    long getMaxIdleTime();
+    default long getMaxIdleTime() {
+        return 0;
+    }
 
     /**
      * @return time unit for max idle time
      */
-    TimeUnit getMaxIdleTimeUnit();
+    default TimeUnit getMaxIdleTimeUnit() {
+        return TimeUnit.MINUTES;
+    }
 }

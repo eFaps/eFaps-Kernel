@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.MultiMapUtils;
@@ -47,7 +48,10 @@ import org.efaps.admin.index.Queue;
 import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
 import org.efaps.db.GeneralInstance;
+import org.efaps.db.ICacheDefinition;
 import org.efaps.db.Instance;
+import org.efaps.db.QueryCache;
+import org.efaps.db.QueryKey;
 import org.efaps.db.stmt.StmtFlag;
 import org.efaps.db.stmt.delete.AbstractDelete;
 import org.efaps.db.stmt.filter.Filter;
@@ -83,6 +87,7 @@ import org.efaps.eql2.IUpdateElement;
 import org.efaps.eql2.IUpdateElementsStmt;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,8 +116,8 @@ public class SQLRunner
     public void prepare(final IRunnable _runnable)
         throws EFapsException
     {
-        this.runnable = _runnable;
-        this.sqlSelect = new SQLSelect();
+        runnable = _runnable;
+        sqlSelect = new SQLSelect();
         if (isPrint()) {
             preparePrint((AbstractPrint) _runnable);
         } else if (isInsert()) {
@@ -133,11 +138,11 @@ public class SQLRunner
     private void prepareUpdate()
         throws EFapsException
     {
-        if (this.runnable instanceof ObjectUpdate) {
-            final ObjectUpdate update = (ObjectUpdate) this.runnable;
+        if (runnable instanceof ObjectUpdate) {
+            final ObjectUpdate update = (ObjectUpdate) runnable;
             prepareUpdate(update.getInstance().getType(), false);
-        } else if (this.runnable instanceof ListUpdate) {
-            final ListUpdate update = (ListUpdate) this.runnable;
+        } else if (runnable instanceof ListUpdate) {
+            final ListUpdate update = (ListUpdate) runnable;
             final Set<Type> types = update.getInstances()
                             .stream().map(instance -> instance.getType())
                             .collect(Collectors.toSet());
@@ -150,7 +155,7 @@ public class SQLRunner
     private void prepareInsert()
         throws EFapsException
     {
-        final Insert insert = (Insert) this.runnable;
+        final Insert insert = (Insert) runnable;
         final Type type = insert.getType();
         final SQLTable mainTable = type.getMainTable();
         getSQLInsert(mainTable);
@@ -181,7 +186,7 @@ public class SQLRunner
             }
         }
 
-        final IUpdateElementsStmt<?> eqlStmt = ((AbstractUpdate) this.runnable).getEqlStmt();
+        final IUpdateElementsStmt<?> eqlStmt = ((AbstractUpdate) runnable).getEqlStmt();
         for (final IUpdateElement element : eqlStmt.getUpdateElements()) {
             final Attribute attr = _type.getAttribute(element.getAttribute());
             final SQLTable sqlTable = attr.getTable();
@@ -202,12 +207,12 @@ public class SQLRunner
     private SQLInsert getSQLInsert(final SQLTable _sqlTable)
     {
         SQLInsert ret;
-        if (this.updatemap.containsKey(_sqlTable)) {
-            ret = (SQLInsert) this.updatemap.get(_sqlTable);
+        if (updatemap.containsKey(_sqlTable)) {
+            ret = (SQLInsert) updatemap.get(_sqlTable);
         } else {
-            ret = Context.getDbType().newInsert(_sqlTable.getSqlTable(), _sqlTable.getSqlColId(), this.updatemap
+            ret = Context.getDbType().newInsert(_sqlTable.getSqlTable(), _sqlTable.getSqlColId(), updatemap
                             .isEmpty());
-            this.updatemap.put(_sqlTable, ret);
+            updatemap.put(_sqlTable, ret);
         }
         return ret;
     }
@@ -215,10 +220,10 @@ public class SQLRunner
     private SQLUpdate getSQLUpdate(final Type _type, final SQLTable _sqlTable)
     {
         SQLUpdate ret;
-        if (this.updatemap.containsKey(_sqlTable)) {
-            ret = (SQLUpdate) this.updatemap.get(_sqlTable);
+        if (updatemap.containsKey(_sqlTable)) {
+            ret = (SQLUpdate) updatemap.get(_sqlTable);
         } else {
-            final AbstractUpdate update = (AbstractUpdate) this.runnable;
+            final AbstractUpdate update = (AbstractUpdate) runnable;
             final Long[] ids;
             if (update instanceof AbstractObjectUpdate) {
                 ids = new Long[] { ((AbstractObjectUpdate) update).getInstance().getId()};
@@ -231,7 +236,7 @@ public class SQLRunner
                 ids = new Long[] { 0L };
             }
             ret = Context.getDbType().newUpdate(_sqlTable.getSqlTable(), _sqlTable.getSqlColId(), ids);
-            this.updatemap.put(_sqlTable, ret);
+            updatemap.put(_sqlTable, ret);
         }
         return ret;
     }
@@ -246,15 +251,15 @@ public class SQLRunner
         for (final Select select : _print.getSelection().getAllSelects()) {
             for (final AbstractElement<?> element : select.getElements()) {
                 if (element instanceof AbstractDataElement) {
-                    ((AbstractDataElement<?>) element).append2SQLSelect(this.sqlSelect);
+                    ((AbstractDataElement<?>) element).append2SQLSelect(sqlSelect);
                 }
             }
         }
-        if (this.sqlSelect.getColumns().size() > 0) {
+        if (sqlSelect.getColumns().size() > 0) {
             for (final Select select : _print.getSelection().getAllSelects()) {
                 for (final AbstractElement<?> element : select.getElements()) {
                     if (element instanceof AbstractDataElement) {
-                        ((AbstractDataElement<?>) element).append2SQLWhere(this.sqlSelect.getWhere());
+                        ((AbstractDataElement<?>) element).append2SQLWhere(sqlSelect.getWhere());
                     }
                 }
             }
@@ -276,15 +281,15 @@ public class SQLRunner
      * @return true, if is prints the
      */
     private boolean isPrint() {
-        return this.runnable instanceof AbstractPrint;
+        return runnable instanceof AbstractPrint;
     }
 
     private boolean isInsert() {
-        return this.runnable instanceof Insert;
+        return runnable instanceof Insert;
     }
 
     private boolean isDelete() {
-        return this.runnable instanceof AbstractDelete;
+        return runnable instanceof AbstractDelete;
     }
 
     /**
@@ -301,9 +306,9 @@ public class SQLRunner
                         .getId())).collect(Collectors.toList());
         for (final Type type : types) {
             final String tableName = type.getMainTable().getSqlTable();
-            final TableIdx tableIdx = this.sqlSelect.getIndexer().getTableIdx(tableName);
+            final TableIdx tableIdx = sqlSelect.getIndexer().getTableIdx(tableName);
             if (tableIdx.isCreated()) {
-                this.sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
+                sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
             }
             if (type.isCompanyDependent()) {
                 final String columnName = type.getCompanyAttribute().getSqlColNames().get(0);
@@ -314,7 +319,7 @@ public class SQLRunner
             if (Context.getThreadContext().getCompany() == null) {
                 throw new EFapsException(SQLRunner.class, "noCompany");
             }
-            final SQLWhere where = this.sqlSelect.getWhere();
+            final SQLWhere where = sqlSelect.getWhere();
             for (final Entry<TableIdx, CompanyCriteria> entry : companyCriterias.entrySet()) {
                 final boolean isConsortium = Type.get(entry.getValue().id).getCompanyAttribute()
                                 .getAttributeType().getClassRepr().equals(ConsortiumLinkType.class);
@@ -367,16 +372,16 @@ public class SQLRunner
                         .collect(Collectors.toList());
         for (final Type type : types) {
             final String tableName = type.getMainTable().getSqlTable();
-            final TableIdx tableIdx = this.sqlSelect.getIndexer().getTableIdx(tableName);
+            final TableIdx tableIdx = sqlSelect.getIndexer().getTableIdx(tableName);
             if (tableIdx.isCreated()) {
-                this.sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
+                sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
             }
             if (type.getMainTable().getSqlColType() != null) {
                 typeCriterias.put(tableIdx, new TypeCriteria(type.getMainTable().getSqlColType(), type.getId()));
             }
         }
         if (!typeCriterias.isEmpty()) {
-            final SQLWhere where = this.sqlSelect.getWhere();
+            final SQLWhere where = sqlSelect.getWhere();
 
             for (final TableIdx tableIdx : typeCriterias.keySet()) {
                 final Collection<TypeCriteria> criterias = typeCriterias.get(tableIdx);
@@ -402,7 +407,7 @@ public class SQLRunner
         throws CacheReloadException
     {
         final Filter filter = _print.getFilter();
-        filter.append2SQLSelect(this.sqlSelect);
+        filter.append2SQLSelect(sqlSelect);
     }
 
     /**
@@ -410,7 +415,7 @@ public class SQLRunner
      */
     private void addWhere4ObjectPrint(final ObjectPrint _print)
     {
-        final SQLWhere where = this.sqlSelect.getWhere();
+        final SQLWhere where = sqlSelect.getWhere();
         where.addCriteria(0, "ID", Comparison.EQUAL, String.valueOf(_print.getInstance().getId()), Connection.AND);
     }
 
@@ -419,13 +424,13 @@ public class SQLRunner
      */
     private void addWhere4ListPrint(final ListPrint _print)
     {
-        final SQLSelectPart currentPart = this.sqlSelect.getCurrentPart();
+        final SQLSelectPart currentPart = sqlSelect.getCurrentPart();
         if (currentPart == null) {
-            this.sqlSelect.addPart(SQLPart.WHERE);
+            sqlSelect.addPart(SQLPart.WHERE);
         } else {
-            this.sqlSelect.addPart(SQLPart.AND);
+            sqlSelect.addPart(SQLPart.AND);
         }
-        this.sqlSelect.addColumnPart(0, "ID")
+        sqlSelect.addColumnPart(0, "ID")
             .addPart(SQLPart.IN)
             .addPart(SQLPart.PARENTHESIS_OPEN)
             .addValuePart(_print.getInstances().stream()
@@ -439,7 +444,7 @@ public class SQLRunner
         throws EFapsException
     {
         if (isPrint()) {
-            executeSQLStmt((ISelectionProvider) this.runnable, this.sqlSelect.getSQL());
+            executeSQLStmt((ISelectionProvider) runnable, sqlSelect.getSQL());
         } else if (isInsert()) {
             executeInserts();
         } else if (isDelete()) {
@@ -457,7 +462,7 @@ public class SQLRunner
     private void executeDeletes()
         throws EFapsException
     {
-        final AbstractDelete delete = (AbstractDelete) this.runnable;
+        final AbstractDelete delete = (AbstractDelete) runnable;
         for (final Instance instance : delete.getInstances()) {
             final Context context = Context.getThreadContext();
             final ConnectionResource con = context.getConnectionResource();
@@ -506,7 +511,7 @@ public class SQLRunner
         ConnectionResource con = null;
         try {
             con = Context.getThreadContext().getConnectionResource();
-            for (final Entry<SQLTable, AbstractSQLInsertUpdate<?>> entry : this.updatemap.entrySet()) {
+            for (final Entry<SQLTable, AbstractSQLInsertUpdate<?>> entry : updatemap.entrySet()) {
                 ((SQLUpdate) entry.getValue()).execute(con);
             }
         } catch (final SQLException e) {
@@ -523,10 +528,10 @@ public class SQLRunner
     {
         ConnectionResource con = null;
         try {
-            final Insert insert = (Insert) this.runnable;
+            final Insert insert = (Insert) runnable;
             con = Context.getThreadContext().getConnectionResource();
             long id = 0;
-            for (final Entry<SQLTable, AbstractSQLInsertUpdate<?>> entry : this.updatemap.entrySet()) {
+            for (final Entry<SQLTable, AbstractSQLInsertUpdate<?>> entry : updatemap.entrySet()) {
                 if (id != 0) {
                     entry.getValue().column(entry.getKey().getSqlColId(), id);
                 }
@@ -552,29 +557,63 @@ public class SQLRunner
      * @return true, if successful
      * @throws EFapsException the e faps exception
      */
+    @SuppressWarnings("unchecked")
     protected boolean executeSQLStmt(final ISelectionProvider _sqlProvider, final String _complStmt)
         throws EFapsException
     {
         SQLRunner.LOG.debug("SQL-Statement: {}", _complStmt);
-        boolean ret = false;
-        ConnectionResource con = null;
-        try {
-            con = Context.getThreadContext().getConnectionResource();
-            final Statement stmt = con.createStatement();
-            final ResultSet rs = stmt.executeQuery(_complStmt);
-            final ArrayListHandler handler = new ArrayListHandler(Context.getDbType().getRowProcessor());
-            final List<Object[]> rows = handler.handle(rs);
-            rs.close();
-            stmt.close();
 
-            for (final Object[] row : rows) {
-                for (final Select select : _sqlProvider.getSelection().getAllSelects()) {
-                    select.addObject(row);
+        boolean ret = false;
+        List<Object[]> rows = new ArrayList<>();
+
+        boolean cached = false;
+        if (runnable.has(StmtFlag.REQCACHED)) {
+            final QueryKey querykey = QueryKey.get(Context.getThreadContext().getRequestId(), _complStmt);
+            final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
+            if (cache.containsKey(querykey)) {
+                final Object object = cache.get(querykey);
+                if (object instanceof List) {
+                    rows = (List<Object[]>) object;
                 }
-                ret = true;
+                cached = true;
             }
-        } catch (final SQLException e) {
-            throw new EFapsException(SQLRunner.class, "executeOneCompleteStmt", e);
+        }
+        if (!cached) {
+            ConnectionResource con = null;
+            try {
+                con = Context.getThreadContext().getConnectionResource();
+                final Statement stmt = con.createStatement();
+                final ResultSet rs = stmt.executeQuery(_complStmt);
+                final ArrayListHandler handler = new ArrayListHandler(Context.getDbType().getRowProcessor());
+                rows = handler.handle(rs);
+                rs.close();
+                stmt.close();
+            } catch (final SQLException e) {
+                throw new EFapsException(SQLRunner.class, "executeOneCompleteStmt", e);
+            }
+            if (runnable.has(StmtFlag.REQCACHED)) {
+                final ICacheDefinition cacheDefinition = new ICacheDefinition() {
+
+                    @Override
+                    public long getLifespan()
+                    {
+                        return 5;
+                    }
+
+                    @Override
+                    public TimeUnit getLifespanUnit()
+                    {
+                        return TimeUnit.MINUTES;
+                    }
+                };
+                QueryCache.put(cacheDefinition, QueryKey.get(Context.getThreadContext().getRequestId(), _complStmt), rows);
+            }
+        }
+        for (final Object[] row : rows) {
+            for (final Select select : _sqlProvider.getSelection().getAllSelects()) {
+                select.addObject(row);
+            }
+            ret = true;
         }
         return ret;
     }
@@ -600,8 +639,8 @@ public class SQLRunner
         TypeCriteria(final String _sqlColType,
                     final long _id)
         {
-            this.sqlColType = _sqlColType;
-            this.id = _id;
+            sqlColType = _sqlColType;
+            id = _id;
         }
 
         @Override
@@ -610,7 +649,7 @@ public class SQLRunner
             final boolean ret;
             if (_obj instanceof TypeCriteria) {
                 final TypeCriteria obj = (TypeCriteria) _obj;
-                ret = this.sqlColType.equals(obj.sqlColType) && this.id == obj.id;
+                ret = sqlColType.equals(obj.sqlColType) && id == obj.id;
             } else {
                 ret = super.equals(_obj);
             }
@@ -620,7 +659,7 @@ public class SQLRunner
         @Override
         public int hashCode()
         {
-            return this.sqlColType.hashCode() + Long.valueOf(this.id).hashCode();
+            return sqlColType.hashCode() + Long.valueOf(id).hashCode();
         }
     }
 
@@ -645,8 +684,8 @@ public class SQLRunner
         CompanyCriteria(final String _sqlColCompany,
                         final long _id)
         {
-            this.sqlColCompany = _sqlColCompany;
-            this.id = _id;
+            sqlColCompany = _sqlColCompany;
+            id = _id;
         }
 
         @Override
@@ -655,7 +694,7 @@ public class SQLRunner
             final boolean ret;
             if (_obj instanceof CompanyCriteria) {
                 final CompanyCriteria obj = (CompanyCriteria) _obj;
-                ret = this.sqlColCompany.equals(obj.sqlColCompany) && this.id == obj.id;
+                ret = sqlColCompany.equals(obj.sqlColCompany) && id == obj.id;
             } else {
                 ret = super.equals(_obj);
             }
@@ -665,7 +704,7 @@ public class SQLRunner
         @Override
         public int hashCode()
         {
-            return this.sqlColCompany.hashCode() + Long.valueOf(this.id).hashCode();
+            return sqlColCompany.hashCode() + Long.valueOf(id).hashCode();
         }
     }
 }
