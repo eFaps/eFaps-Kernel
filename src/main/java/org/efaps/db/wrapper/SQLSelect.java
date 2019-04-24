@@ -67,6 +67,9 @@ public class SQLSelect
     /** The where. */
     private SQLWhere where;
 
+    /** The order. */
+    private SQLOrder order;
+
     /**
      * Instantiates a new SQL select.
      */
@@ -82,7 +85,7 @@ public class SQLSelect
      */
     public SQLSelect(final String _prefix)
     {
-        this.tablePrefix = _prefix;
+        tablePrefix = _prefix;
     }
 
     /**
@@ -92,7 +95,7 @@ public class SQLSelect
      */
     public TableIndexer getIndexer()
     {
-        return this.indexer;
+        return indexer;
     }
 
     /**
@@ -104,7 +107,7 @@ public class SQLSelect
      */
     public SQLSelect column(final String _name)
     {
-        this.columns.add(new Column(this.tablePrefix, null, _name));
+        columns.add(new Column(tablePrefix, null, _name));
         return this;
     }
 
@@ -120,7 +123,7 @@ public class SQLSelect
     public SQLSelect column(final int _tableIndex,
                             final String _columnName)
     {
-        this.columns.add(new Column(this.tablePrefix, _tableIndex, _columnName));
+        columns.add(new Column(tablePrefix, _tableIndex, _columnName));
         return this;
     }
 
@@ -140,7 +143,7 @@ public class SQLSelect
         if (colOpt.isPresent()) {
             ret = getColumns().indexOf(colOpt.get());
         } else {
-            this.columns.add(new Column(this.tablePrefix, _tableIndex, _columnName));
+            columns.add(new Column(tablePrefix, _tableIndex, _columnName));
             ret = getColumnIdx();
         }
         return ret;
@@ -153,7 +156,7 @@ public class SQLSelect
      */
     public List<Column> getColumns()
     {
-        return this.columns;
+        return columns;
     }
 
     /**
@@ -175,7 +178,7 @@ public class SQLSelect
      */
     public SQLSelect from(final String _name)
     {
-        this.fromTables.add(new FromTable(this.tablePrefix, _name, null));
+        fromTables.add(new FromTable(tablePrefix, _name, null));
         return this;
     }
 
@@ -190,7 +193,7 @@ public class SQLSelect
     public SQLSelect from(final String _tableName,
                           final int _tableIndex)
     {
-        this.fromTables.add(new FromTable(this.tablePrefix, _tableName, _tableIndex));
+        fromTables.add(new FromTable(tablePrefix, _tableName, _tableIndex));
         return this;
     }
 
@@ -201,7 +204,7 @@ public class SQLSelect
      */
     public List<FromTable> getFromTables()
     {
-        return this.fromTables;
+        return fromTables;
     }
 
     /**
@@ -222,7 +225,7 @@ public class SQLSelect
                               final int _joinTableIndex,
                               final String _joinColumnName)
     {
-        this.fromTables.add(new FromTableLeftJoin(this.tablePrefix, _tableName, _tableIndex, _columnName,
+        fromTables.add(new FromTableLeftJoin(tablePrefix, _tableName, _tableIndex, _columnName,
                                                   _joinTableIndex, _joinColumnName));
         return this;
     }
@@ -245,7 +248,7 @@ public class SQLSelect
                               final int _joinTableIndex,
                               final String[] _joinColumnNames)
     {
-        this.fromTables.add(new FromTableLeftJoin(this.tablePrefix, _tableName, _tableIndex, _columnNames,
+        fromTables.add(new FromTableLeftJoin(tablePrefix, _tableName, _tableIndex, _columnNames,
                                                  _joinTableIndex, _joinColumnNames));
         return this;
     }
@@ -268,7 +271,7 @@ public class SQLSelect
                               final int _joinTableIndex,
                               final String _joinColumnName)
     {
-        this.fromTables.add(new FromTableInnerJoin(this.tablePrefix, _tableName, _tableIndex, _columnName,
+        fromTables.add(new FromTableInnerJoin(tablePrefix, _tableName, _tableIndex, _columnName,
                                                  _joinTableIndex, _joinColumnName));
         return this;
     }
@@ -291,7 +294,7 @@ public class SQLSelect
                               final int _joinTableIndex,
                               final String[] _joinColumnNames)
     {
-        this.fromTables.add(new FromTableInnerJoin(this.tablePrefix, _tableName, _tableIndex, _columnNames,
+        fromTables.add(new FromTableInnerJoin(tablePrefix, _tableName, _tableIndex, _columnNames,
                                                  _joinTableIndex, _joinColumnNames));
         return this;
     }
@@ -305,11 +308,11 @@ public class SQLSelect
     {
         final StringBuilder cmd = new StringBuilder().append(" ")
             .append(Context.getDbType().getSQLPart(SQLPart.SELECT)).append(" ");
-        if (this.distinct) {
+        if (distinct) {
             cmd.append(Context.getDbType().getSQLPart(SQLPart.DISTINCT)).append(" ");
         }
         boolean first = true;
-        for (final Column column : this.columns) {
+        for (final Column column : columns) {
             if (first) {
                 first = false;
             } else {
@@ -319,7 +322,7 @@ public class SQLSelect
         }
         cmd.append(" ").append(Context.getDbType().getSQLPart(SQLPart.FROM)).append(" ");
         first = true;
-        for (final FromTable fromTable : this.fromTables) {
+        for (final FromTable fromTable : fromTables) {
             fromTable.appendSQL(first, cmd);
             if (first) {
                 first = false;
@@ -327,15 +330,19 @@ public class SQLSelect
         }
         cmd.append(" ");
         boolean whereAdded = false;
-        for (final SQLSelectPart part : this.parts) {
+        for (final SQLSelectPart part : parts) {
             part.appendSQL(cmd);
             cmd.append(" ");
             whereAdded = whereAdded || !whereAdded && SQLPart.WHERE.equals(part.sqlpart);
         }
 
-        if (this.where != null) {
-            this.where.setStarted(whereAdded);
-            this.where.appendSQL(this.tablePrefix, cmd);
+        if (where != null) {
+            where.setStarted(whereAdded);
+            where.appendSQL(tablePrefix, cmd);
+        }
+
+        if (order != null) {
+            order.appendSQL(tablePrefix, cmd);
         }
         return cmd.toString();
     }
@@ -348,7 +355,7 @@ public class SQLSelect
      */
     public SQLSelect distinct(final boolean _distinct)
     {
-        this.distinct = _distinct;
+        distinct = _distinct;
         return this;
     }
 
@@ -372,7 +379,7 @@ public class SQLSelect
      */
     public SQLSelect addPart(final SQLPart _part)
     {
-        this.parts.add(new SQLSelectPart(_part));
+        parts.add(new SQLSelectPart(_part));
         return this;
     }
 
@@ -385,7 +392,7 @@ public class SQLSelect
     public SQLSelect addColumnPart(final Integer _tableIndex,
                                    final String _columnName)
     {
-        this.parts.add(new Column(this.tablePrefix, _tableIndex, _columnName));
+        parts.add(new Column(tablePrefix, _tableIndex, _columnName));
         return this;
     }
 
@@ -398,7 +405,7 @@ public class SQLSelect
     public SQLSelect addTablePart(final String _tableName,
                                   final Integer _tableIndex)
     {
-        this.parts.add(new FromTable(this.tablePrefix, _tableName, _tableIndex));
+        parts.add(new FromTable(tablePrefix, _tableName, _tableIndex));
         return this;
     }
 
@@ -408,7 +415,7 @@ public class SQLSelect
      */
     public SQLSelect addNestedSelectPart(final CharSequence _char)
     {
-        this.parts.add(new NestedSelect(_char));
+        parts.add(new NestedSelect(_char));
         return this;
     }
 
@@ -418,7 +425,7 @@ public class SQLSelect
      */
     public SQLSelect addValuePart(final Object _value)
     {
-        this.parts.add(new Value(_value));
+        parts.add(new Value(_value));
         return this;
     }
 
@@ -428,7 +435,7 @@ public class SQLSelect
      */
     public SQLSelect addEscapedValuePart(final String _value)
     {
-        this.parts.add(new EscapedValue(_value));
+        parts.add(new EscapedValue(_value));
         return this;
     }
 
@@ -439,7 +446,7 @@ public class SQLSelect
      */
     public SQLSelect addTimestampValue(final String _isoDateTime)
     {
-        this.parts.add(new Value(Context.getDbType().getTimestampValue(_isoDateTime)));
+        parts.add(new Value(Context.getDbType().getTimestampValue(_isoDateTime)));
         return this;
     }
 
@@ -450,7 +457,7 @@ public class SQLSelect
      */
     public SQLSelect addBooleanValue(final Boolean _value)
     {
-        this.parts.add(new BooleanValue(_value));
+        parts.add(new BooleanValue(_value));
         return this;
     }
 
@@ -460,10 +467,10 @@ public class SQLSelect
     public SQLSelect getCopy()
     {
         final SQLSelect select = new SQLSelect();
-        select.columns.addAll(this.columns);
-        select.parts.addAll(this.parts);
-        select.fromTables.addAll(this.fromTables);
-        select.distinct = this.distinct;
+        select.columns.addAll(columns);
+        select.parts.addAll(parts);
+        select.fromTables.addAll(fromTables);
+        select.distinct = distinct;
         return select;
     }
 
@@ -474,7 +481,7 @@ public class SQLSelect
      */
     public SQLSelectPart getCurrentPart()
     {
-        return this.parts.isEmpty() ? null : this.parts.get(this.parts.size() - 1);
+        return parts.isEmpty() ? null : parts.get(parts.size() - 1);
     }
 
     /**
@@ -485,7 +492,7 @@ public class SQLSelect
      */
     public SQLSelect where(final SQLWhere _where)
     {
-        this.where = _where.select(this);
+        where = _where.select(this);
         return this;
     }
 
@@ -496,10 +503,29 @@ public class SQLSelect
      */
     public SQLWhere getWhere()
     {
-        if (this.where == null) {
-            this.where = new SQLWhere().select(this);
+        if (where == null) {
+            where = new SQLWhere().select(this);
         }
-        return this.where;
+        return where;
+    }
+
+    public SQLSelect order(final SQLOrder _order)
+    {
+        order = _order;
+        return this;
+    }
+
+    /**
+     * Gets the where.
+     *
+     * @return the where
+     */
+    public SQLOrder getOrder()
+    {
+        if (order == null) {
+            order = new SQLOrder();
+        }
+        return order;
     }
 
     @Override
@@ -535,9 +561,9 @@ public class SQLSelect
                             final String _tableName,
                             final Integer _tableIndex)
         {
-            this.tablePrefix = _tablePrefix;
-            this.tableName = _tableName;
-            this.tableIndex = _tableIndex;
+            tablePrefix = _tablePrefix;
+            tableName = _tableName;
+            tableIndex = _tableIndex;
         }
 
         /**
@@ -549,7 +575,7 @@ public class SQLSelect
          */
         public String getTableName()
         {
-            return this.tableName;
+            return tableName;
         }
 
         /**
@@ -561,7 +587,7 @@ public class SQLSelect
          */
         public Integer getTableIndex()
         {
-            return this.tableIndex;
+            return tableIndex;
         }
 
         @Override
@@ -588,10 +614,10 @@ public class SQLSelect
                 _cmd.append(Context.getDbType().getSQLPart(SQLPart.COMMA));
             }
             _cmd.append(Context.getDbType().getTableQuote())
-                .append(this.tableName)
+                .append(tableName)
                 .append(Context.getDbType().getTableQuote());
-            if (this.tableIndex != null) {
-                _cmd.append(" ").append(this.tablePrefix).append(this.tableIndex);
+            if (tableIndex != null) {
+                _cmd.append(" ").append(tablePrefix).append(tableIndex);
             }
         }
 
@@ -603,7 +629,7 @@ public class SQLSelect
          */
         public String getTablePrefix()
         {
-            return this.tablePrefix;
+            return tablePrefix;
         }
     }
 
@@ -650,9 +676,9 @@ public class SQLSelect
                                     final String _joinColumnName)
         {
             super(_tablePrefix, _tableName, _tableIndex);
-            this.columnNames = new String[] {_columnName};
-            this.joinTableIndex = _joinTableIndex;
-            this.joinColumnNames = new String[] {_joinColumnName};
+            columnNames = new String[] {_columnName};
+            joinTableIndex = _joinTableIndex;
+            joinColumnNames = new String[] {_joinColumnName};
         }
 
         /**
@@ -676,9 +702,9 @@ public class SQLSelect
                                   final String[] _joinColumnNames)
         {
             super(_tablePrefix, _tableName, _tableIndex);
-            this.columnNames = _columnNames;
-            this.joinTableIndex = _joinTableIndex;
-            this.joinColumnNames = _joinColumnNames;
+            columnNames = _columnNames;
+            joinTableIndex = _joinTableIndex;
+            joinColumnNames = _joinColumnNames;
         }
 
         /**
@@ -697,7 +723,7 @@ public class SQLSelect
                 _cmd.append(' ');
             }
 
-            for (int i = 0; i < this.columnNames.length; i++) {
+            for (int i = 0; i < columnNames.length; i++) {
                 if (i == 0) {
                     _cmd.append(Context.getDbType().getSQLPart(getJoin()))
                         .append(" ").append(Context.getDbType().getSQLPart(SQLPart.JOIN)).append(" ")
@@ -709,14 +735,14 @@ public class SQLSelect
                 } else {
                     _cmd.append(" ").append(Context.getDbType().getSQLPart(SQLPart.AND)).append(" ");
                 }
-                _cmd.append(" ").append(getTablePrefix()).append(this.joinTableIndex).append('.')
+                _cmd.append(" ").append(getTablePrefix()).append(joinTableIndex).append('.')
                     .append(Context.getDbType().getColumnQuote())
-                    .append(this.joinColumnNames[i])
+                    .append(joinColumnNames[i])
                     .append(Context.getDbType().getColumnQuote())
                     .append(Context.getDbType().getSQLPart(SQLPart.EQUAL))
                     .append(getTablePrefix()).append(getTableIndex()).append('.')
                     .append(Context.getDbType().getColumnQuote())
-                    .append(this.columnNames[i])
+                    .append(columnNames[i])
                     .append(Context.getDbType().getColumnQuote());
             }
         }
@@ -806,13 +832,13 @@ public class SQLSelect
          */
         public NestedSelect(final CharSequence _value)
         {
-            this.value = _value;
+            value = _value;
         }
 
         @Override
         public void appendSQL(final StringBuilder _cmd)
         {
-            _cmd.append(this.value);
+            _cmd.append(value);
         }
     }
 
@@ -833,19 +859,19 @@ public class SQLSelect
          */
         public Value(final Object _value)
         {
-            this.value = _value;
+            value = _value;
         }
 
         @Override
         public void appendSQL(final StringBuilder _cmd)
         {
-            _cmd.append(this.value);
+            _cmd.append(value);
         }
 
         @Override
         public String toString()
         {
-            return this.value.toString();
+            return value.toString();
         }
     }
 
@@ -866,19 +892,19 @@ public class SQLSelect
          */
         public EscapedValue(final String _value)
         {
-            this.value = _value;
+            value = _value;
         }
 
         @Override
         public void appendSQL(final StringBuilder _cmd)
         {
-            _cmd.append(Context.getDbType().escapeForWhere(this.value));
+            _cmd.append(Context.getDbType().escapeForWhere(value));
         }
 
         @Override
         public String toString()
         {
-            return Context.getDbType().escapeForWhere(this.value);
+            return Context.getDbType().escapeForWhere(value);
         }
     }
 
@@ -899,19 +925,19 @@ public class SQLSelect
          */
         public BooleanValue(final Boolean _value)
         {
-            this.value = _value;
+            value = _value;
         }
 
         @Override
         public void appendSQL(final StringBuilder _cmd)
         {
-            _cmd.append(Context.getDbType().getBooleanValue(this.value));
+            _cmd.append(Context.getDbType().getBooleanValue(value));
         }
 
         @Override
         public String toString()
         {
-            final String ret = Context.getDbType().getBooleanValue(this.value).toString();
+            final String ret = Context.getDbType().getBooleanValue(value).toString();
             return ret;
         }
     }
@@ -933,7 +959,7 @@ public class SQLSelect
          */
         public SQLSelectPart(final SQLPart _part)
         {
-            this.sqlpart = _part;
+            sqlpart = _part;
         }
 
         /**
@@ -948,13 +974,13 @@ public class SQLSelect
          */
         public void appendSQL(final StringBuilder _cmd)
         {
-            _cmd.append(Context.getDbType().getSQLPart(this.sqlpart));
+            _cmd.append(Context.getDbType().getSQLPart(sqlpart));
         }
 
         @Override
         public String toString()
         {
-            return Context.getDbType().getSQLPart(this.sqlpart);
+            return Context.getDbType().getSQLPart(sqlpart);
         }
     }
 
@@ -987,9 +1013,9 @@ public class SQLSelect
                          final Integer _tableIndex,
                          final String _columnName)
         {
-            this.tablePrefix = _tablePrefix;
-            this.tableIndex = _tableIndex;
-            this.columnName = _columnName;
+            tablePrefix = _tablePrefix;
+            tableIndex = _tableIndex;
+            columnName = _columnName;
         }
 
         /**
@@ -1000,11 +1026,11 @@ public class SQLSelect
         @Override
         public void appendSQL(final StringBuilder _cmd)
         {
-            if (this.tableIndex != null) {
-                _cmd.append(this.tablePrefix).append(this.tableIndex).append(".");
+            if (tableIndex != null) {
+                _cmd.append(tablePrefix).append(tableIndex).append(".");
             }
             _cmd.append(Context.getDbType().getColumnQuote())
-                            .append(this.columnName)
+                            .append(columnName)
                             .append(Context.getDbType().getColumnQuote());
         }
 

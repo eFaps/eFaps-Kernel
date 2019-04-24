@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,14 @@ import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.LongType;
 import org.efaps.admin.datamodel.attributetype.StatusType;
+import org.efaps.db.wrapper.SQLOrder;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLWhere;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.eql2.IAttributeSelectElement;
 import org.efaps.eql2.IBaseSelectElement;
+import org.efaps.eql2.IOrder;
+import org.efaps.eql2.IOrderElement;
 import org.efaps.eql2.ISelectElement;
 import org.efaps.eql2.IWhere;
 import org.efaps.eql2.IWhereElement;
@@ -59,6 +62,8 @@ public class Filter
     /** The types. */
     private List<Type> types;
 
+    private IOrder iOrder;
+
     /**
      * Analyze.
      *
@@ -66,10 +71,11 @@ public class Filter
      * @param _types the types
      * @return the filter
      */
-    private Filter analyze(final IWhere _where, final List<Type> _types)
+    private Filter analyze(final IWhere _where, final IOrder _order, final List<Type> _types)
     {
-        this.iWhere = _where;
-        this.types = _types;
+        iWhere = _where;
+        iOrder = _order;
+        types = _types;
         return this;
     }
 
@@ -80,15 +86,15 @@ public class Filter
      */
     public void append2SQLSelect(final SQLSelect _sqlSelect)
     {
-        if (this.iWhere != null) {
+        if (iWhere != null) {
             final SQLWhere sqlWhere = _sqlSelect.getWhere();
-            for (final IWhereTerm<?> term : this.iWhere.getTerms()) {
+            for (final IWhereTerm<?> term : iWhere.getTerms()) {
                 if (term instanceof IWhereElementTerm) {
                     final IWhereElement element = ((IWhereElementTerm) term).getElement();
                     if (element.getAttribute() != null)
                     {
                         final String attrName = element.getAttribute();
-                        for (final Type type : this.types) {
+                        for (final Type type : types) {
                             final Attribute attr = type.getAttribute(attrName);
                             if (attr != null) {
                                 addAttr(_sqlSelect, sqlWhere, attr, term, element);
@@ -101,7 +107,7 @@ public class Filter
                             if (ele instanceof IBaseSelectElement) {
                                 switch (((IBaseSelectElement) ele).getElement()) {
                                     case STATUS:
-                                        for (final Type type : this.types) {
+                                        for (final Type type : types) {
                                             final Attribute attr = type.getStatusAttribute();
                                             if (attr != null) {
                                                 addAttr(_sqlSelect, sqlWhere, attr, term, element);
@@ -114,11 +120,26 @@ public class Filter
                                 }
                             } else if (ele instanceof IAttributeSelectElement) {
                                 final String attrName = ((IAttributeSelectElement) ele).getName();
-                                for (final Type type : this.types) {
+                                for (final Type type : types) {
                                     addAttr(_sqlSelect, sqlWhere, type.getAttribute(attrName), term, element);
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+        if (iOrder != null) {
+            final SQLOrder sqlOrder = _sqlSelect.getOrder();
+            for (final IOrderElement element: iOrder.getElements()) {
+                for (final Type type : types) {
+                    final Attribute attr = type.getAttribute(element.getKey());
+                    if (attr != null) {
+                        final SQLTable table = attr.getTable();
+                        final String tableName = table.getSqlTable();
+                        final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName);
+                        sqlOrder.addElement(tableidx.getIdx(), attr.getSqlColNames(), element.isDesc());
+                        break;
                     }
                 }
             }
@@ -179,9 +200,9 @@ public class Filter
      * @return the selection
      * @throws CacheReloadException the cache reload exception
      */
-    public static Filter get(final IWhere _where, final Type... _baseTypes)
+    public static Filter get(final IWhere _where, final IOrder _order, final Type... _baseTypes)
         throws CacheReloadException
     {
-        return new Filter().analyze(_where, Arrays.asList(_baseTypes));
+        return new Filter().analyze(_where, _order, Arrays.asList(_baseTypes));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.stmt.StmtFlag;
 import org.efaps.db.stmt.filter.Filter;
 import org.efaps.db.stmt.selection.Selection;
+import org.efaps.eql2.IOrder;
 import org.efaps.eql2.IPrintQueryStatement;
 import org.efaps.eql2.IStatement;
 import org.efaps.eql2.IWhere;
@@ -51,8 +52,8 @@ public class QueryPrint
         throws CacheReloadException
     {
         super(_flags);
-        this.eqlStmt = _eqlStmt;
-        for (final String typeStr : ((PrintQueryStatement) this.eqlStmt).getQuery().getTypes()) {
+        eqlStmt = _eqlStmt;
+        for (final String typeStr : ((PrintQueryStatement) eqlStmt).getQuery().getTypes()) {
             final Type type;
             if (UUIDUtil.isUUID(typeStr)) {
                 type = Type.get(UUID.fromString(typeStr));
@@ -91,13 +92,14 @@ public class QueryPrint
     public Filter getFilter()
         throws CacheReloadException
     {
-        final IWhere where = this.eqlStmt.getQuery().getWhere();
-        return Filter.get(where, getTypes().toArray(new Type[getTypes().size()]));
+        final IWhere where = eqlStmt.getQuery().getWhere();
+        final IOrder order = eqlStmt.getOrder();
+        return Filter.get(where, order, getTypes().toArray(new Type[getTypes().size()]));
     }
 
     @Override
     public IStatement<?> getStmt()
     {
-        return this.eqlStmt;
+        return eqlStmt;
     }
 }

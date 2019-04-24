@@ -19,7 +19,9 @@ package org.efaps.eql.builder;
 
 import java.util.Collection;
 
+import org.efaps.ci.CIAttribute;
 import org.efaps.db.Instance;
+import org.efaps.eql2.IWhereElement;
 import org.efaps.eql2.bldr.AbstractWhereBuilder;
 
 
@@ -36,5 +38,17 @@ public class Where
     {
         in(_instances.stream().map(inst -> inst.getId()).toArray(Long[]::new));
         return getThis();
+    }
+
+    public Where attribute(final CIAttribute _ciAttr)
+    {
+        final IWhereElement element = getCurrentElement();
+        element.setAttribute(_ciAttr.name);
+        return getThis();
+    }
+
+    public Where eq(final Instance _instance)
+    {
+        return eq(_instance.getId());
     }
 }

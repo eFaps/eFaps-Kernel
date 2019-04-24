@@ -80,6 +80,12 @@ public class Print
         return getThis();
     }
 
+    public Print orderBy(final CIAttribute _ciAttr)
+    {
+        super.orderBy(_ciAttr.name);
+        return getThis();
+    }
+
     public Print with(final StmtFlag... _flags)
     {
         flags = _flags;

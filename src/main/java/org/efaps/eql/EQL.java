@@ -158,6 +158,18 @@ public final class EQL
     /**
      * Prints the.
      *
+     * @param _ciTypes the types
+     * @return the abstract print EQL builder<?>
+     */
+    public static Query query(final CIType... _ciTypes)
+    {
+        return (Query) EQL2.query(Arrays.stream(_ciTypes)
+                        .map(ciType -> ciType.uuid.toString()).toArray(String[]::new));
+    }
+
+    /**
+     * Prints the.
+     *
      * @param _types the types
      * @return the abstract print EQL builder<?>
      */
