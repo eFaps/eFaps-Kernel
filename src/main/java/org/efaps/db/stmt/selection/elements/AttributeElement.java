@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class AttributeElement
      */
     public Attribute getAttribute()
     {
-        return this.attribute;
+        return attribute;
     }
 
     /**
@@ -58,8 +58,8 @@ public class AttributeElement
      */
     public AttributeElement setAttribute(final Attribute _attribute)
     {
-        this.attribute = _attribute;
-        setDBTable(this.attribute.getTable());
+        attribute = _attribute;
+        setDBTable(attribute.getTable());
         return this;
     }
 
@@ -74,16 +74,16 @@ public class AttributeElement
         throws EFapsException
     {
         if (getTable() instanceof SQLTable) {
-            final TableIdx tableIdx =getTableIdx(_sqlSelect);
-            for (final String colName : this.attribute.getSqlColNames()) {
-                this.colIdxs = ArrayUtils.add(this.colIdxs, _sqlSelect.columnIndex(tableIdx.getIdx(), colName));
+            final TableIdx tableIdx = getTableIdx(_sqlSelect);
+            for (final String colName : attribute.getSqlColNames()) {
+                colIdxs = ArrayUtils.add(colIdxs, _sqlSelect.columnIndex(tableIdx.getIdx(), colName));
             }
 
             // in case of dependencies for the attribute they must be selected also
-            for (final Attribute attr : this.attribute.getDependencies().values()) {
+            for (final Attribute attr : attribute.getDependencies().values()) {
                 for (final String colName : attr.getSqlColNames()) {
                     final int colidx = _sqlSelect.column(tableIdx.getIdx(), colName).getColumnIdx();
-                    ArrayUtils.add(this.colIdxs, colidx);
+                    colIdxs = ArrayUtils.add(colIdxs, colidx);
                 }
             }
         }
@@ -94,14 +94,14 @@ public class AttributeElement
         throws EFapsException
     {
         final Object ret;
-        if (this.colIdxs.length == 1) {
-            ret = _row[this.colIdxs[0]];
+        if (colIdxs.length == 1) {
+            ret = _row[colIdxs[0]];
         } else {
-            ret = new Object[this.colIdxs.length];
-            for (int i = 0; i < this.colIdxs.length; i++) {
-                ((Object[]) ret)[i] = this.colIdxs[i];
+            ret = new Object[colIdxs.length];
+            for (int i = 0; i < colIdxs.length; i++) {
+                ((Object[]) ret)[i] = _row[colIdxs[i]];
             }
         }
-        return callAuxillary(this.attribute.readDBValue(Collections.singletonList(ret)));
+        return callAuxillary(attribute.readDBValue(Collections.singletonList(ret)));
     }
 }
