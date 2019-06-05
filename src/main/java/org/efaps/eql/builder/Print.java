@@ -123,18 +123,6 @@ public class Print
         return query;
     }
 
-    @Override
-    public IEQLBuilder setParent(final IEQLBuilder _parent)
-    {
-        return null;
-    }
-
-    @Override
-    public IEQLBuilder getParent()
-    {
-        return null;
-    }
-
     public static String getDefaultAlias(final CIAttribute _ciAttr)
     {
         return "CIALIAS" + _ciAttr.name;

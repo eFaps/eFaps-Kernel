@@ -18,11 +18,14 @@ package org.efaps.eql.builder;
 
 import static org.testng.Assert.assertEquals;
 
+import org.efaps.db.Instance;
 import org.efaps.eql.EQL;
 import org.efaps.mock.datamodel.CI;
+import org.efaps.test.AbstractTest;
 import org.testng.annotations.Test;
 
 public class BuilderTest
+    extends AbstractTest
 {
 
     @Test
@@ -39,6 +42,22 @@ public class BuilderTest
         assertEquals(stmt, "print query type " + CI.SimpleType.uuid
                         + " where attribute[TestAttribute] == \"Hallo World\""
                         + " select attribute[TestAttribute] as \"CIALIASTestAttribute\"");
+    }
+
+    @Test
+    public void testPrintQueryInstanc()
+    {
+        final String stmt = EQL.print()
+            .query(CI.AllAttrType)
+            .where()
+            .attribute(CI.AllAttrType.LongAttribute).eq(Instance.get(CI.SimpleType.uuid, 56))
+            .select()
+            .attribute(CI.AllAttrType.StringAttribute)
+            .stmt()
+            .asString();
+        assertEquals(stmt, "print query type " + CI.AllAttrType.uuid
+                        + " where attribute[AllAttrLongAttribute] == 56"
+                        + " select attribute[AllAttrStringAttribute] as \"CIALIASAllAttrStringAttribute\"");
     }
 
     @Test
@@ -115,6 +134,42 @@ public class BuilderTest
         assertEquals(stmt, "print query type " + CI.AllAttrType.uuid
                         + " where attribute[AllAttrIntegerAttribute] == 1"
                         + " select attribute[AllAttrIntegerAttribute] as \"This is the Alias\"");
+    }
+
+    @Test
+    public void testPrintQueryWithLinkto()
+    {
+        final String stmt = EQL.print()
+            .query(CI.AllAttrType)
+            .where()
+            .attribute(CI.AllAttrType.IntegerAttribute).eq(1)
+            .select()
+            .linkto(CI.AllAttrType.LinkAttribute).attribute(CI.SimpleType.TestAttr).as("This is the Alias")
+            .stmt()
+            .asString();
+
+        assertEquals(stmt, "print query type " + CI.AllAttrType.uuid
+                        + " where attribute[AllAttrIntegerAttribute] == 1"
+                        + " select linkto[AllAttrLinkAttribute].attribute[TestAttribute] as \"This is the Alias\"");
+    }
+
+    @Test
+    public void testPrintQueryOrder()
+    {
+        final String stmt = EQL.print()
+            .query(CI.AllAttrType)
+            .where()
+            .attribute(CI.AllAttrType.IntegerAttribute).eq(1)
+            .select()
+            .attribute(CI.AllAttrType.IntegerAttribute)
+            .orderBy(CI.AllAttrType.IntegerAttribute)
+            .stmt()
+            .asString();
+
+        assertEquals(stmt, "print query type " + CI.AllAttrType.uuid
+                        + " where attribute[AllAttrIntegerAttribute] == 1"
+                        + " select attribute[AllAttrIntegerAttribute] as \"CIALIASAllAttrIntegerAttribute\""
+                        + " order by AllAttrIntegerAttribute asc");
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  *
  */
 
-package org.efaps.eql;
+package org.efaps.eql.builder;
 
 import static org.testng.Assert.assertEquals;
 
@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.efaps.db.Instance;
-import org.efaps.eql.builder.Converter;
 import org.efaps.mock.Mocks;
 import org.efaps.test.AbstractTest;
 import org.efaps.util.EFapsException;
@@ -55,6 +54,8 @@ public class ConverterTest
         ret.add(new Object[] { 3, "3" });
         ret.add(new Object[] { LocalDate.of(2018, 8, 22), "2018-08-22" });
         ret.add(new Object[] { new BigDecimal("12.986"), "12.986" });
+        final Object unknown = new Object();
+        ret.add(new Object[] { unknown, unknown.toString() });
         return ret.iterator();
     }
 }

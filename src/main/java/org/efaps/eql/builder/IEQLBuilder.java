@@ -18,7 +18,11 @@ package org.efaps.eql.builder;
 
 public interface IEQLBuilder
 {
-    IEQLBuilder setParent(final IEQLBuilder _parent);
+    default IEQLBuilder setParent(final IEQLBuilder _parent) {
+        return this;
+    }
 
-    IEQLBuilder getParent();
+    default IEQLBuilder getParent() {
+        return this;
+    }
 }

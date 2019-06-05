@@ -26,9 +26,11 @@ import java.util.UUID;
 import org.efaps.db.Instance;
 import org.efaps.eql2.IWhereTerm;
 import org.efaps.eql2.impl.WhereElementTerm;
+import org.efaps.test.AbstractTest;
 import org.testng.annotations.Test;
 
 public class WhereTest
+    extends AbstractTest
 {
 
     @Test
