@@ -14,39 +14,11 @@
  * limitations under the License.
  *
  */
-
 package org.efaps.eql.builder;
 
-import org.efaps.eql.EQL;
-import org.efaps.eql2.bldr.AbstractQueryEQLBuilder;
-
-/**
- * The Class Query.
- */
-public class Query
-    extends AbstractQueryEQLBuilder<Query>
-    implements IEQLBuilder
+public interface IEQLBuilder
 {
-    private IEQLBuilder parent;
+    IEQLBuilder setParent(final IEQLBuilder _parent);
 
-    public Where where()
-    {
-        final Where whereBldr = EQL.where();
-        whereBldr.setParent(this);
-        this.where(whereBldr);
-        return whereBldr;
-    }
-
-    @Override
-    public IEQLBuilder setParent(final IEQLBuilder _parent)
-    {
-        parent = _parent;
-        return this;
-    }
-
-    @Override
-    public IEQLBuilder getParent()
-    {
-        return parent;
-    }
+    IEQLBuilder getParent();
 }

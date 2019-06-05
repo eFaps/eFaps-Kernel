@@ -423,6 +423,5 @@ public class PrintTest
             .stmt()
             .execute();
         verify.verify();
-
     }
 }

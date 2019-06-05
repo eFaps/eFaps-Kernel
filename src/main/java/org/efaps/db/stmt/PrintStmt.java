@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
  */
 
 package org.efaps.db.stmt;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.efaps.db.stmt.print.AbstractPrint;
 import org.efaps.db.stmt.print.ListPrint;
@@ -59,13 +62,13 @@ public final class PrintStmt
         throws EFapsException
     {
         if (getEQLStmt() instanceof IPrintObjectStatement) {
-            this.print = new ObjectPrint((IPrintObjectStatement) getEQLStmt(), getFlags());
+            print = new ObjectPrint((IPrintObjectStatement) getEQLStmt(), getFlags());
         } else if (getEQLStmt() instanceof IPrintListStatement) {
-            this.print = new ListPrint((IPrintListStatement) getEQLStmt(), getFlags());
+            print = new ListPrint((IPrintListStatement) getEQLStmt(), getFlags());
         } else if (getEQLStmt() instanceof IPrintQueryStatement) {
-            this.print = new QueryPrint((IPrintQueryStatement) getEQLStmt(), getFlags());
+            print = new QueryPrint((IPrintQueryStatement) getEQLStmt(), getFlags());
         }
-        StmtRunner.get().execute(this.print);
+        StmtRunner.get().execute(print);
         return this;
     }
 
@@ -78,10 +81,25 @@ public final class PrintStmt
     public Evaluator evaluate()
         throws EFapsException
     {
-        if (this.print == null) {
+        if (print == null) {
             execute();
         }
-        return Evaluator.get(this.print.getSelection());
+        return Evaluator.get(print.getSelection());
+    }
+
+    public String asString()
+    {
+        final StringBuilder ret = new StringBuilder();
+        final Pattern regex = Pattern.compile("[^\\s\"]+|\"([^\"]*)\"");
+        final Matcher regexMatcher = regex.matcher(getEQLStmt().eqlStmt());
+        while (regexMatcher.find()) {
+            final String value = regexMatcher.group();
+            if (!value.endsWith(",")) {
+                ret.append(" ");
+            }
+            ret.append(value);
+        }
+        return ret.toString().trim();
     }
 
     /**

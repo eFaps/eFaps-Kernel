@@ -97,6 +97,11 @@ public final class EQL
         return new Selectables();
     }
 
+    public static Print print()
+    {
+        return (Print) org.efaps.eql2.EQL2.print();
+    }
+
     /**
      * Prints the.
      *

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,10 @@ import org.efaps.eql2.bldr.AbstractWhereBuilder;
 
 public class Where
     extends AbstractWhereBuilder<Where>
+    implements IEQLBuilder
 {
+    private IEQLBuilder parent;
+
     @Override
     protected Where getThis()
     {
@@ -50,5 +53,32 @@ public class Where
     public Where eq(final Instance _instance)
     {
         return eq(_instance.getId());
+    }
+
+    /**
+     * Stmt.
+     *
+     * @return the prints the stmt
+     */
+    public Print select()
+    {
+        IEQLBuilder parent = getParent();
+        while (parent != null && !(parent instanceof Print)) {
+            parent = parent.getParent();
+        }
+        return parent instanceof Print ? (Print) parent : null;
+    }
+
+    @Override
+    public IEQLBuilder setParent(final IEQLBuilder _parent)
+    {
+        parent = _parent;
+        return this;
+    }
+
+    @Override
+    public IEQLBuilder getParent()
+    {
+        return parent;
     }
 }

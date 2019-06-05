@@ -18,18 +18,27 @@
 package org.efaps.eql.builder;
 
 import org.efaps.ci.CIAttribute;
+import org.efaps.ci.CIType;
 import org.efaps.db.stmt.PrintStmt;
 import org.efaps.db.stmt.StmtFlag;
+import org.efaps.db.stmt.selection.Evaluator;
+import org.efaps.eql.EQL;
 import org.efaps.eql2.IPrintStatement;
 import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
 import org.efaps.eql2.bldr.ISelectable;
+import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class Print.
  */
 public class Print
     extends AbstractPrintEQLBuilder<Print>
+    implements IEQLBuilder
 {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Converter.class);
 
     /** The flags. */
     private StmtFlag[] flags;
@@ -41,7 +50,20 @@ public class Print
      */
     public PrintStmt stmt()
     {
+        LOG.debug("Stmt: {}", getStmt().eqlStmt());
         return PrintStmt.get((IPrintStatement<?>) getStmt(), flags);
+    }
+
+    public PrintStmt execute()
+        throws EFapsException
+    {
+        return stmt().execute();
+    }
+
+    public Evaluator evaluate()
+        throws EFapsException
+    {
+        return stmt().evaluate();
     }
 
     @Override
@@ -75,7 +97,8 @@ public class Print
         return getThis();
     }
 
-    public Print linkto(final CIAttribute _ciAttr) {
+    public Print linkto(final CIAttribute _ciAttr)
+    {
         linkto(_ciAttr.name);
         return getThis();
     }
@@ -92,7 +115,28 @@ public class Print
         return getThis();
     }
 
-    public static String getDefaultAlias(final CIAttribute _ciAttr) {
+    public Query query(final CIType... _ciTypes)
+    {
+        final Query query = EQL.query(_ciTypes);
+        query.setParent(this);
+        print(query);
+        return query;
+    }
+
+    @Override
+    public IEQLBuilder setParent(final IEQLBuilder _parent)
+    {
+        return null;
+    }
+
+    @Override
+    public IEQLBuilder getParent()
+    {
+        return null;
+    }
+
+    public static String getDefaultAlias(final CIAttribute _ciAttr)
+    {
         return "CIALIAS" + _ciAttr.name;
     }
 }
