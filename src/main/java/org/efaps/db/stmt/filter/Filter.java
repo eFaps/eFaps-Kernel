@@ -38,7 +38,10 @@ import org.efaps.eql2.IAttributeSelectElement;
 import org.efaps.eql2.IBaseSelectElement;
 import org.efaps.eql2.IOrder;
 import org.efaps.eql2.IOrderElement;
+import org.efaps.eql2.IPrintStatement;
+import org.efaps.eql2.ISelect;
 import org.efaps.eql2.ISelectElement;
+import org.efaps.eql2.ISelection;
 import org.efaps.eql2.IWhere;
 import org.efaps.eql2.IWhereElement;
 import org.efaps.eql2.IWhereElementTerm;
@@ -132,14 +135,23 @@ public class Filter
         if (iOrder != null) {
             final SQLOrder sqlOrder = _sqlSelect.getOrder();
             for (final IOrderElement element: iOrder.getElements()) {
-                for (final Type type : types) {
-                    final Attribute attr = type.getAttribute(element.getKey());
-                    if (attr != null) {
-                        final SQLTable table = attr.getTable();
-                        final String tableName = table.getSqlTable();
-                        final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName);
-                        sqlOrder.addElement(tableidx.getIdx(), attr.getSqlColNames(), element.isDesc());
-                        break;
+                final String key = element.getKey();
+                if (StringUtils.isNumeric(key)) {
+                    final Integer index = Integer.valueOf(key);
+                    final IPrintStatement<?> print = (IPrintStatement<?>) iOrder.eContainer();
+                    final ISelection selection = print.getSelection();
+                    final ISelect select = selection.getSelects(index - 1);
+                    System.out.println();
+                } else {
+                    for (final Type type : types) {
+                        final Attribute attr = type.getAttribute(key);
+                        if (attr != null) {
+                            final SQLTable table = attr.getTable();
+                            final String tableName = table.getSqlTable();
+                            final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName);
+                            sqlOrder.addElement(tableidx.getIdx(), attr.getSqlColNames(), element.isDesc());
+                            break;
+                        }
                     }
                 }
             }

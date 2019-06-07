@@ -116,6 +116,7 @@ public class SQLRunner
     public void prepare(final IRunnable _runnable)
         throws EFapsException
     {
+        LOG.trace("Preparing: {}", this);
         runnable = _runnable;
         sqlSelect = new SQLSelect();
         if (isPrint()) {
@@ -443,6 +444,7 @@ public class SQLRunner
     public void execute()
         throws EFapsException
     {
+        LOG.trace("Executing: {}", this);
         if (isPrint()) {
             executeSQLStmt((ISelectionProvider) runnable, sqlSelect.getSQL());
         } else if (isInsert()) {

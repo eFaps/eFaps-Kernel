@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.db.stmt.StmtFlag;
 
 public abstract class AbstractRunnable
@@ -32,15 +33,21 @@ public abstract class AbstractRunnable
     protected AbstractRunnable(final StmtFlag... _flags)
     {
         if (ArrayUtils.isEmpty(_flags)) {
-            this.flags = EnumSet.noneOf(StmtFlag.class);
+            flags = EnumSet.noneOf(StmtFlag.class);
         } else {
-            this.flags = EnumSet.copyOf(Arrays.asList(_flags));
+            flags = EnumSet.copyOf(Arrays.asList(_flags));
         }
     }
 
     @Override
     public boolean has(final StmtFlag _flag)
     {
-        return this.flags.contains(_flag);
+        return flags.contains(_flag);
+    }
+
+    @Override
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

@@ -31,6 +31,8 @@ import org.efaps.eql2.impl.PrintQueryStatement;
 import org.efaps.util.EFapsException;
 import org.efaps.util.UUIDUtil;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class QueryPrint.
@@ -38,6 +40,7 @@ import org.efaps.util.cache.CacheReloadException;
 public class QueryPrint
     extends AbstractPrint
 {
+    private static final Logger LOG = LoggerFactory.getLogger(QueryPrint.class);
 
     /** The eql stmt. */
     private final IPrintQueryStatement eqlStmt;
@@ -69,6 +72,7 @@ public class QueryPrint
                 addType(type);
             }
         }
+        LOG.debug("Instanciated: {}", this);
     }
 
     @Override
