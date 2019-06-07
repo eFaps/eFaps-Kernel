@@ -489,4 +489,141 @@ public class PrintQueryStmtTest
             new Object[] { "attribute["+  Mocks.StatusAttribute.getName() + "]" },
         };
     }
+
+    @Test(description = "Test for order by", dataProvider = "orderByDataProvider")
+    public void testOrderBy(final String _stmt, final String _sql)
+        throws EFapsException
+    {
+        final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL2.parse(_stmt);
+        final PrintStmt printStmt = PrintStmt.get(stmt);
+        final SQLVerify verify = SQLVerify.builder().withSql(_sql).build();
+        printStmt.execute();
+        verify.verify();
+    }
+
+    @DataProvider
+    public static Iterator<Object[]> orderByDataProvider()
+    {
+        final List<Object[]> ret = new ArrayList<>();
+        ret.addAll(orderByData1());
+        ret.addAll(orderByData2());
+        return ret.iterator();
+    }
+
+    public static List<Object[]> orderByData1()
+    {
+        final List<String> stmts = new ArrayList<>();
+        final List<String> sqls = new ArrayList<>();
+        final List<String[]> orderbys = new ArrayList<>();
+        orderbys.add(new String[]{"1", ""});
+        orderbys.add(new String[]{"SomeKey", ""});
+        orderbys.add(new String[]{"1 asc", ""});
+        orderbys.add(new String[]{"SomeKey asc", ""});
+        orderbys.add(new String[]{"1 desc", "desc"});
+        orderbys.add(new String[]{"SomeKey desc", "desc"});
+
+        final Iterator<String[]> iter = orderbys.iterator();
+        while (iter.hasNext()) {
+            final String[] values = iter.next();
+            stmts.add(String.format("print query type %s select attribute[%s] as SomeKey order by %s",
+                            Mocks.SimpleType.getName(), Mocks.TestAttribute.getName(), values[0]));
+            sqls.add(String.format("select T0.%s,T0.ID from %s T0  order by T0.%s %s", Mocks.TestAttribute.getSQLColumnName(),
+                            Mocks.SimpleTypeSQLTable.getSqlTableName(), Mocks.TestAttribute.getSQLColumnName(), values[1]).trim());
+        }
+        final Iterator<String[]> iter2  = orderbys.iterator();
+        while (iter2.hasNext()) {
+            final String[] values = iter2.next();
+            stmts.add(String.format("print query type %s select attribute[%s] as SomeKey order by %s",
+                            Mocks.TypedType.getName(), Mocks.TypedTypeTestAttr.getName(), values[0]));
+            sqls.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE = %s order by T0.%s %s",
+                            Mocks.TypedTypeTestAttr.getSQLColumnName(), Mocks.TypedTypeSQLTable.getSqlTableName(),
+                            Mocks.TypedType.getId(), Mocks.TypedTypeTestAttr.getSQLColumnName(), values[1]).trim());
+        }
+        final Iterator<String[]> iter3 = orderbys.iterator();
+        while (iter3.hasNext()) {
+            final String[] values = iter3.next();
+            stmts.add(String.format("print query type %s select attribute[%s] as SomeKey order by %s",
+                            Mocks.AbstractType.getName(), Mocks.AbstractTypeStringAttribute.getName(), values[0]));
+            sqls.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE in (%s,%s) order by T0.%s %s",
+                            Mocks.AbstractTypeStringAttribute.getSQLColumnName(),
+                            Mocks.AbstractTypeSQLTable.getSqlTableName(),
+                            Mocks.ChildType1.getId() < Mocks.ChildType2.getId()
+                                ? Mocks.ChildType1.getId() : Mocks.ChildType2.getId(),
+                            Mocks.ChildType1.getId() < Mocks.ChildType2.getId()
+                                ? Mocks.ChildType2.getId() : Mocks.ChildType1.getId(),
+                            Mocks.AbstractTypeStringAttribute.getSQLColumnName(), values[1]).trim());
+        }
+
+        final List<Object[]> ret = new ArrayList<>();
+        final Iterator<String> stmtIter = stmts.iterator();
+        final Iterator<String> sqlIter = sqls.iterator();
+        while (stmtIter.hasNext()) {
+            ret.add(new Object[] { stmtIter.next(), sqlIter.next() });
+        }
+        return ret;
+    }
+
+    public static List<Object[]> orderByData2()
+    {
+        final List<String> stmts = new ArrayList<>();
+        final List<String> sqls = new ArrayList<>();
+        final List<String[]> orderbys = new ArrayList<>();
+        orderbys.add(new String[]{"1", "T0." + Mocks.AllAttrDateAttribute.getSQLColumnName()});
+        orderbys.add(new String[]{"Key1", "T0." + Mocks.AllAttrDateAttribute.getSQLColumnName()});
+        orderbys.add(new String[]{"2", "T0." + Mocks.AllAttrDecimalAttribute.getSQLColumnName()});
+        orderbys.add(new String[]{"Key2", "T0." + Mocks.AllAttrDecimalAttribute.getSQLColumnName()});
+        orderbys.add(new String[]{"3", "T0." + Mocks.AllAttrIntegerAttribute.getSQLColumnName()});
+        orderbys.add(new String[]{"Key3", "T0." + Mocks.AllAttrIntegerAttribute.getSQLColumnName()});
+        orderbys.add(new String[]{"4", "T0." + Mocks.AllAttrLongAttribute.getSQLColumnName()});
+        orderbys.add(new String[]{"Key4", "T0." + Mocks.AllAttrLongAttribute.getSQLColumnName()});
+        orderbys.add(new String[]{"5", "T0." + Mocks.AllAttrStringAttribute.getSQLColumnName()});
+        orderbys.add(new String[]{"Key5", "T0." + Mocks.AllAttrStringAttribute.getSQLColumnName()});
+        orderbys.add(new String[]{"1, 2", "T0." + Mocks.AllAttrDateAttribute.getSQLColumnName()
+                + ", T0." + Mocks.AllAttrDecimalAttribute.getSQLColumnName()});
+        orderbys.add(new String[]{"Key1, Key2", "T0." + Mocks.AllAttrDateAttribute.getSQLColumnName()
+                + ", T0." + Mocks.AllAttrDecimalAttribute.getSQLColumnName()});
+        orderbys.add(new String[]{"2,3,5", "T0." + Mocks.AllAttrDecimalAttribute.getSQLColumnName()
+                + ", T0." + Mocks.AllAttrIntegerAttribute.getSQLColumnName() + ", T0." + Mocks.AllAttrStringAttribute.getSQLColumnName()});
+        orderbys.add(new String[]{"Key2,Key3,Key5", "T0." + Mocks.AllAttrDecimalAttribute.getSQLColumnName()
+                + ", T0." + Mocks.AllAttrIntegerAttribute.getSQLColumnName() + ", T0." + Mocks.AllAttrStringAttribute.getSQLColumnName()});
+        orderbys.add(new String[]{"4,1,3", "T0." + Mocks.AllAttrLongAttribute.getSQLColumnName()
+                + ", T0." + Mocks.AllAttrDateAttribute.getSQLColumnName() + ", T0." + Mocks.AllAttrIntegerAttribute.getSQLColumnName()});
+        orderbys.add(new String[]{"Key4,Key1,Key3", "T0." + Mocks.AllAttrLongAttribute.getSQLColumnName()
+                + ", T0." + Mocks.AllAttrDateAttribute.getSQLColumnName() + ", T0." + Mocks.AllAttrIntegerAttribute.getSQLColumnName()});
+        orderbys.add(new String[]{"4 desc,1 asc,3 desc", "T0." + Mocks.AllAttrLongAttribute.getSQLColumnName()
+                + " desc, T0." + Mocks.AllAttrDateAttribute.getSQLColumnName()
+                + ", T0." + Mocks.AllAttrIntegerAttribute.getSQLColumnName() + " desc"});
+        orderbys.add(new String[]{"Key4 desc,Key1 asc,Key3 desc", "T0." + Mocks.AllAttrLongAttribute.getSQLColumnName()
+                + " desc, T0." + Mocks.AllAttrDateAttribute.getSQLColumnName()
+                + ", T0." + Mocks.AllAttrIntegerAttribute.getSQLColumnName() + " desc"});
+
+        final Iterator<String[]> iter = orderbys.iterator();
+        while (iter.hasNext()) {
+            final String[] values = iter.next();
+            stmts.add(String.format("print query type %s select attribute[%s] as Key1, attribute[%s] as Key2, attribute[%s] as Key3, "
+                            + "attribute[%s] as Key4, attribute[%s] as Key5 "
+                            + "order by %s",
+                            Mocks.AllAttrType.getName(), Mocks.AllAttrDateAttribute.getName(),
+                            Mocks.AllAttrDecimalAttribute.getName(), Mocks.AllAttrIntegerAttribute.getName(),
+                            Mocks.AllAttrLongAttribute.getName(), Mocks.AllAttrStringAttribute.getName(),
+                            values[0]));
+
+            sqls.add(String.format("select T0.%s,T0.%s,T0.%s,T0.%s,T0.%s,T0.ID from %s T0  order by %s",
+                            Mocks.AllAttrDateAttribute.getSQLColumnName(),
+                            Mocks.AllAttrDecimalAttribute.getSQLColumnName(),
+                            Mocks.AllAttrIntegerAttribute.getSQLColumnName(),
+                            Mocks.AllAttrLongAttribute.getSQLColumnName(),
+                            Mocks.AllAttrStringAttribute.getSQLColumnName(),
+                            Mocks.AllAttrTypeSQLTable.getSqlTableName(),
+                            values[1]).trim());
+        }
+
+        final List<Object[]> ret = new ArrayList<>();
+        final Iterator<String> stmtIter = stmts.iterator();
+        final Iterator<String> sqlIter = sqls.iterator();
+        while (stmtIter.hasNext()) {
+            ret.add(new Object[] { stmtIter.next(), sqlIter.next() });
+        }
+        return ret;
+    }
 }
