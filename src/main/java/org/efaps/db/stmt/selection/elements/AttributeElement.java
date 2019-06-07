@@ -21,6 +21,7 @@ import java.util.Collections;
 import org.apache.commons.lang3.ArrayUtils;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.SQLTable;
+import org.efaps.db.wrapper.SQLOrder;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.util.EFapsException;
@@ -32,6 +33,7 @@ import org.efaps.util.EFapsException;
  */
 public class AttributeElement
     extends AbstractAttributeElement<AttributeElement>
+    implements IOrderable
 {
 
     /** The col idxs. */
@@ -103,5 +105,14 @@ public class AttributeElement
             }
         }
         return callAuxillary(attribute.readDBValue(Collections.singletonList(ret)));
+    }
+
+    @Override
+    public void append2SQLOrder(final int _orderSequence,
+                                final SQLOrder _order,
+                                final boolean _desc)
+        throws EFapsException
+    {
+        _order.addElement(_orderSequence, getTableIdx(_order.getSqlSelect()).getIdx(), attribute.getSqlColNames(), _desc);
     }
 }

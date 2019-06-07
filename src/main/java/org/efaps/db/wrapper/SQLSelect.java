@@ -523,7 +523,7 @@ public class SQLSelect
     public SQLOrder getOrder()
     {
         if (order == null) {
-            order = new SQLOrder();
+            order = new SQLOrder(this);
         }
         return order;
     }

@@ -63,6 +63,7 @@ import org.efaps.db.stmt.selection.ISelectionProvider;
 import org.efaps.db.stmt.selection.Select;
 import org.efaps.db.stmt.selection.elements.AbstractDataElement;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
+import org.efaps.db.stmt.selection.elements.IOrderable;
 import org.efaps.db.stmt.update.AbstractObjectUpdate;
 import org.efaps.db.stmt.update.AbstractUpdate;
 import org.efaps.db.stmt.update.Insert;
@@ -83,6 +84,10 @@ import org.efaps.db.wrapper.SQLWhere.Criteria;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.eql2.Comparison;
 import org.efaps.eql2.Connection;
+import org.efaps.eql2.IOrder;
+import org.efaps.eql2.IOrderElement;
+import org.efaps.eql2.IPrintQueryStatement;
+import org.efaps.eql2.IStatement;
 import org.efaps.eql2.IUpdateElement;
 import org.efaps.eql2.IUpdateElementsStmt;
 import org.efaps.util.EFapsException;
@@ -248,13 +253,40 @@ public class SQLRunner
      * @param _print the print
      * @throws EFapsException the e faps exception
      */
-    private void preparePrint(final AbstractPrint _print) throws EFapsException {
+    private void preparePrint(final AbstractPrint _print)
+        throws EFapsException
+    {
+        final IStatement<?> stmt = _print.getStmt();
+        IOrder order = null;
+        if (stmt instanceof IPrintQueryStatement) {
+            order = ((IPrintQueryStatement) stmt).getOrder();
+        }
+        int idx = 1;
         for (final Select select : _print.getSelection().getAllSelects()) {
             for (final AbstractElement<?> element : select.getElements()) {
                 if (element instanceof AbstractDataElement) {
                     ((AbstractDataElement<?>) element).append2SQLSelect(sqlSelect);
                 }
             }
+            if (order != null) {
+                int orderIdx = 0;
+                for (final IOrderElement orderElement: order.getElementsList()) {
+                    if (orderElement.getKey().equals(select.getAlias()) || orderElement.getKey().equals(String.valueOf(idx))) {
+                        final List<AbstractElement<?>> orderables = select.getElements().stream()
+                                        .filter(element -> element instanceof IOrderable)
+                                        .collect(Collectors.toList());
+                        if (orderables.isEmpty()) {
+                            LOG.warn("Cannot add order for Key: {}", orderElement);
+                        } else {
+                            ((IOrderable) orderables.get(orderables.size() - 1)).append2SQLOrder(orderIdx, sqlSelect.getOrder(),
+                                            orderElement.isDesc());
+                        }
+                        break;
+                    }
+                    orderIdx++;
+                }
+            }
+            idx++;
         }
         if (sqlSelect.getColumns().size() > 0) {
             for (final Select select : _print.getSelection().getAllSelects()) {

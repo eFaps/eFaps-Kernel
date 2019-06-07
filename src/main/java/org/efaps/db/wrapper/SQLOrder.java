@@ -27,14 +27,31 @@ public class SQLOrder
 {
     private final List<Element> elements = new ArrayList<>();
 
-    public void addElement(final int _tableIndex,
+    private final SQLSelect sqlSelect;
+
+    protected SQLOrder(final SQLSelect _sqlSelect) {
+        sqlSelect = _sqlSelect;
+    }
+
+    public SQLSelect getSqlSelect()
+    {
+        return sqlSelect;
+    }
+
+    public void addElement(final int _orderSequence,
+                           final int _tableIndex,
                            final List<String> _sqlColNames,
                            final boolean _desc)
     {
-       elements.add(new Element()
-                       .tableIndex(_tableIndex)
-                       .colNames(_sqlColNames)
-                       .desc(_desc));
+        final Element element = new Element()
+                        .tableIndex(_tableIndex)
+                        .colNames(_sqlColNames)
+                        .desc(_desc);
+        if (_orderSequence > elements.size() - 1) {
+            elements.add(element);
+        } else {
+            elements.add(_orderSequence, element);
+        }
     }
 
     public void appendSQL(final String _tablePrefix,

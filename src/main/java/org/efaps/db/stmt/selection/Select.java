@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,12 @@ import java.util.TreeMap;
 
 import org.apache.commons.collections4.multimap.AbstractListValuedMap;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.selection.elements.ISquash;
 import org.efaps.util.EFapsException;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Selection.
  *
@@ -67,7 +67,7 @@ public final class Select
      */
     private Select(final String _alias)
     {
-        this.alias = _alias;
+        alias = _alias;
     }
 
     /**
@@ -78,12 +78,12 @@ public final class Select
      */
     protected Select addElement(final AbstractElement<?> _element)
     {
-        this.noSquashRequired = this.noSquashRequired && !(_element instanceof ISquash);
-        if (!this.elements.isEmpty()) {
-            final AbstractElement<?> prev = this.elements.get(this.elements.size() - 1);
+        noSquashRequired = noSquashRequired && !(_element instanceof ISquash);
+        if (!elements.isEmpty()) {
+            final AbstractElement<?> prev = elements.get(elements.size() - 1);
             _element.setPrevious(prev);
         }
-        this.elements.add(_element);
+        elements.add(_element);
         return this;
     }
 
@@ -94,21 +94,21 @@ public final class Select
      */
     protected boolean isSquash()
     {
-        return !this.noSquashRequired;
+        return !noSquashRequired;
     }
 
     protected Squashing getSquash()
     {
-        return this.squash;
+        return squash;
     }
 
     protected void setSquash(final Squashing _squash)
     {
-        this.squash = _squash;
+        squash = _squash;
     }
 
     protected List<Object> getObjects() {
-        return this.objects;
+        return objects;
     }
 
     /**
@@ -120,7 +120,7 @@ public final class Select
     public void addObject(final Object[] _row)
         throws EFapsException
     {
-        this.objects.add(this.elements.get(0).getObject(_row));
+        objects.add(elements.get(0).getObject(_row));
     }
 
     /**
@@ -135,7 +135,7 @@ public final class Select
     {
         final List<Object> result;
         if (_evaluator == null) {
-            result = this.objects;
+            result = objects;
         } else {
             result = new ArrayList<>();
             final AbstractElement<?> element = getElements().get(getElements().size() - 1);
@@ -144,7 +144,7 @@ public final class Select
                             ? Selection.BASEPATH
                             : path);
             final List<Object> instObjs = instSelection.getObjects(null);
-            final Iterator<Object> objIter = this.objects.iterator();
+            final Iterator<Object> objIter = objects.iterator();
             for (final Object instObj : instObjs) {
                 if (_evaluator.getAccess().hasAccess((Instance) instObj)) {
                     result.add(objIter.next());
@@ -163,7 +163,7 @@ public final class Select
      */
     public List<AbstractElement<?>> getElements()
     {
-        return this.elements;
+        return elements;
     }
 
     /**
@@ -173,7 +173,7 @@ public final class Select
      */
     public String getAlias()
     {
-        return this.alias;
+        return alias;
     }
 
     /**
@@ -183,7 +183,7 @@ public final class Select
      */
     public Object getCurrent()
     {
-        return this.current instanceof ProxiedObject ? ((ProxiedObject) this.current).getObject() : this.current;
+        return current instanceof ProxiedObject ? ((ProxiedObject) current).getObject() : current;
     }
 
     /**
@@ -194,11 +194,11 @@ public final class Select
     public boolean next()
     {
         boolean ret = false;
-        if (this.iterator == null) {
-            this.iterator = this.objects.iterator();
+        if (iterator == null) {
+            iterator = objects.iterator();
         }
-        if (this.iterator.hasNext()) {
-            this.current = this.iterator.next();
+        if (iterator.hasNext()) {
+            current = iterator.next();
             ret = true;
         }
         return ret;
@@ -209,8 +209,8 @@ public final class Select
      */
     protected void reset()
     {
-        this.iterator = null;
-        this.current = null;
+        iterator = null;
+        current = null;
     }
 
     /**
@@ -232,6 +232,12 @@ public final class Select
     public static Select get(final String _alias)
     {
         return new Select(_alias);
+    }
+
+    @Override
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this);
     }
 
     /**

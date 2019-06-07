@@ -23,7 +23,6 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.stmt.StmtFlag;
 import org.efaps.db.stmt.filter.Filter;
 import org.efaps.db.stmt.selection.Selection;
-import org.efaps.eql2.IOrder;
 import org.efaps.eql2.IPrintQueryStatement;
 import org.efaps.eql2.IStatement;
 import org.efaps.eql2.IWhere;
@@ -97,8 +96,7 @@ public class QueryPrint
         throws CacheReloadException
     {
         final IWhere where = eqlStmt.getQuery().getWhere();
-        final IOrder order = eqlStmt.getOrder();
-        return Filter.get(where, order, getTypes().toArray(new Type[getTypes().size()]));
+        return Filter.get(where, getTypes().toArray(new Type[getTypes().size()]));
     }
 
     @Override
