@@ -430,7 +430,13 @@ public class SQLRunner
                         ids.add(String.valueOf(Association.evaluate(Type.get(entry.getValue().typeId), companyId)));
                     }
                 } else {
-                    ids.add(String.valueOf(Association.evaluate(Type.get(entry.getValue().typeId))));
+                    final Association association = Association.evaluate(Type.get(entry.getValue().typeId));
+                    if (association == null) {
+                        LOG.debug("No valid Association was found");
+                        ids.add("0");
+                    }else {
+                        ids.add(String.valueOf(association.getId()));
+                    }
                 }
                 where.addCriteria(entry.getKey().getIdx(),
                                 Collections.singletonList(entry.getValue().sqlColAssociation),
