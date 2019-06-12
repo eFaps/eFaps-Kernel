@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
+import org.efaps.admin.datamodel.attributetype.AssociationLinkType;
 import org.efaps.admin.datamodel.attributetype.BitEnumType;
 import org.efaps.admin.datamodel.attributetype.CompanyLinkType;
 import org.efaps.admin.datamodel.attributetype.ConsortiumLinkType;
@@ -328,6 +329,12 @@ public class Type
     private String companyAttributeName;
 
     /**
+     * Stores the name of attribute that contains the association of this type. (if
+     * exist)
+     */
+    private String associationAttributeName;
+
+    /**
      * Stores the name of attribute that contains the company of this type. (if
      * exist)
      */
@@ -397,7 +404,7 @@ public class Type
      */
     public boolean isAbstract()
     {
-        return this.abstractBool;
+        return abstractBool;
     }
 
     /**
@@ -407,7 +414,7 @@ public class Type
      */
     private void setAbstract(final boolean _abstract)
     {
-        this.abstractBool = _abstract;
+        abstractBool = _abstract;
     }
 
     /**
@@ -418,8 +425,8 @@ public class Type
     public boolean isGeneralInstance()
     {
         boolean ret = true;
-        if (this.generalInstance != null) {
-            ret = this.generalInstance;
+        if (generalInstance != null) {
+            ret = generalInstance;
         } else if (getParentType() != null) {
             ret = getParentType().isGeneralInstance();
         }
@@ -434,7 +441,7 @@ public class Type
 
     private void setGeneralInstance(final boolean _generalInstance)
     {
-        this.generalInstance = _generalInstance;
+        generalInstance = _generalInstance;
     }
 
     /**
@@ -444,7 +451,7 @@ public class Type
      */
     public boolean isHistory()
     {
-        return this.history;
+        return history;
     }
 
     /**
@@ -454,7 +461,7 @@ public class Type
      */
     private void setHistory(final boolean _history)
     {
-        this.history = _history;
+        history = _history;
     }
 
     /**
@@ -469,26 +476,29 @@ public class Type
         throws CacheReloadException
     {
         for (final Attribute attribute : _attributes) {
-            if (!this.attributes.containsKey(attribute.getName())) {
+            if (!attributes.containsKey(attribute.getName())) {
                 Type.LOG.trace("adding Attribute:'{}' to type: '{}'", attribute.getName(), getName());
                 // evaluate for type attribute
                 if (attribute.getAttributeType().getClassRepr().equals(TypeType.class)) {
-                    this.typeAttributeName = attribute.getName();
+                    typeAttributeName = attribute.getName();
                 } else if (attribute.getAttributeType().getClassRepr().equals(StatusType.class) && !_inherited) {
                     // evaluate for status, an inherited attribute will not
                     // overwrite the original attribute
-                    this.statusAttributeName = attribute.getName();
+                    statusAttributeName = attribute.getName();
                 } else if (attribute.getAttributeType().getClassRepr().equals(CompanyLinkType.class)
                                 || attribute.getAttributeType().getClassRepr().equals(ConsortiumLinkType.class)) {
                     // evaluate for company
-                    this.companyAttributeName = attribute.getName();
+                    companyAttributeName = attribute.getName();
                 } else if (attribute.getAttributeType().getClassRepr().equals(GroupLinkType.class)) {
                     // evaluate for group
-                    this.groupAttributeName = attribute.getName();
+                    groupAttributeName = attribute.getName();
+                } else if (attribute.getAttributeType().getClassRepr().equals(AssociationLinkType.class)) {
+                    // evaluate for association
+                    associationAttributeName = attribute.getName();
                 }
-                this.attributes.put(attribute.getName(), attribute);
+                attributes.put(attribute.getName(), attribute);
                 if (attribute.getTable() != null) {
-                    this.tables.add(attribute.getTable());
+                    tables.add(attribute.getTable());
                     attribute.getTable().addType(getId());
                     if (getMainTable() == null) {
                         setMainTable(attribute.getTable());
@@ -524,7 +534,7 @@ public class Type
      */
     public Attribute getStatusAttribute()
     {
-        return this.attributes.get(this.statusAttributeName);
+        return attributes.get(statusAttributeName);
     }
 
     /**
@@ -534,7 +544,7 @@ public class Type
      */
     public boolean isCheckStatus()
     {
-        return this.statusAttributeName != null;
+        return statusAttributeName != null;
     }
 
     /**
@@ -544,7 +554,12 @@ public class Type
      */
     public boolean isCompanyDependent()
     {
-        return this.companyAttributeName != null;
+        return companyAttributeName != null;
+    }
+
+    public boolean hasAssociation()
+    {
+        return associationAttributeName != null;
     }
 
     /**
@@ -554,7 +569,7 @@ public class Type
      */
     public boolean isGroupDependent()
     {
-        return this.groupAttributeName != null;
+        return groupAttributeName != null;
     }
 
     /**
@@ -564,7 +579,7 @@ public class Type
      */
     public Attribute getCompanyAttribute()
     {
-        return this.attributes.get(this.companyAttributeName);
+        return attributes.get(companyAttributeName);
     }
 
     /**
@@ -574,7 +589,7 @@ public class Type
      */
     public Attribute getGroupAttribute()
     {
-        return this.attributes.get(this.groupAttributeName);
+        return attributes.get(groupAttributeName);
     }
 
     /**
@@ -585,10 +600,10 @@ public class Type
     public Attribute getTypeAttribute()
     {
         final Attribute ret;
-        if (this.typeAttributeName == null && getParentType() != null) {
+        if (typeAttributeName == null && getParentType() != null) {
             ret = getParentType().getTypeAttribute();
         } else {
-            ret = this.attributes.get(this.typeAttributeName);
+            ret = attributes.get(typeAttributeName);
         }
         return ret;
     }
@@ -775,7 +790,7 @@ public class Type
      */
     public void addAccessSet(final AccessSet _accessSet)
     {
-        this.accessSets.add(_accessSet.getId());
+        accessSets.add(_accessSet.getId());
         setDirty();
     }
 
@@ -789,8 +804,8 @@ public class Type
     public Set<AccessSet> getAccessSets()
         throws EFapsException
     {
-        if (!this.checked4AccessSet) {
-            this.checked4AccessSet = true;
+        if (!checked4AccessSet) {
+            checked4AccessSet = true;
             final QueryBuilder queryBldr = new QueryBuilder(CIAdminAccess.AccessSet2DataModelType);
             queryBldr.addWhereAttrEqValue(CIAdminAccess.AccessSet2DataModelType.DataModelTypeLink, getId());
             final MultiPrintQuery multi = queryBldr.getPrint();
@@ -799,12 +814,12 @@ public class Type
             while (multi.next()) {
                 final Long accessSet = multi.<Long>getAttribute(CIAdminAccess.AccessSet2DataModelType.AccessSetLink);
                 AccessSet.get(accessSet);
-                this.accessSets.add(accessSet);
+                accessSets.add(accessSet);
             }
             setDirty();
         }
         final Set<AccessSet> ret = new HashSet<>();
-        for (final Long id : this.accessSets) {
+        for (final Long id : accessSets) {
             ret.add(AccessSet.get(id));
         }
         return Collections.unmodifiableSet(ret);
@@ -821,9 +836,9 @@ public class Type
         throws EFapsException
     {
         if (_linkTypeUUID.equals(CIAdminDataModel.Type2Store.uuid)) {
-            this.storeId = _toId;
+            storeId = _toId;
         } else if (_linkTypeUUID.equals(CIAdminDataModel.TypeEventIsAllowedFor.uuid)) {
-            this.allowedEventTypes.add(_toId);
+            allowedEventTypes.add(_toId);
         }
         super.setLinkProperty(_linkTypeUUID, _toId, _toTypeUUID, _toName);
     }
@@ -849,11 +864,11 @@ public class Type
     public Type getParentType()
     {
         Type ret = null;
-        if (this.parentTypeId != null && this.parentTypeId != 0) {
+        if (parentTypeId != null && parentTypeId != 0) {
             try {
-                ret = Type.get(this.parentTypeId);
+                ret = Type.get(parentTypeId);
             } catch (final CacheReloadException e) {
-                Type.LOG.error("Could not read parentType for id: {}", this.parentTypeId);
+                Type.LOG.error("Could not read parentType for id: {}", parentTypeId);
             }
         }
         return ret;
@@ -866,7 +881,7 @@ public class Type
      */
     protected Long getParentTypeId()
     {
-        return this.parentTypeId;
+        return parentTypeId;
     }
 
     /**
@@ -876,7 +891,7 @@ public class Type
      */
     protected void setParentTypeID(final long _parentTypeId)
     {
-        this.parentTypeId = _parentTypeId;
+        parentTypeId = _parentTypeId;
     }
 
     /**
@@ -886,8 +901,8 @@ public class Type
      */
     protected void addClassifiedByType(final Classification _classification)
     {
-        this.checked4classifiedBy = true;
-        this.classifiedByTypes.add(_classification.getId());
+        checked4classifiedBy = true;
+        classifiedByTypes.add(_classification.getId());
         setDirty();
     }
 
@@ -900,7 +915,7 @@ public class Type
     public Set<Classification> getClassifiedByTypes()
         throws EFapsException
     {
-        if (!this.checked4classifiedBy) {
+        if (!checked4classifiedBy) {
             final QueryBuilder attrQueryBldr = new QueryBuilder(CIAdminDataModel.TypeClassifies);
             attrQueryBldr.addWhereAttrEqValue(CIAdminDataModel.TypeClassifies.To, getId());
             final AttributeQuery attrQuery = attrQueryBldr.getAttributeQuery(CIAdminDataModel.TypeClassifies.From);
@@ -911,14 +926,14 @@ public class Type
             while (query.next()) {
                 Type.get(query.getCurrentValue().getId());
             }
-            this.checked4classifiedBy = true;
+            checked4classifiedBy = true;
             setDirty();
         }
         final Set<Classification> ret = new HashSet<>();
         if (getParentType() != null) {
             ret.addAll(getParentType().getClassifiedByTypes());
         }
-        for (final Long id : this.classifiedByTypes) {
+        for (final Long id : classifiedByTypes) {
             ret.add((Classification) Type.get(id));
         }
         return Collections.unmodifiableSet(ret);
@@ -935,7 +950,7 @@ public class Type
         throws CacheReloadException
     {
         final Set<Type> ret = new HashSet<>();
-        for (final Long id : this.childTypes) {
+        for (final Long id : childTypes) {
             final Type child = Type.get(id);
             ret.add(child);
             ret.addAll(child.getChildTypes());
@@ -951,7 +966,7 @@ public class Type
      */
     public Map<String, Attribute> getAttributes()
     {
-        return this.attributes;
+        return attributes;
     }
 
     /**
@@ -962,7 +977,7 @@ public class Type
      */
     public Set<SQLTable> getTables()
     {
-        return this.tables;
+        return tables;
     }
 
     /**
@@ -974,8 +989,8 @@ public class Type
      */
     public SQLTable getMainTable()
     {
-        SQLTable ret = this.mainTable;
-        if (this.mainTable == null && getParentType() != null) {
+        SQLTable ret = mainTable;
+        if (mainTable == null && getParentType() != null) {
             ret = getParentType().getMainTable();
         }
         return ret;
@@ -994,7 +1009,7 @@ public class Type
         while (table.getMainTable() != null) {
             table = table.getMainTable();
         }
-        this.mainTable = table;
+        mainTable = table;
     }
 
     /**
@@ -1009,7 +1024,7 @@ public class Type
         throws CacheReloadException
     {
         final Set<Type> ret = new HashSet<>();
-        for (final Long id : this.allowedEventTypes) {
+        for (final Long id : allowedEventTypes) {
             ret.add(Type.get(id));
         }
         return Collections.unmodifiableSet(ret);
@@ -1023,10 +1038,10 @@ public class Type
     public long getStoreId()
     {
         final long ret;
-        if (this.storeId == 0 && getParentType() != null) {
+        if (storeId == 0 && getParentType() != null) {
             ret = getParentType().getStoreId();
         } else {
-            ret = this.storeId;
+            ret = storeId;
         }
         return ret;
     }
@@ -1060,7 +1075,7 @@ public class Type
         throws EFapsException
     {
         Menu ret = null;
-        if (this.typeMenu == null) {
+        if (typeMenu == null) {
             final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.LinkIsTypeTreeFor);
             queryBldr.addWhereAttrEqValue(CIAdminUserInterface.LinkIsTypeTreeFor.To, getId());
             final MultiPrintQuery multi = queryBldr.getPrint();
@@ -1070,20 +1085,20 @@ public class Type
                 final Long menuId = multi.<Long>getAttribute(CIAdminUserInterface.LinkIsTypeTreeFor.From);
                 ret = Menu.get(menuId);
                 if (ret != null) {
-                    this.typeMenu = ret.getId();
+                    typeMenu = ret.getId();
                     ret.setTypeMenu(true);
                 } else {
-                    this.typeMenu = Long.valueOf(0);
+                    typeMenu = Long.valueOf(0);
                 }
             } else {
-                this.typeMenu = Long.valueOf(0);
+                typeMenu = Long.valueOf(0);
             }
             setDirty();
         }
-        if (this.typeMenu == 0 && getParentType() != null) {
+        if (typeMenu == 0 && getParentType() != null) {
             ret = getParentType().getTypeMenu();
         } else {
-            ret = Menu.get(this.typeMenu);
+            ret = Menu.get(typeMenu);
         }
         return ret;
     }
@@ -1097,7 +1112,7 @@ public class Type
         throws EFapsException
     {
         Image ret = null;
-        if (this.typeIcon == null) {
+        if (typeIcon == null) {
             final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.LinkIsTypeIconFor);
             queryBldr.addWhereAttrEqValue(CIAdminUserInterface.LinkIsTypeIconFor.To, getId());
             final MultiPrintQuery multi = queryBldr.getPrint();
@@ -1107,19 +1122,19 @@ public class Type
                 final Long menuId = multi.<Long>getAttribute(CIAdminUserInterface.LinkIsTypeIconFor.From);
                 ret = Image.get(menuId);
                 if (ret != null) {
-                    this.typeIcon = ret.getId();
+                    typeIcon = ret.getId();
                 } else {
-                    this.typeIcon = Long.valueOf(0);
+                    typeIcon = Long.valueOf(0);
                 }
             } else {
-                this.typeIcon = Long.valueOf(0);
+                typeIcon = Long.valueOf(0);
             }
             setDirty();
         }
-        if (this.typeIcon == 0 && getParentType() != null) {
+        if (typeIcon == 0 && getParentType() != null) {
             ret = getParentType().getTypeIcon();
         } else {
-            ret = Image.get(this.typeIcon);
+            ret = Image.get(typeIcon);
         }
         return ret;
     }
@@ -1132,7 +1147,7 @@ public class Type
         throws EFapsException
     {
         Form ret = null;
-        if (this.typeForm == null) {
+        if (typeForm == null) {
             final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.LinkIsTypeFormFor);
             queryBldr.addWhereAttrEqValue(CIAdminUserInterface.LinkIsTypeFormFor.To, getId());
             final MultiPrintQuery multi = queryBldr.getPrint();
@@ -1142,19 +1157,19 @@ public class Type
                 final Long formId = multi.<Long>getAttribute(CIAdminUserInterface.LinkIsTypeFormFor.From);
                 ret = Form.get(formId);
                 if (ret != null) {
-                    this.typeForm = ret.getId();
+                    typeForm = ret.getId();
                 } else {
-                    this.typeForm = Long.valueOf(0);
+                    typeForm = Long.valueOf(0);
                 }
             } else {
-                this.typeForm = Long.valueOf(0);
+                typeForm = Long.valueOf(0);
             }
             setDirty();
         }
-        if (this.typeForm == 0 && getParentType() != null) {
+        if (typeForm == 0 && getParentType() != null) {
              ret = getParentType().getTypeForm();
         } else {
-            ret = Form.get(this.typeForm);
+            ret = Form.get(typeForm);
         }
         return ret;
     }
@@ -1169,17 +1184,17 @@ public class Type
     public String toString()
     {
         return new ToStringBuilder(this).appendSuper(super.toString())
-                        .append("parentTypeId", this.parentTypeId)
-                        .append("attributes", this.attributes.size())
-                        .append("children", this.childTypes.size())
-                        .append("abstract", this.abstractBool)
-                        .append("accessSets", this.accessSets.size())
+                        .append("parentTypeId", parentTypeId)
+                        .append("attributes", attributes.size())
+                        .append("children", childTypes.size())
+                        .append("abstract", abstractBool)
+                        .append("accessSets", accessSets.size())
                         .append("companyDependend", isCompanyDependent())
                         .append("groupDependend", isGroupDependent())
                         .append("statusDependend", isCheckStatus())
-                        .append("checked4AccessSet", this.checked4AccessSet)
-                        .append("checked4Children", this.checked4Children)
-                        .append("checked4classifiedBy", this.checked4classifiedBy)
+                        .append("checked4AccessSet", checked4AccessSet)
+                        .append("checked4Children", checked4Children)
+                        .append("checked4classifiedBy", checked4classifiedBy)
                         .append("dirty", isDirty())
                         .toString();
     }

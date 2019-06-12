@@ -512,4 +512,80 @@ public class CIAdminCommon
             super(_uuid);
         }
     }
+
+    public static final _AssociationAbstract AssociationAbstract = new _AssociationAbstract("5a6eb9e3-53dc-4475-b5d3-2667717af585");
+
+    public static class _AssociationAbstract
+        extends CIType
+    {
+
+        protected _AssociationAbstract(final String _uuid)
+        {
+            super(_uuid);
+        }
+        public final CIAttribute Name = new CIAttribute(this, "Name");
+        public final CIAttribute UUID = new CIAttribute(this, "UUID");
+        public final CIAttribute Creator = new CIAttribute(this, "Creator");
+        public final CIAttribute Created = new CIAttribute(this, "Created");
+        public final CIAttribute Modifier = new CIAttribute(this, "Modifier");
+        public final CIAttribute Modified = new CIAttribute(this, "Modified");
+    }
+
+    public static final _AssociationDefault AssociationDefault = new _AssociationDefault("e33c8ccf-0d86-4804-9aa8-916fdc69005b");
+
+    public static class _AssociationDefault
+        extends _AssociationAbstract
+    {
+        protected _AssociationDefault(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
+    public static final _Association Association = new _Association("e070bc54-5a22-48c2-b6f6-ba7dc134e507");
+
+    public static class _Association
+        extends _AssociationAbstract
+    {
+        protected _Association(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
+    public static final _AssociationDefinition AssociationDefinition = new _AssociationDefinition("cddf2d2d-48f5-4357-b45b-779e7e750e41");
+
+    public static class _AssociationDefinition
+        extends CIType
+    {
+
+        protected _AssociationDefinition(final String _uuid)
+        {
+            super(_uuid);
+        }
+        public final CIAttribute AssociationLink = new CIAttribute(this, "AssociationLink");
+        public final CIAttribute CompanyLink = new CIAttribute(this, "CompanyLink");
+        public final CIAttribute Creator = new CIAttribute(this, "Creator");
+        public final CIAttribute Created = new CIAttribute(this, "Created");
+        public final CIAttribute Modifier = new CIAttribute(this, "Modifier");
+        public final CIAttribute Modified = new CIAttribute(this, "Modified");
+    }
+
+    public static final _AssociationMapping AssociationMapping = new _AssociationMapping("5223158a-6ad9-4633-acb6-55fe2eda5d9c");
+
+    public static class _AssociationMapping
+        extends CIType
+    {
+
+        protected _AssociationMapping(final String _uuid)
+        {
+            super(_uuid);
+        }
+        public final CIAttribute AssociationLink = new CIAttribute(this, "AssociationLink");
+        public final CIAttribute TypeLink = new CIAttribute(this, "TypeLink");
+        public final CIAttribute Creator = new CIAttribute(this, "Creator");
+        public final CIAttribute Created = new CIAttribute(this, "Created");
+        public final CIAttribute Modifier = new CIAttribute(this, "Modifier");
+        public final CIAttribute Modified = new CIAttribute(this, "Modified");
+    }
 }

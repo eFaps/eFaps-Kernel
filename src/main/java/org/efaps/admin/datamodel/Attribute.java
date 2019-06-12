@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,9 @@ public class Attribute
         /** Attribute type BitEnum. */
         ATTRTYPE_BITENUM("a9b1abde-d58d-4aea-8cdc-f2870111f1cd"),
         /** Attribute type BitEnum. */
-        ATTRTYPE_JAXB("58817bd8-db76-4b40-8acd-18112fe96170");
+        ATTRTYPE_JAXB("58817bd8-db76-4b40-8acd-18112fe96170"),
+        /** Attribute type AssociationLink. */
+        ATTRTYPE_ASSOC("0d296eba-0c1e-4b78-a2e3-01b1f4991cfe");
 
         /**
          * Stored the UUID for the given type.
@@ -105,7 +107,7 @@ public class Attribute
          */
         AttributeTypeDef(final String _uuid)
         {
-            this.uuid = UUID.fromString(_uuid);
+            uuid = UUID.fromString(_uuid);
         }
 
         /**
@@ -113,7 +115,7 @@ public class Attribute
          */
         public UUID getUuid()
         {
-            return this.uuid;
+            return uuid;
         }
     }
 
@@ -286,11 +288,11 @@ public class Attribute
         throws EFapsException
     {
         super(_id, null, _name);
-        this.sqlTable = _sqlTable;
-        this.parent = _parentId;
-        this.attributeType = _attributeType;
-        this.defaultValue = _defaultValue != null ? _defaultValue.trim() : null;
-        this.dimensionUUID = _dimensionUUID != null ? _dimensionUUID.trim() : null;
+        sqlTable = _sqlTable;
+        parent = _parentId;
+        attributeType = _attributeType;
+        defaultValue = _defaultValue != null ? _defaultValue.trim() : null;
+        dimensionUUID = _dimensionUUID != null ? _dimensionUUID.trim() : null;
         // add SQL columns and evaluate if attribute is required
         boolean req = false;
         int sizeTemp = 0;
@@ -299,7 +301,7 @@ public class Attribute
         while (tok.hasMoreTokens()) {
             final String colName = tok.nextToken().trim();
             getSqlColNames().add(colName);
-            final ColumnInformation columInfo = this.sqlTable.getTableInformation().getColInfo(colName);
+            final ColumnInformation columInfo = sqlTable.getTableInformation().getColInfo(colName);
             if (columInfo == null) {
                 throw new EFapsException(Attribute.class, "Attribute", _id, _name, _sqlTable, colName);
             }
@@ -307,9 +309,9 @@ public class Attribute
             sizeTemp = columInfo.getSize();
             scaleTemp = columInfo.getScale();
         }
-        this.size = sizeTemp;
-        this.scale = scaleTemp;
-        this.required = req;
+        size = sizeTemp;
+        scale = scaleTemp;
+        required = req;
     }
 
     /**
@@ -344,14 +346,14 @@ public class Attribute
     {
         // CHECKSTYLE:ON
         super(_id, null, _name);
-        this.parent = _parentId;
-        this.sqlTable = _sqlTable;
-        this.attributeType = _attributeType;
-        this.defaultValue = _defaultValue != null ? _defaultValue.trim() : null;
-        this.required = _required;
-        this.size = _size;
-        this.scale = _scale;
-        this.dimensionUUID = _dimensionUUID;
+        parent = _parentId;
+        sqlTable = _sqlTable;
+        attributeType = _attributeType;
+        defaultValue = _defaultValue != null ? _defaultValue.trim() : null;
+        required = _required;
+        size = _size;
+        scale = _scale;
+        dimensionUUID = _dimensionUUID;
     }
 
     /**
@@ -362,7 +364,7 @@ public class Attribute
      */
     public boolean hasLink()
     {
-        return this.link != null;
+        return link != null;
     }
 
     /**
@@ -372,10 +374,10 @@ public class Attribute
      */
     protected Attribute copy(final long _parentId)
     {
-        final Attribute ret = new Attribute(getId(), _parentId, getName(), this.sqlTable, this.attributeType,
-                        this.defaultValue, this.dimensionUUID, this.required, this.size, this.scale);
+        final Attribute ret = new Attribute(getId(), _parentId, getName(), sqlTable, attributeType,
+                        defaultValue, dimensionUUID, required, size, scale);
         ret.getSqlColNames().addAll(getSqlColNames());
-        ret.setLink(this.link);
+        ret.setLink(link);
         ret.setClassName(getClassName());
         ret.getProperties().putAll(getProperties());
         return ret;
@@ -406,7 +408,7 @@ public class Attribute
      */
     public SQLTable getTable()
     {
-        return this.sqlTable;
+        return sqlTable;
     }
 
     /**
@@ -418,7 +420,7 @@ public class Attribute
      */
     protected void setLink(final Long _link)
     {
-        this.link = _link;
+        link = _link;
     }
 
     /**
@@ -430,10 +432,10 @@ public class Attribute
     public Type getLink()
         throws CacheReloadException
     {
-        if (this.link == null) {
+        if (link == null) {
             Attribute.LOG.error("Access on Attribute Link without parent defintion: {}", this);
         }
-        return Type.get(this.link);
+        return Type.get(link);
     }
 
     /**
@@ -445,18 +447,18 @@ public class Attribute
     public Map<String, Attribute> getDependencies()
         throws CacheReloadException
     {
-        if (this.dependencies == null) {
-            this.dependencies = new TreeMap<>();
+        if (dependencies == null) {
+            dependencies = new TreeMap<>();
             // in case of a rate attribute the dependencies to the currencies
             // must be given
             if (getProperties().containsKey("CurrencyAttribute4Rate")) {
-                this.dependencies.put("CurrencyAttribute4Rate",
+                dependencies.put("CurrencyAttribute4Rate",
                                 getParent().getAttribute(getProperties().get("CurrencyAttribute4Rate")));
-                this.dependencies.put("TargetCurrencyAttribute4Rate",
+                dependencies.put("TargetCurrencyAttribute4Rate",
                                 getParent().getAttribute(getProperties().get("TargetCurrencyAttribute4Rate")));
             }
         }
-        return this.dependencies;
+        return dependencies;
     }
 
     /**
@@ -468,7 +470,7 @@ public class Attribute
     public Type getParent()
         throws CacheReloadException
     {
-        return Type.get(this.parent);
+        return Type.get(parent);
     }
 
     /**
@@ -476,7 +478,7 @@ public class Attribute
      */
     public Long getParentId()
     {
-        return this.parent;
+        return parent;
     }
 
     /**
@@ -487,7 +489,7 @@ public class Attribute
      */
     public AttributeSet getParentSet()
     {
-        return this.parentSet;
+        return parentSet;
     }
 
     /**
@@ -497,7 +499,7 @@ public class Attribute
      */
     private void setParentSet(final AttributeSet _parentSet)
     {
-        this.parentSet = _parentSet;
+        parentSet = _parentSet;
     }
 
     /**
@@ -508,7 +510,7 @@ public class Attribute
      */
     public ArrayList<String> getSqlColNames()
     {
-        return this.sqlColNames;
+        return sqlColNames;
     }
 
     /**
@@ -519,7 +521,7 @@ public class Attribute
      */
     public AttributeType getAttributeType()
     {
-        return this.attributeType;
+        return attributeType;
     }
 
     /**
@@ -530,7 +532,7 @@ public class Attribute
      */
     public String getDefaultValue()
     {
-        return this.defaultValue;
+        return defaultValue;
     }
 
     /**
@@ -541,7 +543,7 @@ public class Attribute
      */
     public boolean isRequired()
     {
-        return this.required;
+        return required;
     }
 
     /**
@@ -551,7 +553,7 @@ public class Attribute
      */
     public int getSize()
     {
-        return this.size;
+        return size;
     }
 
     /**
@@ -561,7 +563,7 @@ public class Attribute
      */
     public int getScale()
     {
-        return this.scale;
+        return scale;
     }
 
     /**
@@ -573,7 +575,7 @@ public class Attribute
     {
         Dimension ret = null;
         try {
-            ret = Dimension.get(UUID.fromString(this.dimensionUUID));
+            ret = Dimension.get(UUID.fromString(dimensionUUID));
         } catch (final CacheReloadException e) {
             Attribute.LOG.error("Catched CacheReloadException", e);
         }
@@ -587,7 +589,7 @@ public class Attribute
      */
     public boolean hasUoM()
     {
-        return this.dimensionUUID != null;
+        return dimensionUUID != null;
     }
 
     /**
@@ -614,7 +616,7 @@ public class Attribute
         } catch (final EFapsException e) {
             throw new SQLException(e);
         }
-        this.attributeType.getDbAttrType().prepareInsert(_insert, this, tmp);
+        attributeType.getDbAttrType().prepareInsert(_insert, this, tmp);
     }
 
     /**
@@ -641,7 +643,7 @@ public class Attribute
         } catch (final EFapsException e) {
             throw new SQLException(e);
         }
-        this.attributeType.getDbAttrType().prepareUpdate(_update, this, tmp);
+        attributeType.getDbAttrType().prepareUpdate(_update, this, tmp);
     }
 
     /**
@@ -654,7 +656,7 @@ public class Attribute
     public Object readDBValue(final List<Object> _objectList)
         throws EFapsException
     {
-        Object ret = this.attributeType.getDbAttrType().readValue(this, _objectList);
+        Object ret = attributeType.getDbAttrType().readValue(this, _objectList);
         final List<Return> returns = executeEvents(EventType.READ_VALUE, ParameterValues.CLASS, this,
                         ParameterValues.OTHERS, ret);
         for (final Return aRet : returns) {
@@ -678,14 +680,14 @@ public class Attribute
      */
     public String getKey()
     {
-        if (this.key == null) {
+        if (key == null) {
             try {
-                this.key = getParent().getName() + "/" + getName();
+                key = getParent().getName() + "/" + getName();
             } catch (final CacheReloadException e) {
                 Attribute.LOG.error("Problems during reading of key for Attribute: {}", this);
             }
         }
-        return this.key;
+        return key;
     }
 
     /**
@@ -695,7 +697,7 @@ public class Attribute
      */
     public String getClassName()
     {
-        return this.className;
+        return className;
     }
 
     /**
@@ -705,7 +707,7 @@ public class Attribute
      */
     protected void setClassName(final String _className)
     {
-        this.className = _className;
+        className = _className;
     }
 
     /**
@@ -817,7 +819,7 @@ public class Attribute
     {
         return new ToStringBuilder(this).appendSuper(super.toString())
                         .append("attributetype", getAttributeType().toString())
-                        .append("required", this.required).toString();
+                        .append("required", required).toString();
     }
 
     @Override

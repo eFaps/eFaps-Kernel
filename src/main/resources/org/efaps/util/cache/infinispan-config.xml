@@ -56,6 +56,19 @@
             <indexing index="NONE" />
         </local-cache>
 
+        <local-cache name="org.efaps.admin.common.Association.UUID">
+            <indexing index="NONE" />
+        </local-cache>
+        <local-cache name="org.efaps.admin.common.Association.ID">
+            <indexing index="NONE" />
+        </local-cache>
+        <local-cache name="org.efaps.admin.common.Association.Name">
+            <indexing index="NONE" />
+        </local-cache>
+        <local-cache name="org.efaps.admin.common.Association.Key">
+            <indexing index="NONE" />
+        </local-cache>
+
         <local-cache name="org.efaps.util.cache.InfinispanCache.InternalCounter">
             <indexing index="NONE" />
         </local-cache>
