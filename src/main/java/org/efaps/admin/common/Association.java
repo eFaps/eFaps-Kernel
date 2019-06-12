@@ -264,23 +264,27 @@ public class Association
                              final Type _type)
         throws EFapsException
     {
+        final Cache<AssociationKey, Long> cache = InfinispanCache.get().<AssociationKey, Long>getCache(Association.KEYCACHE);
         final Set<Long> typeIds = new HashSet<>();
         Long assocId = null;
         Type currentType = _type;
-        while (assocId == null && currentType.getParentType() != null) {
-            assocId = loadFromDB(_companyId, currentType.getId());
-            typeIds.add(currentType.getId());
-            currentType = currentType.getParentType();
+        while (assocId == null && currentType != null) {
+            final AssociationKey verifyKey = AssociationKey.get(_companyId, currentType.getId());
+            if (cache.containsKey(verifyKey)) {
+                assocId = cache.get(verifyKey);
+            } else {
+                assocId = loadFromDB(_companyId, currentType.getId());
+                typeIds.add(currentType.getId());
+                currentType = currentType.getParentType();
+            }
         }
         if (assocId == null) {
-            final Cache<AssociationKey, Long> cache = InfinispanCache.get().<AssociationKey, Long>getCache(Association.KEYCACHE);
             assocId = loadDefault(_companyId);
-            for (final Long typeId: typeIds) {
+            for (final Long typeId : typeIds) {
                 cache.put(AssociationKey.get(_companyId, typeId), assocId);
             }
         } else {
-            final Cache<AssociationKey, Long> cache = InfinispanCache.get().<AssociationKey, Long>getCache(Association.KEYCACHE);
-            for (final Long typeId: typeIds) {
+            for (final Long typeId : typeIds) {
                 cache.put(AssociationKey.get(_companyId, typeId), assocId);
             }
         }
