@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.efaps.admin.common.Association;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.ConsortiumLinkType;
@@ -188,6 +189,7 @@ public abstract class AbstractObjectQuery<T>
      * @param _sqlTable SQLTable the index is wanted for
      * @return index of the SQLTable
      */
+    @Override
     public Integer getIndex4SqlTable(final SQLTable _sqlTable)
     {
         final Integer ret;
@@ -375,6 +377,29 @@ public abstract class AbstractObjectQuery<T>
                 }
             }
         }
+
+        if (getBaseType().hasAssociation()) {
+            final QEqual eqPart = new QEqual(new QAttribute(getBaseType().getAssociationAttribute()));
+            if (this.isCompanyDependent()) {
+                if (Context.getThreadContext().getCompany() == null) {
+                    throw new EFapsException(InstanceQuery.class, "noCompany");
+                }
+                eqPart.addValue(new QNumberValue(Association.evaluate(getBaseType()).getId()));
+            } else {
+                for (final Long compId : Context.getThreadContext().getPerson().getCompanies()) {
+                    eqPart.addValue(new QNumberValue(Association.evaluate(getBaseType(), compId).getId()));
+                }
+            }
+            // only add if an actual filter was set. A background process might not use Companies at all.
+            if (CollectionUtils.isNotEmpty(eqPart.getValues())) {
+                if (this.where == null) {
+                    this.where = new QWhereSection(eqPart);
+                } else {
+                    this.where.setPart(new QAnd(this.where.getPart(), eqPart));
+                }
+            }
+        }
+
         if (this.where != null) {
             this.where.prepare(this);
         }

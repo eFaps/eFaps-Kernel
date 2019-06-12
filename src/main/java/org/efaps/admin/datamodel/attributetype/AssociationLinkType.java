@@ -20,6 +20,7 @@ package org.efaps.admin.datamodel.attributetype;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.efaps.admin.common.Association;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
@@ -61,7 +62,19 @@ public class AssociationLinkType
                             final List<Object> _objectList)
         throws EFapsException
     {
-        return null;
+        Object ret = null;
+        if (CollectionUtils.isNotEmpty(_objectList)) {
+            final Object obj = _objectList.get(0);
+            if (obj != null) {
+                long id = 0;
+                if (obj instanceof Number) {
+                    id = ((Number) obj).longValue();
+                } else if (obj != null) {
+                    id = Long.parseLong(obj.toString());
+                }
+                ret = Association.get(id);
+            }
+        }
+        return ret;
     }
-
 }

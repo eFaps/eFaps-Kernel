@@ -39,6 +39,7 @@ import org.apache.commons.collections4.MultiMapUtils;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.dbutils.handlers.ArrayListHandler;
 import org.efaps.admin.access.user.AccessCache;
+import org.efaps.admin.common.Association;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.SQLTable;
@@ -305,6 +306,7 @@ public class SQLRunner
                 addWhere4QueryPrint((QueryPrint) _print);
             }
             addCompanyCriteria(_print);
+            addAssociationCriteria(_print);
         }
     }
 
@@ -386,6 +388,52 @@ public class SQLRunner
                 }
                 where.addCriteria(entry.getKey().getIdx(),
                                 Collections.singletonList(entry.getValue().sqlColCompany),
+                                ids.size() > 1 ? Comparison.IN : Comparison.EQUAL, new LinkedHashSet<>(ids),
+                                                false, Connection.AND);
+            }
+        }
+    }
+
+
+    /**
+     * Adds the company criteria.
+     *
+     * @param _print the print
+     * @throws EFapsException the e faps exception
+     */
+    private void addAssociationCriteria(final AbstractPrint _print)
+        throws EFapsException
+    {
+        final Map<TableIdx, AssociationCriteria> associationCriterias = new HashMap<>();
+        final List<Type> types = _print.getTypes().stream().sorted((type1, type2) -> Long.compare(type1.getId(), type2
+                        .getId())).collect(Collectors.toList());
+        for (final Type type : types) {
+            final String tableName = type.getMainTable().getSqlTable();
+            final TableIdx tableIdx = sqlSelect.getIndexer().getTableIdx(tableName);
+            if (tableIdx.isCreated()) {
+                sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
+            }
+            if (type.hasAssociation()) {
+                final String columnName = type.getAssociationAttribute().getSqlColNames().get(0);
+                associationCriterias.put(tableIdx, new AssociationCriteria(columnName, type.getId()));
+            }
+        }
+        if (!associationCriterias.isEmpty()) {
+            if (Context.getThreadContext().getCompany() == null) {
+                throw new EFapsException(SQLRunner.class, "noCompany");
+            }
+            final SQLWhere where = sqlSelect.getWhere();
+            for (final Entry<TableIdx, AssociationCriteria> entry : associationCriterias.entrySet()) {
+                final List<String> ids = new ArrayList<>();
+                if (_print.has(StmtFlag.COMPANYINDEPENDENT)) {
+                    for (final Long companyId : Context.getThreadContext().getPerson().getCompanies()) {
+                        ids.add(String.valueOf(Association.evaluate(Type.get(entry.getValue().typeId), companyId)));
+                    }
+                } else {
+                    ids.add(String.valueOf(Association.evaluate(Type.get(entry.getValue().typeId))));
+                }
+                where.addCriteria(entry.getKey().getIdx(),
+                                Collections.singletonList(entry.getValue().sqlColAssociation),
                                 ids.size() > 1 ? Comparison.IN : Comparison.EQUAL, new LinkedHashSet<>(ids),
                                                 false, Connection.AND);
             }
@@ -739,6 +787,51 @@ public class SQLRunner
         public int hashCode()
         {
             return sqlColCompany.hashCode() + Long.valueOf(id).hashCode();
+        }
+    }
+
+    /**
+     * The Class TypeCriteria.
+     */
+    private static class AssociationCriteria
+    {
+
+        /** The sql column for company. */
+        private final String sqlColAssociation;
+
+        /** The id. */
+        private final long typeId;
+
+        /**
+         * Instantiates a new type criteria.
+         *
+         * @param _sqlColCopmany the sql column for company id
+         * @param _id the id
+         */
+        AssociationCriteria(final String _sqlColAssociation,
+                        final long _typeId)
+        {
+            sqlColAssociation = _sqlColAssociation;
+            typeId = _typeId;
+        }
+
+        @Override
+        public boolean equals(final Object _obj)
+        {
+            final boolean ret;
+            if (_obj instanceof AssociationCriteria) {
+                final AssociationCriteria obj = (AssociationCriteria) _obj;
+                ret = sqlColAssociation.equals(obj.sqlColAssociation) && typeId == obj.typeId;
+            } else {
+                ret = super.equals(_obj);
+            }
+            return ret;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return sqlColAssociation.hashCode() + Long.valueOf(typeId).hashCode();
         }
     }
 }

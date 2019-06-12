@@ -23,15 +23,19 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.user.Company;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Context;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
+import org.efaps.db.SelectBuilder;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -101,6 +105,8 @@ public class Association
      */
     private final String name;
 
+    private final Set<Long> companyIds = new HashSet<>();
+
     private Association(final long _id,
                         final String _name,
                         final String _uuid)
@@ -128,27 +134,52 @@ public class Association
         return id;
     }
 
+    private void addCompanyId(final Long _companyId)
+    {
+        companyIds.add(_companyId);
+    }
+
+    public Set<Company> getCompanies()
+    {
+        return companyIds.stream()
+            .map(id -> {
+                try {
+                    return Company.get(id);
+                } catch (final CacheReloadException e) {
+                   LOG.error("Well", e);
+                }
+                return null;
+            })
+            .collect(Collectors.toSet());
+    }
+
     /**
      * Method to initialize the {@link #CACHE cache} for the Associations.
      */
     public static void initialize()
     {
         if (InfinispanCache.get().exists(Association.UUIDCACHE)) {
-            InfinispanCache.get().<UUID, Association>getCache(Association.UUIDCACHE).clear();
+            InfinispanCache.get().getCache(Association.UUIDCACHE).clear();
         } else {
             InfinispanCache.get().<UUID, Association>getCache(Association.UUIDCACHE)
                             .addListener(new CacheLogListener(Association.LOG));
         }
         if (InfinispanCache.get().exists(Association.IDCACHE)) {
-            InfinispanCache.get().<Long, Association>getCache(Association.IDCACHE).clear();
+            InfinispanCache.get().getCache(Association.IDCACHE).clear();
         } else {
             InfinispanCache.get().<Long, Association>getCache(Association.IDCACHE)
                             .addListener(new CacheLogListener(Association.LOG));
         }
         if (InfinispanCache.get().exists(Association.NAMECACHE)) {
-            InfinispanCache.get().<String, Association>getCache(Association.NAMECACHE).clear();
+            InfinispanCache.get().getCache(Association.NAMECACHE).clear();
         } else {
             InfinispanCache.get().<String, Association>getCache(Association.NAMECACHE)
+                            .addListener(new CacheLogListener(Association.LOG));
+        }
+        if (InfinispanCache.get().exists(Association.KEYCACHE)) {
+            InfinispanCache.get().getCache(Association.KEYCACHE).clear();
+        } else {
+            InfinispanCache.get().<AssociationKey, Long>getCache(Association.KEYCACHE)
                             .addListener(new CacheLogListener(Association.LOG));
         }
     }
@@ -163,18 +194,29 @@ public class Association
         return cache.get(_id);
     }
 
+    @SuppressWarnings("unchecked")
     private static void loadAssociation(final long _id)
         throws EFapsException
     {
         final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.AssociationAbstract);
         queryBldr.addWhereAttrEqValue(CIAdminCommon.AssociationAbstract.ID, _id);
         final MultiPrintQuery multi = queryBldr.getPrint();
+        final SelectBuilder selCompanyIds = SelectBuilder.get()
+                        .linkfrom(CIAdminCommon.AssociationDefinition.AssociationLink)
+                        .attribute(CIAdminCommon.AssociationDefinition.CompanyLink);
+        multi.addSelect(selCompanyIds);
         multi.addAttribute(CIAdminCommon.AssociationAbstract.Name, CIAdminCommon.AssociationAbstract.UUID);
         multi.executeWithoutAccessCheck();
         if (multi.next()) {
             final String name = multi.getAttribute(CIAdminCommon.AssociationAbstract.Name);
             final String uuid = multi.getAttribute(CIAdminCommon.AssociationAbstract.UUID);
+            final Object companies = multi.getSelect(selCompanyIds);
             final Association association = new Association(_id, name, uuid);
+            if (multi.isList4Select(selCompanyIds.toString())) {
+                ((List<Long>) companies).forEach(id -> association.addCompanyId(id));
+            } else {
+                association.addCompanyId((Long) companies);
+            }
             cacheAssociation(association);
         } else {
             // TODO error
@@ -200,12 +242,19 @@ public class Association
         throws EFapsException
     {
         final Long companyId = Context.getThreadContext().getCompany().getId();
+        return Association.evaluate(_type, companyId);
+    }
+
+    public static Association evaluate(final Type _type,
+                                       final long _companyId)
+        throws EFapsException
+    {
         final Long typeId = _type.getId();
-        final AssociationKey key = AssociationKey.get(companyId, typeId);
+        final AssociationKey key = AssociationKey.get(_companyId, typeId);
 
         final Cache<AssociationKey, Long> cache = InfinispanCache.get().<AssociationKey, Long>getCache(Association.KEYCACHE);
         if (!cache.containsKey(key)) {
-            load(companyId, _type);
+            load(_companyId, _type);
         }
         final Long associationId = cache.get(key);
         return Association.get(associationId);

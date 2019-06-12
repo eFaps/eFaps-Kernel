@@ -137,7 +137,7 @@ public final class Company
      */
     protected void addConsortium(final Long _consortiumId)
     {
-        this.consortiumIds.add(_consortiumId);
+        consortiumIds.add(_consortiumId);
     }
 
     /**
@@ -146,7 +146,7 @@ public final class Company
      */
     public Set<Long> getConsortiums()
     {
-        return Collections.unmodifiableSet(this.consortiumIds);
+        return Collections.unmodifiableSet(consortiumIds);
     }
 
     /**

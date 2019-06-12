@@ -583,6 +583,16 @@ public class Type
     }
 
     /**
+     * Get the attribute containing the company information.
+     *
+     * @return attribute containing the company information
+     */
+    public Attribute getAssociationAttribute()
+    {
+        return attributes.get(associationAttributeName);
+    }
+
+    /**
      * Get the attribute containing the group information.
      *
      * @return attribute containing the group information
@@ -1190,6 +1200,7 @@ public class Type
                         .append("abstract", abstractBool)
                         .append("accessSets", accessSets.size())
                         .append("companyDependend", isCompanyDependent())
+                        .append("hasAssociation", hasAssociation())
                         .append("groupDependend", isGroupDependent())
                         .append("statusDependend", isCheckStatus())
                         .append("checked4AccessSet", checked4AccessSet)

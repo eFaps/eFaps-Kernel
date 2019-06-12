@@ -59,7 +59,7 @@ public class Key
      */
     public long getPersonId()
     {
-        return this.personId;
+        return personId;
     }
 
     /**
@@ -70,7 +70,7 @@ public class Key
      */
     public Key setPersonId(final long _personId)
     {
-        this.personId = _personId;
+        personId = _personId;
         return this;
     }
 
@@ -81,7 +81,7 @@ public class Key
      */
     public long getTypeId()
     {
-        return this.typeId;
+        return typeId;
     }
 
     /**
@@ -92,7 +92,7 @@ public class Key
      */
     public Key setTypeId(final long _typeId)
     {
-        this.typeId = _typeId;
+        typeId = _typeId;
         return this;
     }
 
@@ -103,7 +103,7 @@ public class Key
      */
     public long getCompanyId()
     {
-        return this.companyId;
+        return companyId;
     }
 
     /**
@@ -114,7 +114,7 @@ public class Key
      */
     public Key setCompanyId(final long _companyId)
     {
-        this.companyId = _companyId;
+        companyId = _companyId;
         return this;
     }
 
@@ -124,7 +124,7 @@ public class Key
     @Override
     public int hashCode()
     {
-        return (int) (this.companyId + this.companyId + this.typeId);
+        return (int) (companyId + companyId + typeId);
     }
 
     /**
@@ -168,7 +168,7 @@ public class Key
 
         final Type type = _instance.getType();
         ret.setTypeId(type.getId());
-        if (type.isCompanyDependent()) {
+        if (type.isCompanyDependent() || type.hasAssociation()) {
             ret.setCompanyId(Context.getThreadContext().getCompany().getId());
         }
         Key.LOG.debug("Retrieved Key {}", ret);
