@@ -17,6 +17,7 @@
 
 package org.efaps.db.wrapper;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,13 +49,13 @@ public class TableIndexer
     {
         TableIdx ret = null;
         final String key = _tableName + "-" + StringUtils.join(_keys, "-");
-        final Optional<TableIdx> val = this.tableidxs.stream().filter(t -> t.getKey().equals(key)).findFirst();
+        final Optional<TableIdx> val = tableidxs.stream().filter(t -> t.getKey().equals(key)).findFirst();
         if (val.isPresent()) {
             ret = val.get();
             ret.setCreated(false);
         } else {
-            ret = new TableIdx().setCreated(true).setTable(_tableName).setIdx(this.currentIdx++).setKey(key);
-            this.tableidxs.add(ret);
+            ret = new TableIdx().setCreated(true).setTable(_tableName).setIdx(currentIdx++).setKey(key);
+            tableidxs.add(ret);
         }
         return ret;
     }
@@ -63,7 +64,10 @@ public class TableIndexer
      * The Class Tableidx.
      */
     public static class TableIdx
+        implements Serializable
     {
+        /** */
+        private static final long serialVersionUID = 1L;
 
         /** The key. */
         private String key;
@@ -84,7 +88,7 @@ public class TableIndexer
          */
         public boolean isCreated()
         {
-            return this.created;
+            return created;
         }
 
         /**
@@ -95,7 +99,7 @@ public class TableIndexer
          */
         private TableIdx setCreated(final boolean _created)
         {
-            this.created = _created;
+            created = _created;
             return this;
         }
 
@@ -106,7 +110,7 @@ public class TableIndexer
          */
         public String getTable()
         {
-            return this.table;
+            return table;
         }
 
         /**
@@ -117,7 +121,7 @@ public class TableIndexer
          */
         private TableIdx setTable(final String _table)
         {
-            this.table = _table;
+            table = _table;
             return this;
         }
 
@@ -128,7 +132,7 @@ public class TableIndexer
          */
         public int getIdx()
         {
-            return this.idx;
+            return idx;
         }
 
         /**
@@ -139,7 +143,7 @@ public class TableIndexer
          */
         private TableIdx setIdx(final int _idx)
         {
-            this.idx = _idx;
+            idx = _idx;
             return this;
         }
 
@@ -150,7 +154,7 @@ public class TableIndexer
          */
         public String getKey()
         {
-            return this.key;
+            return key;
         }
 
         /**
@@ -161,8 +165,27 @@ public class TableIndexer
          */
         private TableIdx setKey(final String _key)
         {
-            this.key = _key;
+            key = _key;
             return this;
+        }
+
+        @Override
+        public boolean equals(final Object _obj)
+        {
+            final boolean ret;
+            if (_obj instanceof TableIdx) {
+                final TableIdx obj = (TableIdx) _obj;
+                ret = key.equals(obj.key) && idx == obj.idx && table.equals(obj.table);
+            } else {
+                ret = super.equals(_obj);
+            }
+            return ret;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return table.hashCode() + Long.valueOf(idx).hashCode();
         }
     }
 }

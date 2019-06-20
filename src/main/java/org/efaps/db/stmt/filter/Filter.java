@@ -35,6 +35,8 @@ import org.efaps.admin.datamodel.attributetype.LongType;
 import org.efaps.admin.datamodel.attributetype.StatusType;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLWhere;
+import org.efaps.db.wrapper.SQLWhere.Criteria;
+import org.efaps.db.wrapper.SQLWhere.Group;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.eql2.Comparison;
 import org.efaps.eql2.Connection;
@@ -197,38 +199,32 @@ public class Filter
                                     .filter(TypeCriterion::isNullable)
                                     .findAny()
                                     .isPresent();
+                    final Set<String> values = new LinkedHashSet<>();
+                    criteria.stream()
+                        .map(citerion -> String.valueOf(citerion.getTypeId()))
+                        .forEach(typeId -> values.add(typeId));
 
                     if (nullable) {
-
+                        final Group group = new Group().setConnection(Connection.AND);
+                        group.add(new Criteria()
+                                        .tableIndex(index.intValue())
+                                        .colName(criteria.get(0).getSqlColType())
+                                        .comparison(Comparison.EQUAL)
+                                        .values(values)
+                                        .connection(Connection.OR));
+                        group.add(new Criteria()
+                                        .tableIndex(index.intValue())
+                                        .colName(criteria.get(0).getSqlColType())
+                                        .comparison(Comparison.EQUAL)
+                                        .connection(Connection.OR));
+                        where.section(group);
                     } else {
-                        final Set<String> values = new LinkedHashSet<>();
-                        criteria.stream()
-                            .map(citerion -> String.valueOf(citerion.getTypeId()))
-                            .forEach(typeId -> values.add(typeId));
-
-                        where.addCriteria(index.intValue(),Collections.singletonList(criteria.get(0).getSqlColType()),
+                        where.addCriteria(index.intValue(), Collections.singletonList(criteria.get(0).getSqlColType()),
                                         Comparison.EQUAL, values, false, Connection.AND);
                     }
-                    /*
-                    final Group group = new Group().setConnection(Connection.AND);
-                    group.add(new Criteria()
-                                    .tableIndex(tableidx.getIdx())
-                                    .colName(((SQLTable) getTable()).getSqlColType())
-                                    .comparison(Comparison.EQUAL)
-                                    .value(String.valueOf(getAttributeSet().getId()))
-                                    .connection(Connection.OR));
-                    group.add(new Criteria()
-                                    .tableIndex(tableidx.getIdx())
-                                    .colName(((SQLTable) getTable()).getSqlColType())
-                                    .comparison(Comparison.EQUAL)
-                                    .connection(Connection.OR));
-                    where.section(group);
-                    */
             });
         }
-
     }
-
 
     /**
      * Gets the.

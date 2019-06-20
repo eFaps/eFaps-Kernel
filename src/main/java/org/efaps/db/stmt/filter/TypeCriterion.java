@@ -80,7 +80,8 @@ public class TypeCriterion
         final boolean ret;
         if (_obj instanceof TypeCriterion) {
             final TypeCriterion obj = (TypeCriterion) _obj;
-            ret = sqlColType.equals(obj.sqlColType) && typeId == obj.typeId;
+            ret = sqlColType.equals(obj.sqlColType) && typeId == obj.typeId
+                            && nullable == obj.nullable && tableIdx.equals(obj.tableIdx);
         } else {
             ret = super.equals(_obj);
         }
