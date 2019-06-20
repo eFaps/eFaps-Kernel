@@ -677,6 +677,7 @@ public class SQLRunner
                 rs.close();
                 stmt.close();
             } catch (final SQLException e) {
+                LOG.error("SQL Statment threw error: {}", _complStmt);
                 throw new EFapsException(SQLRunner.class, "executeOneCompleteStmt", e);
             }
             if (runnable.has(StmtFlag.REQCACHED)) {
