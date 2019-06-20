@@ -17,16 +17,14 @@
 
 package org.efaps.db.stmt.selection.elements;
 
+import java.util.Set;
+
 import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.stmt.filter.TypeCriterion;
 import org.efaps.db.wrapper.SQLSelect;
-import org.efaps.db.wrapper.SQLWhere;
-import org.efaps.db.wrapper.SQLWhere.Criteria;
-import org.efaps.db.wrapper.SQLWhere.Group;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
-import org.efaps.eql2.Comparison;
-import org.efaps.eql2.Connection;
 import org.efaps.util.EFapsException;
 
 /**
@@ -34,7 +32,7 @@ import org.efaps.util.EFapsException;
  */
 public class AttributeSetElement
     extends AbstractDataElement<AttributeSetElement>
-    implements IJoinTableIdx, ISquash
+    implements IJoinTableIdx, ISquash, ITypeCriterion
 {
     /** The type. */
     private AttributeSet attributeSet;
@@ -44,24 +42,24 @@ public class AttributeSetElement
 
     public AttributeSet getAttributeSet()
     {
-        return this.attributeSet;
+        return attributeSet;
     }
 
     public AttributeSetElement setAttributeSet(final AttributeSet _attributeSet)
     {
-        this.attributeSet = _attributeSet;
-        setDBTable(this.attributeSet.getMainTable());
+        attributeSet = _attributeSet;
+        setDBTable(attributeSet.getMainTable());
         return this;
     }
 
     public Type getType()
     {
-        return this.type;
+        return type;
     }
 
     public AttributeSetElement setType(final Type _type)
     {
-        this.type = _type;
+        type = _type;
         return this;
     }
 
@@ -70,8 +68,8 @@ public class AttributeSetElement
         throws EFapsException
     {
         final String tableName = ((SQLTable) getTable()).getSqlTable();
-        final String joinTableName = this.attributeSet.getMainTable().getSqlTable();
-        return _sqlSelect.getIndexer().getTableIdx(joinTableName, tableName, this.attributeSet.getName());
+        final String joinTableName = attributeSet.getMainTable().getSqlTable();
+        return _sqlSelect.getIndexer().getTableIdx(joinTableName, tableName, attributeSet.getName());
     }
 
     @Override
@@ -89,33 +87,11 @@ public class AttributeSetElement
                 } else {
                     tableidx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable());
                 }
-                final String joinTableName = this.attributeSet.getMainTable().getSqlTable();
-                final String linktoColName = this.type.getAttribute("ID").getSqlColNames().get(0);
-                _sqlSelect.leftJoin(joinTableName, joinTableidx.getIdx(), this.attributeSet.getSqlColNames().get(0),
+                final String joinTableName = attributeSet.getMainTable().getSqlTable();
+                final String linktoColName = type.getAttribute("ID").getSqlColNames().get(0);
+                _sqlSelect.leftJoin(joinTableName, joinTableidx.getIdx(), attributeSet.getSqlColNames().get(0),
                                 tableidx.getIdx(), linktoColName);
             }
-        }
-    }
-
-    @Override
-    public void append2SQLWhere(final SQLWhere _sqlWhere)
-        throws EFapsException
-    {
-        if (((SQLTable) getTable()).getSqlColType() != null) {
-            final TableIdx tableidx = getJoinTableIdx(_sqlWhere.getSqlSelect());
-            final Group group = new Group().setConnection(Connection.AND);
-            group.add(new Criteria()
-                            .tableIndex(tableidx.getIdx())
-                            .colName(((SQLTable) getTable()).getSqlColType())
-                            .comparison(Comparison.EQUAL)
-                            .value(String.valueOf(getAttributeSet().getId()))
-                            .connection(Connection.OR));
-            group.add(new Criteria()
-                            .tableIndex(tableidx.getIdx())
-                            .colName(((SQLTable) getTable()).getSqlColType())
-                            .comparison(Comparison.EQUAL)
-                            .connection(Connection.OR));
-            _sqlWhere.section(group);
         }
     }
 
@@ -145,12 +121,22 @@ public class AttributeSetElement
     @Override
     public String getPath()
     {
-        return super.getPath() + "->ATTRIBUTESET-" + this.attributeSet.getName();
+        return super.getPath() + "->ATTRIBUTESET-" + attributeSet.getName();
     }
 
     @Override
     public AttributeSetElement getThis()
     {
         return this;
+    }
+
+    @Override
+    public void add2TypeCriteria(final SQLSelect _sqlSelect, final Set<TypeCriterion> _typeCriterias)
+        throws EFapsException
+    {
+        if (((SQLTable) getTable()).getSqlColType() != null) {
+            final TableIdx tableidx = getJoinTableIdx(_sqlSelect);
+            _typeCriterias.add(TypeCriterion.of(tableidx, ((SQLTable) getTable()).getSqlColType(), getAttributeSet().getId()));
+        }
     }
 }

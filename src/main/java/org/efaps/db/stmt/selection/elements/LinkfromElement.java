@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@
 
 package org.efaps.db.stmt.selection.elements;
 
+import java.util.Set;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.stmt.filter.TypeCriterion;
 import org.efaps.db.wrapper.SQLSelect;
-import org.efaps.db.wrapper.SQLWhere;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
-import org.efaps.eql2.Comparison;
-import org.efaps.eql2.Connection;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -33,7 +33,7 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public class LinkfromElement
     extends AbstractDataElement<LinkfromElement>
-    implements IJoinTableIdx, ISquash
+    implements IJoinTableIdx, ISquash, ITypeCriterion
 {
     /** The attribute. */
     private Attribute attribute;
@@ -48,7 +48,7 @@ public class LinkfromElement
      */
     public Attribute getAttribute()
     {
-        return this.attribute;
+        return attribute;
     }
 
     /**
@@ -59,8 +59,8 @@ public class LinkfromElement
      */
     public LinkfromElement setAttribute(final Attribute _attribute)
     {
-        this.attribute = _attribute;
-        setDBTable(this.attribute.getTable());
+        attribute = _attribute;
+        setDBTable(attribute.getTable());
         return this;
     }
 
@@ -71,7 +71,7 @@ public class LinkfromElement
      */
     public Type getStartType()
     {
-        return this.startType;
+        return startType;
     }
 
     /**
@@ -82,7 +82,7 @@ public class LinkfromElement
      */
     public LinkfromElement setStartType(final Type _startType)
     {
-        this.startType = _startType;
+        startType = _startType;
         return this;
     }
 
@@ -111,9 +111,9 @@ public class LinkfromElement
                 if (getPrevious() != null && getPrevious() instanceof IJoinTableIdx) {
                     tableidx = ((IJoinTableIdx) getPrevious()).getJoinTableIdx(_sqlSelect);
                 } else {
-                    tableidx = _sqlSelect.getIndexer().getTableIdx(this.startType.getMainTable().getSqlTable());
+                    tableidx = _sqlSelect.getIndexer().getTableIdx(startType.getMainTable().getSqlTable());
                 }
-                final String linktoColName = this.attribute.getSqlColNames().get(0);
+                final String linktoColName = attribute.getSqlColNames().get(0);
                 final String tableName = ((SQLTable) getTable()).getSqlTable();
                 _sqlSelect.leftJoin(tableName, joinTableidx.getIdx(), linktoColName, tableidx.getIdx(), "ID");
             }
@@ -132,19 +132,8 @@ public class LinkfromElement
         throws CacheReloadException
     {
         final String tableName = ((SQLTable) getTable()).getSqlTable();
-        return _sqlSelect.getIndexer().getTableIdx(tableName, this.attribute.getName(),
-                        this.startType.getMainTable().getSqlTable());
-    }
-
-    @Override
-    public void append2SQLWhere(final SQLWhere _sqlWhere)
-        throws EFapsException
-    {
-        if (((SQLTable) getTable()).getSqlColType() != null) {
-            final TableIdx tableidx = getJoinTableIdx(_sqlWhere.getSqlSelect());
-            _sqlWhere.addCriteria(tableidx.getIdx(), ((SQLTable) getTable()).getSqlColType(), Comparison.EQUAL,
-                            String.valueOf(getAttribute().getParent().getId()), Connection.AND);
-        }
+        return _sqlSelect.getIndexer().getTableIdx(tableName, attribute.getName(),
+                        startType.getMainTable().getSqlTable());
     }
 
     /**
@@ -155,7 +144,7 @@ public class LinkfromElement
     protected void appendBaseTable(final SQLSelect _sqlSelect)
     {
         if (_sqlSelect.getFromTables().isEmpty()) {
-            final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(this.startType.getMainTable().getSqlTable());
+            final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(startType.getMainTable().getSqlTable());
             if (tableidx.isCreated()) {
                 _sqlSelect.from(tableidx.getTable(), tableidx.getIdx());
             }
@@ -166,5 +155,16 @@ public class LinkfromElement
     public String getPath()
     {
         return super.getPath() + "<-" + getAttribute().getName() + ":" + getAttribute().getParentId();
+    }
+
+    @Override
+    public void add2TypeCriteria(final SQLSelect _sqlSelect, final Set<TypeCriterion> _typeCriterias)
+        throws EFapsException
+    {
+        if (((SQLTable) getTable()).getSqlColType() != null) {
+            final TableIdx tableidx = getJoinTableIdx(_sqlSelect);
+            _typeCriterias.add(TypeCriterion.of(tableidx, ((SQLTable) getTable()).getSqlColType(),
+                            getAttribute().getParent().getId(), true));
+        }
     }
 }

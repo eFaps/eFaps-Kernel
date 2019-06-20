@@ -22,9 +22,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -35,8 +35,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.MultiMapUtils;
-import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.dbutils.handlers.ArrayListHandler;
 import org.efaps.admin.access.user.AccessCache;
 import org.efaps.admin.common.Association;
@@ -56,6 +54,7 @@ import org.efaps.db.QueryKey;
 import org.efaps.db.stmt.StmtFlag;
 import org.efaps.db.stmt.delete.AbstractDelete;
 import org.efaps.db.stmt.filter.Filter;
+import org.efaps.db.stmt.filter.TypeCriterion;
 import org.efaps.db.stmt.print.AbstractPrint;
 import org.efaps.db.stmt.print.ListPrint;
 import org.efaps.db.stmt.print.ObjectPrint;
@@ -65,6 +64,7 @@ import org.efaps.db.stmt.selection.Select;
 import org.efaps.db.stmt.selection.elements.AbstractDataElement;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.selection.elements.IOrderable;
+import org.efaps.db.stmt.selection.elements.ITypeCriterion;
 import org.efaps.db.stmt.update.AbstractObjectUpdate;
 import org.efaps.db.stmt.update.AbstractUpdate;
 import org.efaps.db.stmt.update.Insert;
@@ -81,7 +81,6 @@ import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLSelect.SQLSelectPart;
 import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.db.wrapper.SQLWhere;
-import org.efaps.db.wrapper.SQLWhere.Criteria;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.eql2.Comparison;
 import org.efaps.eql2.Connection;
@@ -262,11 +261,15 @@ public class SQLRunner
         if (stmt instanceof IPrintQueryStatement) {
             order = ((IPrintQueryStatement) stmt).getOrder();
         }
+        final Set<TypeCriterion> typeCriteria = new HashSet<>();
         int idx = 1;
         for (final Select select : _print.getSelection().getAllSelects()) {
             for (final AbstractElement<?> element : select.getElements()) {
                 if (element instanceof AbstractDataElement) {
                     ((AbstractDataElement<?>) element).append2SQLSelect(sqlSelect);
+                }
+                if (element instanceof ITypeCriterion) {
+                    ((ITypeCriterion) element).add2TypeCriteria(sqlSelect, typeCriteria);
                 }
             }
             if (order != null) {
@@ -290,20 +293,13 @@ public class SQLRunner
             idx++;
         }
         if (sqlSelect.getColumns().size() > 0) {
-            for (final Select select : _print.getSelection().getAllSelects()) {
-                for (final AbstractElement<?> element : select.getElements()) {
-                    if (element instanceof AbstractDataElement) {
-                        ((AbstractDataElement<?>) element).append2SQLWhere(sqlSelect.getWhere());
-                    }
-                }
-            }
             if (_print instanceof ObjectPrint) {
                 addWhere4ObjectPrint((ObjectPrint) _print);
             } else if (_print instanceof ListPrint) {
                 addWhere4ListPrint((ListPrint) _print);
             } else {
-                addTypeCriteria((QueryPrint) _print);
-                addWhere4QueryPrint((QueryPrint) _print);
+                addBaseTypeCriteria((QueryPrint) _print, typeCriteria);
+                addWhere4QueryPrint((QueryPrint) _print, typeCriteria);
             }
             addCompanyCriteria(_print);
             addAssociationCriteria(_print);
@@ -447,16 +443,15 @@ public class SQLRunner
     }
 
     /**
-     * Adds the type criteria.
+     * Adds the base type criteria.
      *
      * @param _print the print
-     */
-    private void addTypeCriteria(final QueryPrint _print)
+     * @param typeCriteria2
+    */
+    private void addBaseTypeCriteria(final QueryPrint _print,
+                                     final Set<TypeCriterion> _typeCriteria)
     {
-        final MultiValuedMap<TableIdx, TypeCriteria> typeCriterias = MultiMapUtils.newListValuedHashMap();
-        final List<Type> types = _print.getTypes().stream()
-                        .sorted((type1, type2) -> Long.compare(type1.getId(), type2.getId()))
-                        .collect(Collectors.toList());
+        final List<Type> types = _print.getTypes().stream().collect(Collectors.toList());
         for (final Type type : types) {
             final String tableName = type.getMainTable().getSqlTable();
             final TableIdx tableIdx = sqlSelect.getIndexer().getTableIdx(tableName);
@@ -464,24 +459,7 @@ public class SQLRunner
                 sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
             }
             if (type.getMainTable().getSqlColType() != null) {
-                typeCriterias.put(tableIdx, new TypeCriteria(type.getMainTable().getSqlColType(), type.getId()));
-            }
-        }
-        if (!typeCriterias.isEmpty()) {
-            final SQLWhere where = sqlSelect.getWhere();
-
-            for (final TableIdx tableIdx : typeCriterias.keySet()) {
-                final Collection<TypeCriteria> criterias = typeCriterias.get(tableIdx);
-                final Iterator<TypeCriteria> iter = criterias.iterator();
-                final TypeCriteria typeCriteria = iter.next();
-
-                final Criteria criteria = where.addCriteria(tableIdx.getIdx(), typeCriteria.sqlColType,
-                                iter.hasNext() ? Comparison.IN : Comparison.EQUAL,
-                                                String.valueOf(typeCriteria.id), Connection.AND);
-
-                while (iter.hasNext()) {
-                    criteria.value(String.valueOf(iter.next().id));
-                }
+                _typeCriteria.add(TypeCriterion.of(tableIdx, type.getMainTable().getSqlColType(), type.getId()));
             }
         }
     }
@@ -490,11 +468,11 @@ public class SQLRunner
      * Adds the where.
      * @throws CacheReloadException on error
      */
-    private void addWhere4QueryPrint(final QueryPrint _print)
+    private void addWhere4QueryPrint(final QueryPrint _print, final Set<TypeCriterion> _typeCriteria)
         throws CacheReloadException
     {
         final Filter filter = _print.getFilter();
-        filter.append2SQLSelect(sqlSelect);
+        filter.append2SQLSelect(sqlSelect, _typeCriteria);
     }
 
     /**
@@ -705,51 +683,6 @@ public class SQLRunner
             ret = true;
         }
         return ret;
-    }
-
-    /**
-     * The Class TypeCriteria.
-     */
-    private static class TypeCriteria
-    {
-
-        /** The sql col type. */
-        private final String sqlColType;
-
-        /** The id. */
-        private final long id;
-
-        /**
-         * Instantiates a new type criteria.
-         *
-         * @param _sqlColType the sql col type
-         * @param _id the id
-         */
-        TypeCriteria(final String _sqlColType,
-                    final long _id)
-        {
-            sqlColType = _sqlColType;
-            id = _id;
-        }
-
-        @Override
-        public boolean equals(final Object _obj)
-        {
-            final boolean ret;
-            if (_obj instanceof TypeCriteria) {
-                final TypeCriteria obj = (TypeCriteria) _obj;
-                ret = sqlColType.equals(obj.sqlColType) && id == obj.id;
-            } else {
-                ret = super.equals(_obj);
-            }
-            return ret;
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return sqlColType.hashCode() + Long.valueOf(id).hashCode();
-        }
     }
 
     /**

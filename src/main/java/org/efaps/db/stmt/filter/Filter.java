@@ -18,10 +18,13 @@
 package org.efaps.db.stmt.filter;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.comparators.ComparatorChain;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.IAttributeType;
@@ -33,6 +36,8 @@ import org.efaps.admin.datamodel.attributetype.StatusType;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLWhere;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
+import org.efaps.eql2.Comparison;
+import org.efaps.eql2.Connection;
 import org.efaps.eql2.IAttributeSelectElement;
 import org.efaps.eql2.IBaseSelectElement;
 import org.efaps.eql2.ISelectElement;
@@ -78,7 +83,7 @@ public class Filter
      *
      * @param _sqlSelect the sql select
      */
-    public void append2SQLSelect(final SQLSelect _sqlSelect)
+    public void append2SQLSelect(final SQLSelect _sqlSelect, final Set<TypeCriterion> _typeCriteria)
     {
         if (iWhere != null) {
             final SQLWhere sqlWhere = _sqlSelect.getWhere();
@@ -123,6 +128,7 @@ public class Filter
                 }
             }
         }
+        addTypeCriteria(_sqlSelect, _typeCriteria);
     }
 
     protected void addAttr(final SQLSelect _sqlSelect, final SQLWhere _sqlWhere, final Attribute _attr,
@@ -170,6 +176,59 @@ public class Filter
         }
         return ret;
     }
+
+    protected void addTypeCriteria(final SQLSelect _sqlSelect,
+                                   final Set<TypeCriterion> _typeCriteria)
+    {
+        if (!_typeCriteria.isEmpty()) {
+
+            final ComparatorChain<TypeCriterion> chain = new ComparatorChain<>();
+            chain.addComparator((_criterion1,
+                                 _criterion2) -> _criterion1.getTableIndex().compareTo(_criterion2.getTableIndex()));
+            chain.addComparator((_criterion1,
+                                _criterion2) -> Long.compare(_criterion1.getTypeId(), _criterion2.getTypeId()));
+
+            final SQLWhere where = _sqlSelect.getWhere();
+            _typeCriteria.stream()
+                .sorted(chain)
+                .collect(Collectors.groupingBy(TypeCriterion::getTableIndex))
+                .forEach((index, criteria) -> {
+                    final boolean nullable = criteria.stream()
+                                    .filter(TypeCriterion::isNullable)
+                                    .findAny()
+                                    .isPresent();
+
+                    if (nullable) {
+
+                    } else {
+                        final Set<String> values = new LinkedHashSet<>();
+                        criteria.stream()
+                            .map(citerion -> String.valueOf(citerion.getTypeId()))
+                            .forEach(typeId -> values.add(typeId));
+
+                        where.addCriteria(index.intValue(),Collections.singletonList(criteria.get(0).getSqlColType()),
+                                        Comparison.EQUAL, values, false, Connection.AND);
+                    }
+                    /*
+                    final Group group = new Group().setConnection(Connection.AND);
+                    group.add(new Criteria()
+                                    .tableIndex(tableidx.getIdx())
+                                    .colName(((SQLTable) getTable()).getSqlColType())
+                                    .comparison(Comparison.EQUAL)
+                                    .value(String.valueOf(getAttributeSet().getId()))
+                                    .connection(Connection.OR));
+                    group.add(new Criteria()
+                                    .tableIndex(tableidx.getIdx())
+                                    .colName(((SQLTable) getTable()).getSqlColType())
+                                    .comparison(Comparison.EQUAL)
+                                    .connection(Connection.OR));
+                    where.section(group);
+                    */
+            });
+        }
+
+    }
+
 
     /**
      * Gets the.

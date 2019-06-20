@@ -17,17 +17,15 @@
 
 package org.efaps.db.stmt.selection.elements;
 
+import java.util.Set;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.stmt.filter.TypeCriterion;
 import org.efaps.db.wrapper.SQLSelect;
-import org.efaps.db.wrapper.SQLWhere;
-import org.efaps.db.wrapper.SQLWhere.Criteria;
-import org.efaps.db.wrapper.SQLWhere.Group;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
-import org.efaps.eql2.Comparison;
-import org.efaps.eql2.Connection;
 import org.efaps.util.EFapsException;
 
 /**
@@ -35,7 +33,7 @@ import org.efaps.util.EFapsException;
  */
 public class ClassElement
     extends AbstractDataElement<ClassElement>
-    implements IJoinTableIdx
+    implements IJoinTableIdx, ITypeCriterion
 {
     /** The type. */
     private Classification classification;
@@ -44,28 +42,28 @@ public class ClassElement
     private Type type;
 
     /** The added. */
-    private boolean added = false;
+    private final boolean added = false;
 
     public Classification getClassification()
     {
-        return this.classification;
+        return classification;
     }
 
     public ClassElement setClassification(final Classification _classification)
     {
-        this.classification = _classification;
+        classification = _classification;
         return this;
     }
 
     public Type getType()
     {
-        return this.type;
+        return type;
     }
 
     public ClassElement setType(final Type _type)
     {
-        this.type = _type;
-        setDBTable(this.type.getMainTable());
+        type = _type;
+        setDBTable(type.getMainTable());
         return this;
     }
 
@@ -74,7 +72,7 @@ public class ClassElement
         throws EFapsException
     {
         final String tableName = ((SQLTable) getTable()).getSqlTable();
-        final String joinTableName = this.classification.getMainTable().getSqlTable();
+        final String joinTableName = classification.getMainTable().getSqlTable();
         return _sqlSelect.getIndexer().getTableIdx(joinTableName, tableName, "ID");
     }
 
@@ -93,9 +91,9 @@ public class ClassElement
                 } else {
                     tableidx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable());
                 }
-                final Attribute joinAttr = this.classification.getAttribute(this.classification.getLinkAttributeName());
+                final Attribute joinAttr = classification.getAttribute(classification.getLinkAttributeName());
                 final String joinTableName = joinAttr.getTable().getSqlTable();
-                final String linktoColName = this.type.getAttribute("ID").getSqlColNames().get(0);
+                final String linktoColName = type.getAttribute("ID").getSqlColNames().get(0);
                 _sqlSelect.leftJoin(joinTableName, joinTableidx.getIdx(), joinAttr.getSqlColNames().get(0),
                                 tableidx.getIdx(), linktoColName);
             }
@@ -119,29 +117,6 @@ public class ClassElement
     }
 
     @Override
-    public void append2SQLWhere(final SQLWhere _sqlWhere)
-        throws EFapsException
-    {
-        if (getClassification().getMainTable().getSqlColType() != null && !this.added) {
-            this.added = true;
-            final TableIdx tableidx = getJoinTableIdx(_sqlWhere.getSqlSelect());
-            final Group group = new Group().setConnection(Connection.AND);
-            group.add(new Criteria()
-                            .tableIndex(tableidx.getIdx())
-                            .colName(((SQLTable) getTable()).getSqlColType())
-                            .comparison(Comparison.EQUAL)
-                            .value(String.valueOf(getClassification().getId()))
-                            .connection(Connection.OR));
-            group.add(new Criteria()
-                            .tableIndex(tableidx.getIdx())
-                            .colName(((SQLTable) getTable()).getSqlColType())
-                            .comparison(Comparison.EQUAL)
-                            .connection(Connection.OR));
-            _sqlWhere.section(group);
-        }
-    }
-
-    @Override
     public Object getObject(final Object[] _row)
         throws EFapsException
     {
@@ -151,12 +126,22 @@ public class ClassElement
     @Override
     public String getPath()
     {
-        return super.getPath() + "->CLASS-" + this.classification.getName();
+        return super.getPath() + "->CLASS-" + classification.getName();
     }
 
     @Override
     public ClassElement getThis()
     {
         return this;
+    }
+
+    @Override
+    public void add2TypeCriteria(final SQLSelect _sqlSelect, final Set<TypeCriterion> _typeCriterias)
+        throws EFapsException
+    {
+        if (getClassification().getMainTable().getSqlColType() != null) {
+            final TableIdx tableidx = getJoinTableIdx(_sqlSelect);
+            _typeCriterias.add(TypeCriterion.of(tableidx, ((SQLTable) getTable()).getSqlColType(), getClassification().getId()));
+        }
     }
 }

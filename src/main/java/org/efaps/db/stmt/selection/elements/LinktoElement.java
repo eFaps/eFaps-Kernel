@@ -20,7 +20,6 @@ package org.efaps.db.stmt.selection.elements;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.db.wrapper.SQLSelect;
-import org.efaps.db.wrapper.SQLWhere;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.util.EFapsException;
 
@@ -142,11 +141,5 @@ public class LinktoElement
     public String getPath()
     {
         return super.getPath() + "->" + getAttribute().getName();
-    }
-
-    @Override
-    public void append2SQLWhere(final SQLWhere _sqlWhere)
-        throws EFapsException
-    {
     }
 }

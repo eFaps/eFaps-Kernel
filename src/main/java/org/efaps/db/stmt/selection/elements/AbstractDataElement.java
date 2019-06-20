@@ -19,7 +19,6 @@ package org.efaps.db.stmt.selection.elements;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.efaps.admin.datamodel.DBTable;
 import org.efaps.db.wrapper.SQLSelect;
-import org.efaps.db.wrapper.SQLWhere;
 import org.efaps.util.EFapsException;
 
 /**
@@ -78,7 +77,4 @@ public abstract class AbstractDataElement<T>
      */
     public abstract void append2SQLSelect(SQLSelect _sqlSelect)
         throws EFapsException;
-
-    public abstract void append2SQLWhere(SQLWhere _sqlWhere)
-                    throws EFapsException;
 }

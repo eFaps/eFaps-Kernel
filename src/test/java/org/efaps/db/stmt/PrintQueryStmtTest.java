@@ -373,21 +373,22 @@ public class PrintQueryStmtTest
         final Iterator<String> iter2 = getSQLWheres(Mocks.TypedTypeTestAttr.getSQLColumnName()).iterator();
         while (iter2.hasNext()) {
             final String val = iter2.next();
-            ret.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE = %s and T0.%s and T0.%s",
+            ret.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.%s and T0.%s and T0.TYPE = %s",
                             Mocks.TypedTypeTestAttr.getSQLColumnName(), Mocks.TypedTypeSQLTable.getSqlTableName(),
-                            Mocks.TypedType.getId(), val, val));
+                            val, val, Mocks.TypedType.getId()));
         }
         final Iterator<String> iter3 = getSQLWheres(Mocks.AbstractTypeStringAttribute.getSQLColumnName()).iterator();
         while (iter3.hasNext()) {
             final String val = iter3.next();
-            ret.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE in (%s,%s) "
-                            + "and T0.%s and T0.%s",
+            ret.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where "
+                            + "T0.%s and T0.%s and T0.TYPE in (%s,%s)",
                             Mocks.AbstractTypeStringAttribute.getSQLColumnName(),
                             Mocks.AbstractTypeSQLTable.getSqlTableName(),
+                            val, val,
                             Mocks.ChildType1.getId() < Mocks.ChildType2.getId()
                                 ? Mocks.ChildType1.getId() : Mocks.ChildType2.getId(),
                             Mocks.ChildType1.getId() < Mocks.ChildType2.getId()
-                                ? Mocks.ChildType2.getId() : Mocks.ChildType1.getId(), val, val));
+                                ? Mocks.ChildType2.getId() : Mocks.ChildType1.getId()));
         }
         return ret;
     }
@@ -413,19 +414,20 @@ public class PrintQueryStmtTest
         }
         final Iterator<String> iter2 = getSQLWheres(Mocks.TypedTypeTestAttr.getSQLColumnName()).iterator();
         while (iter2.hasNext()) {
-            ret.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE = %s and T0.%s",
+            ret.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.%s and T0.TYPE = %s",
                             Mocks.TypedTypeTestAttr.getSQLColumnName(), Mocks.TypedTypeSQLTable.getSqlTableName(),
-                            Mocks.TypedType.getId(), iter2.next()));
+                            iter2.next(), Mocks.TypedType.getId()));
         }
         final Iterator<String> iter3 = getSQLWheres(Mocks.AbstractTypeStringAttribute.getSQLColumnName()).iterator();
         while (iter3.hasNext()) {
-            ret.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.TYPE in (%s,%s) and T0.%s",
+            ret.add(String.format("select T0.%s,T0.ID,T0.TYPE from %s T0 where T0.%s and T0.TYPE in (%s,%s)",
                             Mocks.AbstractTypeStringAttribute.getSQLColumnName(),
                             Mocks.AbstractTypeSQLTable.getSqlTableName(),
+                            iter3.next(),
                             Mocks.ChildType1.getId() < Mocks.ChildType2.getId()
                                 ? Mocks.ChildType1.getId() : Mocks.ChildType2.getId(),
                             Mocks.ChildType1.getId() < Mocks.ChildType2.getId()
-                                ? Mocks.ChildType2.getId() : Mocks.ChildType1.getId(), iter3.next()));
+                                ? Mocks.ChildType2.getId() : Mocks.ChildType1.getId()));
         }
         return ret;
     }

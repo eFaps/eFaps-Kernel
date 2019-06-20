@@ -167,7 +167,11 @@ public class SQLWhere
                                 new SQLSelect.SQLSelectPart(SQLPart.IS).appendSQL(_cmd);
                                 new SQLSelect.SQLSelectPart(SQLPart.NULL).appendSQL(_cmd);
                             } else {
-                                new SQLSelect.SQLSelectPart(SQLPart.EQUAL).appendSQL(_cmd);
+                                if (criteria.values.size() > 1) {
+                                    new SQLSelect.SQLSelectPart(SQLPart.IN).appendSQL(_cmd);
+                                } else {
+                                    new SQLSelect.SQLSelectPart(SQLPart.EQUAL).appendSQL(_cmd);
+                                }
                             }
                             break;
                         case LIKE:
