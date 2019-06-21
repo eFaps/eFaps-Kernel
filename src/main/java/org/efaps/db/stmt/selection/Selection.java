@@ -41,6 +41,7 @@ import org.efaps.db.stmt.selection.elements.FirstElement;
 import org.efaps.db.stmt.selection.elements.FormatElement;
 import org.efaps.db.stmt.selection.elements.IDElement;
 import org.efaps.db.stmt.selection.elements.InstanceElement;
+import org.efaps.db.stmt.selection.elements.JoiningElement;
 import org.efaps.db.stmt.selection.elements.KeyElement;
 import org.efaps.db.stmt.selection.elements.LabelElement;
 import org.efaps.db.stmt.selection.elements.LastElement;
@@ -57,6 +58,7 @@ import org.efaps.eql2.IBaseSelectElement;
 import org.efaps.eql2.IClassSelectElement;
 import org.efaps.eql2.IExecSelectElement;
 import org.efaps.eql2.IFormatSelectElement;
+import org.efaps.eql2.IJoiningSelectElement;
 import org.efaps.eql2.ILinkfromSelectElement;
 import org.efaps.eql2.ILinktoSelectElement;
 import org.efaps.eql2.IPrintStatement;
@@ -102,10 +104,10 @@ public final class Selection
         final IStatement<?> stmt = _stmtProvider.getStmt();
         for (final ISelect sel : ((IPrintStatement<?>) stmt).getSelection().getSelects()) {
             final Select select = Select.get(sel.getAlias());
-            if (this.selects.isEmpty()) {
-                this.instSelects.put(BASEPATH, Select.get().addElement(new InstanceElement(type)));
+            if (selects.isEmpty()) {
+                instSelects.put(BASEPATH, Select.get().addElement(new InstanceElement(type)));
             }
-            this.selects.add(select);
+            selects.add(select);
             Type currentType = type;
             for (final ISelectElement ele : sel.getElements()) {
                 if (ele instanceof IAttributeSelectElement) {
@@ -189,6 +191,9 @@ public final class Selection
                 } else if (ele instanceof IFormatSelectElement) {
                     final String pattern = ((IFormatSelectElement) ele).getPattern();
                     select.addElement(new FormatElement().setPattern(pattern));
+                } else if (ele instanceof IJoiningSelectElement) {
+                    final String separator = ((IJoiningSelectElement) ele).getSeparator();
+                    select.addElement(new JoiningElement().setSeparator(separator));
                 } else if (ele instanceof IExecSelectElement) {
                     select.addElement(new ExecElement(currentType)
                                     .setEsjp(((IExecSelectElement) ele).getClassName())
@@ -212,7 +217,7 @@ public final class Selection
                                final Type _currentType)
         throws CacheReloadException
     {
-        if (StringUtils.isNotEmpty(_element.getPath()) && !this.instSelects.containsKey(_element.getPath())) {
+        if (StringUtils.isNotEmpty(_element.getPath()) && !instSelects.containsKey(_element.getPath())) {
             final Select instSelect = Select.get();
             for (final AbstractElement<?> selectTmp : _select.getElements()) {
                 if (!selectTmp.equals(_element)) {
@@ -249,7 +254,7 @@ public final class Selection
                                 .setType(_currentType));
                 instSelect.addElement(new InstanceElement((Type) _attrOrClass));
             }
-            this.instSelects.put(_element.getPath(), instSelect);
+            instSelects.put(_element.getPath(), instSelect);
         }
     }
 
@@ -303,7 +308,7 @@ public final class Selection
      */
     public List<Select> getSelects()
     {
-        return this.selects;
+        return selects;
     }
 
     /**
@@ -313,7 +318,7 @@ public final class Selection
      */
     public Map<String, Select> getInstSelects()
     {
-        return this.instSelects;
+        return instSelects;
     }
 
     /**
@@ -323,8 +328,8 @@ public final class Selection
      */
     public Collection<Select> getAllSelects()
     {
-        final List<Select> ret = new ArrayList<>(this.selects);
-        ret.addAll(this.instSelects.values());
+        final List<Select> ret = new ArrayList<>(selects);
+        ret.addAll(instSelects.values());
         return Collections.unmodifiableCollection(ret);
     }
 

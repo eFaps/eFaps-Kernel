@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.ci.CIAttribute;
@@ -39,6 +40,7 @@ import org.efaps.db.stmt.selection.elements.AttributeElement;
 import org.efaps.db.stmt.selection.elements.AttributeSetElement;
 import org.efaps.db.stmt.selection.elements.FirstElement;
 import org.efaps.db.stmt.selection.elements.IAuxillary;
+import org.efaps.db.stmt.selection.elements.JoiningElement;
 import org.efaps.db.stmt.selection.elements.LastElement;
 import org.efaps.eql.JSONData;
 import org.efaps.eql.builder.Print;
@@ -72,7 +74,7 @@ public final class Evaluator
      */
     private Evaluator(final Selection _selection)
     {
-        this.selection = _selection;
+        selection = _selection;
     }
 
     /**
@@ -84,12 +86,12 @@ public final class Evaluator
     private void initialize(final boolean _step)
         throws EFapsException
     {
-        if (!this.init) {
+        if (!init) {
             squash();
             evalAccess();
-            this.init = true;
+            init = true;
             if (_step) {
-                step(this.selection.getAllSelects());
+                step(selection.getAllSelects());
             }
         }
     }
@@ -102,15 +104,15 @@ public final class Evaluator
     private void squash()
         throws EFapsException
     {
-        if (this.selection.getSelects().stream().anyMatch(Select::isSquash)) {
-            final Select select = this.selection.getInstSelects().get(Selection.BASEPATH);
+        if (selection.getSelects().stream().anyMatch(Select::isSquash)) {
+            final Select select = selection.getInstSelects().get(Selection.BASEPATH);
             final Squashing squash = new Squashing(select);
 
-            for (final Entry<String, Select> entry : this.selection.getInstSelects().entrySet()) {
+            for (final Entry<String, Select> entry : selection.getInstSelects().entrySet()) {
                 squash.execute(entry.getKey(), entry.getValue());
             }
 
-            for (final Select currentSelect : this.selection.getSelects()) {
+            for (final Select currentSelect : selection.getSelects()) {
                 squash.execute(null, currentSelect);
             }
         }
@@ -126,7 +128,7 @@ public final class Evaluator
         throws EFapsException
     {
         initialize(false);
-        final Select select = this.selection.getInstSelects().get(Selection.BASEPATH);
+        final Select select = selection.getInstSelects().get(Selection.BASEPATH);
         return select.getObjects(this).size();
     }
 
@@ -145,8 +147,8 @@ public final class Evaluator
         initialize(true);
         Object ret = null;
         final int idx = _idx - 1;
-        if (this.selection.getSelects().size() > idx) {
-            final Select select = this.selection.getSelects().get(idx);
+        if (selection.getSelects().size() > idx) {
+            final Select select = selection.getSelects().get(idx);
             ret = get(select);
         }
         return (T) ret;
@@ -166,7 +168,7 @@ public final class Evaluator
     {
         initialize(true);
         Object ret = null;
-        final Optional<Select> selectOpt = this.selection.getSelects().stream()
+        final Optional<Select> selectOpt = selection.getSelects().stream()
                         .filter(select -> _alias.equals(select.getAlias()))
                         .findFirst();
         if (selectOpt.isPresent()) {
@@ -202,8 +204,8 @@ public final class Evaluator
         initialize(true);
         Attribute ret = null;
         final int idx = _idx - 1;
-        if (this.selection.getSelects().size() > idx) {
-            final Select select = this.selection.getSelects().get(idx);
+        if (selection.getSelects().size() > idx) {
+            final Select select = selection.getSelects().get(idx);
             ret = attribute(select);
         }
         return ret;
@@ -221,7 +223,7 @@ public final class Evaluator
     {
         initialize(true);
         Attribute ret = null;
-        final Optional<Select> selectOpt = this.selection.getSelects()
+        final Optional<Select> selectOpt = selection.getSelects()
                         .stream()
                         .filter(select -> _alias.equals(select.getAlias()))
                         .findFirst();
@@ -276,13 +278,17 @@ public final class Evaluator
         return (T) ret;
     }
 
-    protected Object agregate(final Select _select, final List<Object> _objects) {
+    protected Object agregate(final Select _select,
+                              final List<Object> _objects)
+    {
         Object ret;
         final AbstractElement<?> lastElement = _select.getElements().get(_select.getElements().size() - 1);
         if (lastElement instanceof FirstElement) {
             ret = _objects.get(0);
         } else if (lastElement instanceof LastElement) {
             ret = _objects.get(_objects.size() - 1);
+        } else if (lastElement instanceof JoiningElement) {
+            ret = StringUtils.join(_objects, ((JoiningElement) lastElement).getSeparator());
         } else {
             ret = _objects;
         }
@@ -296,7 +302,7 @@ public final class Evaluator
      */
     public Instance inst()
     {
-        return (Instance) this.selection.getInstSelects().get(Selection.BASEPATH).getCurrent();
+        return (Instance) selection.getInstSelects().get(Selection.BASEPATH).getCurrent();
     }
 
     /**
@@ -312,8 +318,8 @@ public final class Evaluator
         boolean stepForward = true;
         boolean ret = true;
         while (stepForward && ret) {
-            ret = step(this.selection.getAllSelects());
-            stepForward = !this.access.hasAccess(inst());
+            ret = step(selection.getAllSelects());
+            stepForward = !access.hasAccess(inst());
         }
         return ret;
     }
@@ -335,14 +341,14 @@ public final class Evaluator
             size--;
         }
         if (size == 1) {
-            ret.add(this.access.hasAccess(inst()));
+            ret.add(access.hasAccess(inst()));
         } else {
             int idx = 0;
             boolean accessTemp = true;
             while (idx < size && accessTemp) {
                 final AbstractElement<?> element = _select.getElements().get(idx);
                 idx++;
-                final Select instSelect = this.selection.getInstSelects().get(element.getPath());
+                final Select instSelect = selection.getInstSelects().get(element.getPath());
                 if (element instanceof AttributeSetElement) {
                     idx = size;
                     if (instSelect.getCurrent() != null && instSelect.getCurrent() instanceof Collection) {
@@ -354,18 +360,18 @@ public final class Evaluator
                     }
                     final Object obj = instSelect.getCurrent();
                     if (obj instanceof Instance) {
-                        accessTemp = this.access.hasAccess((Instance) obj);
+                        accessTemp = access.hasAccess((Instance) obj);
                         ret.clear();
                         ret.add(accessTemp);
                     } else if (obj instanceof List) {
                         if (ret.isEmpty()) {
                             ret = ((List<?>) obj).stream()
-                                            .map(ele -> this.access.hasAccess((Instance) ele))
+                                            .map(ele -> access.hasAccess((Instance) ele))
                                             .collect(Collectors.toList());
                         } else {
                             final Iterator<Boolean> iter = ret.iterator();
                             ret = ((List<?>) obj).stream()
-                                            .map(ele -> iter.next() && this.access.hasAccess((Instance) ele))
+                                            .map(ele -> iter.next() && access.hasAccess((Instance) ele))
                                             .collect(Collectors.toList());
                         }
                         accessTemp = ret.contains(true);
@@ -383,7 +389,7 @@ public final class Evaluator
      */
     protected Access getAccess()
     {
-        return this.access;
+        return access;
     }
 
     /**
@@ -393,7 +399,7 @@ public final class Evaluator
      */
     protected Selection getSelection()
     {
-        return this.selection;
+        return selection;
     }
 
     /**
@@ -420,8 +426,8 @@ public final class Evaluator
         throws EFapsException
     {
         final List<Instance> instances = new ArrayList<>();
-        while (step(this.selection.getInstSelects().values())) {
-            for (final Entry<String, Select> entry : this.selection.getInstSelects().entrySet()) {
+        while (step(selection.getInstSelects().values())) {
+            for (final Entry<String, Select> entry : selection.getInstSelects().entrySet()) {
                 final Object object = entry.getValue().getCurrent();
                 if (object != null) {
                     if (object instanceof List) {
@@ -434,10 +440,10 @@ public final class Evaluator
                 }
             }
         }
-        for (final Entry<String, Select> entry : this.selection.getInstSelects().entrySet()) {
+        for (final Entry<String, Select> entry : selection.getInstSelects().entrySet()) {
             entry.getValue().reset();
         }
-        this.access = Access.get(AccessTypeEnums.READ.getAccessType(), instances);
+        access = Access.get(AccessTypeEnums.READ.getAccessType(), instances);
     }
 
     /**
@@ -453,7 +459,7 @@ public final class Evaluator
         while (next()) {
             final ObjectData data = new ObjectData();
             int idx = 1;
-            for (final Select select : this.selection.getSelects()) {
+            for (final Select select : selection.getSelects()) {
                 final String key = select.getAlias() == null ? String.valueOf(idx) : select.getAlias();
                 data.getValues().add(JSONData.getValue(key, get(select)));
                 idx++;
@@ -469,14 +475,14 @@ public final class Evaluator
      * @return the data
      * @throws EFapsException the e faps exception
      */
-    public final Collection<Map<String, ?>> getData()
+    public Collection<Map<String, ?>> getData()
         throws EFapsException
     {
         final Collection<Map<String, ?>> ret = new ArrayList<>();
         while (next()) {
             final Map<String, ?> map = new LinkedHashMap<>();
             int idx = 1;
-            for (final Select select : this.selection.getSelects()) {
+            for (final Select select : selection.getSelects()) {
                 final String key = select.getAlias() == null ? String.valueOf(idx) : select.getAlias();
                 map.put(key, get(select));
                 idx++;
