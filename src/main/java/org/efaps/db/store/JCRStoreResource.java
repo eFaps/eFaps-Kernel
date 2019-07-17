@@ -135,9 +135,9 @@ public class JCRStoreResource
         super.initialize(_instance, _store);
         try {
             final InitialContext ctx = new InitialContext();
-            this.repository = (Repository) ctx.lookup(getStore().getProperty(Store.PROPERTY_JNDINAME));
+            repository = (Repository) ctx.lookup(getStore().getProperty(Store.PROPERTY_JNDINAME));
             if (JCRStoreResource.LOG.isDebugEnabled()) {
-                final String name = this.repository.getDescriptor(Repository.REP_NAME_DESC);
+                final String name = repository.getDescriptor(Repository.REP_NAME_DESC);
                 JCRStoreResource.LOG.debug("Successfully retrieved '{}' repository from JNDI", new Object[]{ name });
             }
 
@@ -155,7 +155,7 @@ public class JCRStoreResource
     protected Session getSession()
         throws EFapsException
     {
-        if (this.session == null) {
+        if (session == null) {
             try {
                 String username = getProperties().get(JCRStoreResource.PROPERTY_USERNAME);
                 if (username == null) {
@@ -165,7 +165,7 @@ public class JCRStoreResource
                 if (passwd == null) {
                     passwd = "efaps";
                 }
-                this.session = this.repository.login(new SimpleCredentials(username, passwd.toCharArray()),
+                session = repository.login(new SimpleCredentials(username, passwd.toCharArray()),
                                 getProperties().get(JCRStoreResource.PROPERTY_WORKSPACENAME));
             } catch (final LoginException e) {
                 throw new EFapsException(JCRStoreResource.class, "initialize.LoginException", e);
@@ -175,7 +175,7 @@ public class JCRStoreResource
                 throw new EFapsException(JCRStoreResource.class, "initialize.RepositoryException", e);
             }
         }
-        return this.session;
+        return session;
     }
 
     /**
@@ -198,7 +198,7 @@ public class JCRStoreResource
     {
         final String identiferTmp = _rs.getString(6);
         if (identiferTmp != null && !identiferTmp.isEmpty()) {
-            this.identifier = identiferTmp.trim();
+            identifier = identiferTmp.trim();
         }
     }
 
@@ -236,12 +236,12 @@ public class JCRStoreResource
         try {
             final Binary bin = getBinary(_in);
             final Node resNode;
-            if (this.identifier == null) {
+            if (identifier == null) {
                 final Node fileNode = getFolderNode().addNode(getInstance().getOid(), NodeType.NT_FILE);
                 setIdentifer(fileNode.getIdentifier());
                 resNode = fileNode.addNode(Property.JCR_CONTENT, NodeType.NT_RESOURCE);
             } else {
-                final Node fileNode = getSession().getNodeByIdentifier(this.identifier);
+                final Node fileNode = getSession().getNodeByIdentifier(identifier);
                 resNode = fileNode.getNode(Property.JCR_CONTENT);
             }
             resNode.setProperty(Property.JCR_DATA, bin);
@@ -326,7 +326,7 @@ public class JCRStoreResource
     protected void setIdentifer(final String _identifier)
         throws EFapsException
     {
-        if (!_identifier.equals(this.identifier)) {
+        if (!_identifier.equals(identifier)) {
 
             ConnectionResource res = null;
             try {
@@ -344,7 +344,7 @@ public class JCRStoreResource
                 } finally {
                     stmt.close();
                 }
-                this.identifier = _identifier;
+                identifier = _identifier;
             } catch (final EFapsException e) {
                 throw e;
             } catch (final SQLException e) {
@@ -372,11 +372,13 @@ public class JCRStoreResource
     {
         InputStream input = null;
         try {
-            final Node fileNode = getSession().getNodeByIdentifier(this.identifier);
-            final Node resNode = fileNode.getNode(Property.JCR_CONTENT);
-            final Property data = resNode.getProperty(Property.JCR_DATA);
-            final Binary bin = data.getBinary();
-            input = new JCRStoreResourceInputStream(this, bin);
+            if (identifier != null) {
+                final Node fileNode = getSession().getNodeByIdentifier(identifier);
+                final Node resNode = fileNode.getNode(Property.JCR_CONTENT);
+                final Property data = resNode.getProperty(Property.JCR_DATA);
+                final Binary bin = data.getBinary();
+                input = new JCRStoreResourceInputStream(this, bin);
+            }
         } catch (final RepositoryException e) {
             throw new EFapsException(JCRStoreResource.class, "read.RepositoryException", e);
         } catch (final IOException e) {
@@ -396,7 +398,7 @@ public class JCRStoreResource
         if (getExist()[0] && getExist()[1]
                         && "TRUE".equalsIgnoreCase(getProperties().get(JCRStoreResource.PROPERTY_ENABLEDELETION))) {
             try {
-                final Node fileNode = getSession().getNodeByIdentifier(this.identifier);
+                final Node fileNode = getSession().getNodeByIdentifier(identifier);
                 fileNode.remove();
             } catch (final RepositoryException e) {
                 throw new EFapsException(JCRStoreResource.class, "delete.RepositoryException", e);
