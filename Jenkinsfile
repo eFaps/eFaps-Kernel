@@ -7,7 +7,7 @@ properties([
 pipeline {
   agent any
   tools {
-    jdk 'jdk8'
+    jdk 'jdk11'
   }
   stages {
     stage('Build') {
