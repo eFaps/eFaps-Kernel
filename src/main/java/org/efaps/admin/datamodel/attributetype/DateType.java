@@ -19,6 +19,7 @@
 package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
@@ -67,6 +68,11 @@ public class DateType
                 dateTime = new DateTime(_value[0]);
             } else if (_value[0] instanceof DateTime) {
                 dateTime = (DateTime) _value[0];
+            } else if (_value[0] instanceof LocalDate) {
+                final LocalDate localDate = (LocalDate) _value[0];
+                dateTime = dateTime.withYear(localDate.getYear())
+                    .withMonthOfYear(localDate.getMonthValue())
+                    .withDayOfMonth(localDate.getDayOfMonth());
             } else if (_value[0] instanceof String) {
                 final String str = (String) _value[0];
                 if (str.isEmpty()) {
