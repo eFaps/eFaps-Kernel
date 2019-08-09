@@ -17,6 +17,7 @@
 
 package org.efaps.db.stmt;
 
+import org.efaps.admin.event.EventType;
 import org.efaps.db.stmt.delete.AbstractDelete;
 import org.efaps.db.stmt.delete.ListDelete;
 import org.efaps.db.stmt.delete.ObjectDelete;
@@ -47,11 +48,14 @@ public class DeleteStmt
         throws EFapsException
     {
         if (getEQLStmt() instanceof IDeleteObjectStatement) {
-            this.delete = new ObjectDelete((IDeleteObjectStatement) getEQLStmt());
+            delete = new ObjectDelete((IDeleteObjectStatement) getEQLStmt());
         } else if (getEQLStmt() instanceof IDeleteListStatement) {
-            this.delete = new ListDelete((IDeleteListStatement) getEQLStmt());
+            delete = new ListDelete((IDeleteListStatement) getEQLStmt());
         }
-        StmtRunner.get().execute(this.delete);
+        if (!has(StmtFlag.TRIGGEROFF)) {
+            delete.executeEvents(EventType.DELETE_PRE);
+        }
+        StmtRunner.get().execute(delete);
         return this;
     }
 

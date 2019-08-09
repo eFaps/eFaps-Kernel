@@ -18,6 +18,7 @@
 package org.efaps.db.stmt.print;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.efaps.db.Instance;
@@ -51,13 +52,13 @@ public class ObjectPrint
      * @param _eqlStmt the eql stmt
      * @throws CacheReloadException on error
      */
-    public ObjectPrint(final IPrintObjectStatement _eqlStmt, final StmtFlag... _flags)
+    public ObjectPrint(final IPrintObjectStatement _eqlStmt, final EnumSet<StmtFlag> _flags)
         throws CacheReloadException
     {
         super(_flags);
-        this.instance = Instance.get(_eqlStmt.getOid());
-        this.eqlStmt = _eqlStmt;
-        addType(this.instance.getType());
+        instance = Instance.get(_eqlStmt.getOid());
+        eqlStmt = _eqlStmt;
+        addType(instance.getType());
     }
 
     /**
@@ -67,7 +68,7 @@ public class ObjectPrint
      */
     public Instance getInstance()
     {
-        return this.instance;
+        return instance;
     }
 
     @Override
@@ -85,7 +86,7 @@ public class ObjectPrint
     @Override
     public IStatement<?> getStmt()
     {
-        return this.eqlStmt;
+        return eqlStmt;
     }
 
     @Override

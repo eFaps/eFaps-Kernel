@@ -17,6 +17,7 @@
 
 package org.efaps.db.stmt.print;
 
+import java.util.EnumSet;
 import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
@@ -50,7 +51,7 @@ public class QueryPrint
      * @param _eqlStmt the eql stmt
      * @throws CacheReloadException on error
      */
-    public QueryPrint(final IPrintQueryStatement _eqlStmt, final StmtFlag... _flags)
+    public QueryPrint(final IPrintQueryStatement _eqlStmt, final EnumSet<StmtFlag> _flags)
         throws CacheReloadException
     {
         super(_flags);

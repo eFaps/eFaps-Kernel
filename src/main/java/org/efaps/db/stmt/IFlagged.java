@@ -14,12 +14,16 @@
  * limitations under the License.
  *
  */
-package org.efaps.db.stmt.runner;
 
-import org.efaps.db.stmt.IFlagged;
+package org.efaps.db.stmt;
 
-public interface IRunnable
-    extends IFlagged
+public interface IFlagged
 {
-
+    /**
+     * Checks for a Stmt Flag.
+     *
+     * @param _flag the flag
+     * @return true, if successful
+     */
+    boolean has(final StmtFlag _flag);
 }

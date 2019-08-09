@@ -17,6 +17,7 @@
 
 package org.efaps.db.stmt.print;
 
+import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -44,11 +45,10 @@ public abstract class AbstractPrint
     /** The types. */
     private final Set<Type> types = new LinkedHashSet<>();
 
-    public AbstractPrint(final StmtFlag... _flags)
+    public AbstractPrint(final EnumSet<StmtFlag> _flags)
     {
         super(_flags);
     }
-
 
     /**
      * Gets the selection.
@@ -60,7 +60,7 @@ public abstract class AbstractPrint
     public Selection getSelection()
         throws EFapsException
     {
-        return this.selection;
+        return selection;
     }
 
     /**
@@ -70,7 +70,7 @@ public abstract class AbstractPrint
      */
     protected void setSelection(final Selection _selection)
     {
-        this.selection = _selection;
+        selection = _selection;
     }
 
     /**
@@ -80,7 +80,7 @@ public abstract class AbstractPrint
      */
     protected void addType(final Type _type)
     {
-        this.types.add(_type);
+        types.add(_type);
     }
 
     /**
@@ -91,6 +91,6 @@ public abstract class AbstractPrint
     @Override
     public Set<Type> getTypes()
     {
-        return this.types;
+        return types;
     }
 }

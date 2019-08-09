@@ -18,6 +18,7 @@
 package org.efaps.db.stmt.print;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,14 +42,14 @@ public class ListPrint
 
     private final List<Instance> instances;
 
-    public ListPrint(final IPrintListStatement _eqlStmt, final StmtFlag... _flags)
+    public ListPrint(final IPrintListStatement _eqlStmt, final EnumSet<StmtFlag>  _flags)
     {
         super(_flags);
-        this.eqlStmt = _eqlStmt;
-        this.instances = _eqlStmt.getOidsList().stream()
+        eqlStmt = _eqlStmt;
+        instances = _eqlStmt.getOidsList().stream()
                         .map(oid -> Instance.get(oid))
                         .collect(Collectors.toList());
-        this.instances.forEach(instance -> addType(instance.getType()));
+        instances.forEach(instance -> addType(instance.getType()));
     }
 
     @Override
@@ -66,12 +67,12 @@ public class ListPrint
     @Override
     public IStatement<?> getStmt()
     {
-        return this.eqlStmt;
+        return eqlStmt;
     }
 
     public List<Instance> getInstances()
     {
-        return this.instances;
+        return instances;
     }
 
     @Override

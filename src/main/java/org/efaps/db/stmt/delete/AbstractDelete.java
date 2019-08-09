@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.access.AccessTypeEnums;
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Parameter;
+import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.runner.AbstractRunnable;
@@ -42,7 +46,7 @@ public class AbstractDelete
 
     public AbstractDelete(final IDeleteStatement<?> _eqlStmt)
     {
-        this.eqlStmt = _eqlStmt;
+        eqlStmt = _eqlStmt;
     }
 
     /**
@@ -64,11 +68,26 @@ public class AbstractDelete
 
     public IDeleteStatement<?> getEqlStmt()
     {
-        return this.eqlStmt;
+        return eqlStmt;
     }
 
     public List<Instance> getInstances()
     {
-        return this.instances;
+        return instances;
+    }
+
+    public void executeEvents(final EventType _eventType)
+        throws EFapsException
+    {
+        for (final Instance instance : getInstances()) {
+            final  List<EventDefinition> triggers = instance.getType().getEvents(_eventType);
+            if (triggers != null) {
+                final Parameter parameter = new Parameter();
+                parameter.put(ParameterValues.INSTANCE, instance);
+                for (final EventDefinition evenDef : triggers) {
+                    evenDef.execute(parameter);
+                }
+            }
+        }
     }
 }

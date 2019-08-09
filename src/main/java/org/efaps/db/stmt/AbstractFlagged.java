@@ -15,32 +15,37 @@
  *
  */
 
-package org.efaps.db.stmt.runner;
+package org.efaps.db.stmt;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.efaps.db.stmt.AbstractFlagged;
-import org.efaps.db.stmt.StmtFlag;
+import org.apache.commons.lang3.ArrayUtils;
 
-public abstract class AbstractRunnable
-    extends AbstractFlagged
-    implements IRunnable
+public abstract class AbstractFlagged
+    implements IFlagged
 {
 
-    protected AbstractRunnable(final StmtFlag... _flags)
+    private final EnumSet<StmtFlag> flags;
+
+    protected AbstractFlagged(final StmtFlag... _flags)
     {
-        super(_flags);
+        this(ArrayUtils.isEmpty(_flags) ? EnumSet.noneOf(StmtFlag.class) : EnumSet.copyOf(Arrays.asList(_flags)));
     }
 
-    protected AbstractRunnable( final EnumSet<StmtFlag> _flags)
+    protected AbstractFlagged(final EnumSet<StmtFlag> _flags)
     {
-        super(_flags);
+        flags = _flags;
     }
 
     @Override
-    public String toString()
+    public boolean has(final StmtFlag _flag)
     {
-        return ToStringBuilder.reflectionToString(this);
+        return flags.contains(_flag);
+    }
+
+    protected EnumSet<StmtFlag> getFlags()
+    {
+        return flags;
     }
 }

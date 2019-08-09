@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,16 +25,15 @@ import org.efaps.eql2.IStatement;
  * @author The eFaps Team
  */
 public abstract class AbstractStmt
+    extends AbstractFlagged
 {
 
     /** The statement. */
     private IStatement<?> eqlStmt;
 
-    private final StmtFlag[] flags;
-
     protected AbstractStmt(final StmtFlag... _flags)
     {
-        this.flags = _flags;
+        super(_flags);
     }
 
     /**
@@ -44,7 +43,7 @@ public abstract class AbstractStmt
      */
     protected IStatement<?> getEQLStmt()
     {
-        return this.eqlStmt;
+        return eqlStmt;
     }
 
     /**
@@ -54,12 +53,6 @@ public abstract class AbstractStmt
      */
     protected void setEQLStmt(final IStatement<?> _eqlStmt)
     {
-        this.eqlStmt = _eqlStmt;
-    }
-
-
-    protected StmtFlag[] getFlags()
-    {
-        return this.flags;
+        eqlStmt = _eqlStmt;
     }
 }
