@@ -248,6 +248,13 @@ public interface IDataModel
                     .withParentTypeId(Admin_Event_Definition.getId())
                     .build();
 
+    Type Admin_DataModel_Type_Trigger_DeletePre = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("Admin_DataModel_Type_Trigger_DeletePre")
+                    .withUuid(UUID.fromString("7d64b1b6-c7d6-40a8-8abc-0a6a04d1b7b7"))
+                    .withParentTypeId(Admin_Event_Definition.getId())
+                    .build();
+
     Type Admin_Common_Property = Type.builder()
                     .withId(RandomUtils.nextLong())
                     .withName("Admin_Common_Property")

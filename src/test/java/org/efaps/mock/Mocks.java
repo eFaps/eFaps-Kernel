@@ -26,6 +26,7 @@ import org.efaps.mock.datamodel.SQLTable;
 import org.efaps.mock.datamodel.StatusGroup;
 import org.efaps.mock.datamodel.Type;
 import org.efaps.mock.esjp.AccessCheck;
+import org.efaps.mock.esjp.TriggerEvent;
 
 /**
  * The Interface ITypes.
@@ -531,4 +532,27 @@ public interface Mocks
                     .withAttributeTypeId(IDataModel.StringType.getId())
                     .build();
 
+    Type EventType = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("EventType")
+                    .build();
+
+    SQLTable EventTypeSQLTable = SQLTable.builder()
+                    .withName("EventTypeSQLTable")
+                    .build();
+
+    Attribute EventTypeStringAttribute = Attribute.builder()
+                    .withName("EventAttribute")
+                    .withDataModelTypeId(EventType.getId())
+                    .withSqlTableId(EventTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.StringType.getId())
+                    .build();
+
+    EventDefinition EventTypeEvent = EventDefinition.builder()
+                    .withObjectLink(EventType.getId())
+                    .withInstId(44L)
+                    .withTypeId(IDataModel.Admin_DataModel_Type_Trigger_DeletePre.getId())
+                    .withESJP(TriggerEvent.class.getName())
+                    .withMethod("deletePre")
+                    .build();
 }

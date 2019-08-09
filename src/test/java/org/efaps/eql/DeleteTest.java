@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,15 @@
 
 package org.efaps.eql;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.event.EventType;
 import org.efaps.db.Instance;
 import org.efaps.mock.Mocks;
 import org.efaps.mock.esjp.AccessCheck;
+import org.efaps.mock.esjp.TriggerEvent;
 import org.efaps.test.AbstractTest;
 import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
@@ -136,5 +141,17 @@ public class DeleteTest
         EQL.delete(inst1, inst2)
             .stmt()
             .execute();
+    }
+
+    @Test
+    public void testDeleteInstancePreTrigger()
+        throws EFapsException
+    {
+        final Instance inst = Instance.get( Mocks.EventType.getId() + ".4");
+        EQL.delete(inst)
+            .stmt()
+            .execute();
+        assertTrue(TriggerEvent.RESULTS.containsKey(inst));
+        assertEquals(TriggerEvent.RESULTS.get(inst).get(0), EventType.DELETE_PRE);
     }
 }

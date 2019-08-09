@@ -80,7 +80,7 @@ public class AbstractDelete
         throws EFapsException
     {
         for (final Instance instance : getInstances()) {
-            final  List<EventDefinition> triggers = instance.getType().getEvents(_eventType);
+            final List<EventDefinition> triggers = instance.getType().getEvents(_eventType);
             if (triggers != null) {
                 final Parameter parameter = new Parameter();
                 parameter.put(ParameterValues.INSTANCE, instance);

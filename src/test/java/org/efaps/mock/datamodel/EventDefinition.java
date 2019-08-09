@@ -18,6 +18,7 @@ package org.efaps.mock.datamodel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -68,22 +69,26 @@ public final class EventDefinition
     private EventDefinition(final EventDefinitionBuilder _builder)
     {
         super(_builder);
-        this.objectLink = _builder.objectLink;
-        this.esjp = _builder.esjp;
-        this.method = _builder.method;
-        this.instIds = _builder.instIds;
-        this.typeIds = _builder.typeIds;
-        final List<Long> types = Arrays.asList(IDataModel.Admin_Event_Definition.getId(),
-                        IDataModel.Admin_DataModel_TypeAccessCheckEvent.getId());
+        objectLink = _builder.objectLink;
+        esjp = _builder.esjp;
+        method = _builder.method;
+        instIds = _builder.instIds;
+        typeIds = _builder.typeIds;
+
+        final List<Long> types = new ArrayList<>(Arrays.asList(IDataModel.Admin_DataModel_TypeAccessCheckEvent.getId(),
+                        IDataModel.Admin_DataModel_Type_Trigger_DeletePre.getId()));
+        Collections.sort(types);
+        types.add(0, IDataModel.Admin_Event_Definition.getId());
+
         final StringBuilder instSqlBldr = new StringBuilder()
                 .append(String.format("select T0.ID,T0.TYPEID from %s T0 left join %s T1 on T0.ID=T1.ID "
                         + "where ( ( T1.Abstract_COL = %s ) "
                         + "and T0.Type_COL in ( ",
                         IDataModel.Admin_DataModel_SQLTable.getSqlTableName(),
                         IDataModel.Admin_Event_DefinitionSQLTable.getSqlTableName(),
-                        this.objectLink));
+                        objectLink));
         instSqlBldr.append(StringUtils.join(types, " , ")).append(" ) )");
-        this.instSql = instSqlBldr.toString();
+        instSql = instSqlBldr.toString();
 
         final StringBuilder valueSqlBldr = new StringBuilder()
             .append(String.format("select T0.ID,T2.ID,T2.TYPEID,T0.TYPEID,T2.Name_COL,T0.Type_COL,T0.Name_COL,"
@@ -92,25 +97,25 @@ public final class EventDefinition
                         + "left join T_DMTABLE T2 on T1.%s=T2.ID "
                         + "where T0.ID in ( ",
                         IDataModel.JavaProgAttr.getSQLColumnName()));
-        valueSqlBldr.append(StringUtils.join(this.instIds, " , ")).append(" )");
-        this.valueSql = valueSqlBldr.toString();
+        valueSqlBldr.append(StringUtils.join(instIds, " , ")).append(" )");
+        valueSql = valueSqlBldr.toString();
     }
 
     @Override
     public String[] getSqls()
     {
-        return new String[] { this.instSql, this.valueSql };
+        return new String[] { instSql, valueSql };
     }
 
     @Override
     public boolean applies(final String _sql, final List<Parameter> _parameters)
     {
         boolean ret = false;
-        if (_sql.equals(this.instSql)) {
-            this.inst = true;
+        if (_sql.equals(instSql)) {
+            inst = true;
             ret = true;
-        } else if (_sql.equals(this.valueSql)) {
-            this.inst = false;
+        } else if (_sql.equals(valueSql)) {
+            inst = false;
             ret = true;
         }
         return ret;
@@ -119,7 +124,7 @@ public final class EventDefinition
     @Override
     public QueryResult getResult()
     {
-        return this.inst ? getResult4Instance() : getResult4Value();
+        return inst ? getResult4Instance() : getResult4Value();
     }
 
     /**
@@ -131,8 +136,8 @@ public final class EventDefinition
     {
         return RowLists.rowList9(Object.class, Object.class, Object.class, Object.class, Object.class, Object.class,
                         Object.class, Object.class, Object.class)
-             .append(1L, 1L, 1L, this.typeIds.iterator().next(), this.esjp, this.typeIds.iterator().next(),
-                             "Name2", 0, this.method)
+             .append(1L, 1L, 1L, typeIds.iterator().next(), esjp, typeIds.iterator().next(),
+                             "Name2", 0, method)
             .asResult();
     }
 
@@ -144,8 +149,8 @@ public final class EventDefinition
     public QueryResult getResult4Instance()
     {
         Impl<Object, Object> rr = RowLists.rowList2(Object.class, Object.class);
-        final Iterator<Long> iter = this.typeIds.iterator();
-        for (final Long instId : this.instIds) {
+        final Iterator<Long> iter = typeIds.iterator();
+        for (final Long instId : instIds) {
             rr = rr.append(instId, iter.next());
         }
         return rr.asResult();
@@ -191,7 +196,7 @@ public final class EventDefinition
          */
         public EventDefinitionBuilder withObjectLink(final Long _objectLink)
         {
-            this.objectLink = _objectLink;
+            objectLink = _objectLink;
             return this;
         }
 
@@ -204,7 +209,7 @@ public final class EventDefinition
         public EventDefinitionBuilder withInstId(final Long... _instIds)
         {
             for (final Long instId : _instIds) {
-                this.instIds.add(instId);
+                instIds.add(instId);
             }
             return this;
         }
@@ -218,7 +223,7 @@ public final class EventDefinition
         public EventDefinitionBuilder withTypeId(final Long... _instIds)
         {
             for (final Long instId : _instIds) {
-                this.typeIds.add(instId);
+                typeIds.add(instId);
             }
             return this;
         }
@@ -231,7 +236,7 @@ public final class EventDefinition
          */
         public EventDefinitionBuilder withESJP(final String _esjp)
         {
-            this.esjp = _esjp;
+            esjp = _esjp;
             return this;
         }
 
@@ -243,7 +248,7 @@ public final class EventDefinition
          */
         public EventDefinitionBuilder withMethod(final String _method)
         {
-            this.method = _method;
+            method = _method;
             return this;
         }
 

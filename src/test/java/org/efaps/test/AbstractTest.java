@@ -37,6 +37,7 @@ import org.efaps.mock.datamodel.IDataModel;
 import org.efaps.mock.datamodel.Person;
 import org.efaps.mock.db.MockDatabase;
 import org.efaps.mock.esjp.AccessCheck;
+import org.efaps.mock.esjp.TriggerEvent;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,5 +131,6 @@ public abstract class AbstractTest
         Context.commit();
         EFapsQueryHandler.get().cleanUp();
         AccessCheck.RESULTS.clear();
+        TriggerEvent.RESULTS.clear();
     }
 }

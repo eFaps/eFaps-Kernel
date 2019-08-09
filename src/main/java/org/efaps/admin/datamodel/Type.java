@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -221,7 +222,7 @@ public class Type
      *
      * @see #getChildTypes
      */
-    private final Set<Long> childTypes = new HashSet<>();
+    private final Set<Long> childTypes = new TreeSet<>();
 
     /**
      * Classification ids which are classifying this type.
@@ -657,12 +658,14 @@ public class Type
     public boolean isKindOf(final Type _type)
     {
         boolean ret = false;
-        Type type = this;
-        while (type != null && type.getId() != _type.getId()) {
-            type = type.getParentType();
-        }
-        if (type != null && type.getId() == _type.getId()) {
-            ret = true;
+        if (_type != null) {
+            Type type = this;
+            while (type != null && type.getId() != _type.getId()) {
+                type = type.getParentType();
+            }
+            if (type != null && type.getId() == _type.getId()) {
+                ret = true;
+            }
         }
         return ret;
     }
