@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -962,7 +963,7 @@ public class Type
     public Set<Type> getChildTypes()
         throws CacheReloadException
     {
-        final Set<Type> ret = new HashSet<>();
+        final Set<Type> ret = new LinkedHashSet<>();
         for (final Long id : childTypes) {
             final Type child = Type.get(id);
             ret.add(child);
