@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ public class QEqual
     {
         super(_attribute, null);
         for (final AbstractQValue value : _values) {
-            this.values.add(value);
+            values.add(value);
         }
     }
 
@@ -68,7 +68,7 @@ public class QEqual
     @Override
     public AbstractQValue getValue()
     {
-        return this.values.isEmpty() ? null : this.values.get(0);
+        return values.isEmpty() ? null : values.get(0);
     }
 
     /**
@@ -78,7 +78,7 @@ public class QEqual
      */
     public List<AbstractQValue> getValues()
     {
-        return this.values;
+        return values;
     }
 
     /**
@@ -88,7 +88,7 @@ public class QEqual
      */
     public AbstractQPart addValue(final AbstractQValue _value)
     {
-        this.values.add(_value);
+        values.add(_value);
         return this;
     }
 
@@ -100,11 +100,11 @@ public class QEqual
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);
-        if (this.values.size() > 1
-                        || this.values.size() > 0 && this.values.get(0) instanceof QBitValue) {
+        if (values.size() > 1
+                        || values.size() > 0 && values.get(0) instanceof QBitValue) {
             _sql.addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
             boolean first = true;
-            for (final AbstractQValue value : this.values) {
+            for (final AbstractQValue value : values) {
                 if (first) {
                     first = false;
                 } else {
@@ -113,7 +113,7 @@ public class QEqual
                 value.appendSQL(_sql);
             }
             _sql.addPart(SQLPart.PARENTHESIS_CLOSE);
-        } else {
+        } else if (getValue() != null){
             _sql.addPart(SQLPart.EQUAL);
             getValue().appendSQL(_sql);
         }
@@ -129,7 +129,7 @@ public class QEqual
         throws EFapsException
     {
         getAttribute().prepare(_query, this);
-        for (final AbstractQValue value : this.values) {
+        for (final AbstractQValue value : values) {
             value.prepare(_query, this);
         }
         return this;
@@ -138,6 +138,6 @@ public class QEqual
     @Override
     public String toString()
     {
-        return new ToStringBuilder(this).append("values", this.values).toString();
+        return new ToStringBuilder(this).append("values", values).toString();
     }
 }
