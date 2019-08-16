@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,11 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.efaps.db.Instance;
-import org.efaps.db.stmt.StmtFlag;
 import org.efaps.db.stmt.selection.Selection;
 import org.efaps.db.stmt.selection.elements.IPrimed;
 import org.efaps.eql2.IPrintObjectStatement;
 import org.efaps.eql2.IStatement;
+import org.efaps.eql2.StmtFlag;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 

@@ -30,6 +30,7 @@ import org.efaps.eql2.IPrintListStatement;
 import org.efaps.eql2.IPrintObjectStatement;
 import org.efaps.eql2.IPrintQueryStatement;
 import org.efaps.eql2.IPrintStatement;
+import org.efaps.eql2.StmtFlag;
 import org.efaps.util.EFapsException;
 
 /**

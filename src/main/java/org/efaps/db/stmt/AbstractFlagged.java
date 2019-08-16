@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.efaps.eql2.StmtFlag;
 
 public abstract class AbstractFlagged
     implements IFlagged

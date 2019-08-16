@@ -18,6 +18,7 @@
 package org.efaps.db.stmt;
 
 import org.efaps.eql2.IStatement;
+import org.efaps.eql2.StmtFlag;
 
 /**
  * The Class AbstractStmt.

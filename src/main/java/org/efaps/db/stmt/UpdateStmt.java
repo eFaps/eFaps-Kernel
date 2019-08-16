@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.efaps.eql2.IUpdateListStatement;
 import org.efaps.eql2.IUpdateObjectStatement;
 import org.efaps.eql2.IUpdateQueryStatement;
 import org.efaps.eql2.IUpdateStatement;
+import org.efaps.eql2.StmtFlag;
 import org.efaps.util.EFapsException;
 
 /**
@@ -55,13 +56,13 @@ public class UpdateStmt
         throws EFapsException
     {
         if (getEQLStmt() instanceof IUpdateObjectStatement) {
-            this.update = new ObjectUpdate((IUpdateObjectStatement) getEQLStmt());
+            update = new ObjectUpdate((IUpdateObjectStatement) getEQLStmt());
         } else if (getEQLStmt() instanceof IUpdateListStatement) {
-            this.update = new ListUpdate((IUpdateListStatement) getEQLStmt());
+            update = new ListUpdate((IUpdateListStatement) getEQLStmt());
         } else if (getEQLStmt() instanceof IUpdateQueryStatement) {
-            this.update = new QueryUpdate((IUpdateQueryStatement) getEQLStmt());
+            update = new QueryUpdate((IUpdateQueryStatement) getEQLStmt());
         }
-        StmtRunner.get().execute(this.update);
+        StmtRunner.get().execute(update);
         return this;
     }
 

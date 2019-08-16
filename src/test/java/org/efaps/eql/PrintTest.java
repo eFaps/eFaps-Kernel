@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import org.apache.commons.lang.reflect.FieldUtils;
 import org.efaps.admin.user.Person;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
-import org.efaps.db.stmt.StmtFlag;
 import org.efaps.eql.builder.Selectables;
+import org.efaps.eql2.StmtFlag;
 import org.efaps.mock.Mocks;
 import org.efaps.mock.datamodel.CI;
 import org.efaps.mock.datamodel.Company;

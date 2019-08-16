@@ -21,7 +21,7 @@ import java.util.EnumSet;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.db.stmt.AbstractFlagged;
-import org.efaps.db.stmt.StmtFlag;
+import org.efaps.eql2.StmtFlag;
 
 public abstract class AbstractRunnable
     extends AbstractFlagged

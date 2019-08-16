@@ -21,12 +21,12 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
-import org.efaps.db.stmt.StmtFlag;
 import org.efaps.db.stmt.filter.Filter;
 import org.efaps.db.stmt.selection.Selection;
 import org.efaps.eql2.IPrintQueryStatement;
 import org.efaps.eql2.IStatement;
 import org.efaps.eql2.IWhere;
+import org.efaps.eql2.StmtFlag;
 import org.efaps.eql2.impl.PrintQueryStatement;
 import org.efaps.util.EFapsException;
 import org.efaps.util.UUIDUtil;

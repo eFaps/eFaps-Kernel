@@ -17,6 +17,8 @@
 
 package org.efaps.db.stmt;
 
+import org.efaps.eql2.StmtFlag;
+
 public interface IFlagged
 {
     /**

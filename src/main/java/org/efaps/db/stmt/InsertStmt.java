@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.efaps.db.stmt.runner.StmtRunner;
 import org.efaps.db.stmt.update.AbstractObjectUpdate;
 import org.efaps.db.stmt.update.Insert;
 import org.efaps.eql2.IInsertStatement;
+import org.efaps.eql2.StmtFlag;
 import org.efaps.util.EFapsException;
 
 /**
@@ -49,9 +50,9 @@ public class InsertStmt
     public Instance execute()
         throws EFapsException
     {
-        this.update = new Insert((IInsertStatement) getEQLStmt());
-        StmtRunner.get().execute(this.update);
-        return this.update.getInstance();
+        update = new Insert((IInsertStatement) getEQLStmt());
+        StmtRunner.get().execute(update);
+        return update.getInstance();
     }
 
     /**

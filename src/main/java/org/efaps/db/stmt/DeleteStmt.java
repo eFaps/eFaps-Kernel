@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.efaps.db.stmt.runner.StmtRunner;
 import org.efaps.eql2.IDeleteListStatement;
 import org.efaps.eql2.IDeleteObjectStatement;
 import org.efaps.eql2.IDeleteStatement;
+import org.efaps.eql2.StmtFlag;
 import org.efaps.util.EFapsException;
 
 public class DeleteStmt
