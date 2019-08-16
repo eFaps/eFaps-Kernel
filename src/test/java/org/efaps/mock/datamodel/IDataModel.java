@@ -255,6 +255,20 @@ public interface IDataModel
                     .withParentTypeId(Admin_Event_Definition.getId())
                     .build();
 
+    Type Admin_DataModel_Type_Trigger_DeletePost = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("Admin_DataModel_Type_Trigger_DeletePost")
+                    .withUuid(UUID.fromString("590af1fc-b058-49fd-a0bc-f56950577af8"))
+                    .withParentTypeId(Admin_Event_Definition.getId())
+                    .build();
+
+    Type Admin_DataModel_Type_Trigger_DeleteOverride = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("Admin_DataModel_Type_Trigger_DeleteOverride")
+                    .withUuid(UUID.fromString("3be4ca23-671c-4700-bf21-a3bec7bf4830"))
+                    .withParentTypeId(Admin_Event_Definition.getId())
+                    .build();
+
     Type Admin_Common_Property = Type.builder()
                     .withId(RandomUtils.nextLong())
                     .withName("Admin_Common_Property")

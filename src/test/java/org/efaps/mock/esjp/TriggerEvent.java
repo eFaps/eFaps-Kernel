@@ -36,4 +36,20 @@ public class TriggerEvent
         RESULTS.put(_parameter.getInstance(), EventType.DELETE_PRE);
         return ret;
     }
+
+    public Return deletePost(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        RESULTS.put(_parameter.getInstance(), EventType.DELETE_POST);
+        return ret;
+    }
+
+    public Return deleteOverride(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        RESULTS.put(_parameter.getInstance(), EventType.DELETE_OVERRIDE);
+        return ret;
+    }
 }

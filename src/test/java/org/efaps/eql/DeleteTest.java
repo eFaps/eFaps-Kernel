@@ -147,11 +147,35 @@ public class DeleteTest
     public void testDeleteInstancePreTrigger()
         throws EFapsException
     {
-        final Instance inst = Instance.get( Mocks.EventType.getId() + ".4");
+        final Instance inst = Instance.get(Mocks.DeletePreEventType.getId() + ".4");
         EQL.delete(inst)
             .stmt()
             .execute();
         assertTrue(TriggerEvent.RESULTS.containsKey(inst));
         assertEquals(TriggerEvent.RESULTS.get(inst).get(0), EventType.DELETE_PRE);
+    }
+
+    @Test
+    public void testDeleteInstancePostTrigger()
+        throws EFapsException
+    {
+        final Instance inst = Instance.get(Mocks.DeletePostEventType.getId() + ".4");
+        EQL.delete(inst)
+            .stmt()
+            .execute();
+        assertTrue(TriggerEvent.RESULTS.containsKey(inst));
+        assertEquals(TriggerEvent.RESULTS.get(inst).get(0), EventType.DELETE_POST);
+    }
+
+    @Test
+    public void testDeleteInstanceOverrideTrigger()
+        throws EFapsException
+    {
+        final Instance inst = Instance.get(Mocks.DeleteOverrideEventType.getId() + ".4");
+        EQL.delete(inst)
+            .stmt()
+            .execute();
+        assertTrue(TriggerEvent.RESULTS.containsKey(inst));
+        assertEquals(TriggerEvent.RESULTS.get(inst).get(0), EventType.DELETE_OVERRIDE);
     }
 }

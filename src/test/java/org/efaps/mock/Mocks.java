@@ -532,27 +532,115 @@ public interface Mocks
                     .withAttributeTypeId(IDataModel.StringType.getId())
                     .build();
 
-    Type EventType = Type.builder()
+    Type AllEventType = Type.builder()
                     .withId(RandomUtils.nextLong())
-                    .withName("EventType")
+                    .withName("AllEventType")
                     .build();
 
-    SQLTable EventTypeSQLTable = SQLTable.builder()
-                    .withName("EventTypeSQLTable")
+    SQLTable AllEventTypeSQLTable = SQLTable.builder()
+                    .withName("AllEventTypeSQLTable")
                     .build();
 
-    Attribute EventTypeStringAttribute = Attribute.builder()
+    Attribute AllEventTypeStringAttribute = Attribute.builder()
                     .withName("EventAttribute")
-                    .withDataModelTypeId(EventType.getId())
-                    .withSqlTableId(EventTypeSQLTable.getId())
+                    .withDataModelTypeId(AllEventType.getId())
+                    .withSqlTableId(AllEventTypeSQLTable.getId())
                     .withAttributeTypeId(IDataModel.StringType.getId())
                     .build();
 
-    EventDefinition EventTypeEvent = EventDefinition.builder()
-                    .withObjectLink(EventType.getId())
+    EventDefinition AllEventTypeEvent1 = EventDefinition.builder()
+                    .withObjectLink(AllEventType.getId())
+                    .withInstId(100L)
+                    .withTypeId(IDataModel.Admin_DataModel_Type_Trigger_DeletePre.getId())
+                    .withESJP(TriggerEvent.class.getName())
+                    .withMethod("deletePre")
+                    .build();
+
+    EventDefinition AllEventTypeEvent2 = EventDefinition.builder()
+                    .withObjectLink(AllEventType.getId())
+                    .withInstId(101L)
+                    .withTypeId(IDataModel.Admin_DataModel_Type_Trigger_DeleteOverride.getId())
+                    .withESJP(TriggerEvent.class.getName())
+                    .withMethod("deleteOverride")
+                    .build();
+
+    EventDefinition AllEventTypeEvent3 = EventDefinition.builder()
+                    .withObjectLink(AllEventType.getId())
+                    .withInstId(101L)
+                    .withTypeId(IDataModel.Admin_DataModel_Type_Trigger_DeletePost.getId())
+                    .withESJP(TriggerEvent.class.getName())
+                    .withMethod("deletePost")
+                    .build();
+
+    Type DeletePreEventType = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("DeletePreEventType")
+                    .build();
+
+    SQLTable DeletePreEventTypeSQLTable = SQLTable.builder()
+                    .withName("DeletePreEventTypeSQLTable")
+                    .build();
+
+    Attribute DeletePreEventTypeStringAttribute = Attribute.builder()
+                    .withName("EventAttribute")
+                    .withDataModelTypeId(DeletePreEventType.getId())
+                    .withSqlTableId(DeletePreEventTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.StringType.getId())
+                    .build();
+
+    EventDefinition DeletePreEventTypeEvent = EventDefinition.builder()
+                    .withObjectLink(DeletePreEventType.getId())
                     .withInstId(44L)
                     .withTypeId(IDataModel.Admin_DataModel_Type_Trigger_DeletePre.getId())
                     .withESJP(TriggerEvent.class.getName())
                     .withMethod("deletePre")
+                    .build();
+
+    Type DeletePostEventType = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("DeletePostEventType")
+                    .build();
+
+    SQLTable DeletePostEventTypeSQLTable = SQLTable.builder()
+                    .withName("DeletePostEventTypeSQLTable")
+                    .build();
+
+    Attribute DeletePostEventTypeStringAttribute = Attribute.builder()
+                    .withName("EventAttribute")
+                    .withDataModelTypeId(DeletePostEventType.getId())
+                    .withSqlTableId(DeletePostEventTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.StringType.getId())
+                    .build();
+
+    EventDefinition DeletePostEventTypeEvent = EventDefinition.builder()
+                    .withObjectLink(DeletePostEventType.getId())
+                    .withInstId(45L)
+                    .withTypeId(IDataModel.Admin_DataModel_Type_Trigger_DeletePost.getId())
+                    .withESJP(TriggerEvent.class.getName())
+                    .withMethod("deletePost")
+                    .build();
+
+    Type DeleteOverrideEventType = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("DeleteOverrideEventType")
+                    .build();
+
+    SQLTable DeleteOverrideEventTypeSQLTable = SQLTable.builder()
+                    .withName("DeleteOverrideEventTypeSQLTable")
+                    .build();
+
+    Attribute DeleteOverrideEventTypeStringAttribute = Attribute.builder()
+                    .withName("EventAttribute")
+                    .withDataModelTypeId(DeleteOverrideEventType.getId())
+                    .withSqlTableId(DeleteOverrideEventTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.StringType.getId())
+                    .build();
+
+    EventDefinition DeleteOverrideEventTypeEvent = EventDefinition.builder()
+                    .withObjectLink(DeleteOverrideEventType.getId())
+                    .withInstId(46L)
+                    .withTypeId(IDataModel.Admin_DataModel_Type_Trigger_DeleteOverride.getId())
+                    .withESJP(TriggerEvent.class.getName())
+                    .withMethod("deleteOverride")
                     .build();
 }

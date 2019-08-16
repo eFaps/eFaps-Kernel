@@ -53,10 +53,16 @@ public class DeleteStmt
         } else if (getEQLStmt() instanceof IDeleteListStatement) {
             delete = new ListDelete((IDeleteListStatement) getEQLStmt());
         }
-        if (!has(StmtFlag.TRIGGEROFF)) {
+        if (has(StmtFlag.TRIGGEROFF)) {
+            StmtRunner.get().execute(delete);
+        } else {
             delete.executeEvents(EventType.DELETE_PRE);
+
+            if (!delete.executeEvents(EventType.DELETE_OVERRIDE)) {
+                StmtRunner.get().execute(delete);
+            }
+            delete.executeEvents(EventType.DELETE_POST);
         }
-        StmtRunner.get().execute(delete);
         return this;
     }
 

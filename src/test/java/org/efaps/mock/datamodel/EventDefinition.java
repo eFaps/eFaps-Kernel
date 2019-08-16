@@ -76,7 +76,9 @@ public final class EventDefinition
         typeIds = _builder.typeIds;
 
         final List<Long> types = new ArrayList<>(Arrays.asList(IDataModel.Admin_DataModel_TypeAccessCheckEvent.getId(),
-                        IDataModel.Admin_DataModel_Type_Trigger_DeletePre.getId()));
+                        IDataModel.Admin_DataModel_Type_Trigger_DeletePre.getId(),
+                        IDataModel.Admin_DataModel_Type_Trigger_DeleteOverride.getId(),
+                        IDataModel.Admin_DataModel_Type_Trigger_DeletePost.getId()));
         Collections.sort(types);
         types.add(0, IDataModel.Admin_Event_Definition.getId());
 

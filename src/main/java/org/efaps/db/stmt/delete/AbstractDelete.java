@@ -76,12 +76,14 @@ public class AbstractDelete
         return instances;
     }
 
-    public void executeEvents(final EventType _eventType)
+    public boolean executeEvents(final EventType _eventType)
         throws EFapsException
     {
+        boolean ret = false;
         for (final Instance instance : getInstances()) {
             final List<EventDefinition> triggers = instance.getType().getEvents(_eventType);
             if (triggers != null) {
+                ret = true;
                 final Parameter parameter = new Parameter();
                 parameter.put(ParameterValues.INSTANCE, instance);
                 for (final EventDefinition evenDef : triggers) {
@@ -89,5 +91,6 @@ public class AbstractDelete
                 }
             }
         }
+        return ret;
     }
 }
