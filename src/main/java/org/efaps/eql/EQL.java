@@ -184,28 +184,6 @@ public final class EQL
     }
 
     /**
-     * Update.
-     *
-     * @param _instance the instance
-     * @return the update
-     */
-    public static Update update(final Instance _instance)
-    {
-        return update(_instance.getOid());
-    }
-
-    /**
-     * Update.
-     *
-     * @param _oid the oid of the instance to be updated
-     * @return the update
-     */
-    public static Update update(final String _oid)
-    {
-        return  (Update) EQL2.update(_oid);
-    }
-
-    /**
      * Delete.
      *
      * @param _instance the instance
@@ -270,5 +248,17 @@ public final class EQL
             return insert(_ciType.getType().getName());
         }
 
+        @Override
+        public Update update(final String... _oid)
+        {
+            return (Update) super.update(_oid);
+        }
+
+        public Update update(final Instance... _instances)
+        {
+            return update(Arrays.stream(_instances)
+                            .map(instance -> instance.getOid())
+                            .toArray(String[]::new));
+        }
     }
 }

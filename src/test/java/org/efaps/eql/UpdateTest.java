@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,8 @@ public class UpdateTest
                         Mocks.TestAttribute.getSQLColumnName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.update(Mocks.SimpleType.getId() + ".4")
+        EQL.builder()
+            .update(Mocks.SimpleType.getId() + ".4")
             .set(CI.SimpleType.TestAttr, "A Value")
             .stmt()
             .execute();
@@ -70,7 +71,8 @@ public class UpdateTest
                         Mocks.AllAttrDateAttribute.getSQLColumnName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.update(Mocks.AllAttrType.getId() + ".4")
+        EQL.builder()
+            .update(Mocks.AllAttrType.getId() + ".4")
             .set(CI.AllAttrType.StringAttribute, "A String Value")
             .set(CI.AllAttrType.LongAttribute, 248651L)
             .set(CI.AllAttrType.IntegerAttribute, 22)
@@ -94,7 +96,8 @@ public class UpdateTest
         throws EFapsException
     {
         AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType.getId()), 4L), false);
-        EQL.update(Mocks.AccessType.getId() + ".4")
+        EQL.builder()
+            .update(Mocks.AccessType.getId() + ".4")
             .set(Mocks.AccessTypeStringAttribute.getName(), "A value")
             .stmt()
             .execute();
@@ -110,7 +113,8 @@ public class UpdateTest
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
         AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType.getId()), 4L), true);
-        EQL.update(Mocks.AccessType.getId() + ".4")
+        EQL.builder()
+            .update(Mocks.AccessType.getId() + ".4")
             .set(Mocks.AccessTypeStringAttribute.getName(), "A value")
             .stmt()
             .execute();
