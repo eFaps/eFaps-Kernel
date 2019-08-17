@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,8 @@ public class InsertTest
                         Mocks.TestAttribute.getSQLColumnName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.insert(CI.SimpleType)
+        EQL.builder()
+            .insert(CI.SimpleType)
             .set(CI.SimpleType.TestAttr, "A Value")
             .stmt()
             .execute();
@@ -72,7 +73,8 @@ public class InsertTest
                         Mocks.AllAttrDateAttribute.getSQLColumnName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.insert(CI.AllAttrType)
+        EQL.builder()
+            .insert(CI.AllAttrType)
             .set(CI.AllAttrType.StringAttribute, "A String Value")
             .set(CI.AllAttrType.LongAttribute, 248651L)
             .set(CI.AllAttrType.IntegerAttribute, 4)
@@ -103,7 +105,8 @@ public class InsertTest
                                     .asResult())
                     .build();
 
-        final Instance instance = EQL.insert(CI.SimpleType)
+        final Instance instance = EQL.builder()
+            .insert(CI.SimpleType)
             .set(CI.SimpleType.TestAttr, "A Value")
             .stmt()
             .execute();
@@ -126,7 +129,8 @@ public class InsertTest
                         Mocks.CompanyStringAttribute);
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.insert(CI.CompanyType)
+        EQL.builder()
+            .insert(CI.CompanyType)
             .set(CI.CompanyType.StringAttribute, "A Value")
             .stmt()
             .execute();
@@ -138,7 +142,8 @@ public class InsertTest
         throws EFapsException
     {
         AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType.getId()), 0L), false);
-        EQL.insert(Mocks.AccessType.getName())
+        EQL.builder()
+            .insert(Mocks.AccessType.getName())
             .set(Mocks.AccessTypeStringAttribute.getName(), "A Value")
             .stmt()
             .execute();
@@ -154,7 +159,8 @@ public class InsertTest
                         Mocks.AccessTypeStringAttribute.getSQLColumnName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.insert(Mocks.AccessType.getName())
+        EQL.builder()
+            .insert(Mocks.AccessType.getName())
             .set(Mocks.AccessTypeStringAttribute.getName(), "A Value")
             .stmt()
             .execute();

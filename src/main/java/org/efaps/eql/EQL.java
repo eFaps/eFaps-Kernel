@@ -184,28 +184,6 @@ public final class EQL
     }
 
     /**
-     * Insert.
-     *
-     * @param _typeName the type name
-     * @return the insert
-     */
-    public static Insert insert(final String _typeName)
-    {
-        return (Insert) EQL2.insert(_typeName);
-    }
-
-    /**
-     * Insert.
-     *
-     * @param _ciType the ci type
-     * @return the insert
-     */
-    public static Insert insert(final CIType _ciType)
-    {
-        return (Insert) EQL2.insert(_ciType.getType().getName());
-    }
-
-    /**
      * Update.
      *
      * @param _instance the instance
@@ -280,5 +258,17 @@ public final class EQL
                             .map(instance -> instance.getOid())
                             .toArray(String[]::new));
         }
+
+        @Override
+        public Insert insert(final String _typeName)
+        {
+            return (Insert) super.insert(_typeName);
+        }
+
+        public Insert insert(final CIType _ciType)
+        {
+            return insert(_ciType.getType().getName());
+        }
+
     }
 }
