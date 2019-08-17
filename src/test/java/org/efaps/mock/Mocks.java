@@ -550,26 +550,15 @@ public interface Mocks
 
     EventDefinition AllEventTypeEvent1 = EventDefinition.builder()
                     .withObjectLink(AllEventType.getId())
-                    .withInstId(100L)
-                    .withTypeId(IDataModel.Admin_DataModel_Type_Trigger_DeletePre.getId())
+                    .withInstId(100L, 101L, 102L, 103L, 104L, 105L)
+                    .withTypeId(IDataModel.Admin_DataModel_Type_Trigger_DeletePre.getId(),
+                                IDataModel.Admin_DataModel_Type_Trigger_DeleteOverride.getId(),
+                                IDataModel.Admin_DataModel_Type_Trigger_DeletePost.getId(),
+                                IDataModel.Admin_DataModel_Type_Trigger_InsertPre.getId(),
+                                IDataModel.Admin_DataModel_Type_Trigger_InsertOverride.getId(),
+                                IDataModel.Admin_DataModel_Type_Trigger_InsertPost.getId())
                     .withESJP(TriggerEvent.class.getName())
-                    .withMethod("deletePre")
-                    .build();
-
-    EventDefinition AllEventTypeEvent2 = EventDefinition.builder()
-                    .withObjectLink(AllEventType.getId())
-                    .withInstId(101L)
-                    .withTypeId(IDataModel.Admin_DataModel_Type_Trigger_DeleteOverride.getId())
-                    .withESJP(TriggerEvent.class.getName())
-                    .withMethod("deleteOverride")
-                    .build();
-
-    EventDefinition AllEventTypeEvent3 = EventDefinition.builder()
-                    .withObjectLink(AllEventType.getId())
-                    .withInstId(101L)
-                    .withTypeId(IDataModel.Admin_DataModel_Type_Trigger_DeletePost.getId())
-                    .withESJP(TriggerEvent.class.getName())
-                    .withMethod("deletePost")
+                    .withMethod("event")
                     .build();
 
     Type DeletePreEventType = Type.builder()

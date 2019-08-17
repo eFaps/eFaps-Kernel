@@ -196,12 +196,11 @@ public class DeleteTest
         throws EFapsException
     {
         final Instance inst = Instance.get(Mocks.AllEventType.getId() + ".4");
-
         EQL.builder()
             .with(StmtFlag.TRIGGEROFF)
             .delete(inst)
             .stmt()
             .execute();
-        assertFalse(TriggerEvent.RESULTS.containsKey(inst));
+        assertFalse(TriggerEvent.RESULTS.isEmpty());
     }
 }

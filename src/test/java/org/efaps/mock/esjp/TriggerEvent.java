@@ -29,6 +29,14 @@ public class TriggerEvent
     /** The results. */
     public static ArrayListValuedHashMap<Instance, EventType> RESULTS = new ArrayListValuedHashMap<>();
 
+    public Return event(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        RESULTS.put(_parameter.getInstance(), EventType.DELETE_PRE);
+        return ret;
+    }
+
     public Return deletePre(final Parameter _parameter)
         throws EFapsException
     {

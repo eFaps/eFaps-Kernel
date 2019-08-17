@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -27,6 +27,7 @@ import org.efaps.test.EFapsQueryHandler;
 
 import acolyte.jdbc.QueryResult;
 import acolyte.jdbc.RowList2.Impl;
+import acolyte.jdbc.RowList9;
 import acolyte.jdbc.RowLists;
 import acolyte.jdbc.StatementHandler.Parameter;
 
@@ -139,11 +140,14 @@ public final class EventDefinition
      */
     public QueryResult getResult4Value()
     {
-        return RowLists.rowList9(Object.class, Object.class, Object.class, Object.class, Object.class, Object.class,
-                        Object.class, Object.class, Object.class)
-             .append(1L, 1L, 1L, typeIds.iterator().next(), esjp, typeIds.iterator().next(),
-                             "Name2", 0, method)
-            .asResult();
+         RowList9.Impl<Object, Object, Object, Object, Object, Object, Object, Object, Object> rr = RowLists.rowList9(Object.class,
+                         Object.class, Object.class, Object.class, Object.class, Object.class, Object.class, Object.class, Object.class);
+         final Iterator<Long> iter = typeIds.iterator();
+         for (final Long instId : instIds) {
+             final Long typeId = iter.next();
+             rr = rr.append(instId, 1L, 1L, typeId, esjp, typeId, "Name2", 0, method);
+         }
+         return rr.asResult();
     }
 
     /**

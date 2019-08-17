@@ -28,6 +28,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.eql2.StmtFlag;
 import org.efaps.mock.MockResult;
 import org.efaps.mock.Mocks;
 import org.efaps.mock.datamodel.CI;
@@ -207,6 +208,19 @@ public class InsertTest
             .execute();
         assertTrue(TriggerEvent.RESULTS.containsKey(inst));
         assertEquals(TriggerEvent.RESULTS.get(inst).get(0), EventType.INSERT_POST);
+    }
+
+    @Test
+    public void testInsertDeactivateTrigger()
+        throws EFapsException
+    {
+        EQL.builder()
+            .with(StmtFlag.TRIGGEROFF)
+            .insert(Mocks.AllEventType.getName())
+            .set(Mocks.AllEventTypeStringAttribute.getName(), "A Value")
+            .stmt()
+            .execute();
+        assertTrue(TriggerEvent.RESULTS.isEmpty());
     }
 
 }

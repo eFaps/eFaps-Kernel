@@ -73,7 +73,7 @@ public class InsertStmt
      */
     public static InsertStmt get(final IInsertStatement _insertStmt)
     {
-        final InsertStmt ret = new InsertStmt();
+        final InsertStmt ret = new InsertStmt(_insertStmt.getFlags());
         ret.setEQLStmt(_insertStmt);
         return ret;
     }
