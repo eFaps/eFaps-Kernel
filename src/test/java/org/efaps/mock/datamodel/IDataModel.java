@@ -269,6 +269,29 @@ public interface IDataModel
                     .withParentTypeId(Admin_Event_Definition.getId())
                     .build();
 
+    Type Admin_DataModel_Type_Trigger_InsertPre = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("Admin_DataModel_Type_Trigger_InsertPre")
+                    .withUuid(UUID.fromString("f2118146-3d89-4cbb-8665-af10f3a1158b"))
+                    .withParentTypeId(Admin_Event_Definition.getId())
+                    .build();
+
+    Type Admin_DataModel_Type_Trigger_InsertPost = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("Admin_DataModel_Type_Trigger_InsertPost")
+                    .withUuid(UUID.fromString("b8cd5c3b-5dc2-454c-a493-f19cefc15e1a"))
+                    .withParentTypeId(Admin_Event_Definition.getId())
+                    .build();
+
+    Type Admin_DataModel_Type_Trigger_InsertOverride = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("Admin_DataModel_Type_Trigger_InsertOverride")
+                    .withUuid(UUID.fromString("93115e42-a77e-45da-91fa-4ceb811a39d8"))
+                    .withParentTypeId(Admin_Event_Definition.getId())
+                    .build();
+
+
+
     Type Admin_Common_Property = Type.builder()
                     .withId(RandomUtils.nextLong())
                     .withName("Admin_Common_Property")

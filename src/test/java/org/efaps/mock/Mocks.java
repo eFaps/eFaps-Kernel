@@ -643,4 +643,76 @@ public interface Mocks
                     .withESJP(TriggerEvent.class.getName())
                     .withMethod("deleteOverride")
                     .build();
+
+    Type InsertPreEventType = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("InsertPreEventType")
+                    .build();
+
+    SQLTable InsertPreEventTypeSQLTable = SQLTable.builder()
+                    .withName("InsertPreEventTypeSQLTable")
+                    .build();
+
+    Attribute InsertPreEventTypeStringAttribute = Attribute.builder()
+                    .withName("EventAttribute")
+                    .withDataModelTypeId(InsertPreEventType.getId())
+                    .withSqlTableId(InsertPreEventTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.StringType.getId())
+                    .build();
+
+    EventDefinition InsertPreEventTypeEvent = EventDefinition.builder()
+                    .withObjectLink(InsertPreEventType.getId())
+                    .withInstId(244L)
+                    .withTypeId(IDataModel.Admin_DataModel_Type_Trigger_InsertPre.getId())
+                    .withESJP(TriggerEvent.class.getName())
+                    .withMethod("insertPre")
+                    .build();
+
+    Type InsertPostEventType = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("InsertPostEventType")
+                    .build();
+
+    SQLTable InsertPostEventTypeSQLTable = SQLTable.builder()
+                    .withName("InsertPostEventTypeSQLTable")
+                    .build();
+
+    Attribute InsertPostEventTypeStringAttribute = Attribute.builder()
+                    .withName("EventAttribute")
+                    .withDataModelTypeId(InsertPostEventType.getId())
+                    .withSqlTableId(InsertPostEventTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.StringType.getId())
+                    .build();
+
+    EventDefinition InsertPostEventTypeEvent = EventDefinition.builder()
+                    .withObjectLink(InsertPostEventType.getId())
+                    .withInstId(245L)
+                    .withTypeId(IDataModel.Admin_DataModel_Type_Trigger_InsertPost.getId())
+                    .withESJP(TriggerEvent.class.getName())
+                    .withMethod("insertPost")
+                    .build();
+
+    Type InsertOverrideEventType = Type.builder()
+                    .withId(RandomUtils.nextLong())
+                    .withName("InsertOverrideEventType")
+                    .build();
+
+    SQLTable InsertOverrideEventTypeSQLTable = SQLTable.builder()
+                    .withName("InsertOverrideEventTypeSQLTable")
+                    .build();
+
+    Attribute InsertOverrideEventTypeStringAttribute = Attribute.builder()
+                    .withName("EventAttribute")
+                    .withDataModelTypeId(InsertOverrideEventType.getId())
+                    .withSqlTableId(InsertOverrideEventTypeSQLTable.getId())
+                    .withAttributeTypeId(IDataModel.StringType.getId())
+                    .build();
+
+    EventDefinition InsertOverrideEventTypeEvent = EventDefinition.builder()
+                    .withObjectLink(InsertOverrideEventType.getId())
+                    .withInstId(246L)
+                    .withTypeId(IDataModel.Admin_DataModel_Type_Trigger_InsertOverride.getId())
+                    .withESJP(TriggerEvent.class.getName())
+                    .withMethod("insertOverride")
+                    .build();
 }

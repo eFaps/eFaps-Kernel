@@ -16,10 +16,15 @@
  */
 package org.efaps.db.stmt.update;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Parameter;
+import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.eql2.IInsertStatement;
@@ -51,9 +56,9 @@ public class Insert
         super(_eqlStmt);
         final String typeStr = ((IInsertStatement) getEqlStmt()).getTypeName();
         if (UUIDUtil.isUUID(typeStr)) {
-            this.type = Type.get(UUID.fromString(typeStr));
+            type = Type.get(UUID.fromString(typeStr));
         } else {
-            this.type = Type.get(typeStr);
+            type = Type.get(typeStr);
         }
 
         if (!getType().hasAccess(Instance.get(getType(), 0), AccessTypeEnums.CREATE.getAccessType(), null)) {
@@ -70,7 +75,7 @@ public class Insert
      */
     public Type getType()
     {
-        return this.type;
+        return type;
     }
 
     /**
@@ -80,6 +85,22 @@ public class Insert
      */
     public void evaluateInstance(final Long _created)
     {
-       this.instance = Instance.get(getType(), _created);
+       instance = Instance.get(getType(), _created);
+    }
+
+    public boolean executeEvents(final EventType _eventType)
+        throws EFapsException
+    {
+        boolean ret = false;
+        final List<EventDefinition> triggers = type.getEvents(_eventType);
+        if (triggers != null) {
+            ret = true;
+            final Parameter parameter = new Parameter();
+            parameter.put(ParameterValues.INSTANCE, instance);
+            for (final EventDefinition evenDef : triggers) {
+                evenDef.execute(parameter);
+            }
+        }
+        return ret;
     }
 }

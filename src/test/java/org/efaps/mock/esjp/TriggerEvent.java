@@ -52,4 +52,28 @@ public class TriggerEvent
         RESULTS.put(_parameter.getInstance(), EventType.DELETE_OVERRIDE);
         return ret;
     }
+
+    public Return insertPre(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        RESULTS.put(_parameter.getInstance(), EventType.INSERT_PRE);
+        return ret;
+    }
+
+    public Return insertPost(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        RESULTS.put(_parameter.getInstance(), EventType.INSERT_POST);
+        return ret;
+    }
+
+    public Return insertOverride(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        RESULTS.put(_parameter.getInstance(), EventType.INSERT_OVERRIDE);
+        return ret;
+    }
 }

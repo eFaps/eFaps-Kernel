@@ -18,12 +18,14 @@
 package org.efaps.eql;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.event.EventType;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.mock.MockResult;
@@ -32,6 +34,7 @@ import org.efaps.mock.datamodel.CI;
 import org.efaps.mock.datamodel.Company;
 import org.efaps.mock.datamodel.Company.CompanyBuilder;
 import org.efaps.mock.esjp.AccessCheck;
+import org.efaps.mock.esjp.TriggerEvent;
 import org.efaps.test.AbstractTest;
 import org.efaps.test.SQLVerify;
 import org.efaps.util.EFapsException;
@@ -166,4 +169,44 @@ public class InsertTest
             .execute();
         verify.verify();
     }
+
+    @Test
+    public void testInsertPreTrigger()
+        throws EFapsException
+    {
+        EQL.builder()
+            .insert(Mocks.InsertPreEventType.getName())
+            .set(Mocks.InsertPreEventTypeStringAttribute.getName(), "A Value")
+            .stmt()
+            .execute();
+        assertTrue(TriggerEvent.RESULTS.containsKey(null));
+        assertEquals(TriggerEvent.RESULTS.get(null).get(0), EventType.INSERT_PRE);
+    }
+
+    @Test
+    public void testInsertOverrideTrigger()
+        throws EFapsException
+    {
+        EQL.builder()
+            .insert(Mocks.InsertOverrideEventType.getName())
+            .set(Mocks.InsertOverrideEventTypeStringAttribute.getName(), "A Value")
+            .stmt()
+            .execute();
+        assertTrue(TriggerEvent.RESULTS.containsKey(null));
+        assertEquals(TriggerEvent.RESULTS.get(null).get(0), EventType.INSERT_OVERRIDE);
+    }
+
+    @Test
+    public void testInsertPostTrigger()
+        throws EFapsException
+    {
+        final Instance inst = EQL.builder()
+            .insert(Mocks.InsertPostEventType.getName())
+            .set(Mocks.InsertPostEventTypeStringAttribute.getName(), "A Value")
+            .stmt()
+            .execute();
+        assertTrue(TriggerEvent.RESULTS.containsKey(inst));
+        assertEquals(TriggerEvent.RESULTS.get(inst).get(0), EventType.INSERT_POST);
+    }
+
 }

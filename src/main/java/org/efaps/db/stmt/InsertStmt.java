@@ -16,9 +16,9 @@
  */
 package org.efaps.db.stmt;
 
+import org.efaps.admin.event.EventType;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.runner.StmtRunner;
-import org.efaps.db.stmt.update.AbstractObjectUpdate;
 import org.efaps.db.stmt.update.Insert;
 import org.efaps.eql2.IInsertStatement;
 import org.efaps.eql2.StmtFlag;
@@ -31,7 +31,7 @@ public class InsertStmt
     extends AbstractStmt
 {
     /** The print. */
-    private AbstractObjectUpdate update;
+    private Insert insert;
 
     /**
      * Instantiates a new prints the stmt.
@@ -50,9 +50,19 @@ public class InsertStmt
     public Instance execute()
         throws EFapsException
     {
-        update = new Insert((IInsertStatement) getEQLStmt());
-        StmtRunner.get().execute(update);
-        return update.getInstance();
+        insert = new Insert((IInsertStatement) getEQLStmt());
+
+        if (has(StmtFlag.TRIGGEROFF)) {
+            StmtRunner.get().execute(insert);
+        } else {
+            insert.executeEvents(EventType.INSERT_PRE);
+
+            if (!insert.executeEvents(EventType.INSERT_OVERRIDE)) {
+                StmtRunner.get().execute(insert);
+            }
+            insert.executeEvents(EventType.INSERT_POST);
+        }
+        return insert.getInstance();
     }
 
     /**
