@@ -64,7 +64,10 @@ public class EvaluatorTest
                 .asResult())
             .build();
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+        final Evaluator eval = EQL.builder()
+            .print()
+            .query(Mocks.AllAttrType.getName())
+            .select()
             .attribute(Mocks.AllAttrStringAttribute.getName(), Mocks.AllAttrLongAttribute.getName())
             .stmt()
             .execute()
@@ -89,7 +92,10 @@ public class EvaluatorTest
                 .asResult())
             .build();
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+        final Evaluator eval = EQL.builder()
+                        .print()
+                        .query(Mocks.AccessType.getName())
+                        .select()
                         .attribute(Mocks.AccessTypeStringAttribute.getName())
                         .stmt()
                         .execute()
@@ -116,7 +122,10 @@ public class EvaluatorTest
 
         AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType.getId()), 534L), false);
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+        final Evaluator eval = EQL.builder()
+                        .print()
+                        .query(Mocks.AccessType.getName())
+                        .select()
                         .attribute(Mocks.AccessTypeStringAttribute.getName())
                         .stmt()
                         .execute()
@@ -146,7 +155,10 @@ public class EvaluatorTest
                 .asResult())
             .build();
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+        final Evaluator eval = EQL.builder()
+                        .print()
+                        .query(Mocks.AccessType.getName())
+                        .select()
                         .attribute(Mocks.AccessTypeStringAttribute.getName())
                         .linkto(Mocks.AccessTypeLinkAttribute.getName())
                             .attribute(Mocks.AccessType2StringAttribute.getName())
@@ -180,7 +192,10 @@ public class EvaluatorTest
 
         AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType.getId()), 224L), false);
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+        final Evaluator eval = EQL.builder()
+                        .print()
+                        .query(Mocks.AccessType.getName())
+                        .select()
                         .attribute(Mocks.AccessTypeStringAttribute.getName())
                         .linkto(Mocks.AccessTypeLinkAttribute.getName())
                             .attribute(Mocks.AccessType2StringAttribute.getName())
@@ -214,7 +229,10 @@ public class EvaluatorTest
 
         AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType2.getId()), 225L), false);
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+        final Evaluator eval = EQL.builder()
+                        .print()
+                        .query(Mocks.AccessType.getName())
+                        .select()
                         .attribute(Mocks.AccessTypeStringAttribute.getName())
                         .linkto(Mocks.AccessTypeLinkAttribute.getName())
                             .attribute(Mocks.AccessType2StringAttribute.getName())
@@ -257,7 +275,10 @@ public class EvaluatorTest
                 .asResult())
             .build();
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+        final Evaluator eval = EQL.builder()
+                        .print()
+                        .query(Mocks.AccessType.getName())
+                        .select()
                         .attribute(Mocks.AccessTypeStringAttribute.getName())
                         .linkto(Mocks.AccessTypeLinkAttribute.getName())
                             .linkto(Mocks.AccessType2LinkAttribute.getName())
@@ -303,7 +324,10 @@ public class EvaluatorTest
 
         AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType.getId()), 224L), false);
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+        final Evaluator eval = EQL.builder()
+                        .print()
+                        .query(Mocks.AccessType.getName())
+                        .select()
                         .attribute(Mocks.AccessTypeStringAttribute.getName())
                         .linkto(Mocks.AccessTypeLinkAttribute.getName())
                             .linkto(Mocks.AccessType2LinkAttribute.getName())
@@ -347,7 +371,10 @@ public class EvaluatorTest
 
         AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType2.getId()), 225L), false);
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+        final Evaluator eval = EQL.builder()
+                        .print()
+                        .query(Mocks.AccessType.getName())
+                        .select()
                         .attribute(Mocks.AccessTypeStringAttribute.getName())
                         .linkto(Mocks.AccessTypeLinkAttribute.getName())
                             .linkto(Mocks.AccessType2LinkAttribute.getName())
@@ -395,7 +422,10 @@ public class EvaluatorTest
 
         AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType3.getId()), 226L), false);
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+        final Evaluator eval = EQL.builder()
+                        .print()
+                        .query(Mocks.AccessType.getName())
+                        .select()
                         .attribute(Mocks.AccessTypeStringAttribute.getName())
                         .linkto(Mocks.AccessTypeLinkAttribute.getName())
                             .linkto(Mocks.AccessType2LinkAttribute.getName())
@@ -433,7 +463,10 @@ public class EvaluatorTest
                             .asResult())
             .build();
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.SimpleType.getName()))
+        final Evaluator eval = EQL.builder()
+                        .print()
+                        .query(Mocks.SimpleType.getName())
+                        .select()
                         .linkfrom(Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName())
                             .instance()
                         .stmt()
@@ -466,7 +499,10 @@ public class EvaluatorTest
                             .asResult())
             .build();
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.SimpleType.getName()))
+        final Evaluator eval = EQL.builder()
+                        .print()
+                        .query(Mocks.SimpleType.getName())
+                        .select()
                         .linkfrom(Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName())
                             .instance()
                         .stmt()
@@ -506,7 +542,10 @@ public class EvaluatorTest
 
         AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.AccessType.getId()), 116L), false);
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+        final Evaluator eval = EQL.builder()
+                        .print()
+                        .query(Mocks.AccessType.getName())
+                        .select()
                         .linkfrom(Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName())
                             .instance()
                         .stmt()
@@ -534,7 +573,10 @@ public class EvaluatorTest
 
         AccessCheck.RESULTS.put(Instance.get(Type.get(Mocks.RelationAccessType.getId()), 315L), false);
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AccessType.getName()))
+        final Evaluator eval = EQL.builder()
+                        .print()
+                        .query(Mocks.AccessType.getName())
+                        .select()
                         .linkfrom(Mocks.RelationAccessType.getName(), Mocks.RealtionAccessFromLinkAttribute.getName())
                             .instance()
                         .stmt()
@@ -569,7 +611,10 @@ public class EvaluatorTest
                 .asResult())
             .build();
 
-        final DataList dataList = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+        final DataList dataList = EQL.builder()
+            .print()
+            .query(Mocks.AllAttrType.getName())
+            .select()
             .attribute(Mocks.AllAttrStringAttribute.getName(), Mocks.AllAttrLongAttribute.getName())
             .stmt()
             .evaluate()
@@ -598,7 +643,10 @@ public class EvaluatorTest
                 .asResult())
             .build();
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+        final Evaluator eval = EQL.builder()
+            .print()
+            .query(Mocks.AllAttrType.getName())
+            .select()
             .attribute(CI.AllAttrType.StringAttribute, CI.AllAttrType.LongAttribute)
             .stmt()
             .evaluate();
@@ -623,7 +671,10 @@ public class EvaluatorTest
                 .asResult())
             .build();
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+        final Evaluator eval = EQL.builder()
+            .print()
+            .query(Mocks.AllAttrType.getName())
+            .select()
             .attribute(CI.AllAttrType.StringAttribute).as("Bethoven")
             .attribute(CI.AllAttrType.LongAttribute)
             .stmt()
@@ -649,7 +700,10 @@ public class EvaluatorTest
                 .asResult())
             .build();
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+        final Evaluator eval = EQL.builder()
+            .print()
+            .query(Mocks.AllAttrType.getName())
+            .select()
             .attribute(CI.AllAttrType.StringAttribute, CI.AllAttrType.LongAttribute)
             .stmt()
             .evaluate();
@@ -674,7 +728,10 @@ public class EvaluatorTest
                 .asResult())
             .build();
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+        final Evaluator eval = EQL.builder()
+            .print()
+            .query(Mocks.AllAttrType.getName())
+            .select()
             .attribute(CI.AllAttrType.StringAttribute).as("alias1")
             .attribute(CI.AllAttrType.LongAttribute).as("alias2")
             .stmt()

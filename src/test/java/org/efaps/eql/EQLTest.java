@@ -25,7 +25,7 @@ public class EQLTest
 {
     @Test(description = "EQL instanciates correct Where")
     public void testWhere() {
-        final Where where = EQL.where();
+        final Where where = EQL.builder().where();
         assertTrue(where instanceof Where);
     }
 }

@@ -97,103 +97,6 @@ public final class EQL
         return new Selectables();
     }
 
-    public static Print print()
-    {
-        return (Print) org.efaps.eql2.EQL2.print();
-    }
-
-    /**
-     * Prints the.
-     *
-     * @param _instances the instances
-     * @return the prints the
-     */
-    public static Print print(final Instance... _instances)
-    {
-        return print(Arrays.stream(_instances)
-                        .map(instance -> instance.getOid())
-                        .toArray(String[]::new));
-    }
-
-    /**
-     * Prints the.
-     *
-     * @param _oid the oid
-     * @return the prints the
-     */
-    public static Print print(final String... _oid)
-    {
-        return (Print) org.efaps.eql2.EQL2.print(_oid);
-    }
-
-    /**
-     * Prints the.
-     *
-     * @param _queryBuilder the query builder
-     * @return the prints the
-     */
-    public static Print print(final Query  _queryBuilder)
-    {
-        return (Print) org.efaps.eql2.EQL2.print(_queryBuilder);
-    }
-
-    /**
-     * Prints the.
-     *
-     * @param _queryBuilder the query builder
-     * @return the prints the
-     */
-    public static Print printQuery(final CIType... _ciTypes)
-    {
-        return (Print) org.efaps.eql2.EQL2.print(query(Arrays.stream(_ciTypes)
-                        .map(ciType -> ciType.uuid.toString()).toArray(String[]::new)));
-    }
-
-    /**
-     * Prints the.
-     *
-     * @param _queryBuilder the query builder
-     * @return the prints the
-     */
-    public static Print printQuery(final String... _types)
-    {
-        return (Print) EQL2.print(query(_types));
-    }
-
-    /**
-     * Prints the.
-     *
-     * @param _ciTypes the types
-     * @return the abstract print EQL builder<?>
-     */
-    public static Query query(final CIType... _ciTypes)
-    {
-        return (Query) EQL2.query(Arrays.stream(_ciTypes)
-                        .map(ciType -> ciType.uuid.toString()).toArray(String[]::new));
-    }
-
-    /**
-     * Prints the.
-     *
-     * @param _types the types
-     * @return the abstract print EQL builder<?>
-     */
-    public static Query query(final String... _types)
-    {
-        return (Query) EQL2.query(_types);
-    }
-
-    /**
-     * Delete.
-     *
-     * @param _instance the instance
-     * @return the delete
-     */
-    public static Where where()
-    {
-        return (Where) EQL2.where();
-    }
-
     /**
      * Parses the stmt.
      *
@@ -259,6 +162,36 @@ public final class EQL
             return update(Arrays.stream(_instances)
                             .map(instance -> instance.getOid())
                             .toArray(String[]::new));
+        }
+
+        public Print print()
+        {
+            return print(new String[0]);
+        }
+
+        @Override
+        public Print print(final String... _oids)
+        {
+            return (Print) super.print(_oids);
+        }
+
+        public Print print(final Instance... _instances)
+        {
+            return print(Arrays.stream(_instances)
+                            .map(instance -> instance.getOid())
+                            .toArray(String[]::new));
+        }
+
+        @Override
+        public Query query(final String... _types)
+        {
+            return (Query) super.query(_types);
+        }
+
+        @Override
+        public Where where()
+        {
+            return (Where) super.where();
         }
     }
 }

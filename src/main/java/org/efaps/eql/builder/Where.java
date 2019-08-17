@@ -24,13 +24,9 @@ import org.efaps.db.Instance;
 import org.efaps.eql2.IWhereElement;
 import org.efaps.eql2.bldr.AbstractWhereBuilder;
 
-
 public class Where
     extends AbstractWhereBuilder<Where>
-    implements IEQLBuilder
 {
-    private IEQLBuilder parent;
-
     @Override
     protected Where getThis()
     {
@@ -60,25 +56,9 @@ public class Where
      *
      * @return the prints the stmt
      */
+    @Override
     public Print select()
     {
-        IEQLBuilder parent = getParent();
-        while (parent != null && !(parent instanceof Print)) {
-            parent = parent.getParent();
-        }
-        return parent instanceof Print ? (Print) parent : null;
-    }
-
-    @Override
-    public IEQLBuilder setParent(final IEQLBuilder _parent)
-    {
-        parent = _parent;
-        return this;
-    }
-
-    @Override
-    public IEQLBuilder getParent()
-    {
-        return parent;
+        return (Print) super.select();
     }
 }

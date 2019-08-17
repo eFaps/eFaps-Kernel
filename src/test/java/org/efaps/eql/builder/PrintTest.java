@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ public class PrintTest
     @Test
     public void testGetStmt()
     {
-        final PrintStmt stmt = EQL.print("123.45").stmt();
+        final PrintStmt stmt = EQL.builder().print("123.45").stmt();
         assertNotNull(stmt);
     }
 
@@ -40,7 +40,7 @@ public class PrintTest
     public void testExecute()
         throws EFapsException
     {
-        final PrintStmt stmt = EQL.print("123.45").execute();
+        final PrintStmt stmt = EQL.builder().print("123.45").execute();
         assertNotNull(stmt);
     }
 
@@ -48,7 +48,7 @@ public class PrintTest
     public void testEvaluate()
         throws EFapsException
     {
-        final Evaluator eval = EQL.print("123.45").evaluate();
+        final Evaluator eval = EQL.builder().print("123.45").evaluate();
         assertNotNull(eval);
     }
 

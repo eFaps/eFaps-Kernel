@@ -17,13 +17,13 @@
 
 package org.efaps.eql.builder;
 
+import java.util.Arrays;
+
 import org.efaps.ci.CIAttribute;
 import org.efaps.ci.CIType;
 import org.efaps.db.stmt.PrintStmt;
 import org.efaps.db.stmt.selection.Evaluator;
-import org.efaps.eql.EQL;
 import org.efaps.eql2.IPrintStatement;
-import org.efaps.eql2.StmtFlag;
 import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
 import org.efaps.eql2.bldr.ISelectable;
 import org.efaps.util.EFapsException;
@@ -35,13 +35,9 @@ import org.slf4j.LoggerFactory;
  */
 public class Print
     extends AbstractPrintEQLBuilder<Print>
-    implements IEQLBuilder
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(Converter.class);
-
-    /** The flags. */
-    private StmtFlag[] flags;
 
     /**
      * Stmt.
@@ -51,7 +47,7 @@ public class Print
     public PrintStmt stmt()
     {
         LOG.debug("Stmt: {}", getStmt().eqlStmt());
-        return PrintStmt.get((IPrintStatement<?>) getStmt(), flags);
+        return PrintStmt.get((IPrintStatement<?>) getStmt());
     }
 
     public PrintStmt execute()
@@ -109,18 +105,17 @@ public class Print
         return getThis();
     }
 
-    public Print with(final StmtFlag... _flags)
+    @Override
+    public Query query(final String... _types)
     {
-        flags = _flags;
-        return getThis();
+        return (Query) super.query(_types);
     }
 
-    public Query query(final CIType... _ciTypes)
+    public Query query(final CIType... _types)
     {
-        final Query query = EQL.query(_ciTypes);
-        query.setParent(this);
-        print(query);
-        return query;
+        return query(Arrays.stream(_types)
+                        .map(ciType -> String.valueOf(ciType.uuid))
+                        .toArray(String[]::new));
     }
 
     public static String getDefaultAlias(final CIAttribute _ciAttr)

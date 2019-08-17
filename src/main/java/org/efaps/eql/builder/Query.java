@@ -17,7 +17,6 @@
 
 package org.efaps.eql.builder;
 
-import org.efaps.eql.EQL;
 import org.efaps.eql2.bldr.AbstractQueryEQLBuilder;
 
 /**
@@ -25,28 +24,18 @@ import org.efaps.eql2.bldr.AbstractQueryEQLBuilder;
  */
 public class Query
     extends AbstractQueryEQLBuilder<Query>
-    implements IEQLBuilder
 {
-    private IEQLBuilder parent;
 
+    @Override
+    public Print select()
+    {
+        return (Print) super.select();
+    }
+
+    @Override
     public Where where()
     {
-        final Where whereBldr = EQL.where();
-        whereBldr.setParent(this);
-        this.where(whereBldr);
-        return whereBldr;
+        return (Where) super.where();
     }
 
-    @Override
-    public IEQLBuilder setParent(final IEQLBuilder _parent)
-    {
-        parent = _parent;
-        return this;
-    }
-
-    @Override
-    public IEQLBuilder getParent()
-    {
-        return parent;
-    }
 }

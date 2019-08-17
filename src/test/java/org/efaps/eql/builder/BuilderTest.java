@@ -31,7 +31,8 @@ public class BuilderTest
     @Test
     public void testPrintQueryString()
     {
-        final String stmt = EQL.print()
+        final String stmt = EQL.builder()
+            .print()
             .query(CI.SimpleType)
             .where()
             .attribute(CI.SimpleType.TestAttr).eq("Hallo World")
@@ -47,7 +48,8 @@ public class BuilderTest
     @Test
     public void testPrintQueryInstanc()
     {
-        final String stmt = EQL.print()
+        final String stmt = EQL.builder()
+            .print()
             .query(CI.AllAttrType)
             .where()
             .attribute(CI.AllAttrType.LongAttribute).eq(Instance.get(CI.SimpleType.uuid, 56))
@@ -63,7 +65,8 @@ public class BuilderTest
     @Test
     public void testPrintQueryNumber()
     {
-        final String stmt = EQL.print()
+        final String stmt = EQL.builder()
+            .print()
             .query(CI.AllAttrType)
             .where()
             .attribute(CI.AllAttrType.IntegerAttribute).eq(1)
@@ -80,7 +83,8 @@ public class BuilderTest
     @Test
     public void testPrintQueryVarious()
     {
-        final String stmt = EQL.print()
+        final String stmt = EQL.builder()
+            .print()
             .query(CI.AllAttrType)
             .where()
             .attribute(CI.AllAttrType.IntegerAttribute).eq(1)
@@ -100,7 +104,8 @@ public class BuilderTest
     @Test
     public void testPrintQueryVariousWithSelect()
     {
-        final String stmt = EQL.print()
+        final String stmt = EQL.builder()
+            .print()
             .query(CI.AllAttrType)
             .where()
             .attribute(CI.AllAttrType.IntegerAttribute).eq(1)
@@ -122,7 +127,8 @@ public class BuilderTest
     @Test
     public void testPrintQueryWithAlias()
     {
-        final String stmt = EQL.print()
+        final String stmt = EQL.builder()
+            .print()
             .query(CI.AllAttrType)
             .where()
             .attribute(CI.AllAttrType.IntegerAttribute).eq(1)
@@ -139,7 +145,8 @@ public class BuilderTest
     @Test
     public void testPrintQueryWithLinkto()
     {
-        final String stmt = EQL.print()
+        final String stmt = EQL.builder()
+            .print()
             .query(CI.AllAttrType)
             .where()
             .attribute(CI.AllAttrType.IntegerAttribute).eq(1)
@@ -156,7 +163,8 @@ public class BuilderTest
     @Test
     public void testPrintQueryOrder()
     {
-        final String stmt = EQL.print()
+        final String stmt = EQL
+            .builder().print()
             .query(CI.AllAttrType)
             .where()
             .attribute(CI.AllAttrType.IntegerAttribute).eq(1)

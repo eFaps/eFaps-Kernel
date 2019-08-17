@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,10 @@ public class QueryTest
                         Mocks.SimpleTypeSQLTable.getSqlTableName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(EQL.query(Mocks.SimpleType.getName()))
+        EQL.builder()
+            .print()
+            .query(Mocks.SimpleType.getName())
+            .select()
             .attribute(Mocks.TestAttribute.getName())
             .stmt()
             .execute();
@@ -67,7 +70,10 @@ public class QueryTest
                         Mocks.TypedType.getId());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(EQL.query(Mocks.TypedType.getName()))
+        EQL.builder()
+            .print()
+            .query(Mocks.TypedType.getName())
+            .select()
             .attribute(Mocks.TypedTypeTestAttr.getName())
             .stmt()
             .execute();
@@ -87,7 +93,10 @@ public class QueryTest
                             ? Mocks.ChildType2.getId() : Mocks.ChildType1.getId());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(EQL.query(Mocks.ChildType1.getName(), Mocks.ChildType2.getName()))
+        EQL.builder()
+            .print()
+            .query(Mocks.ChildType1.getName(), Mocks.ChildType2.getName())
+            .select()
             .attribute(Mocks.AbstractTypeStringAttribute.getName())
             .stmt()
             .execute();
@@ -106,10 +115,13 @@ public class QueryTest
                         strCriteria);
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(EQL.query(Mocks.SimpleType.getName()).where(
-                        EQL.where()
-                        .attribute(Mocks.TestAttribute.getName())
-                        .eq(strCriteria)))
+        EQL.builder()
+            .print()
+            .query(Mocks.SimpleType.getName())
+            .where()
+                .attribute(Mocks.TestAttribute.getName())
+                .eq(strCriteria)
+            .select()
             .attribute(Mocks.TestAttribute.getName())
             .stmt()
             .execute();
@@ -134,7 +146,10 @@ public class QueryTest
             .build();
 
         final List<String> values = new ArrayList<>();
-        final Evaluator eval = EQL.print(EQL.query(Mocks.SimpleType.getName()))
+        final Evaluator eval = EQL.builder()
+            .print()
+            .query(Mocks.SimpleType.getName())
+            .select()
             .attribute(Mocks.TestAttribute.getName())
             .stmt()
             .execute()
@@ -166,7 +181,10 @@ public class QueryTest
         final List<String> values1 = new ArrayList<>();
         final List<Long> values2 = new ArrayList<>();
         final List<Instance> instances = new ArrayList<>();
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+        final Evaluator eval = EQL.builder()
+            .print()
+            .query(Mocks.AllAttrType.getName())
+            .select()
             .attribute(Mocks.AllAttrStringAttribute.getName(), Mocks.AllAttrLongAttribute.getName())
             .stmt()
             .execute()
@@ -200,7 +218,10 @@ public class QueryTest
                             .asResult())
             .build();
 
-        final Evaluator eval = EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+        final Evaluator eval = EQL.builder()
+                        .print()
+                        .query(Mocks.AllAttrType.getName())
+                        .select()
                         .linkto(Mocks.AllAttrLinkAttribute.getName()).attribute(Mocks.TestAttribute.getName())
                         .stmt()
                         .execute()
@@ -222,8 +243,11 @@ public class QueryTest
                         Mocks.RealtionFromLinkAttribute.getSQLColumnName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(EQL.query(Mocks.SimpleType.getName()))
-                        .linkfrom(Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName())
+        EQL.builder()
+            .print()
+            .query(Mocks.SimpleType.getName())
+            .select()
+                    .linkfrom(Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName())
                             .instance()
                         .stmt()
                         .execute();
@@ -241,7 +265,10 @@ public class QueryTest
                         Mocks.RealtionFromLinkAttribute.getSQLColumnName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(EQL.query(Mocks.SimpleType.getName()))
+        EQL.builder()
+            .print()
+            .query(Mocks.SimpleType.getName())
+            .select()
                         .linkfrom(Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName())
                             .attribute(Mocks.RealtionStringAttribute.getName())
                         .stmt()
@@ -263,7 +290,9 @@ public class QueryTest
                         Mocks.RealtionFromLinkAttribute.getSQLColumnName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(EQL.query(Mocks.AllAttrType.getName()))
+        EQL.builder()
+            .print().query(Mocks.AllAttrType.getName())
+            .select()
                         .linkto(Mocks.AllAttrLinkAttribute.getName())
                         .linkfrom(Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName())
                             .attribute(Mocks.RealtionStringAttribute.getName())

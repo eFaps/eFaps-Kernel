@@ -52,7 +52,8 @@ public class PrintTest
                         Mocks.SimpleTypeSQLTable.getSqlTableName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(Mocks.SimpleType.getId() + ".4")
+        EQL.builder()
+            .print(Mocks.SimpleType.getId() + ".4")
             .attribute(Mocks.TestAttribute.getName())
             .stmt()
             .execute();
@@ -68,7 +69,8 @@ public class PrintTest
                         Mocks.SimpleTypeSQLTable.getSqlTableName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(Mocks.SimpleType.getId() + ".4")
+        EQL.builder()
+            .print(Mocks.SimpleType.getId() + ".4")
             .attribute(CI.SimpleType.TestAttr)
             .stmt()
             .execute();
@@ -85,7 +87,8 @@ public class PrintTest
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(Mocks.AllAttrType.getId() + ".4")
+        EQL.builder()
+            .print(Mocks.AllAttrType.getId() + ".4")
             .attribute(Mocks.AllAttrBooleanAttribute.getName(),
                        Mocks.AllAttrStringAttribute.getName())
             .stmt()
@@ -103,7 +106,8 @@ public class PrintTest
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(Mocks.AllAttrType.getId() + ".4")
+        EQL.builder()
+            .print(Mocks.AllAttrType.getId() + ".4")
             .attribute(Mocks.AllAttrBooleanAttribute.getName())
             .attribute(Mocks.AllAttrStringAttribute.getName())
             .stmt()
@@ -120,7 +124,8 @@ public class PrintTest
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(Mocks.AllAttrType.getId() + ".4")
+        EQL.builder()
+            .print(Mocks.AllAttrType.getId() + ".4")
             .attribute(Mocks.AllAttrBooleanAttribute.getName())
             .as("BlaBla")
             .stmt()
@@ -138,7 +143,8 @@ public class PrintTest
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(Mocks.AllAttrType.getId() + ".4")
+        EQL.builder()
+            .print(Mocks.AllAttrType.getId() + ".4")
             .attribute(Mocks.AllAttrBooleanAttribute.getName()).as("BlaBla")
             .attribute(Mocks.AllAttrStringAttribute.getName()).as("BlaBla2")
             .stmt()
@@ -162,7 +168,8 @@ public class PrintTest
                         company.getId());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(Mocks.CompanyType.getId() + ".4")
+        EQL.builder()
+            .print(Mocks.CompanyType.getId() + ".4")
             .attribute(Mocks.CompanyStringAttribute.getName())
             .stmt()
             .execute();
@@ -185,7 +192,10 @@ public class PrintTest
                         company.getId());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.printQuery(CI.CompanyType)
+        EQL.builder()
+            .print()
+            .query(CI.CompanyType)
+            .select()
             .attribute(CI.CompanyType.StringAttribute)
             .stmt()
             .execute();
@@ -211,9 +221,12 @@ public class PrintTest
                         company.getId());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.printQuery(CI.CompanyType)
+        EQL.builder()
             .with(StmtFlag.COMPANYINDEPENDENT)
-            .attribute(CI.CompanyType.StringAttribute)
+            .print()
+                .query(CI.CompanyType)
+            .select()
+                .attribute(CI.CompanyType.StringAttribute)
             .stmt()
             .execute();
         verify.verify();
@@ -243,9 +256,12 @@ public class PrintTest
                         company2.getId());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.printQuery(CI.CompanyType)
+        EQL.builder()
             .with(StmtFlag.COMPANYINDEPENDENT)
-            .attribute(CI.CompanyType.StringAttribute)
+            .print()
+                .query(CI.CompanyType)
+            .select()
+                .attribute(CI.CompanyType.StringAttribute)
             .stmt()
             .execute();
         verify.verify();
@@ -263,7 +279,8 @@ public class PrintTest
                         Mocks.AllAttrLinkAttribute.getSQLColumnName());
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
 
-        EQL.print(Mocks.AllAttrType.getId() + ".4")
+        EQL.builder()
+            .print(Mocks.AllAttrType.getId() + ".4")
             .linkto(Mocks.AllAttrLinkAttribute.getName())
                 .attribute(Mocks.TestAttribute.getName())
             .stmt()
@@ -284,7 +301,8 @@ public class PrintTest
                         Mocks.AllAttrLinkAttribute.getSQLColumnName());
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
 
-        EQL.print(Mocks.AllAttrType.getId() + ".4")
+        EQL.builder()
+            .print(Mocks.AllAttrType.getId() + ".4")
             .attribute(Mocks.AllAttrStringAttribute.getName())
             .linkto(Mocks.AllAttrLinkAttribute.getName())
                 .attribute(Mocks.TestAttribute.getName())
@@ -301,7 +319,8 @@ public class PrintTest
                                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(Mocks.AllAttrType.getId() + ".4")
+        EQL.builder()
+            .print(Mocks.AllAttrType.getId() + ".4")
             .oid()
             .stmt()
             .execute();
@@ -317,7 +336,8 @@ public class PrintTest
                                         Mocks.TypedType.getId());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(Mocks.TypedType.getId() + ".4")
+        EQL.builder()
+            .print(Mocks.TypedType.getId() + ".4")
             .oid()
             .stmt()
             .execute();
@@ -332,7 +352,8 @@ public class PrintTest
                         Mocks.TypedTypeTestAttr.getSQLColumnName(),
                         Mocks.TypedTypeSQLTable.getSqlTableName());
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(Instance.get(Mocks.TypedType.getId() + ".4"))
+        EQL.builder()
+            .print(Instance.get(Mocks.TypedType.getId() + ".4"))
             .select(CI.TypedType.TestAttr)
             .stmt()
             .execute();
@@ -347,7 +368,8 @@ public class PrintTest
                         Mocks.TypedTypeTestAttr.getSQLColumnName(),
                         Mocks.TypedTypeSQLTable.getSqlTableName());
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(Instance.get(Mocks.TypedType.getId() + ".4"))
+        EQL.builder()
+            .print(Instance.get(Mocks.TypedType.getId() + ".4"))
             .select(Selectables.attribute(CI.TypedType.TestAttr.name))
             .stmt()
             .execute();
@@ -363,7 +385,8 @@ public class PrintTest
                         Mocks.TypedTypeIDAttribute.getSQLColumnName(),
                         Mocks.TypedTypeSQLTable.getSqlTableName());
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(Instance.get(Mocks.TypedType.getId() + ".4"))
+        EQL.builder()
+            .print(Instance.get(Mocks.TypedType.getId() + ".4"))
             .select(CI.TypedType.TestAttr, CI.TypedType.ID)
             .stmt()
             .execute();
@@ -382,7 +405,8 @@ public class PrintTest
                         Mocks.AllAttrLinkAttribute.getSQLColumnName());
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
 
-        EQL.print(Instance.get(Mocks.AllAttrType.getId() + ".4"))
+        EQL.builder()
+            .print(Instance.get(Mocks.AllAttrType.getId() + ".4"))
             .select(Selectables.linkto(CI.AllAttrType.LinkAttribute).attr(CI.SimpleType.TestAttr))
             .stmt()
             .execute();
@@ -402,7 +426,8 @@ public class PrintTest
                         Mocks.AllAttrLinkAttribute.getSQLColumnName());
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
 
-        EQL.print(Mocks.AllAttrType.getId() + ".4")
+        EQL.builder()
+            .print(Mocks.AllAttrType.getId() + ".4")
             .select(CI.AllAttrType.StringAttribute,
                 Selectables.linkto(CI.AllAttrType.LinkAttribute).attr(CI.SimpleType.TestAttr))
             .stmt()
@@ -418,7 +443,8 @@ public class PrintTest
         final String sql = String.format("select T0.ID,T0.TYPE from %s T0 where T0.ID = 4",
                         Mocks.TypedTypeSQLTable.getSqlTableName());
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
-        EQL.print(Instance.get(Mocks.TypedType.getId() + ".4"))
+        EQL.builder()
+            .print(Instance.get(Mocks.TypedType.getId() + ".4"))
             .select(Selectables.instance())
             .stmt()
             .execute();

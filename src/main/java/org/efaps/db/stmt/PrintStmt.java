@@ -110,10 +110,9 @@ public final class PrintStmt
      * @param _flags the flags
      * @return the prints the stmt
      */
-    public static PrintStmt get(final IPrintStatement<?> _printStmt,
-                                final StmtFlag... _flags)
+    public static PrintStmt get(final IPrintStatement<?> _printStmt)
     {
-        final PrintStmt ret = new PrintStmt(_flags);
+        final PrintStmt ret = new PrintStmt(_printStmt.getFlags());
         ret.setEQLStmt(_printStmt);
         return ret;
     }
