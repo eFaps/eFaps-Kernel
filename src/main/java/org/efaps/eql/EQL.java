@@ -233,30 +233,6 @@ public final class EQL
      * @param _instance the instance
      * @return the delete
      */
-    public static Delete delete(final Instance... _instances)
-    {
-        return delete(Arrays.stream(_instances)
-                        .map(instance -> instance.getOid())
-                        .toArray(String[]::new));
-    }
-
-    /**
-     * Delete.
-     *
-     * @param _instance the instance
-     * @return the delete
-     */
-    public static Delete delete(final String... _oids)
-    {
-        return (Delete) EQL2.delete(_oids);
-    }
-
-    /**
-     * Delete.
-     *
-     * @param _instance the instance
-     * @return the delete
-     */
     public static Where where()
     {
         return (Where) EQL2.where();
@@ -282,5 +258,27 @@ public final class EQL
             ret = UpdateStmt.get((IUpdateStatement<?>) stmt);
         }
         return ret;
+    }
+
+    public static EQLBuilder builder() {
+        return new EQLBuilder(EQL2.eql());
+    }
+
+    public static class EQLBuilder extends EQL2Builder<EQLBuilder> {
+        public EQLBuilder(final EQL2 _eql2) {
+            super(_eql2);
+        }
+
+        @Override
+        public Delete delete(final String... _oids) {
+            return (Delete) super.delete(_oids);
+        }
+
+        public Delete delete(final Instance... _instances)
+        {
+            return delete(Arrays.stream(_instances)
+                            .map(instance -> instance.getOid())
+                            .toArray(String[]::new));
+        }
     }
 }

@@ -18,11 +18,13 @@
 package org.efaps.eql;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.Instance;
+import org.efaps.eql2.StmtFlag;
 import org.efaps.mock.Mocks;
 import org.efaps.mock.esjp.AccessCheck;
 import org.efaps.mock.esjp.TriggerEvent;
@@ -44,7 +46,8 @@ public class DeleteTest
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
 
-        EQL.delete(Mocks.AllAttrType.getId() + ".4")
+        EQL.builder()
+            .delete(Mocks.AllAttrType.getId() + ".4")
             .stmt()
             .execute();
         verify.verify();
@@ -61,7 +64,8 @@ public class DeleteTest
 
         final SQLVerify verify1 = SQLVerify.builder().withSql(sql1).build();
         final SQLVerify verify2 = SQLVerify.builder().withSql(sql2).build();
-        EQL.delete(Mocks.SimpleType.getId() + ".4")
+        EQL.builder()
+            .delete(Mocks.SimpleType.getId() + ".4")
             .stmt()
             .execute();
         verify1.verify();
@@ -79,7 +83,8 @@ public class DeleteTest
         final SQLVerify verify1 = SQLVerify.builder().withSql(sql1).build();
         final SQLVerify verify2 = SQLVerify.builder().withSql(sql2).build();
 
-        EQL.delete(Mocks.AllAttrType.getId() + ".4", Mocks.AllAttrType.getId() + ".5")
+        EQL.builder()
+            .delete(Mocks.AllAttrType.getId() + ".4", Mocks.AllAttrType.getId() + ".5")
             .stmt()
             .execute();
         verify1.verify();
@@ -95,7 +100,8 @@ public class DeleteTest
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
 
-        EQL.delete(Instance.get(Mocks.AllAttrType.getId() + ".4"))
+        EQL.builder()
+            .delete(Instance.get(Mocks.AllAttrType.getId() + ".4"))
             .stmt()
             .execute();
         verify.verify();
@@ -112,7 +118,8 @@ public class DeleteTest
         final SQLVerify verify1 = SQLVerify.builder().withSql(sql1).build();
         final SQLVerify verify2 = SQLVerify.builder().withSql(sql2).build();
 
-        EQL.delete(Instance.get(Mocks.AllAttrType.getId() + ".4"), Instance.get(Mocks.AllAttrType.getId() + ".5"))
+        EQL.builder()
+            .delete(Instance.get(Mocks.AllAttrType.getId() + ".4"), Instance.get(Mocks.AllAttrType.getId() + ".5"))
             .stmt()
             .execute();
         verify1.verify();
@@ -125,7 +132,8 @@ public class DeleteTest
     {
         final Instance inst = Instance.get(Type.get(Mocks.AccessType.getId()), 4L);
         AccessCheck.RESULTS.put(inst, false);
-        EQL.delete(inst.getOid())
+        EQL.builder()
+            .delete(inst.getOid())
             .stmt()
             .execute();
     }
@@ -138,7 +146,8 @@ public class DeleteTest
         final Instance inst2 = Instance.get(Type.get(Mocks.AccessType.getId()), 4L);
         AccessCheck.RESULTS.put(inst1, false);
         AccessCheck.RESULTS.put(inst2, false);
-        EQL.delete(inst1, inst2)
+        EQL.builder()
+            .delete(inst1, inst2)
             .stmt()
             .execute();
     }
@@ -148,7 +157,8 @@ public class DeleteTest
         throws EFapsException
     {
         final Instance inst = Instance.get(Mocks.DeletePreEventType.getId() + ".4");
-        EQL.delete(inst)
+        EQL.builder()
+            .delete(inst)
             .stmt()
             .execute();
         assertTrue(TriggerEvent.RESULTS.containsKey(inst));
@@ -160,7 +170,8 @@ public class DeleteTest
         throws EFapsException
     {
         final Instance inst = Instance.get(Mocks.DeletePostEventType.getId() + ".4");
-        EQL.delete(inst)
+        EQL.builder()
+            .delete(inst)
             .stmt()
             .execute();
         assertTrue(TriggerEvent.RESULTS.containsKey(inst));
@@ -172,10 +183,25 @@ public class DeleteTest
         throws EFapsException
     {
         final Instance inst = Instance.get(Mocks.DeleteOverrideEventType.getId() + ".4");
-        EQL.delete(inst)
+        EQL.builder()
+            .delete(inst)
             .stmt()
             .execute();
         assertTrue(TriggerEvent.RESULTS.containsKey(inst));
         assertEquals(TriggerEvent.RESULTS.get(inst).get(0), EventType.DELETE_OVERRIDE);
+    }
+
+    @Test
+    public void testDeleteInstanceDeactivateTrigger()
+        throws EFapsException
+    {
+        final Instance inst = Instance.get(Mocks.AllEventType.getId() + ".4");
+
+        EQL.builder()
+            .with(StmtFlag.TRIGGEROFF)
+            .delete(inst)
+            .stmt()
+            .execute();
+        assertFalse(TriggerEvent.RESULTS.containsKey(inst));
     }
 }
