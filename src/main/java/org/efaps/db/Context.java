@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -293,13 +294,13 @@ public final class Context
                     final boolean _inherit)
         throws EFapsException
     {
-        this.inherit = _inherit;
-        this.transaction = _transaction;
-        this.requestId = RandomStringUtils.randomAlphanumeric(8);
-        this.parameters = _parameters == null ? new HashMap<>() : _parameters;
-        this.fileParameters = _fileParameters == null ? new HashMap<>() : _fileParameters;
-        this.sessionAttributes = _sessionAttributes == null ? new HashMap<>() : _sessionAttributes;
-        this.locale = _locale == null ? Locale.ENGLISH : _locale;
+        inherit = _inherit;
+        transaction = _transaction;
+        requestId = RandomStringUtils.randomAlphanumeric(8);
+        parameters = _parameters == null ? new HashMap<>() : _parameters;
+        fileParameters = _fileParameters == null ? new HashMap<>() : _fileParameters;
+        sessionAttributes = _sessionAttributes == null ? new HashMap<>() : _sessionAttributes;
+        locale = _locale == null ? Locale.ENGLISH : _locale;
     }
 
     /**
@@ -308,7 +309,7 @@ public final class Context
     private ThreadLocal<Context> getThreadLocal()
     {
         final ThreadLocal<Context> ret;
-        if (this.inherit) {
+        if (inherit) {
             ret = Context.INHERITTHREADCONTEXT;
         } else {
             ret = Context.THREADCONTEXT;
@@ -322,7 +323,7 @@ public final class Context
     @Override
     public void finalize()
     {
-        Context.LOG.debug("finalize context for {}", this.person);
+        Context.LOG.debug("finalize context for {}", person);
     }
 
     /**
@@ -333,7 +334,7 @@ public final class Context
      */
     public void close()
     {
-        Context.LOG.debug("close context for {}", this.person);
+        Context.LOG.debug("close context for {}", person);
         QueryCache.cleanByKey(getRequestId());
         if (getThreadLocal().get() != null && getThreadLocal().get() == this) {
             getThreadLocal().set(null);
@@ -349,7 +350,7 @@ public final class Context
         throws EFapsException
     {
         try {
-            this.transaction.setRollbackOnly();
+            transaction.setRollbackOnly();
         } catch (final SystemException e) {
             throw new EFapsException(getClass(), "abort.SystemException", e);
         }
@@ -367,13 +368,13 @@ public final class Context
         throws EFapsException
     {
         try {
-            if (this.connectionResource == null) {
-                this.connectionResource = new ConnectionResource(Context.DATASOURCE.getConnection());
+            if (connectionResource == null) {
+                connectionResource = new ConnectionResource(Context.DATASOURCE.getConnection());
             }
         } catch (final SQLException e) {
             throw new EFapsException(getClass(), "getConnectionResource.SQLException", e);
         }
-        return this.connectionResource;
+        return connectionResource;
     }
 
     /**
@@ -393,7 +394,7 @@ public final class Context
         final Store store = Store.get(_instance.getType().getStoreId());
         storeRsrc = store.getResource(_instance);
         storeRsrc.open(_event);
-        this.storeStore.add(storeRsrc);
+        storeStore.add(storeRsrc);
         return storeRsrc;
     }
 
@@ -410,8 +411,8 @@ public final class Context
     {
         long ret = 1;
 
-        if (this.person != null) {
-            ret = this.person.getId();
+        if (person != null) {
+            ret = person.getId();
         }
         return ret;
     }
@@ -425,8 +426,8 @@ public final class Context
     public String getParameter(final String _key)
     {
         String value = null;
-        if (this.parameters != null) {
-            final String[] values = this.parameters.get(_key);
+        if (parameters != null) {
+            final String[] values = parameters.get(_key);
             if (values != null && values.length > 0) {
                 value = values[0];
             }
@@ -441,7 +442,7 @@ public final class Context
      */
     public String getPath()
     {
-        return this.path;
+        return path;
     }
 
     /**
@@ -451,7 +452,7 @@ public final class Context
      */
     public void setPath(final String _path)
     {
-        this.path = _path;
+        path = _path;
     }
 
     /**
@@ -461,7 +462,7 @@ public final class Context
      */
     public String getRequestId()
     {
-        return this.requestId;
+        return requestId;
     }
 
     /**
@@ -479,7 +480,7 @@ public final class Context
      */
     public boolean containsRequestAttribute(final String _key)
     {
-        return this.requestAttributes.containsKey(_key);
+        return requestAttributes.containsKey(_key);
     }
 
     /**
@@ -505,7 +506,7 @@ public final class Context
      */
     public Object getRequestAttribute(final String _key)
     {
-        return this.requestAttributes.get(_key);
+        return requestAttributes.get(_key);
     }
 
     /**
@@ -523,7 +524,7 @@ public final class Context
     public Object setRequestAttribute(final String _key,
                                       final Object _value)
     {
-        return this.requestAttributes.put(_key, _value);
+        return requestAttributes.put(_key, _value);
     }
 
     /**
@@ -532,7 +533,7 @@ public final class Context
      */
     public void removeRequestAttribute(final String _key)
     {
-        this.requestAttributes.remove(_key);
+        requestAttributes.remove(_key);
     }
 
     /**
@@ -550,7 +551,7 @@ public final class Context
      */
     public boolean containsSessionAttribute(final String _key)
     {
-        return this.sessionAttributes.containsKey(_key);
+        return sessionAttributes.containsKey(_key);
     }
 
     /**
@@ -576,7 +577,7 @@ public final class Context
      */
     public Object getSessionAttribute(final String _key)
     {
-        return this.sessionAttributes.get(_key);
+        return sessionAttributes.get(_key);
     }
 
     /**
@@ -594,7 +595,7 @@ public final class Context
     public Object setSessionAttribute(final String _key,
                                       final Object _value)
     {
-        return this.sessionAttributes.put(_key, _value);
+        return sessionAttributes.put(_key, _value);
     }
 
     /**
@@ -603,7 +604,7 @@ public final class Context
      */
     public void removeSessionAttribute(final String _key)
     {
-        this.sessionAttributes.remove(_key);
+        sessionAttributes.remove(_key);
     }
 
     /**
@@ -715,7 +716,7 @@ public final class Context
      */
     private void setTransaction(final Transaction _transaction)
     {
-        this.transaction = _transaction;
+        transaction = _transaction;
     }
 
     /**
@@ -726,7 +727,7 @@ public final class Context
      */
     public Transaction getTransaction()
     {
-        return this.transaction;
+        return transaction;
     }
 
     /**
@@ -737,7 +738,7 @@ public final class Context
      */
     public Person getPerson()
     {
-        return this.person;
+        return person;
     }
 
     /**
@@ -749,7 +750,7 @@ public final class Context
     public Company getCompany()
         throws CacheReloadException
     {
-        return this.companyId == null ?  null : Company.get(this.companyId);
+        return companyId == null ?  null : Company.get(companyId);
     }
 
     /**
@@ -761,9 +762,9 @@ public final class Context
         throws CacheReloadException
     {
         if (_company == null) {
-            this.companyId = null;
+            companyId = null;
         } else {
-            this.companyId = _company.getId();
+            companyId = _company.getId();
         }
     }
 
@@ -775,7 +776,7 @@ public final class Context
      */
     public Locale getLocale()
     {
-        return this.locale;
+        return locale;
     }
 
     /**
@@ -786,7 +787,11 @@ public final class Context
      */
     public DateTimeZone getTimezone()
     {
-        return this.timezone;
+        return timezone;
+    }
+
+    public ZoneId getZoneId() {
+        return getTimezone().toTimeZone().toZoneId();
     }
 
     /**
@@ -797,7 +802,7 @@ public final class Context
      */
     public Chronology getChronology()
     {
-        return this.chronology;
+        return chronology;
     }
 
     /**
@@ -807,7 +812,7 @@ public final class Context
      */
     public String getLanguage()
     {
-        return this.language;
+        return language;
     }
 
     /**
@@ -817,7 +822,7 @@ public final class Context
      */
     public void setLanguage(final String _language)
     {
-        this.language = _language;
+        language = _language;
     }
 
     /**
@@ -828,7 +833,7 @@ public final class Context
      */
     public Map<String, String[]> getParameters()
     {
-        return this.parameters;
+        return parameters;
     }
 
     /**
@@ -839,7 +844,7 @@ public final class Context
      */
     public Map<String, FileParameter> getFileParameters()
     {
-        return this.fileParameters;
+        return fileParameters;
     }
 
     /**

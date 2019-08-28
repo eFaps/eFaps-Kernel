@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.ZoneId;
 import java.util.Date;
 
 import org.efaps.admin.EFapsSystemConfiguration;
@@ -79,6 +80,20 @@ public final class DateTimeUtil
         }
         return now;
     }
+
+    public static ZoneId getDBZoneId()
+        throws EFapsException
+    {
+        ZoneId ret;
+        if (EFapsSystemConfiguration.get() == null) {
+            ret = ZoneId.systemDefault();
+        } else {
+            final String zoneId = EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DBTIMEZONE);
+            ret = ZoneId.of(zoneId);
+        }
+        return ret;
+    }
+
 
     /**
      * The given DateTime will be normalized to ISO calendar with time zone
