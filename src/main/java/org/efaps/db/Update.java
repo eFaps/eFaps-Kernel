@@ -209,7 +209,7 @@ public class Update
     {
         // convert the map in a more simple map (following existing API)
         final Map<Attribute, Object[]> ret = new HashMap<>();
-        for (final Entry<Attribute, Value> entry : this.trigRelevantAttr2values.entrySet()) {
+        for (final Entry<Attribute, Value> entry : trigRelevantAttr2values.entrySet()) {
             ret.put(entry.getKey(), entry.getValue().getValues());
         }
         return ret;
@@ -286,17 +286,17 @@ public class Update
         }
         final Value value = getValue(_attr, _value);
         validate(getInstance(), value);
-        List<Value> values = this.table2values.get(_attr.getTable());
+        List<Value> values = table2values.get(_attr.getTable());
         if (values == null) {
             values = new ArrayList<>();
-            this.table2values.put(_attr.getTable(), values);
+            table2values.put(_attr.getTable(), values);
         }
         values.add(value);
 
-        this.attr2values.put(_attr, value);
+        attr2values.put(_attr, value);
 
         if (_triggerRelevant) {
-            this.trigRelevantAttr2values.put(_attr, value);
+            trigRelevantAttr2values.put(_attr, value);
         }
         return ret;
     }
@@ -311,7 +311,7 @@ public class Update
         throws EFapsException
     {
         _value.getAttribute().getAttributeType().getDbAttrType()
-                        .valiate4Update(_value.getAttribute(), getInstance(), _value.getValues());
+                        .validate4Update(_value.getAttribute(), getInstance(), _value.getValues());
     }
 
     /**
@@ -348,7 +348,7 @@ public class Update
      */
     protected Map<SQLTable, List<Value>> getTable2values()
     {
-        return this.table2values;
+        return table2values;
     }
 
     /**
@@ -359,7 +359,7 @@ public class Update
         throws EFapsException
     {
         final Set<Attribute> attributes = new HashSet<>();
-        for (final Attribute attr : this.attr2values.keySet()) {
+        for (final Attribute attr : attr2values.keySet()) {
             final AttributeType attrType = attr.getAttributeType();
             if (!attrType.isAlwaysUpdate()) {
                 attributes.add(attr);
@@ -421,7 +421,7 @@ public class Update
             ConnectionResource con = null;
             try {
                 con = context.getConnectionResource();
-                for (final Entry<SQLTable, List<Value>> entry : this.table2values.entrySet()) {
+                for (final Entry<SQLTable, List<Value>> entry : table2values.entrySet()) {
                     final SQLUpdate update = Context.getDbType().newUpdate(entry.getKey().getSqlTable(),
                                     entry.getKey().getSqlColId(),
                                     getInstance().getId());
@@ -439,7 +439,7 @@ public class Update
                         }
                     }
                     final Set<String> updatedColumns = update.execute(con);
-                    final Iterator<Entry<Attribute, Value>> attrIter = this.trigRelevantAttr2values.entrySet()
+                    final Iterator<Entry<Attribute, Value>> attrIter = trigRelevantAttr2values.entrySet()
                                     .iterator();
                     while (attrIter.hasNext()) {
                         final Entry<Attribute, Value> trigRelEntry = attrIter.next();
@@ -460,8 +460,8 @@ public class Update
                 AccessCache.registerUpdate(getInstance());
                 Queue.registerUpdate(getInstance());
             } catch (final SQLException e) {
-                Update.LOG.error("Update of '" + this.instance + "' not possible", e);
-                throw new EFapsException(getClass(), "executeWithoutTrigger.SQLException", e, this.instance);
+                Update.LOG.error("Update of '" + instance + "' not possible", e);
+                throw new EFapsException(getClass(), "executeWithoutTrigger.SQLException", e, instance);
             }
         } else {
             throw new EFapsException(getClass(), "executeWithout.StatusInvalid", Update.STATUSOK.getStati());
@@ -499,7 +499,7 @@ public class Update
      */
     public Instance getInstance()
     {
-        return this.instance;
+        return instance;
     }
 
     /**
@@ -511,7 +511,7 @@ public class Update
      */
     protected void setInstance(final Instance _instance)
     {
-        this.instance = _instance;
+        instance = _instance;
     }
 
     /**
@@ -561,9 +561,9 @@ public class Update
                       final Attribute _attribute,
                       final Object _value)
         {
-            this.returnValue = _returnvalue;
-            this.value = _value;
-            this.attribute = _attribute;
+            returnValue = _returnvalue;
+            value = _value;
+            attribute = _attribute;
             Update.STATUSOK.getStati().add(this);
         }
 
@@ -572,9 +572,9 @@ public class Update
          */
         public Status()
         {
-            this.returnValue = null;
-            this.value = null;
-            this.attribute = null;
+            returnValue = null;
+            value = null;
+            attribute = null;
         }
 
         /**
@@ -600,7 +600,7 @@ public class Update
 
         public Object getReturnValue()
         {
-            return this.returnValue;
+            return returnValue;
         }
 
         /**
@@ -611,7 +611,7 @@ public class Update
 
         public Object getValue()
         {
-            return this.value;
+            return value;
         }
 
         /**
@@ -623,7 +623,7 @@ public class Update
 
         public Attribute getAttribute()
         {
-            return this.attribute;
+            return attribute;
         }
 
         /**
@@ -634,7 +634,7 @@ public class Update
 
         public List<Update.Status> getStati()
         {
-            return this.stati;
+            return stati;
         }
 
         /**
@@ -671,8 +671,8 @@ public class Update
         private Value(final Attribute _attribute,
                       final Object... _values)
         {
-            this.attribute = _attribute;
-            this.values = _values;
+            attribute = _attribute;
+            values = _values;
         }
 
         /**
@@ -680,7 +680,7 @@ public class Update
          */
         public Attribute getAttribute()
         {
-            return this.attribute;
+            return attribute;
         }
 
         /**
@@ -688,7 +688,7 @@ public class Update
          */
         public Object[] getValues()
         {
-            return this.values;
+            return values;
         }
 
         @Override

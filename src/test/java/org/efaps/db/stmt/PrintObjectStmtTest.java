@@ -21,6 +21,11 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
 
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
@@ -193,11 +198,12 @@ public class PrintObjectStmtTest
                         Mocks.AllAttrDateAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
-        final DateTime date = new DateTime();
+        final LocalDate date = LocalDate.of(2019, 8, 23);
+        final Timestamp timestamp = Timestamp.valueOf(LocalDateTime.of(date, LocalTime.MIN));
         MockResult.builder()
             .withSql(sql)
             .withResult(RowLists.rowList2(Object.class, Long.class)
-                        .append(date.toDate(), 4L)
+                        .append(timestamp, 4L)
                         .asResult())
             .build();
 
@@ -219,11 +225,12 @@ public class PrintObjectStmtTest
                         Mocks.AllAttrTimeAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
-        final DateTime date = new DateTime();
+        final LocalTime time = LocalTime.of(22, 31, 15);
+        final Timestamp timestamp = Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), time));
         MockResult.builder()
             .withSql(sql)
             .withResult(RowLists.rowList2(Object.class, Long.class)
-                        .append(date.toDate(), 4L)
+                        .append(timestamp, 4L)
                         .asResult())
             .build();
 
@@ -234,7 +241,7 @@ public class PrintObjectStmtTest
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluate();
-        assertEquals(evaluator.get(1), date.toLocalTime());
+        assertEquals(evaluator.get(1), time);
     }
 
     @Test
@@ -245,11 +252,11 @@ public class PrintObjectStmtTest
                         Mocks.AllAttrDateTimeAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
-        final DateTime date = new DateTime();
+        final OffsetDateTime dateTime = OffsetDateTime.now();
         MockResult.builder()
             .withSql(sql)
             .withResult(RowLists.rowList2(Object.class, Long.class)
-                        .append(date.toDate(), 4L)
+                        .append(Timestamp.from(dateTime.toInstant()), 4L)
                         .asResult())
             .build();
 
@@ -260,7 +267,7 @@ public class PrintObjectStmtTest
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluate();
-        assertEquals(evaluator.get(1), date);
+        assertEquals(evaluator.get(1), dateTime);
     }
 
     @Test
@@ -271,11 +278,11 @@ public class PrintObjectStmtTest
                         Mocks.AllAttrCreatedAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
-        final DateTime date = new DateTime();
+        final OffsetDateTime dateTime = OffsetDateTime.now();
         MockResult.builder()
             .withSql(sql)
             .withResult(RowLists.rowList2(Object.class, Long.class)
-                        .append(date.toDate(), 4L)
+                        .append(Timestamp.from(dateTime.toInstant()), 4L)
                         .asResult())
             .build();
 
@@ -286,7 +293,7 @@ public class PrintObjectStmtTest
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluate();
-        assertEquals(evaluator.get(1), date);
+        assertEquals(evaluator.get(1), dateTime);
     }
 
     @Test
@@ -297,11 +304,11 @@ public class PrintObjectStmtTest
                         Mocks.AllAttrModifiedAttribute.getSQLColumnName(),
                         Mocks.AllAttrTypeSQLTable.getSqlTableName());
 
-        final DateTime date = new DateTime();
+        final OffsetDateTime dateTime = OffsetDateTime.now();
         MockResult.builder()
             .withSql(sql)
             .withResult(RowLists.rowList2(Object.class, Long.class)
-                        .append(date.toDate(), 4L)
+                        .append(Timestamp.from(dateTime.toInstant()), 4L)
                         .asResult())
             .build();
 
@@ -312,7 +319,7 @@ public class PrintObjectStmtTest
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluate();
-        assertEquals(evaluator.get(1), date);
+        assertEquals(evaluator.get(1), dateTime);
     }
 
     @Test

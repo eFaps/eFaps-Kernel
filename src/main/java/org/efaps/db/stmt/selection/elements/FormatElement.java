@@ -17,9 +17,13 @@
 
 package org.efaps.db.stmt.selection.elements;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
-import org.joda.time.base.AbstractDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +48,15 @@ public class FormatElement
     {
         Object object = _row == null ? null : _row[0];
         if (object != null) {
-            if (object instanceof AbstractDateTime) {
-                object = ((AbstractDateTime) object).toString(this.pattern, Context.getThreadContext().getLocale());
+            if (pattern == null) {
+                object = object.toString();
+                LOG.warn("FormatElement was called with no given pattern on Object: {}", object);
+            } else if (object instanceof LocalDate) {
+                object = ((LocalDate) object).format(DateTimeFormatter.ofPattern(pattern, Context.getThreadContext().getLocale()));
+            } else if (object instanceof LocalTime) {
+                object = ((LocalTime) object).format(DateTimeFormatter.ofPattern(pattern, Context.getThreadContext().getLocale()));
+            } else if (object instanceof OffsetDateTime) {
+                object = ((OffsetDateTime) object).format(DateTimeFormatter.ofPattern(pattern, Context.getThreadContext().getLocale()));
             } else {
                 LOG.warn("FormatElement was called with unexpected Object: {}", object);
             }
@@ -55,7 +66,7 @@ public class FormatElement
 
     public FormatElement setPattern(final String _value)
     {
-        this.pattern = _value;
+        pattern = _value;
         return this;
     }
 }

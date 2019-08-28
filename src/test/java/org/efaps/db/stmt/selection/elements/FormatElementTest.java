@@ -25,9 +25,11 @@ import static org.powermock.api.easymock.PowerMock.verify;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.efaps.test.AbstractTest;
 import org.efaps.util.EFapsException;
-import org.joda.time.DateTime;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
@@ -66,8 +68,8 @@ public class FormatElementTest
         throws EFapsException
     {
         final FormatElement formatElement = new FormatElement();
-        final DateTime date = new DateTime();
-        assertEquals(date.toString(), formatElement.getObject(new Object[] { date }));
+        final OffsetDateTime dateTime = OffsetDateTime.now();
+        assertEquals(dateTime.toString(), formatElement.getObject(new Object[] { dateTime }));
     }
 
     @Test
@@ -75,8 +77,8 @@ public class FormatElementTest
         throws EFapsException
     {
         final FormatElement formatElement = new FormatElement().setPattern("YYYY");
-        final DateTime date = new DateTime();
-        assertEquals(date.toString("YYYY"), formatElement.getObject(new Object[] { date }));
+        final OffsetDateTime dateTime = OffsetDateTime.now();
+        assertEquals(dateTime.format(DateTimeFormatter.ofPattern("YYYY")), formatElement.getObject(new Object[] { dateTime }));
     }
 
     @Test

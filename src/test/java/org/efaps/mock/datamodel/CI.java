@@ -54,6 +54,8 @@ public class CI
         public final CIAttribute IntegerAttribute = new CIAttribute(this, Mocks.AllAttrIntegerAttribute.getName());
         public final CIAttribute DecimalAttribute = new CIAttribute(this, Mocks.AllAttrDecimalAttribute.getName());
         public final CIAttribute DateAttribute = new CIAttribute(this, Mocks.AllAttrDateAttribute.getName());
+        public final CIAttribute TimeAttribute = new CIAttribute(this, Mocks.AllAttrTimeAttribute.getName());
+        public final CIAttribute DateTimeAttribute = new CIAttribute(this, Mocks.AllAttrDateTimeAttribute.getName());
     }
 
     public static final _CompanyType CompanyType = new _CompanyType(Mocks.CompanyType.getUuid().toString());

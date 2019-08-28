@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,13 @@
  *
  */
 
-package org.efaps.admin.datamodel;
+package org.efaps.admin.datamodel.attributetype;
 
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.Instance;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLUpdate;
@@ -106,10 +107,12 @@ public interface IAttributeType
      * @param _value        value that will be used for the update
      * @throws EFapsException if not valid
      */
-    void valiate4Update(Attribute _attribute,
-                        Instance _instance,
-                        Object[] _value)
-        throws EFapsException;
+    default void validate4Update(final Attribute _attribute,
+                                 final Instance _instance,
+                                 final Object[] _value)
+        throws EFapsException
+    {
+    }
 
     /**
      * Method is executed on addition of an Attribute/Value pair for an Insert
@@ -122,8 +125,10 @@ public interface IAttributeType
      * @param _value        value that will be used for the update
      * @throws EFapsException if not valid
      */
-    void valiate4Insert(Attribute _attribute,
-                        Instance _instance,
-                        Object[] _value)
-        throws EFapsException;
+    default void validate4Insert(final Attribute _attribute,
+                        final Instance _instance,
+                        final Object[] _value)
+        throws EFapsException
+    {
+    }
 }

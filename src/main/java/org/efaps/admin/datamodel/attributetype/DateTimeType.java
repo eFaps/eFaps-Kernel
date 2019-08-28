@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,37 +58,9 @@ public class DateTimeType
                             final List<Object> _objectList)
         throws EFapsException
     {
-        // reads the Value from "Admin_Common_DataBaseTimeZone"
-        final String timezoneID = EFapsSystemConfiguration.get() == null ? DateTimeZone.getDefault().getID()
-                : EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DBTIMEZONE);
-        final ISOChronology chron;
-        if (timezoneID != null) {
-            final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
-            chron = ISOChronology.getInstance(timezone);
-        } else {
-            chron = ISOChronology.getInstanceUTC();
-        }
-
-        final List<DateTime> ret = new ArrayList<>();
+        final List<Object> ret = new ArrayList<>();
         for (final Object object : _objectList) {
-            if (object instanceof Timestamp || object instanceof Date) {
-                // to avoid the automatic "correction" of the timezone first a local date must be made
-                // and than a new Date with the correct timezone must be created
-                final DateTime dateTime = new DateTime(object);
-                final DateTime unlocalized = new DateTime(dateTime.getYear(),
-                                dateTime.getMonthOfYear(),
-                                dateTime.getDayOfMonth(),
-                                dateTime.getHourOfDay(),
-                                dateTime.getMinuteOfHour(),
-                                dateTime.getSecondOfMinute(),
-                                dateTime.getMillisOfSecond(),
-                                chron);
-                ret.add(unlocalized);
-            } else if (object != null) {
-                ret.add(new DateTime());
-            } else {
-                ret.add(null);
-            }
+            ret.add(DateTimeUtil.toDateTime(object));
         }
         return _objectList.size() > 0 ? ret.size() > 1 ? ret : ret.get(0) : null;
     }
@@ -110,9 +82,8 @@ public class DateTimeType
         }
     }
 
-
     /**
-     * The value that can be set is a Date, a DateTime or a String
+     * The value that can be set is a Date, OffsetDateTime, a DateTime or a String
      * yyyy-MM-dd'T'HH:mm:ss.SSSZZ. It will be normalized to ISO Calender with
      * TimeZone from SystemAttribute Admin_Common_DataBaseTimeZone. In case that
      * the SystemAttribute is missing UTC will be used.
@@ -128,20 +99,8 @@ public class DateTimeType
         if (_value == null || _value.length == 0 || _value[0] == null) {
             ret = null;
         } else  {
-            final DateTime dateTime = DateTimeUtil.translateFromUI(_value[0]);
-            // until now we have a time that depends on the timezone of the application server
-            // to convert it in a timestamp for the efaps database the timezone information (mainly the offset)
-            // must be removed. This is done by creating a local date with the same, date and time.
-            // this guarantees that the datetime inserted into the database depends on the setting
-            // in the configuration and not on the timezone for the application server.
-            final DateTime localized = new DateTime(dateTime.getYear(),
-                                                    dateTime.getMonthOfYear(),
-                                                    dateTime.getDayOfMonth(),
-                                                    dateTime.getHourOfDay(),
-                                                    dateTime.getMinuteOfHour(),
-                                                    dateTime.getSecondOfMinute(),
-                                                    dateTime.getMillisOfSecond());
-            ret = localized != null ? new Timestamp(localized.getMillis()) : null;
+            final OffsetDateTime dateTime = DateTimeUtil.toDateTime(_value[0]);
+            ret = dateTime == null ?  null : Timestamp.from(dateTime.toInstant());
         }
         return ret;
     }
@@ -179,5 +138,44 @@ public class DateTimeType
             ret = _object;
         }
         return ret;
+    }
+
+    public Object readDateTimeValue(final Attribute attribute,
+                                    final List<Object> _objectList)
+        throws EFapsException
+    {
+        // reads the Value from "Admin_Common_DataBaseTimeZone"
+        final String timezoneID = EFapsSystemConfiguration.get() == null ? DateTimeZone.getDefault().getID()
+                : EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DBTIMEZONE);
+        final ISOChronology chron;
+        if (timezoneID != null) {
+            final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
+            chron = ISOChronology.getInstance(timezone);
+        } else {
+            chron = ISOChronology.getInstanceUTC();
+        }
+
+        final List<DateTime> ret = new ArrayList<>();
+        for (final Object object : _objectList) {
+            if (object instanceof Timestamp || object instanceof Date) {
+                // to avoid the automatic "correction" of the timezone first a local date must be made
+                // and than a new Date with the correct timezone must be created
+                final DateTime dateTime = new DateTime(object);
+                final DateTime unlocalized = new DateTime(dateTime.getYear(),
+                                dateTime.getMonthOfYear(),
+                                dateTime.getDayOfMonth(),
+                                dateTime.getHourOfDay(),
+                                dateTime.getMinuteOfHour(),
+                                dateTime.getSecondOfMinute(),
+                                dateTime.getMillisOfSecond(),
+                                chron);
+                ret.add(unlocalized);
+            } else if (object != null) {
+                ret.add(new DateTime());
+            } else {
+                ret.add(null);
+            }
+        }
+        return _objectList.size() > 0 ? ret.size() > 1 ? ret : ret.get(0) : null;
     }
 }

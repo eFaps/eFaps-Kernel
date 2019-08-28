@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,12 +40,12 @@ public class StatusType
      * {@inheritDoc}
      */
     @Override
-    public void valiate4Update(final Attribute _attribute,
+    public void validate4Update(final Attribute _attribute,
                                final Instance _instance,
                                final Object[] _value)
         throws EFapsException
     {
-        super.valiate4Update(_attribute, _instance, _value);
+        super.validate4Update(_attribute, _instance, _value);
         validate(_attribute, _instance, _value);
     }
 
@@ -53,12 +53,12 @@ public class StatusType
      * {@inheritDoc}
      */
     @Override
-    public void valiate4Insert(final Attribute _attribute,
+    public void validate4Insert(final Attribute _attribute,
                                final Instance _instance,
                                final Object[] _value)
         throws EFapsException
     {
-        super.valiate4Update(_attribute, _instance, _value);
+        super.validate4Update(_attribute, _instance, _value);
         validate(_attribute, _instance, _value);
     }
 

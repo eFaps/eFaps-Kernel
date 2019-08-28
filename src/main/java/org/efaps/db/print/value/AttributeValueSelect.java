@@ -65,7 +65,7 @@ public class AttributeValueSelect
                                 final String _attrName)
     {
         super(_oneSelect);
-        this.attrName = _attrName;
+        attrName = _attrName;
     }
 
     /**
@@ -76,7 +76,7 @@ public class AttributeValueSelect
                                 final Attribute _attr)
     {
         super(_oneSelect);
-        this.attribute = _attr;
+        attribute = _attr;
     }
 
     /**
@@ -86,7 +86,7 @@ public class AttributeValueSelect
      */
     public String getAttrName()
     {
-        return this.attrName;
+        return attrName;
     }
 
     /**
@@ -95,7 +95,7 @@ public class AttributeValueSelect
     @Override
     public Attribute getAttribute()
     {
-        return this.attribute;
+        return attribute;
     }
 
     /**
@@ -105,7 +105,7 @@ public class AttributeValueSelect
      */
     public void setAttribute(final Attribute _attribute)
     {
-        this.attribute = _attribute;
+        attribute = _attribute;
     }
 
     /**
@@ -115,7 +115,7 @@ public class AttributeValueSelect
     public Object getValue(final Object _object)
         throws EFapsException
     {
-        final ArrayList<Object> tempList = new ArrayList<Object>();
+        final ArrayList<Object> tempList = new ArrayList<>();
         tempList.add(_object);
         return getValue(tempList);
     }
@@ -131,23 +131,23 @@ public class AttributeValueSelect
         if (getParentSelectPart() != null && getParentSelectPart() instanceof LinkToSelectPart) {
             final Instance linkInstance = ((LinkToSelectPart) getParentSelectPart()).getCurrentInstance();
             if (linkInstance != null && linkInstance.isValid()) {
-                if (linkInstance.getType().getId() != this.attribute.getParentId()) {
-                    this.attribute = linkInstance.getType().getAttribute(this.attribute.getName());
+                if (linkInstance.getType().getId() != attribute.getParentId()) {
+                    attribute = linkInstance.getType().getAttribute(attribute.getName());
                 }
             }
-        } else if (this.attribute.getParent().isAbstract() && getOneSelect().getQuery().getCurrentInstance() != null
+        } else if (attribute.getParent().isAbstract() && getOneSelect().getQuery().getCurrentInstance() != null
                         && getOneSelect().getQuery().getCurrentInstance().isValid()) {
             final Attribute attrTmp = getOneSelect().getQuery().getCurrentInstance().getType().getAttribute(
-                            this.attribute.getName());
+                            attribute.getName());
             if (attrTmp != null) {
-                this.attribute = attrTmp;
+                attribute = attrTmp;
             }
         }
 
-        Object ret = this.attribute.readDBValue(_objectList);
-        int i = this.attribute.getSqlColNames().size();
-        for (final Attribute attr : this.attribute.getDependencies().values()) {
-            final List<Object> tmpObjectList = new ArrayList<Object>();
+        Object ret = attribute.value(_objectList);
+        int i = attribute.getSqlColNames().size();
+        for (final Attribute attr : attribute.getDependencies().values()) {
+            final List<Object> tmpObjectList = new ArrayList<>();
             for (final Object object : _objectList) {
                 final Object[] inner = new Object[attr.getSqlColNames().size()];
                 tmpObjectList.add(inner);
@@ -170,7 +170,7 @@ public class AttributeValueSelect
         if (getChildValueSelect() != null) {
             if (getChildValueSelect() instanceof IAttributeChildValueSelect) {
                 final IAttributeChildValueSelect val = (IAttributeChildValueSelect) getChildValueSelect();
-                ret = val.get(this.attribute, ret);
+                ret = val.get(attribute, ret);
             }
         }
         return ret;
@@ -184,7 +184,7 @@ public class AttributeValueSelect
     private Object getVal(final Object _existingVal,
                           final Object _toAdd)
     {
-        final List<Object> tmpRetList = new ArrayList<Object>();
+        final List<Object> tmpRetList = new ArrayList<>();
         if (_existingVal instanceof Object[]) {
             for (final Object object : (Object[]) _existingVal) {
                 tmpRetList.add(object);
@@ -212,22 +212,22 @@ public class AttributeValueSelect
                                 final int _colIndex)
         throws EFapsException
     {
-        if (this.attribute == null) {
-            this.attribute = _type.getAttribute(this.attrName);
+        if (attribute == null) {
+            attribute = _type.getAttribute(attrName);
         }
-        if (this.attribute == null) {
-            AttributeValueSelect.LOG.error("Could not get an attribute with name '{} 'for type: '{}'", this.attrName,
+        if (attribute == null) {
+            AttributeValueSelect.LOG.error("Could not get an attribute with name '{} 'for type: '{}'", attrName,
                             _type);
             throw new EFapsException(AttributeValueSelect.class, "appendNoAttribute");
         }
         int ret = 0;
-        for (final String colName : this.attribute.getSqlColNames()) {
+        for (final String colName : attribute.getSqlColNames()) {
             _select.column(_tableIndex, colName);
             getColIndexs().add(_colIndex + ret);
             ret++;
         }
         // in case of dependencies for the attribute they must be selected also
-        for (final Attribute attr : this.attribute.getDependencies().values()) {
+        for (final Attribute attr : attribute.getDependencies().values()) {
             for (final String colName : attr.getSqlColNames()) {
                 _select.column(_tableIndex, colName);
                 getColIndexs().add(_colIndex + ret);

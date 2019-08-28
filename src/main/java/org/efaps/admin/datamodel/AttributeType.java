@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.efaps.admin.datamodel.attributetype.IAttributeType;
 import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.db.Context;
 import org.efaps.db.wrapper.SQLPart;

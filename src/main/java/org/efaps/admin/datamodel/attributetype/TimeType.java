@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
@@ -44,21 +45,16 @@ public class TimeType
      */
     private static final long serialVersionUID = 1L;
 
-
     @Override
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
         throws EFapsException
     {
-        final List<LocalTime> ret = new ArrayList<LocalTime>();
+        final List<Object> ret = new ArrayList<>();
         for (final Object object : _objectList) {
-            if (object instanceof Timestamp || object instanceof Date) {
-                ret.add(new DateTime(object).toLocalTime());
-            } else if (ret != null) {
-                ret.add(new LocalTime());
-            }
+            ret.add(DateTimeUtil.toTime(object));
         }
-        return _objectList.size() > 0 ? (ret.size() > 1 ? ret : ret.get(0)) : null;
+        return _objectList.size() > 0 ? ret.size() > 1 ? ret : ret.get(0) : null;
     }
 
 
@@ -78,7 +74,7 @@ public class TimeType
         throws EFapsException
     {
         final Timestamp ret;
-        if ((_value == null) || (_value.length == 0) || (_value[0] == null)) {
+        if (_value == null || _value.length == 0 || _value[0] == null) {
             ret = null;
         } else  {
             LocalTime time = new LocalTime();

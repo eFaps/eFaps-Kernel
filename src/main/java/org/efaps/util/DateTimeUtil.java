@@ -21,7 +21,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Date;
 
 import org.efaps.admin.EFapsSystemConfiguration;
@@ -56,6 +63,17 @@ public final class DateTimeUtil
     private DateTimeUtil()
     {
     }
+
+    public static DateTimeFormatter FORMATTER = new DateTimeFormatterBuilder()
+                    // date/time
+                    .append(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                    // offset (hh:mm - "+00:00" when it's zero)
+                    .optionalStart().appendOffset("+HH:MM", "+00:00").optionalEnd()
+                    // offset (hhmm - "+0000" when it's zero)
+                    .optionalStart().appendOffset("+HHMM", "+0000").optionalEnd()
+                    // offset (hh - "Z" when it's zero)
+                    .optionalStart().appendOffset("+HH", "Z").optionalEnd()
+                    .toFormatter();
 
     /**
      * Static method to get the current time stamp from the eFaps database.
@@ -162,6 +180,85 @@ public final class DateTimeUtil
                             localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond(),
                             localDateTime.getSecond()).withChronology(chron);
         } else  {
+            ret = null;
+        }
+        return ret;
+    }
+
+    public static OffsetDateTime toDateTime(final Object _value)
+        throws EFapsException
+    {
+        OffsetDateTime ret;
+        if (_value == null) {
+            ret = null;
+        } else if (_value instanceof Date) {
+            ret = OffsetDateTime.ofInstant(Instant.ofEpochMilli(((Date) _value).getTime()), getDBZoneId());
+        } else if (_value instanceof DateTime) {
+            ret = OffsetDateTime.parse(((DateTime) _value).toString(), FORMATTER);
+        } else if (_value instanceof String) {
+            ret = OffsetDateTime.parse((String) _value, FORMATTER);
+        } else if (_value instanceof LocalDate) {
+            final LocalDateTime localDateTime = LocalDateTime.of((LocalDate) _value, LocalTime.MIN);
+            ret = OffsetDateTime.of(localDateTime, getDBZoneId().getRules().getOffset(localDateTime));
+        } else if (_value instanceof LocalDateTime) {
+            final LocalDateTime localDateTime = (LocalDateTime) _value;
+            ret = OffsetDateTime.of(localDateTime, getDBZoneId().getRules().getOffset(localDateTime));
+        } else if (_value instanceof OffsetDateTime) {
+            ret = (OffsetDateTime) _value;
+        } else {
+            LOG.warn("Cannot convert value {} to OffsetDateTime", _value);
+            ret = null;
+        }
+        return ret;
+    }
+
+    public static LocalDate toDate(final Object _value)
+        throws EFapsException
+    {
+        LocalDate ret;
+        if (_value == null) {
+            ret = null;
+        } else if (_value instanceof Date) {
+            final Instant instant = ((Date) _value).toInstant();
+            ret = instant.atZone(DateTimeUtil.getDBZoneId()).toLocalDate();
+        } else if (_value instanceof DateTime) {
+            final DateTime dateTime = (DateTime)_value;
+            ret = LocalDate.of(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth());
+        } else if (_value instanceof String) {
+            ret = LocalDate.parse((String) _value);
+        } else if (_value instanceof LocalDateTime) {
+            final LocalDateTime localDateTime = (LocalDateTime) _value;
+            ret = LocalDate.of(localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth());
+        } else if (_value instanceof LocalDate) {
+            ret = (LocalDate) _value;
+        } else {
+            LOG.warn("Cannot convert value {} to OffsetDateTime", _value);
+            ret = null;
+        }
+        return ret;
+    }
+
+    public static LocalTime toTime(final Object _value)
+        throws EFapsException
+    {
+        LocalTime ret;
+        if (_value == null) {
+            ret = null;
+        } else if (_value instanceof Date) {
+            final Instant instant = ((Date) _value).toInstant();
+            ret = instant.atZone(DateTimeUtil.getDBZoneId()).toLocalTime();
+        } else if (_value instanceof DateTime) {
+            final DateTime dateTime = (DateTime) _value;
+            ret = LocalTime.of(dateTime.getHourOfDay(), dateTime.getMinuteOfHour(), dateTime.getSecondOfMinute());
+        } else if (_value instanceof String) {
+            ret = LocalTime.parse((String) _value);
+        } else if (_value instanceof LocalDateTime) {
+            final LocalDateTime localDateTime = (LocalDateTime) _value;
+            ret = LocalTime.of(localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond());
+        } else if (_value instanceof LocalTime) {
+            ret = (LocalTime) _value;
+        } else {
+            LOG.warn("Cannot convert value {} to OffsetDateTime", _value);
             ret = null;
         }
         return ret;

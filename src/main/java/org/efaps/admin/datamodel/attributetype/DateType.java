@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,12 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoField;
-import java.time.temporal.TemporalAccessor;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 
 
 /**
@@ -43,6 +41,18 @@ public class DateType
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public Object readValue(final Attribute _attribute,
+                            final List<Object> _objectList)
+        throws EFapsException
+    {
+        final List<Object> ret = new ArrayList<>();
+        for (final Object object : _objectList) {
+            ret.add(DateTimeUtil.toDate(object));
+        }
+        return _objectList.size() > 0 ? ret.size() > 1 ? ret : ret.get(0) : null;
+    }
 
     /**
      * The value that can be set is a Date, a DateTime or a String
@@ -63,45 +73,8 @@ public class DateType
         if (_value == null || _value.length == 0 || _value[0] == null) {
             ret = null;
         } else  {
-            DateTime dateTime = new DateTime();
-            if (_value[0] instanceof Date) {
-                dateTime = new DateTime(_value[0]);
-            } else if (_value[0] instanceof DateTime) {
-                dateTime = (DateTime) _value[0];
-            } else if (_value[0] instanceof LocalDate) {
-                final LocalDate localDate = (LocalDate) _value[0];
-                dateTime = dateTime.withYear(localDate.getYear())
-                    .withMonthOfYear(localDate.getMonthValue())
-                    .withDayOfMonth(localDate.getDayOfMonth());
-            } else if (_value[0] instanceof String) {
-                final String str = (String) _value[0];
-                if (str.isEmpty()) {
-                    dateTime = null;
-                } else if (str.length() == 10) {
-                    final TemporalAccessor temp = DateTimeFormatter.ISO_LOCAL_DATE.parse(str);
-                    dateTime = new DateTime().withDate(temp.get(ChronoField.YEAR),
-                                    temp.get(ChronoField.MONTH_OF_YEAR), temp.get(ChronoField.DAY_OF_MONTH));
-                } else {
-                    dateTime = ISODateTimeFormat.dateTime().withOffsetParsed().parseDateTime((String) _value[0]);
-                }
-            }
-            if (dateTime == null) {
-                ret = null;
-            }  else {
-                // until now we have a time that depends on the timezone of the application server
-                // to convert it in a timestamp for the efaps database the timezone information (mainly the offset)
-                // must be removed. This is done by creating a local date with the same, date and time.
-                // this guarantees that the datetime inserted into the database depends on the setting
-                // in the configuration and not on the timezone for the application server.
-                final DateTime localized = new DateTime(dateTime.getYear(),
-                                                        dateTime.getMonthOfYear(),
-                                                        dateTime.getDayOfMonth(),
-                                                        0,
-                                                        0,
-                                                        0,
-                                                        0);
-                ret = localized != null ? new Timestamp(localized.getMillis()) : null;
-            }
+            final LocalDate date = DateTimeUtil.toDate(_value[0]);
+            ret = date == null ?  null : Timestamp.valueOf(date.atStartOfDay());
         }
         return ret;
     }

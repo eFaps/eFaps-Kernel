@@ -21,6 +21,9 @@ import static org.testng.Assert.assertEquals;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Type;
@@ -62,13 +65,15 @@ public class UpdateTest
     public void testUpdateMultipleAttributes()
         throws EFapsException
     {
-        final String sql = String.format("update %s set %s=?,%s=?,%s=?,%s=?,%s=? where ID=?",
+        final String sql = String.format("update %s set %s=?,%s=?,%s=?,%s=?,%s=?,%s=?,%s=? where ID=?",
                         Mocks.AllAttrTypeSQLTable.getSqlTableName(),
                         Mocks.AllAttrStringAttribute.getSQLColumnName(),
                         Mocks.AllAttrLongAttribute.getSQLColumnName(),
                         Mocks.AllAttrIntegerAttribute.getSQLColumnName(),
                         Mocks.AllAttrDecimalAttribute.getSQLColumnName(),
-                        Mocks.AllAttrDateAttribute.getSQLColumnName());
+                        Mocks.AllAttrDateAttribute.getSQLColumnName(),
+                        Mocks.AllAttrTimeAttribute.getSQLColumnName(),
+                        Mocks.AllAttrDateTimeAttribute.getSQLColumnName());
 
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
         EQL.builder()
@@ -78,6 +83,8 @@ public class UpdateTest
             .set(CI.AllAttrType.IntegerAttribute, 22)
             .set(CI.AllAttrType.DecimalAttribute, new BigDecimal("12.98"))
             .set(CI.AllAttrType.DateAttribute, LocalDate.of(2018, 8, 22))
+            .set(CI.AllAttrType.TimeAttribute, LocalTime.of(22, 45, 13))
+            .set(CI.AllAttrType.DateTimeAttribute, OffsetDateTime.of(2019, 8, 23, 21, 33, 54, 112, ZoneOffset.UTC))
             .stmt()
             .execute();
         verify.verify();
@@ -88,7 +95,7 @@ public class UpdateTest
         assertEquals(parameters.get(3).getValue(), new BigDecimal("12.98"));
         assertEquals(parameters.get(4).getKey().sqlTypeName, "TIMESTAMP");
         assertEquals(parameters.get(4).getValue().toString(), "2018-08-22 00:00:00.0");
-        assertEquals(parameters.get(5).getValue(), 4L);
+        assertEquals(parameters.get(7).getValue(), 4L);
     }
 
     @Test(expectedExceptions = { EFapsException.class })

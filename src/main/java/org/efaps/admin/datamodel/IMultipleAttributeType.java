@@ -17,6 +17,8 @@
 
 package org.efaps.admin.datamodel;
 
+import org.efaps.admin.datamodel.attributetype.IAttributeType;
+
 /**
  * @author The eFaps Team
  *

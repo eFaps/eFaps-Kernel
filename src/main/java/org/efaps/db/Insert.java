@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,8 +152,8 @@ public class Insert
     public Insert setExchangeIds(final Long _exchangeSystemId,
                                  final Long _exchangeId)
     {
-        this.exchangeSystemId = _exchangeSystemId;
-        this.exchangeId = _exchangeId;
+        exchangeSystemId = _exchangeSystemId;
+        exchangeId = _exchangeId;
         return this;
     }
 
@@ -222,8 +222,8 @@ public class Insert
 
             setInstance(Instance.get(getInstance().getType(), id));
 
-            getInstance().setExchangeId(this.exchangeId);
-            getInstance().setExchangeSystemId(this.exchangeSystemId);
+            getInstance().setExchangeId(exchangeId);
+            getInstance().setExchangeSystemId(exchangeSystemId);
 
             GeneralInstance.insert(getInstance(), con);
 
@@ -248,7 +248,7 @@ public class Insert
         throws EFapsException
     {
         _value.getAttribute().getAttributeType().getDbAttrType()
-                        .valiate4Insert(_value.getAttribute(), getInstance(), _value.getValues());
+                        .validate4Insert(_value.getAttribute(), getInstance(), _value.getValues());
     }
 
     /**

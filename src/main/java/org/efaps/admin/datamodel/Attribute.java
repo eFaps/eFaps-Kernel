@@ -31,6 +31,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.efaps.admin.datamodel.attributetype.DateTimeType;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -656,6 +657,25 @@ public class Attribute
     public Object readDBValue(final List<Object> _objectList)
         throws EFapsException
     {
+        Object ret;
+        if (attributeType.getDbAttrType() instanceof DateTimeType) {
+            ret = ((DateTimeType) attributeType.getDbAttrType()).readDateTimeValue(this, _objectList);
+        } else {
+            ret = attributeType.getDbAttrType().readValue(this, _objectList);
+        }
+        final List<Return> returns = executeEvents(EventType.READ_VALUE, ParameterValues.CLASS, this,
+                        ParameterValues.OTHERS, ret);
+        for (final Return aRet : returns) {
+            if (aRet.contains(ReturnValues.VALUES)) {
+                ret = aRet.get(ReturnValues.VALUES);
+            }
+        }
+        return ret;
+    }
+
+    public Object value(final List<Object> _objectList)
+        throws EFapsException
+    {
         Object ret = attributeType.getDbAttrType().readValue(this, _objectList);
         final List<Return> returns = executeEvents(EventType.READ_VALUE, ParameterValues.CLASS, this,
                         ParameterValues.OTHERS, ret);
@@ -666,6 +686,7 @@ public class Attribute
         }
         return ret;
     }
+
 
     /**
      * @return the key for the DBProperties value

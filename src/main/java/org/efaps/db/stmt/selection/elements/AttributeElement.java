@@ -104,7 +104,7 @@ public class AttributeElement
                 ((Object[]) ret)[i] = _row[colIdxs[i]];
             }
         }
-        return callAuxillary(attribute.readDBValue(Collections.singletonList(ret)));
+        return callAuxillary(attribute.value(Collections.singletonList(ret)));
     }
 
     @Override
