@@ -17,6 +17,7 @@
 
 package org.efaps.db;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -67,6 +68,7 @@ import org.efaps.db.search.value.QClassValue;
 import org.efaps.db.search.value.QDateTimeValue;
 import org.efaps.db.search.value.QNullValue;
 import org.efaps.db.search.value.QNumberValue;
+import org.efaps.db.search.value.QOffsetDateTimeValue;
 import org.efaps.db.search.value.QSQLValue;
 import org.efaps.db.search.value.QStringValue;
 import org.efaps.eql.stmt.parts.where.AbstractWhere;
@@ -175,7 +177,7 @@ public class QueryBuilder
      */
     public QueryBuilder(final UUID _typeUUID)
     {
-        this.typeUUID = _typeUUID;
+        typeUUID = _typeUUID;
     }
 
     /**
@@ -236,8 +238,8 @@ public class QueryBuilder
         throws EFapsException
     {
         final List<Type> allType = new ArrayList<>();
-        if (this.types.isEmpty()) {
-            final Type type = Type.get(this.typeUUID);
+        if (types.isEmpty()) {
+            final Type type = Type.get(typeUUID);
             if (type.isAbstract()) {
                 final List<Type> childTypes = type.getChildTypes()
                                 .stream()
@@ -248,7 +250,7 @@ public class QueryBuilder
                 allType.add(type);
             }
         }
-        for (final UUID type : this.types) {
+        for (final UUID type : types) {
             allType.add(Type.get(type));
         }
         for (final Type type : _type) {
@@ -287,14 +289,14 @@ public class QueryBuilder
             throw new EFapsException(QueryBuilder.class, "noCommon", allType);
         } else {
             // first common type
-            this.typeUUID = common.iterator().next().getUUID();
+            typeUUID = common.iterator().next().getUUID();
             for (final Type type : allType) {
-                this.types.add(type.getUUID());
+                types.add(type.getUUID());
             }
         }
         // special case handling
-        if (this.types.size() == 1 && this.types.iterator().next().equals(this.typeUUID)) {
-            this.types.clear();
+        if (types.size() == 1 && types.iterator().next().equals(typeUUID)) {
+            types.clear();
         }
     }
 
@@ -322,7 +324,7 @@ public class QueryBuilder
         throws EFapsException
     {
         final QEqual equal = new QEqual(new QAttribute(_attrName));
-        this.compares.add(equal);
+        compares.add(equal);
         for (final Object value : _values) {
             equal.addValue(getValue(value));
         }
@@ -362,7 +364,7 @@ public class QueryBuilder
         throws EFapsException
     {
         final QEqual equal = new QEqual(new QAttribute(_attr));
-        this.compares.add(equal);
+        compares.add(equal);
         for (final Object value : _values) {
             equal.addValue(getValue(value));
         }
@@ -393,7 +395,7 @@ public class QueryBuilder
         throws EFapsException
     {
         final QNotEqual equal = new QNotEqual(new QAttribute(_attrName));
-        this.compares.add(equal);
+        compares.add(equal);
         for (final Object value : _values) {
             equal.addValue(getValue(value));
         }
@@ -411,7 +413,7 @@ public class QueryBuilder
         throws EFapsException
     {
         final QNotEqual equal = new QNotEqual(new QAttribute(_attr));
-        this.compares.add(equal);
+        compares.add(equal);
         for (final Object value : _values) {
             equal.addValue(getValue(value));
         }
@@ -442,7 +444,7 @@ public class QueryBuilder
         throws EFapsException
     {
         final QLess ret = new QLess(new QAttribute(_attrName), getValue(_value));
-        this.compares.add(ret);
+        compares.add(ret);
         return ret;
     }
 
@@ -457,7 +459,7 @@ public class QueryBuilder
         throws EFapsException
     {
         final QLess ret = new QLess(new QAttribute(_attr), getValue(_value));
-        this.compares.add(ret);
+        compares.add(ret);
         return ret;
     }
 
@@ -523,7 +525,7 @@ public class QueryBuilder
         throws EFapsException
     {
         final QGreater ret = new QGreater(new QAttribute(_attrName), getValue(_value));
-        this.compares.add(ret);
+        compares.add(ret);
         return ret;
     }
 
@@ -538,7 +540,7 @@ public class QueryBuilder
         throws EFapsException
     {
         final QGreater ret = new QGreater(new QAttribute(_attr), getValue(_value));
-        this.compares.add(ret);
+        compares.add(ret);
         return ret;
     }
 
@@ -583,7 +585,7 @@ public class QueryBuilder
         throws EFapsException
     {
         final QMatch ret = new QMatch(new QAttribute(_attr));
-        this.compares.add(ret);
+        compares.add(ret);
         for (final Object value : _values) {
             ret.addValue(getValue(value));
         }
@@ -601,7 +603,7 @@ public class QueryBuilder
         throws EFapsException
     {
         final QMatch ret = new QMatch(new QAttribute(_attrName));
-        this.compares.add(ret);
+        compares.add(ret);
         for (final Object value : _values) {
             ret.addValue(getValue(value));
         }
@@ -620,7 +622,7 @@ public class QueryBuilder
         for (final Classification clazz : _classes) {
             ret.addValue(new QClassValue(clazz));
         }
-        this.compares.add(ret);
+        compares.add(ret);
         return ret;
     }
 
@@ -649,8 +651,8 @@ public class QueryBuilder
     {
         final String attr = getAttr4Select(_attrName);
         final QIn in = new QIn(new QAttribute(attr.isEmpty() ? _attrName : attr),
-                        new QSQLValue(_query.getSQLStatement(this.subQueryIdx++)));
-        this.compares.add(in);
+                        new QSQLValue(_query.getSQLStatement(subQueryIdx++)));
+        compares.add(in);
         return in;
     }
 
@@ -664,8 +666,8 @@ public class QueryBuilder
                                    final AttributeQuery _query)
         throws EFapsException
     {
-        final QIn in = new QIn(new QAttribute(_attr), new QSQLValue(_query.getSQLStatement(this.subQueryIdx++)));
-        this.compares.add(in);
+        final QIn in = new QIn(new QAttribute(_attr), new QSQLValue(_query.getSQLStatement(subQueryIdx++)));
+        compares.add(in);
         return in;
     }
 
@@ -694,8 +696,8 @@ public class QueryBuilder
     {
         final String attr = getAttr4Select(_attrName);
         final QNotIn in = new QNotIn(new QAttribute(attr.isEmpty() ? _attrName : attr),
-                        new QSQLValue(_query.getSQLStatement(this.subQueryIdx++)));
-        this.compares.add(in);
+                        new QSQLValue(_query.getSQLStatement(subQueryIdx++)));
+        compares.add(in);
         return in;
     }
 
@@ -709,8 +711,8 @@ public class QueryBuilder
                                          final AttributeQuery _query)
         throws EFapsException
     {
-        final QNotIn in = new QNotIn(new QAttribute(_attr), new QSQLValue(_query.getSQLStatement(this.subQueryIdx++)));
-        this.compares.add(in);
+        final QNotIn in = new QNotIn(new QAttribute(_attr), new QSQLValue(_query.getSQLStatement(subQueryIdx++)));
+        compares.add(in);
         return in;
     }
 
@@ -735,7 +737,7 @@ public class QueryBuilder
         throws EFapsException
     {
         final QIs in = new QIs(new QAttribute(_attrName), new QNullValue());
-        this.compares.add(in);
+        compares.add(in);
         return in;
     }
 
@@ -748,7 +750,7 @@ public class QueryBuilder
         throws EFapsException
     {
         final QIs in = new QIs(new QAttribute(_attr), new QNullValue());
-        this.compares.add(in);
+        compares.add(in);
         return in;
     }
 
@@ -772,7 +774,7 @@ public class QueryBuilder
         throws EFapsException
     {
         final QIsNot in = new QIsNot(new QAttribute(_attrName), new QNullValue());
-        this.compares.add(in);
+        compares.add(in);
         return in;
     }
 
@@ -785,7 +787,7 @@ public class QueryBuilder
         throws EFapsException
     {
         final QIsNot in = new QIsNot(new QAttribute(_attr), new QNullValue());
-        this.compares.add(in);
+        compares.add(in);
         return in;
     }
 
@@ -805,7 +807,7 @@ public class QueryBuilder
     public QOrderAsc addOrderByAttributeAsc(final String _attrName)
     {
         final QOrderAsc asc = new QOrderAsc(new QAttribute(_attrName));
-        this.orders.add(asc);
+        orders.add(asc);
         return asc;
     }
 
@@ -816,7 +818,7 @@ public class QueryBuilder
     public QOrderAsc addOrderByAttributeAsc(final Attribute _attr)
     {
         final QOrderAsc asc = new QOrderAsc(new QAttribute(_attr));
-        this.orders.add(asc);
+        orders.add(asc);
         return asc;
     }
 
@@ -836,7 +838,7 @@ public class QueryBuilder
     public QOrderDesc addOrderByAttributeDesc(final String _attrName)
     {
         final QOrderDesc desc = new QOrderDesc(new QAttribute(_attrName));
-        this.orders.add(desc);
+        orders.add(desc);
         return desc;
     }
 
@@ -847,7 +849,7 @@ public class QueryBuilder
     public QOrderDesc addOrderByAttributeDesc(final Attribute _attr)
     {
         final QOrderDesc desc = new QOrderDesc(new QAttribute(_attr));
-        this.orders.add(desc);
+        orders.add(desc);
         return desc;
     }
 
@@ -869,6 +871,8 @@ public class QueryBuilder
             ret = new QStringValue((String) _value);
         } else if (_value instanceof DateTime) {
             ret = new QDateTimeValue((DateTime) _value);
+        } else if (_value instanceof OffsetDateTime) {
+            ret = new QOffsetDateTimeValue((OffsetDateTime) _value);
         } else if (_value instanceof Boolean) {
             ret = new QBooleanValue((Boolean) _value);
         } else if (_value instanceof Status) {
@@ -877,8 +881,7 @@ public class QueryBuilder
             ret = new QNumberValue(Status.find((CIStatus) _value).getId());
         } else if (_value instanceof Instance) {
             if (!((Instance) _value).isValid()) {
-                QueryBuilder.LOG.error("the given Instance was not valid and cannot be used as filter criteria",
-                                _value);
+                QueryBuilder.LOG.error("the given Instance was not valid and cannot be used as filter criteria", _value);
                 throw new EFapsException(QueryBuilder.class, "invalid Instance given");
             }
             ret = new QNumberValue(((Instance) _value).getId());
@@ -903,7 +906,7 @@ public class QueryBuilder
      */
     public boolean isOr()
     {
-        return this.or;
+        return or;
     }
 
     /**
@@ -914,7 +917,7 @@ public class QueryBuilder
      */
     public QueryBuilder setOr(final boolean _or)
     {
-        this.or = _or;
+        or = _or;
         return this;
     }
 
@@ -925,7 +928,7 @@ public class QueryBuilder
      */
     public int getLimit()
     {
-        return this.limit;
+        return limit;
     }
 
     /**
@@ -936,7 +939,7 @@ public class QueryBuilder
      */
     public QueryBuilder setLimit(final int _limit)
     {
-        this.limit = _limit;
+        limit = _limit;
         return this;
     }
 
@@ -947,7 +950,7 @@ public class QueryBuilder
      */
     public final UUID getTypeUUID()
     {
-        return this.typeUUID;
+        return typeUUID;
     }
 
     /**
@@ -959,7 +962,7 @@ public class QueryBuilder
     public final Type getType()
         throws CacheReloadException
     {
-        return Type.get(this.typeUUID);
+        return Type.get(typeUUID);
     }
 
     /**
@@ -968,17 +971,17 @@ public class QueryBuilder
      */
     public InstanceQuery getQuery()
     {
-        if (this.query == null) {
+        if (query == null) {
             try {
-                this.query = new InstanceQuery(this.typeUUID)
+                query = new InstanceQuery(typeUUID)
                                 .setIncludeChildTypes(isIncludeChildTypes())
                                 .setCompanyDependent(isCompanyDependent());
                 prepareQuery();
             } catch (final EFapsException e) {
-                QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", this.typeUUID);
+                QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", typeUUID);
             }
         }
-        return (InstanceQuery) this.query;
+        return (InstanceQuery) query;
     }
 
     /**
@@ -988,17 +991,17 @@ public class QueryBuilder
      */
     public CachedInstanceQuery getCachedQuery(final String _key)
     {
-        if (this.query == null) {
+        if (query == null) {
             try {
-                this.query = new CachedInstanceQuery(_key, this.typeUUID)
+                query = new CachedInstanceQuery(_key, typeUUID)
                                 .setIncludeChildTypes(isIncludeChildTypes())
                                 .setCompanyDependent(isCompanyDependent());
                 prepareQuery();
             } catch (final EFapsException e) {
-                QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", this.typeUUID);
+                QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", typeUUID);
             }
         }
-        return (CachedInstanceQuery) this.query;
+        return (CachedInstanceQuery) query;
     }
 
     /**
@@ -1007,17 +1010,17 @@ public class QueryBuilder
      */
     public CachedInstanceQuery getCachedQuery4Request()
     {
-        if (this.query == null) {
+        if (query == null) {
             try {
-                this.query = CachedInstanceQuery.get4Request(this.typeUUID)
+                query = CachedInstanceQuery.get4Request(typeUUID)
                                 .setIncludeChildTypes(isIncludeChildTypes())
                                 .setCompanyDependent(isCompanyDependent());
                 prepareQuery();
             } catch (final EFapsException e) {
-                QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", this.typeUUID);
+                QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", typeUUID);
             }
         }
-        return (CachedInstanceQuery) this.query;
+        return (CachedInstanceQuery) query;
     }
 
     /**
@@ -1039,17 +1042,17 @@ public class QueryBuilder
      */
     public AttributeQuery getAttributeQuery(final String _attributeName)
     {
-        if (this.query == null) {
+        if (query == null) {
             try {
                 final String attribute = getAttr4Select(_attributeName);
-                this.query = new AttributeQuery(this.typeUUID, attribute.isEmpty() ? _attributeName : attribute)
+                query = new AttributeQuery(typeUUID, attribute.isEmpty() ? _attributeName : attribute)
                                     .setCompanyDependent(isCompanyDependent());
                 prepareQuery();
             } catch (final EFapsException e) {
-                QueryBuilder.LOG.error("Could not open AttributeQuery for uuid: {}", this.typeUUID);
+                QueryBuilder.LOG.error("Could not open AttributeQuery for uuid: {}", typeUUID);
             }
         }
-        return (AttributeQuery) this.query;
+        return (AttributeQuery) query;
     }
 
     /**
@@ -1063,8 +1066,8 @@ public class QueryBuilder
     {
         AttributeQuery ret = this.getAttributeQuery(getSelectAttributeName());
         // check if in the linkto chain is one before this one
-        if (!this.attrQueryBldrs.isEmpty()) {
-            final QueryBuilder queryBldr = this.attrQueryBldrs.values().iterator().next();
+        if (!attrQueryBldrs.isEmpty()) {
+            final QueryBuilder queryBldr = attrQueryBldrs.values().iterator().next();
             queryBldr.addWhereAttrInQuery(queryBldr.getLinkAttributeName(), ret);
             ret = queryBldr.getAttributeQuery();
         }
@@ -1078,37 +1081,37 @@ public class QueryBuilder
     private void prepareQuery()
         throws EFapsException
     {
-        for (final QueryBuilder queryBldr : this.attrQueryBldrs.values()) {
+        for (final QueryBuilder queryBldr : attrQueryBldrs.values()) {
             final AttributeQuery attrQuery = queryBldr.getAttributeQuery();
             this.addWhereAttrInQuery(queryBldr.getLinkAttributeName(), attrQuery);
         }
 
-        if (!this.types.isEmpty()) {
+        if (!types.isEmpty()) {
             // force the include
-            this.query.setIncludeChildTypes(true);
-            final Type baseType = Type.get(this.typeUUID);
+            query.setIncludeChildTypes(true);
+            final Type baseType = Type.get(typeUUID);
             final QEqual eqPart = new QEqual(new QAttribute(baseType.getTypeAttribute()));
 
-            for (final UUID type : this.types) {
+            for (final UUID type : types) {
                 eqPart.addValue(new QNumberValue(Type.get(type).getId()));
             }
-            this.compares.add(eqPart);
+            compares.add(eqPart);
         }
 
-        if (!this.compares.isEmpty()) {
-            final QAnd and = this.or ? new QOr() : new QAnd();
-            for (final AbstractQAttrCompare compare : this.compares) {
+        if (!compares.isEmpty()) {
+            final QAnd and = or ? new QOr() : new QAnd();
+            for (final AbstractQAttrCompare compare : compares) {
                 and.addPart(compare);
             }
-            this.query.setWhere(new QWhereSection(and));
+            query.setWhere(new QWhereSection(and));
         }
-        if (!this.orders.isEmpty()) {
+        if (!orders.isEmpty()) {
             final QOrderBySection orderBy = new QOrderBySection(
-                            this.orders.toArray(new AbstractQPart[this.orders.size()]));
-            this.query.setOrderBy(orderBy);
+                            orders.toArray(new AbstractQPart[orders.size()]));
+            query.setOrderBy(orderBy);
         }
-        if (this.limit > 0) {
-            this.query.setLimit(this.limit);
+        if (limit > 0) {
+            query.setLimit(limit);
         }
     }
 
@@ -1153,7 +1156,7 @@ public class QueryBuilder
      */
     public boolean isIncludeChildTypes()
     {
-        return this.includeChildTypes;
+        return includeChildTypes;
     }
 
     /**
@@ -1164,7 +1167,7 @@ public class QueryBuilder
      */
     public QueryBuilder setIncludeChildTypes(final boolean _includeChildTypes)
     {
-        this.includeChildTypes = _includeChildTypes;
+        includeChildTypes = _includeChildTypes;
         return this;
     }
 
@@ -1175,7 +1178,7 @@ public class QueryBuilder
      */
     public boolean isCompanyDependent()
     {
-        return this.companyDependent;
+        return companyDependent;
     }
 
     /**
@@ -1186,7 +1189,7 @@ public class QueryBuilder
      */
     public QueryBuilder setCompanyDependent(final boolean _companyDependent)
     {
-        this.companyDependent = _companyDependent;
+        companyDependent = _companyDependent;
         return this;
     }
 
@@ -1228,12 +1231,11 @@ public class QueryBuilder
             linkto = false;
         }
 
-        if (StringUtils.isNotEmpty(key) && !this.attrQueryBldrs.containsKey(key)) {
+        if (StringUtils.isNotEmpty(key) && !attrQueryBldrs.containsKey(key)) {
             if (linkto) {
-                Type currentType = Type.get(this.typeUUID);
+                Type currentType = Type.get(typeUUID);
                 QueryBuilder queryBldr = this;
-                for (final Iterator<String> iterator = linktos.iterator(); iterator.hasNext();) {
-                    final String string = iterator.next();
+                for (final String string : linktos) {
                     currentType = currentType.getAttribute(string).getLink();
                     final QueryBuilder queryBldrTmp = new QueryBuilder(currentType);
                     queryBldrTmp.setLinkAttributeName(string);
@@ -1254,7 +1256,7 @@ public class QueryBuilder
                 getAttrQueryBldrs().put(key, queryBldrTmp);
             }
         }
-        return this.attrQueryBldrs.get(key);
+        return attrQueryBldrs.get(key);
     }
 
     /**
@@ -1264,7 +1266,7 @@ public class QueryBuilder
      */
     protected List<AbstractQAttrCompare> getCompares()
     {
-        return this.compares;
+        return compares;
     }
 
     /**
@@ -1274,7 +1276,7 @@ public class QueryBuilder
      */
     protected Map<String, QueryBuilder> getAttrQueryBldrs()
     {
-        return this.attrQueryBldrs;
+        return attrQueryBldrs;
     }
 
     /**
@@ -1284,7 +1286,7 @@ public class QueryBuilder
      */
     protected String getLinkAttributeName()
     {
-        return this.linkAttributeName;
+        return linkAttributeName;
     }
 
     /**
@@ -1294,7 +1296,7 @@ public class QueryBuilder
      */
     protected void setLinkAttributeName(final String _linkAttributeName)
     {
-        this.linkAttributeName = _linkAttributeName;
+        linkAttributeName = _linkAttributeName;
     }
 
     /**
@@ -1304,7 +1306,7 @@ public class QueryBuilder
      */
     protected String getSelectAttributeName()
     {
-        return this.selectAttributeName == null ?  "attribute[ID]" : this.selectAttributeName;
+        return selectAttributeName == null ?  "attribute[ID]" : selectAttributeName;
     }
 
     /**
@@ -1314,7 +1316,7 @@ public class QueryBuilder
      */
     protected void setSelectAttributeName(final String _selectAttributeName)
     {
-        this.selectAttributeName = _selectAttributeName;
+        selectAttributeName = _selectAttributeName;
     }
 
     /**

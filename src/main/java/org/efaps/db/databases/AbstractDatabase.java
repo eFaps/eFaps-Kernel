@@ -22,6 +22,8 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -380,6 +382,11 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
     public String getStr4DateTime(final ReadableDateTime _value)
     {
         return _value.toDateTime().toString(ISODateTimeFormat.dateHourMinuteSecondFraction());
+    }
+
+    public String getStr4DateTime(final OffsetDateTime _value)
+    {
+        return _value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
     }
 
     /**

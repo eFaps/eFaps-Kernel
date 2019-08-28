@@ -89,7 +89,7 @@ public final class DateTimeUtil
             ret = ZoneId.systemDefault();
         } else {
             final String zoneId = EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DBTIMEZONE);
-            ret = ZoneId.of(zoneId);
+            ret = zoneId == null ? ZoneId.of("Z") : ZoneId.of(zoneId);
         }
         return ret;
     }

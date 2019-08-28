@@ -19,6 +19,7 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -155,6 +156,8 @@ public class DateTimeType
         String ret = "";
         if (_value instanceof ReadableDateTime) {
             ret = Context.getDbType().getStr4DateTime((ReadableDateTime) _value);
+        } else if (_value instanceof OffsetDateTime) {
+            ret = Context.getDbType().getStr4DateTime((OffsetDateTime) _value);
         } else if (_value instanceof String) {
             ret = (String) _value;
         }
