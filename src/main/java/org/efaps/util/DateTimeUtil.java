@@ -225,7 +225,8 @@ public final class DateTimeUtil
             final DateTime dateTime = (DateTime)_value;
             ret = LocalDate.of(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth());
         } else if (_value instanceof String) {
-            ret = LocalDate.parse((String) _value);
+            final String str = (String) _value;
+            ret = LocalDate.parse(str.substring(0, 10));
         } else if (_value instanceof LocalDateTime) {
             final LocalDateTime localDateTime = (LocalDateTime) _value;
             ret = LocalDate.of(localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth());

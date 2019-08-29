@@ -144,7 +144,7 @@ public class AttributeValueSelect
             }
         }
 
-        Object ret = attribute.value(_objectList);
+        Object ret = attribute.readDBValue(_objectList);
         int i = attribute.getSqlColNames().size();
         for (final Attribute attr : attribute.getDependencies().values()) {
             final List<Object> tmpObjectList = new ArrayList<>();
