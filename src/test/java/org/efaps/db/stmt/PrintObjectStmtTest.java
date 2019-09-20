@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
@@ -267,7 +268,7 @@ public class PrintObjectStmtTest
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluate();
-        assertEquals(evaluator.get(1), dateTime);
+        assertEquals(0, ChronoUnit.SECONDS.between(evaluator.get(1), dateTime));
     }
 
     @Test
@@ -293,7 +294,7 @@ public class PrintObjectStmtTest
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluate();
-        assertEquals(evaluator.get(1), dateTime);
+        assertEquals(0, ChronoUnit.SECONDS.between(evaluator.get(1), dateTime));
     }
 
     @Test
@@ -319,7 +320,7 @@ public class PrintObjectStmtTest
         final Evaluator evaluator = PrintStmt.get(stmt)
                         .execute()
                         .evaluate();
-        assertEquals(evaluator.get(1), dateTime);
+        assertEquals(0, ChronoUnit.SECONDS.between(evaluator.get(1), dateTime));
     }
 
     @Test
