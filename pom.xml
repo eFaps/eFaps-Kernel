@@ -204,7 +204,13 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
              <groupId>org.efaps</groupId>
             <artifactId>efaps-eql</artifactId>
             <version>${project.version}</version>
-        </dependency>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.emf</groupId>
+                    <artifactId>org.eclipse.emf.mwe2.runtime</artifactId>
+                </exclusion>
+            </exclusions>
+         </dependency>
         <dependency>
              <groupId>org.efaps</groupId>
             <artifactId>efaps-eql2</artifactId>
