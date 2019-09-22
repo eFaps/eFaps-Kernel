@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,6 @@ import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment!
  *
  * @author The eFaps Team
  *
@@ -43,10 +43,6 @@ import org.efaps.util.EFapsException;
 public class JaxbType
     extends AbstractType
 {
-
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -58,7 +54,7 @@ public class JaxbType
         if (_objectList.size() < 1) {
             ret = null;
         } else {
-            final List<Object> list = new ArrayList<Object>();
+            final List<Object> list = new ArrayList<>();
             for (final Object object : _objectList) {
                 String str = null;
                 if (object instanceof String) {
@@ -70,7 +66,7 @@ public class JaxbType
                     list.add(getObject4String(_attribute, str));
                 }
             }
-            ret = list.isEmpty() ? null : (list.size() > 1 ? list : list.get(0));
+            ret = list.isEmpty() ? null : list.size() > 1 ? list : list.get(0);
         }
         return ret;
     }
@@ -98,7 +94,7 @@ public class JaxbType
         String ret = null;
         if (_value == null) {
             ret = null;
-        } else if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
+        } else if (_value[0] instanceof String && ((String) _value[0]).length() > 0) {
             ret = (String) _value[0];
         } else {
             try {
@@ -106,7 +102,7 @@ public class JaxbType
                 if (object != null) {
                     final Class<?> clazz = Class.forName(_attribute.getClassName(), false,
                                     EFapsClassLoader.getInstance());
-                    final IJaxb jaxb = (IJaxb) clazz.newInstance();
+                    final IJaxb jaxb = (IJaxb) clazz.getConstructor().newInstance();
                     final JAXBContext jc = JAXBContext.newInstance(jaxb.getClasses());
                     final Marshaller marshaller = jc.createMarshaller();
                     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -114,14 +110,10 @@ public class JaxbType
                     marshaller.marshal(_value[0], writer);
                     ret = writer.toString();
                 }
-            } catch (final ClassNotFoundException e) {
-                throw new SQLException("ClassNotFoundException", e);
-            } catch (final InstantiationException e) {
-                throw new SQLException("InstantiationException", e);
-            } catch (final IllegalAccessException e) {
-                throw new SQLException("IllegalAccessException", e);
-            } catch (final JAXBException e) {
-                throw new SQLException("JAXBException", e);
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                            | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                            | SecurityException | JAXBException e) {
+                throw new SQLException("JaxbType Exception", e);
             }
         }
         return ret;
@@ -141,20 +133,16 @@ public class JaxbType
         try {
             if (_str != null && !_str.isEmpty()) {
                 final Class<?> clazz = Class.forName(_attribute.getClassName(), false, EFapsClassLoader.getInstance());
-                final IJaxb jaxb = (IJaxb) clazz.newInstance();
+                final IJaxb jaxb = (IJaxb) clazz.getConstructor().newInstance();
                 final JAXBContext jc = JAXBContext.newInstance(jaxb.getClasses());
                 final Unmarshaller unmarshaller = jc.createUnmarshaller();
                 final StringReader reader = new StringReader(_str);
                 ret = unmarshaller.unmarshal(reader);
             }
-        } catch (final ClassNotFoundException e) {
-            throw new EFapsException("ClassNotFoundException", e);
-        } catch (final InstantiationException e) {
-            throw new EFapsException("InstantiationException", e);
-        } catch (final IllegalAccessException e) {
-            throw new EFapsException("IllegalAccessException", e);
-        } catch (final JAXBException e) {
-            throw new EFapsException("JAXBException", e);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                        | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                        | SecurityException | JAXBException e) {
+            throw new EFapsException("JaxbType Exception", e);
         }
         return ret;
     }
