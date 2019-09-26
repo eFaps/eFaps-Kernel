@@ -44,6 +44,8 @@ public class AssociationLinkType
         if (_values != null && _values.length > 0 && _values[0] != null) {
             if (_values[0] instanceof Long) {
                 _insertUpdate.column(_attribute.getSqlColNames().get(0), (Long) _values[0]);
+            } else if (_values[0] instanceof Association) {
+                _insertUpdate.column(_attribute.getSqlColNames().get(0), ((Association) _values[0]).getId());
             } else {
                 _insertUpdate.column(_attribute.getSqlColNames().get(0), Long.parseLong(_values[0].toString()));
             }
