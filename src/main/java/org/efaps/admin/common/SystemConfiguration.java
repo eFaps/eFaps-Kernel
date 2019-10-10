@@ -50,6 +50,7 @@ import org.efaps.util.cache.InfinispanCache;
 import org.infinispan.Cache;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.encryption.pbe.config.StringPBEConfig;
+import org.jasypt.iv.IvGenerator;
 import org.jasypt.properties.EncryptableProperties;
 import org.jasypt.salt.SaltGenerator;
 import org.slf4j.Logger;
@@ -952,6 +953,12 @@ public final class SystemConfiguration
 
         @Override
         public String getStringOutputType()
+        {
+            return null;
+        }
+
+        @Override
+        public IvGenerator getIvGenerator()
         {
             return null;
         }
