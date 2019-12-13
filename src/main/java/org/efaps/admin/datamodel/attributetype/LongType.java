@@ -99,7 +99,7 @@ public class LongType
                 } else if (object != null) {
                     temp = Long.parseLong(object.toString());
                 }
-                list.add(object == null ? new Long(0) : temp);
+                list.add(object == null ? Long.valueOf(0) : temp);
             }
             ret = list;
         } else {
@@ -110,7 +110,7 @@ public class LongType
             } else if (object != null) {
                 temp = Long.parseLong(object.toString());
             }
-            ret = object == null ? new Long(0) : temp;
+            ret = object == null ? Long.valueOf(0) : temp;
         }
         return ret;
     }

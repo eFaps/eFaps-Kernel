@@ -22,7 +22,9 @@ import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -44,6 +46,8 @@ public class JaxbType
     extends AbstractType
 {
     private static final long serialVersionUID = 1L;
+
+    private static final Map<Long, JAXBContext> JAXBCONTEXTSTORE = new HashMap<>();
 
     @Override
     public Object readValue(final Attribute _attribute,
@@ -100,10 +104,16 @@ public class JaxbType
             try {
                 final Object object = _value[0];
                 if (object != null) {
-                    final Class<?> clazz = Class.forName(_attribute.getClassName(), false,
-                                    EFapsClassLoader.getInstance());
-                    final IJaxb jaxb = (IJaxb) clazz.getConstructor().newInstance();
-                    final JAXBContext jc = JAXBContext.newInstance(jaxb.getClasses());
+                    final JAXBContext jc;
+                    if (JAXBCONTEXTSTORE.containsKey(_attribute.getId())) {
+                        jc = JAXBCONTEXTSTORE.get(_attribute.getId());
+                    } else {
+                        final Class<?> clazz = Class.forName(_attribute.getClassName(), false,
+                                        EFapsClassLoader.getInstance());
+                        final IJaxb jaxb = (IJaxb) clazz.getConstructor().newInstance();
+                        jc = JAXBContext.newInstance(jaxb.getClasses());
+                        JAXBCONTEXTSTORE.put(_attribute.getId(), jc);
+                    }
                     final Marshaller marshaller = jc.createMarshaller();
                     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
                     final StringWriter writer = new StringWriter();
@@ -132,9 +142,16 @@ public class JaxbType
         Object ret = null;
         try {
             if (_str != null && !_str.isEmpty()) {
-                final Class<?> clazz = Class.forName(_attribute.getClassName(), false, EFapsClassLoader.getInstance());
-                final IJaxb jaxb = (IJaxb) clazz.getConstructor().newInstance();
-                final JAXBContext jc = JAXBContext.newInstance(jaxb.getClasses());
+                final JAXBContext jc;
+                if (JAXBCONTEXTSTORE.containsKey(_attribute.getId())) {
+                    jc = JAXBCONTEXTSTORE.get(_attribute.getId());
+                } else {
+                    final Class<?> clazz = Class.forName(_attribute.getClassName(), false,
+                                    EFapsClassLoader.getInstance());
+                    final IJaxb jaxb = (IJaxb) clazz.getConstructor().newInstance();
+                    jc = JAXBContext.newInstance(jaxb.getClasses());
+                    JAXBCONTEXTSTORE.put(_attribute.getId(), jc);
+                }
                 final Unmarshaller unmarshaller = jc.createUnmarshaller();
                 final StringReader reader = new StringReader(_str);
                 ret = unmarshaller.unmarshal(reader);

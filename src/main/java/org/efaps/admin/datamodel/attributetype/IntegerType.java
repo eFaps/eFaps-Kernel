@@ -98,7 +98,7 @@ public class IntegerType
                 } else if (object != null) {
                     temp = Integer.parseInt(object.toString());
                 }
-                list.add(object == null ? new Integer(0) : temp);
+                list.add(object == null ? Integer.valueOf(0) : temp);
             }
             ret = list;
         } else {
@@ -109,7 +109,7 @@ public class IntegerType
             } else if (object != null) {
                 temp = Integer.parseInt(object.toString());
             }
-            ret = object == null ? new Integer(0) : temp;
+            ret = object == null ? Integer.valueOf(0) : temp;
         }
         return ret;
     }
