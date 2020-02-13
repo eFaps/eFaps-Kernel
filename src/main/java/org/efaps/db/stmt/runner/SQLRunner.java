@@ -146,14 +146,13 @@ public class SQLRunner
     {
         if (runnable instanceof ObjectUpdate) {
             final ObjectUpdate update = (ObjectUpdate) runnable;
-            prepareUpdate(update.getInstance().getType(), false);
+            prepareUpdate(update.getInstance().getType(), update.getInstance());
         } else if (runnable instanceof ListUpdate) {
             final ListUpdate update = (ListUpdate) runnable;
-            final Set<Type> types = update.getInstances()
-                            .stream().map(instance -> instance.getType())
-                            .collect(Collectors.toSet());
-            for (final Type type : types) {
-                prepareUpdate(type, false);
+            final Map<Type, List<Instance>> types = update.getInstances().stream()
+                .collect(Collectors.groupingBy(Instance::getType));
+            for (final Entry<Type, List<Instance>> entry : types.entrySet()) {
+                prepareUpdate(entry.getKey(), entry.getValue().stream().toArray(Instance[]::new));
             }
         }
     }
@@ -165,10 +164,10 @@ public class SQLRunner
         final Type type = insert.getType();
         final SQLTable mainTable = type.getMainTable();
         getSQLInsert(mainTable);
-        prepareUpdate(type, true);
+        prepareUpdate(type);
     }
 
-    private void prepareUpdate(final Type _type, final boolean _create)
+    private void prepareUpdate(final Type _type, final Instance... _instances)
         throws EFapsException
     {
         final Iterator<?> iter = _type.getAttributes().entrySet().iterator();
@@ -176,10 +175,10 @@ public class SQLRunner
             final Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
             final Attribute attr = (Attribute) entry.getValue();
             final AttributeType attrType = attr.getAttributeType();
-            if (_create && attrType.isCreateUpdate() || attrType.isAlwaysUpdate()) {
+            if (_instances.length == 0 && attrType.isCreateUpdate() || attrType.isAlwaysUpdate()) {
                 try {
                     final SQLTable sqlTable = attr.getTable();
-                    if (_create) {
+                    if (_instances.length == 0) {
                         final SQLInsert sqlInsert = getSQLInsert(sqlTable);
                         attr.prepareDBInsert(sqlInsert);
                     } else {
@@ -197,10 +196,16 @@ public class SQLRunner
             final Attribute attr = _type.getAttribute(element.getAttribute());
             final SQLTable sqlTable = attr.getTable();
             try {
-                if (_create) {
+                if (_instances.length == 0) {
+                    attr.getAttributeType().getDbAttrType().validate4Insert(attr, Instance.get(_type, 0),
+                                    new Object[] { element.getValue() });
                     final SQLInsert sqlInsert = getSQLInsert(sqlTable);
                     attr.prepareDBInsert(sqlInsert, element.getValue());
                 } else {
+                    for (final Instance instance : _instances) {
+                        attr.getAttributeType().getDbAttrType().validate4Update(attr, instance,
+                                        new Object[] { element.getValue() });
+                    }
                     final SQLUpdate sqlUpdate = getSQLUpdate(_type, sqlTable);
                     attr.prepareDBUpdate(sqlUpdate, element.getValue());
                 }
@@ -610,6 +615,7 @@ public class SQLRunner
                     insert.evaluateInstance(created);
                 }
             }
+            insert.triggerListeners();
         } catch (final SQLException e) {
             throw new EFapsException(SQLRunner.class, "executeOneCompleteStmt", e);
         }

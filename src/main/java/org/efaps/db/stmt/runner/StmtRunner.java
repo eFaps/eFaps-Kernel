@@ -17,6 +17,7 @@
 
 package org.efaps.db.stmt.runner;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,14 +72,15 @@ public final class StmtRunner
         try {
             final List<IEQLRunner> instances = new ArrayList<>();
             for (final Class<? extends IEQLRunner> clazz : EQLRUNNERS) {
-                final IEQLRunner runner = clazz.newInstance();
+                final IEQLRunner runner = clazz.getDeclaredConstructor().newInstance();
                 instances.add(runner);
                 runner.prepare(_runnable);
             }
             for (final IEQLRunner runner : instances) {
                 runner.execute();
             }
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                        | NoSuchMethodException | SecurityException e) {
             LOG.error("Problems while instantiating", e);
         }
     }

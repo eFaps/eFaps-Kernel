@@ -20,6 +20,7 @@ package org.efaps.admin.datamodel.attributetype;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.program.esjp.Listener;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
@@ -47,6 +48,13 @@ public class StatusType
     {
         super.validate4Update(_attribute, _instance, _value);
         validate(_attribute, _instance, _value);
+
+        // for an update we can register the change here, but not for insert due to not having a general instance yet
+        final Long statusId = eval(_value);
+        for (final IStatusChangeListener listener : Listener.get()
+                        .<IStatusChangeListener>invoke(IStatusChangeListener.class)) {
+            listener.onUpdate(_instance, statusId);
+        }
     }
 
     /**
@@ -54,8 +62,8 @@ public class StatusType
      */
     @Override
     public void validate4Insert(final Attribute _attribute,
-                               final Instance _instance,
-                               final Object[] _value)
+                                final Instance _instance,
+                                final Object[] _value)
         throws EFapsException
     {
         super.validate4Update(_attribute, _instance, _value);
