@@ -80,7 +80,7 @@ public class Update
     /**
      * Mapping of attribute to values.
      */
-    private final Map<Attribute, Value> attr2values = new HashMap<>();
+    protected final Map<Attribute, Value> attr2values = new HashMap<>();
 
     /**
      * Mapping of attribute to values.

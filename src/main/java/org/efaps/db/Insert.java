@@ -33,8 +33,11 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.attributetype.IStatusChangeListener;
+import org.efaps.admin.datamodel.attributetype.StatusType;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.index.Queue;
+import org.efaps.admin.program.esjp.Listener;
 import org.efaps.ci.CIType;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLInsert;
@@ -236,6 +239,23 @@ public class Insert
             Queue.registerUpdate(getInstance());
         } finally {
 
+        }
+
+        if (getType().isCheckStatus()) {
+            Long statusId = 0L;
+            for (final Entry<Attribute, Value> entry : attr2values.entrySet()) {
+                final AttributeType attrType = entry.getKey().getAttributeType();
+                if (attrType.getDbAttrType() instanceof StatusType) {
+                    statusId = (Long) entry.getValue().getValues()[0];
+                    break;
+                }
+            }
+            if (statusId > 0) {
+                for (final IStatusChangeListener listener : Listener.get()
+                                .<IStatusChangeListener>invoke(IStatusChangeListener.class)) {
+                    listener.onInsert(getInstance(), statusId);
+                }
+            }
         }
     }
 
