@@ -108,8 +108,8 @@ public final class GeneralInstance
      * @return id of the new instance
      * @throws EFapsException on  error
      */
-    protected static long insert(final Instance _instance,
-                                 final ConnectionResource _con)
+    public static long insert(final Instance _instance,
+                              final ConnectionResource _con)
         throws EFapsException
     {
         long ret = 0;

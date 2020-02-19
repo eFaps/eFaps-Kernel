@@ -615,6 +615,7 @@ public class SQLRunner
                     insert.evaluateInstance(created);
                 }
             }
+            GeneralInstance.insert(insert.getInstance(), con);
             insert.triggerListeners();
         } catch (final SQLException e) {
             throw new EFapsException(SQLRunner.class, "executeOneCompleteStmt", e);
