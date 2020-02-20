@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.collections4.iterators.ReverseListIterator;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
@@ -246,7 +247,17 @@ public class Insert
             for (final Entry<Attribute, Value> entry : attr2values.entrySet()) {
                 final AttributeType attrType = entry.getKey().getAttributeType();
                 if (attrType.getDbAttrType() instanceof StatusType) {
-                    statusId = (Long) entry.getValue().getValues()[0];
+                    final Object statusValue = entry.getValue().getValues()[0];
+                    if (statusValue instanceof Long) {
+                        statusId = (Long) statusValue;
+                    } else if (statusValue instanceof Integer) {
+                        statusId = ((Integer) statusValue).longValue();
+                    } else if (statusValue instanceof String) {
+                        statusId = NumberUtils.toLong((String) statusValue, 0);
+                    } else {
+                        LOG.error("Cannot retrieve value for statusId on StatusChange for attribute {]", entry.getKey());
+                    }
+                    statusId =  (Long) entry.getValue().getValues()[0];
                     break;
                 }
             }
