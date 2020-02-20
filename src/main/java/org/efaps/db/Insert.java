@@ -257,7 +257,6 @@ public class Insert
                     } else {
                         LOG.error("Cannot retrieve value for statusId on StatusChange for attribute {]", entry.getKey());
                     }
-                    statusId =  (Long) entry.getValue().getValues()[0];
                     break;
                 }
             }
