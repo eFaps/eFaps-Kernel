@@ -226,7 +226,12 @@ public final class DateTimeUtil
             ret = LocalDate.of(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth());
         } else if (_value instanceof String) {
             final String str = (String) _value;
-            ret = LocalDate.parse(str.substring(0, 10));
+            // an empty or not long enough value -> null
+            if (str.length() < 10) {
+                ret = null;
+            } else {
+                ret = LocalDate.parse(str.substring(0, 10));
+            }
         } else if (_value instanceof LocalDateTime) {
             final LocalDateTime localDateTime = (LocalDateTime) _value;
             ret = LocalDate.of(localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth());
