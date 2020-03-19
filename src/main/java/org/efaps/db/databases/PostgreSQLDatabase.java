@@ -147,7 +147,7 @@ public class PostgreSQLDatabase
         addMapping(ColumnType.REAL,         "real",      "null", "float4");
         addMapping(ColumnType.STRING_SHORT, "char",      "null", "bpchar");
         addMapping(ColumnType.STRING_LONG,  "varchar",   "null", "varchar");
-        addMapping(ColumnType.DATETIME,     "timestamp", "null", "timestamp");
+        addMapping(ColumnType.DATETIME,     "timestamp", "null", "timestamp", "timestamp without time zone");
         addMapping(ColumnType.BLOB,         "bytea",     "null", "bytea");
         addMapping(ColumnType.CLOB,         "text",      "null", "text");
         addMapping(ColumnType.BOOLEAN,      "boolean",   "null", "bool");
