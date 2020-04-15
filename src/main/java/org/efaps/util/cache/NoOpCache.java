@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -176,6 +177,12 @@ public class NoOpCache<K, V>
 
     @Override
     public CompletableFuture<V> getAsync(final K _key)
+    {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Long> sizeAsync()
     {
         return null;
     }
@@ -636,5 +643,41 @@ public class NoOpCache<K, V>
     @Override
     public void addListener(final Object _listener, final KeyFilter<? super K> _filter)
     {
+    }
+
+    @Override
+    public <C> CompletionStage<Void> addFilteredListenerAsync(final Object arg0, final CacheEventFilter<? super K, ? super V> arg1,
+                                                              final CacheEventConverter<? super K, ? super V, C> arg2,
+                                                              final Set<Class<? extends Annotation>> arg3)
+    {
+        return null;
+    }
+
+    @Override
+    public <C> CompletionStage<Void> addListenerAsync(final Object arg0, final CacheEventFilter<? super K, ? super V> arg1,
+                                                      final CacheEventConverter<? super K, ? super V, C> arg2)
+    {
+        return null;
+    }
+
+    @Override
+    public <C> CompletionStage<Void> addStorageFormatFilteredListenerAsync(final Object arg0,
+                                                                           final CacheEventFilter<? super K, ? super V> arg1,
+                                                                           final CacheEventConverter<? super K, ? super V, C> arg2,
+                                                                           final Set<Class<? extends Annotation>> arg3)
+    {
+        return null;
+    }
+
+    @Override
+    public CompletionStage<Void> addListenerAsync(final Object arg0)
+    {
+        return null;
+    }
+
+    @Override
+    public CompletionStage<Void> removeListenerAsync(final Object arg0)
+    {
+        return null;
     }
 }
