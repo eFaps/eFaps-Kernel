@@ -28,33 +28,17 @@
             </memory>
             <!--10 minutes, 5 minutes (miliseconds) -->
             <expiration lifespan="600000" max-idle="300000" />
-            <indexing index="LOCAL">
+            <indexing index="PRIMARY_OWNER">
                 <indexed-entities>
                     <indexed-entity>org.efaps.admin.access.user.PermissionSet</indexed-entity>
                 </indexed-entities>
+                <property name="default.indexBase">${java.io.tmpdir}/infinispan</property>
                 <property name="hibernate.search.lucene_version">LUCENE_CURRENT</property>
-                <property name="hibernate.search.default.indexmanager">org.infinispan.query.indexmanager.InfinispanIndexManager</property>
-                <property name="hibernate.search.default.directory_provider">infinispan</property>
-                <property name="hibernate.search.default.exclusive_index_use">true</property>
-                <property name="hibernate.search.default.locking_cachename">org.efaps.admin.access.user.AccessCache.LuceneIndexesLocking</property>
-                <property name="hibernate.search.default.data_cachename">org.efaps.admin.access.user.AccessCache.LuceneIndexesData</property>
-                <property name="hibernate.search.default.metadata_cachename">org.efaps.admin.access.user.AccessCache.LuceneIndexesMetadata</property>
-                <property name="hibernate.search.default.reader.strategy">shared</property>
             </indexing>
         </local-cache>
         <local-cache name="org.efaps.admin.access.user.AccessCache.StatusCache">
             <indexing index="NONE" />
         </local-cache>
-        <local-cache name="org.efaps.admin.access.AccessCache.LuceneIndexesMetadata">
-            <indexing index="NONE" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.access.AccessCache.LuceneIndexesData">
-            <indexing index="NONE" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.access.AccessCache.LuceneIndexesLocking">
-            <indexing index="NONE" />
-        </local-cache>
-
         <local-cache name="org.efaps.admin.common.Association.UUID">
             <indexing index="NONE" />
         </local-cache>
@@ -117,31 +101,13 @@
         <local-cache name="org.efaps.db.QueryCache.Index">
             <!---Only experation no eviction, 10 minutes, 5 minutes (miliseconds) -->
             <expiration lifespan="600000" max-idle="300000" />
-            <indexing index="LOCAL">
+            <indexing index="PRIMARY_OWNER">
                 <indexed-entities>
                     <indexed-entity>org.efaps.db.QueryKey</indexed-entity>
                 </indexed-entities>
+                <property name="default.indexBase">${java.io.tmpdir}/infinispan</property>
                 <property name="hibernate.search.lucene_version">LUCENE_CURRENT</property>
-                <property name="hibernate.search.default.indexmanager">org.infinispan.query.indexmanager.InfinispanIndexManager</property>
-                <property name="hibernate.search.default.directory_provider">infinispan</property>
-                <property name="hibernate.search.default.exclusive_index_use">true</property>
-                <property name="hibernate.search.default.locking_cachename">org.efaps.db.QueryCache.LuceneIndexesLocking</property>
-                <property name="hibernate.search.default.data_cachename">org.efaps.db.QueryCache.LuceneIndexesData</property>
-                <property name="hibernate.search.default.metadata_cachename">org.efaps.db.QueryCache.LuceneIndexesMetadata</property>
-                <property name="hibernate.search.default.reader.strategy">shared</property>
             </indexing>
-        </local-cache>
-
-        <local-cache name="org.efaps.db.QueryCache.LuceneIndexesMetadata">
-            <indexing index="NONE" />
-        </local-cache>
-
-        <local-cache name="org.efaps.db.QueryCache.LuceneIndexesData">
-            <indexing index="NONE" />
-        </local-cache>
-
-        <local-cache name="org.efaps.db.QueryCache.LuceneIndexesLocking">
-            <indexing index="NONE" />
         </local-cache>
 
         <local-cache name="org.efaps.admin.dbproperty.DBProperties"/>
@@ -257,20 +223,14 @@
             <memory>
                 <object size="5000" strategy="LIRS"/>
             </memory>
-            <indexing index="LOCAL">
+            <indexing index="PRIMARY_OWNER">
                 <!-- the entity will be added during webapp loading
                 <indexed-entities>
                     <indexed-entity>org.efaps.ui.wicket.connectionregistry.UserSession</indexed-entity>
                 </indexed-entities>
                  -->
+                <property name="default.indexBase">${java.io.tmpdir}/infinispan</property>
                 <property name="hibernate.search.lucene_version">LUCENE_CURRENT</property>
-                <property name="hibernate.search.default.indexmanager">org.infinispan.query.indexmanager.InfinispanIndexManager</property>
-                <property name="hibernate.search.default.directory_provider">infinispan</property>
-                <property name="hibernate.search.default.exclusive_index_use">true</property>
-                <property name="hibernate.search.default.locking_cachename">org.efaps.db.QueryCache.LuceneIndexesLocking</property>
-                <property name="hibernate.search.default.data_cachename">org.efaps.db.QueryCache.LuceneIndexesData</property>
-                <property name="hibernate.search.default.metadata_cachename">org.efaps.db.QueryCache.LuceneIndexesMetadata</property>
-                <property name="hibernate.search.default.reader.strategy">shared</property>
             </indexing>
         </local-cache-configuration>
     </cache-container>
