@@ -21,6 +21,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.attributetype.StatusType;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.util.EFapsException;
@@ -47,11 +48,11 @@ public class StatusElement
     public StatusElement(final Type _type)
         throws EFapsException
     {
-        if (!_type.isCheckStatus()) {
+        if (!_type.isCheckStatus() && _type.getAttributes(StatusType.class).isEmpty()) {
             throw new EFapsException(StatusElement.class, "Type has not Status", _type);
         }
         setDBTable(_type.getMainTable());
-        this.typeId = _type.getId();
+        typeId = _type.getId();
     }
 
     @Override
@@ -66,8 +67,14 @@ public class StatusElement
     {
         if (getTable() instanceof SQLTable) {
             final TableIdx tableIdx = getTableIdx(_sqlSelect);
-            final String colName = Type.get(this.typeId).getStatusAttribute().getSqlColNames().get(0);
-            this.colIdx = _sqlSelect.columnIndex(tableIdx.getIdx(), colName);
+            final Type type = Type.get(typeId);
+            final String colName;
+            if (type.isCheckStatus()) {
+                colName = Type.get(typeId).getStatusAttribute().getSqlColNames().get(0);
+            } else {
+                colName = type.getAttributes(StatusType.class).iterator().next().getSqlColNames().get(0);
+            }
+            colIdx = _sqlSelect.columnIndex(tableIdx.getIdx(), colName);
         }
     }
 
@@ -75,7 +82,7 @@ public class StatusElement
     public Object getObject(final Object[] _row)
         throws EFapsException
     {
-        final Long statusId = getValue(_row[this.colIdx]);
+        final Long statusId = getValue(_row[colIdx]);
         return callAuxillary(Status.get(statusId));
     }
 
