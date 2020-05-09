@@ -19,9 +19,11 @@ package org.efaps.eql.builder;
 
 import java.util.Arrays;
 
+import org.efaps.admin.common.MsgPhrase;
 import org.efaps.ci.CIAttribute;
 import org.efaps.ci.CIType;
 import org.efaps.db.stmt.PrintStmt;
+import org.efaps.db.stmt.selection.EvalHelper;
 import org.efaps.db.stmt.selection.Evaluator;
 import org.efaps.eql2.IPrintStatement;
 import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
@@ -39,6 +41,18 @@ public class Print
 
     private static final Logger LOG = LoggerFactory.getLogger(Converter.class);
 
+    private EvalHelper helper;
+
+    private Long currentMsgPhraseId;
+
+    private EvalHelper getHelper()
+    {
+        if (helper == null) {
+            helper = new EvalHelper();
+        }
+        return helper;
+    }
+
     /**
      * Stmt.
      *
@@ -47,7 +61,7 @@ public class Print
     public PrintStmt stmt()
     {
         LOG.debug("Stmt: {}", getStmt().eqlStmt());
-        return PrintStmt.get((IPrintStatement<?>) getStmt());
+        return PrintStmt.get((IPrintStatement<?>) getStmt(), helper);
     }
 
     public PrintStmt execute()
@@ -88,7 +102,7 @@ public class Print
     {
         for (final CIAttribute ciAttr : _ciAttrs) {
             attribute(ciAttr.name);
-            as(getDefaultAlias(ciAttr));
+            as(getCIAlias(ciAttr));
         }
         return getThis();
     }
@@ -105,6 +119,47 @@ public class Print
         return getThis();
     }
 
+    public Print msgPhrase(final MsgPhrase... _msgPhrase)
+        throws EFapsException
+    {
+        return msgPhrase(null, _msgPhrase);
+    }
+
+    public Print msgPhrase(final CharSequence _baseSelect,
+                           final MsgPhrase... _msgPhrase)
+        throws EFapsException
+    {
+        final String baseSel;
+        if (_baseSelect == null) {
+            baseSel = "";
+        } else {
+            baseSel = _baseSelect.toString() + ".";
+        }
+        for (final MsgPhrase phrase : _msgPhrase) {
+            int idx = 0;
+            for (final String selectStmt : phrase.getArguments()) {
+                select(baseSel + selectStmt);
+                as(getMsgPhraseAlias(phrase.getId()) + "_" + idx);
+                idx++;
+            }
+            getHelper().addMsgPhrase(phrase);
+            currentMsgPhraseId = phrase.getId();
+        }
+        return this;
+    }
+
+    @Override
+    public Print as(final String _alias)
+    {
+        if (currentMsgPhraseId != null) {
+            getHelper().setMsgPhraseAlias(currentMsgPhraseId, _alias);
+            currentMsgPhraseId = null;
+        } else {
+            super.as(_alias);
+        }
+        return this;
+    }
+
     @Override
     public Query query(final String... _types)
     {
@@ -118,8 +173,13 @@ public class Print
                         .toArray(String[]::new));
     }
 
-    public static String getDefaultAlias(final CIAttribute _ciAttr)
+    public static String getCIAlias(final CIAttribute _ciAttr)
     {
-        return "CIALIAS" + _ciAttr.name;
+        return "CIALIAS_" + _ciAttr.name;
+    }
+
+    public static String getMsgPhraseAlias(final Long _id)
+    {
+        return "MSGPHRASE_" + _id;
     }
 }

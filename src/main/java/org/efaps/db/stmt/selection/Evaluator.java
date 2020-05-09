@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ package org.efaps.db.stmt.selection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,8 +31,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.access.AccessTypeEnums;
+import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.ci.CIAttribute;
 import org.efaps.db.Instance;
@@ -67,14 +70,17 @@ public final class Evaluator
     /** The Access. */
     private Access access;
 
+    private final EvalHelper helper;
+
     /**
      * Instantiates a new selection evaluator.
      *
      * @param _selection the selection
      */
-    private Evaluator(final Selection _selection)
+    private Evaluator(final Selection _selection, final EvalHelper _helper)
     {
         selection = _selection;
+        helper = _helper;
     }
 
     /**
@@ -188,7 +194,7 @@ public final class Evaluator
     public <T> T get(final CIAttribute _ciAttr)
         throws EFapsException
     {
-        return get(Print.getDefaultAlias(_ciAttr));
+        return get(Print.getCIAlias(_ciAttr));
     }
 
     /**
@@ -480,12 +486,41 @@ public final class Evaluator
     {
         final Collection<Map<String, ?>> ret = new ArrayList<>();
         while (next()) {
-            final Map<String, ?> map = new LinkedHashMap<>();
+            final Map<String, Object> map = new LinkedHashMap<>();
             int idx = 1;
+            final Map<String, Object[]> msgphrases = new HashMap<>();
             for (final Select select : selection.getSelects()) {
                 final String key = select.getAlias() == null ? String.valueOf(idx) : select.getAlias();
-                map.put(key, get(select));
+                if (helper == null) {
+                    map.put(key, get(select));
+                } else {
+                    String msgPhraseKey = null;
+                    for (final Entry<String, MsgPhrase> entry : helper.getMsgPhrases().entrySet()) {
+                        final String alias = Print.getMsgPhraseAlias(entry.getValue().getId());
+                        if (key.startsWith(alias + "_")) {
+                            msgPhraseKey = entry.getKey();
+                            break;
+                        }
+                    }
+                    if (msgPhraseKey == null) {
+                        map.put(key, get(select));
+                    } else {
+                        Object[] values;
+                        if (!msgphrases.containsKey(msgPhraseKey)) {
+                            values = new Object[0];
+                        } else {
+                            values = msgphrases.get(msgPhraseKey);
+                        }
+                        values = ArrayUtils.add(values, get(select));
+                        msgphrases.put(msgPhraseKey, values);
+                    }
+                }
                 idx++;
+            }
+            for (final Entry<String, Object[]> entry : msgphrases.entrySet()) {
+                final MsgPhrase msgPhrase = helper.getMsgPhrases().get(entry.getKey());
+                final String value = msgPhrase.format(entry.getValue());
+                map.put(entry.getKey(), value);
             }
             ret.add(map);
         }
@@ -498,8 +533,8 @@ public final class Evaluator
      * @param _selection the selection
      * @return the selection evaluator
      */
-    public static Evaluator get(final Selection _selection)
+    public static Evaluator get(final Selection _selection, final EvalHelper _helper)
     {
-        return new Evaluator(_selection);
+        return new Evaluator(_selection, _helper);
     }
 }

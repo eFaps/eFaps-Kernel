@@ -42,7 +42,7 @@ public class BuilderTest
             .asString();
         assertEquals(stmt, "print query type " + CI.SimpleType.uuid
                         + " where attribute[TestAttribute] == \"Hallo World\""
-                        + " select attribute[TestAttribute] as \"CIALIASTestAttribute\"");
+                        + " select attribute[TestAttribute] as \"CIALIAS_TestAttribute\"");
     }
 
     @Test
@@ -59,7 +59,7 @@ public class BuilderTest
             .asString();
         assertEquals(stmt, "print query type " + CI.AllAttrType.uuid
                         + " where attribute[AllAttrLongAttribute] == 56"
-                        + " select attribute[AllAttrStringAttribute] as \"CIALIASAllAttrStringAttribute\"");
+                        + " select attribute[AllAttrStringAttribute] as \"CIALIAS_AllAttrStringAttribute\"");
     }
 
     @Test
@@ -77,7 +77,7 @@ public class BuilderTest
 
         assertEquals(stmt, "print query type " + CI.AllAttrType.uuid
                         + " where attribute[AllAttrIntegerAttribute] == 1"
-                        + " select attribute[AllAttrIntegerAttribute] as \"CIALIASAllAttrIntegerAttribute\"");
+                        + " select attribute[AllAttrIntegerAttribute] as \"CIALIAS_AllAttrIntegerAttribute\"");
     }
 
     @Test
@@ -98,7 +98,7 @@ public class BuilderTest
         assertEquals(stmt, "print query type " + CI.AllAttrType.uuid
                         + " where attribute[AllAttrIntegerAttribute] == 1"
                         + " and attribute[AllAttrStringAttribute] == \"Hello world\""
-                        + " select attribute[AllAttrIntegerAttribute] as \"CIALIASAllAttrIntegerAttribute\"");
+                        + " select attribute[AllAttrIntegerAttribute] as \"CIALIAS_AllAttrIntegerAttribute\"");
     }
 
     @Test
@@ -120,8 +120,8 @@ public class BuilderTest
         assertEquals(stmt, "print query type " + CI.AllAttrType.uuid
                         + " where attribute[AllAttrIntegerAttribute] == 1"
                         + " and attribute[AllAttrStringAttribute] == \"Hello world\""
-                        + " select attribute[AllAttrIntegerAttribute] as \"CIALIASAllAttrIntegerAttribute\","
-                        + " attribute[AllAttrStringAttribute] as \"CIALIASAllAttrStringAttribute\"");
+                        + " select attribute[AllAttrIntegerAttribute] as \"CIALIAS_AllAttrIntegerAttribute\","
+                        + " attribute[AllAttrStringAttribute] as \"CIALIAS_AllAttrStringAttribute\"");
     }
 
     @Test
@@ -176,7 +176,7 @@ public class BuilderTest
 
         assertEquals(stmt, "print query type " + CI.AllAttrType.uuid
                         + " where attribute[AllAttrIntegerAttribute] == 1"
-                        + " select attribute[AllAttrIntegerAttribute] as \"CIALIASAllAttrIntegerAttribute\""
+                        + " select attribute[AllAttrIntegerAttribute] as \"CIALIAS_AllAttrIntegerAttribute\""
                         + " order by AllAttrIntegerAttribute asc");
     }
 

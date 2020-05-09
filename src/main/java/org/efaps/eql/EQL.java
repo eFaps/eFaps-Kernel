@@ -108,7 +108,7 @@ public final class EQL
         AbstractStmt ret = null;
         final IStatement<?> stmt = parse(_stmt);
         if (stmt instanceof IPrintStatement) {
-            ret = PrintStmt.get((IPrintStatement<?>) stmt);
+            ret = PrintStmt.get((IPrintStatement<?>) stmt, null);
         } else if (stmt instanceof IDeleteStatement) {
             ret = DeleteStmt.get((IDeleteStatement<?>) stmt);
         } else if (stmt instanceof IInsertStatement) {

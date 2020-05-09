@@ -25,6 +25,7 @@ import org.efaps.db.stmt.print.ListPrint;
 import org.efaps.db.stmt.print.ObjectPrint;
 import org.efaps.db.stmt.print.QueryPrint;
 import org.efaps.db.stmt.runner.StmtRunner;
+import org.efaps.db.stmt.selection.EvalHelper;
 import org.efaps.db.stmt.selection.Evaluator;
 import org.efaps.eql2.IPrintListStatement;
 import org.efaps.eql2.IPrintObjectStatement;
@@ -45,12 +46,19 @@ public final class PrintStmt
     /** The print. */
     private AbstractPrint print;
 
+    private EvalHelper helper;
+
     /**
      * Instantiates a new prints the stmt.
      */
     private PrintStmt(final StmtFlag... _flags)
     {
         super(_flags);
+    }
+
+    private void setHelper(final EvalHelper _helper)
+    {
+        helper = _helper;
     }
 
     /**
@@ -85,7 +93,7 @@ public final class PrintStmt
         if (print == null) {
             execute();
         }
-        return Evaluator.get(print.getSelection());
+        return Evaluator.get(print.getSelection(), helper);
     }
 
     public String asString()
@@ -103,17 +111,16 @@ public final class PrintStmt
         return ret.toString().trim();
     }
 
-    /**
-     * Gets the.
-     *
-     * @param _printStmt the print stmt
-     * @param _flags the flags
-     * @return the prints the stmt
-     */
     public static PrintStmt get(final IPrintStatement<?> _printStmt)
+    {
+        return get(_printStmt, null);
+    }
+
+    public static PrintStmt get(final IPrintStatement<?> _printStmt, final EvalHelper _helper)
     {
         final PrintStmt ret = new PrintStmt(_printStmt.getFlags());
         ret.setEQLStmt(_printStmt);
+        ret.setHelper(_helper);
         return ret;
     }
 }
