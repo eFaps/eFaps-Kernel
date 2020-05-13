@@ -180,4 +180,17 @@ public class BuilderTest
                         + " order by AllAttrIntegerAttribute asc");
     }
 
+    @Test
+    public void testPrintClass()
+    {
+        final String stmt = EQL.builder()
+            .print()
+            .query(CI.SimpleType)
+            .select()
+            .clazz(CI.CompanyType).attribute(CI.CompanyType.StringAttribute)
+            .stmt()
+            .asString();
+        assertEquals(stmt, "print query type " + CI.SimpleType.uuid
+            + " select class[" + CI.CompanyType.uuid + "].attribute[StringAttribute] as \"CIALIAS_StringAttribute\"");
+    }
 }

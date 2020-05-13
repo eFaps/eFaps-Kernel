@@ -173,6 +173,11 @@ public class Print
                         .toArray(String[]::new));
     }
 
+    public Print clazz(final CIType _ciType)
+    {
+        return clazz(String.valueOf(_ciType.uuid));
+    }
+
     public static String getCIAlias(final CIAttribute _ciAttr)
     {
         return "CIALIAS_" + _ciAttr.name;
