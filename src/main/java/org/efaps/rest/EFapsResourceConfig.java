@@ -20,6 +20,7 @@ package org.efaps.rest;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
@@ -98,8 +99,8 @@ public class EFapsResourceConfig
                 logClasses("Provider classes found:", providerClasses);
             }
         }
-        this.cachedClasses.clear();
-        this.cachedClasses.addAll(getClasses());
+        cachedClasses.clear();
+        cachedClasses.addAll(getClasses());
     }
 
     /**
@@ -124,9 +125,10 @@ public class EFapsResourceConfig
     private void logClasses(final String _text,
                             final Set<Class<?>> _classes)
     {
+        final Set<Class<?>> sortedClasses = new TreeSet<Class<?>>(_classes);
         final StringBuilder b = new StringBuilder();
         b.append(_text);
-        for (final Class<?> c : _classes) {
+        for (final Class<?> c : sortedClasses) {
             b.append('\n').append("  ").append(c);
         }
         EFapsResourceConfig.LOG.info(b.toString());
@@ -142,12 +144,12 @@ public class EFapsResourceConfig
         final Set<Class<?>> classesToAdd = new HashSet<>();
 
         for (final Class<?> c : getClasses()) {
-            if (!this.cachedClasses.contains(c)) {
+            if (!cachedClasses.contains(c)) {
                 classesToAdd.add(c);
             }
         }
 
-        for (final Class<?> c : this.cachedClasses) {
+        for (final Class<?> c : cachedClasses) {
             if (!getClasses().contains(c)) {
                 classesToRemove.add(c);
             }
