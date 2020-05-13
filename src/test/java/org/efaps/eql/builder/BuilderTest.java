@@ -193,4 +193,20 @@ public class BuilderTest
         assertEquals(stmt, "print query type " + CI.SimpleType.uuid
             + " select class[" + CI.CompanyType.uuid + "].attribute[StringAttribute] as \"CIALIAS_StringAttribute\"");
     }
+
+    @Test
+    public void testPrintClassAfterAttribute()
+    {
+        final String stmt = EQL.builder()
+            .print()
+            .query(CI.SimpleType)
+            .select()
+            .attribute(CI.SimpleType.TestAttr)
+            .clazz(CI.CompanyType).attribute(CI.CompanyType.StringAttribute)
+            .stmt()
+            .asString();
+        assertEquals(stmt, "print query type " + CI.SimpleType.uuid
+            + " select attribute[TestAttribute] as \"CIALIAS_TestAttribute\","
+            + " class[" + CI.CompanyType.uuid + "].attribute[StringAttribute] as \"CIALIAS_StringAttribute\"");
+    }
 }
