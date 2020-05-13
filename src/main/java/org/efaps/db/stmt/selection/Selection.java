@@ -25,6 +25,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.Attribute;
@@ -66,6 +67,7 @@ import org.efaps.eql2.ISelect;
 import org.efaps.eql2.ISelectElement;
 import org.efaps.eql2.IStatement;
 import org.efaps.util.EFapsException;
+import org.efaps.util.UUIDUtil;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,7 +130,8 @@ public final class Selection
                 } else if (ele instanceof ILinkfromSelectElement) {
                     final String typeName = ((ILinkfromSelectElement) ele).getTypeName();
                     final String attrName = ((ILinkfromSelectElement) ele).getAttribute();
-                    final Type linkFromType = Type.get(typeName);
+                    final Type linkFromType = UUIDUtil.isUUID(typeName)
+                                    ? Type.get(UUID.fromString(typeName)) : Type.get(typeName);
                     final Attribute attr = linkFromType.getAttribute(attrName);
                     final LinkfromElement element = new LinkfromElement().setAttribute(attr).setStartType(currentType);
                     select.addElement(element);
@@ -136,7 +139,8 @@ public final class Selection
                     currentType = linkFromType;
                 } else if (ele instanceof IClassSelectElement) {
                     final String typeName = ((IClassSelectElement) ele).getName();
-                    final Classification classification = Classification.get(typeName);
+                    final Classification classification = UUIDUtil.isUUID(typeName)
+                                    ? Classification.get(UUID.fromString(typeName)) :  Classification.get(typeName);
                     final ClassElement element = new ClassElement().setClassification(classification)
                                     .setType(currentType);
                     select.addElement(element);

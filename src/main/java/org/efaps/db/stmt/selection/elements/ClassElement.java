@@ -126,7 +126,7 @@ public class ClassElement
     @Override
     public String getPath()
     {
-        return super.getPath() + "->CLASS-" + classification.getName();
+        return super.getPath() + "->CLASS-" + classification == null ? "MISSING" : classification.getName();
     }
 
     @Override
