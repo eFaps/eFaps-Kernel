@@ -20,7 +20,6 @@ package org.efaps.rest;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
@@ -125,12 +124,12 @@ public class EFapsResourceConfig
     private void logClasses(final String _text,
                             final Set<Class<?>> _classes)
     {
-        final Set<Class<?>> sortedClasses = new TreeSet<Class<?>>(_classes);
         final StringBuilder b = new StringBuilder();
         b.append(_text);
-        for (final Class<?> c : sortedClasses) {
-            b.append('\n').append("  ").append(c);
-        }
+        _classes.stream()
+            .map(clazz -> clazz.getName())
+            .sorted()
+            .forEach(clazzName -> b.append('\n').append("  ").append(clazzName));
         EFapsResourceConfig.LOG.info(b.toString());
     }
 
