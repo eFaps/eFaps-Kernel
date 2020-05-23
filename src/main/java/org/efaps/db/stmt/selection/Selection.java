@@ -53,6 +53,7 @@ import org.efaps.db.stmt.selection.elements.OIDElement;
 import org.efaps.db.stmt.selection.elements.StatusElement;
 import org.efaps.db.stmt.selection.elements.TypeElement;
 import org.efaps.db.stmt.selection.elements.UUIDElement;
+import org.efaps.db.stmt.selection.elements.UoMElement;
 import org.efaps.eql2.IAttributeSelectElement;
 import org.efaps.eql2.IAttributeSetSelectElement;
 import org.efaps.eql2.IBaseSelectElement;
@@ -188,6 +189,9 @@ public final class Selection
                             break;
                         case LAST:
                             select.addElement(new LastElement());
+                            break;
+                        case UOM:
+                            select.addElement(new UoMElement());
                             break;
                         default:
                             break;

@@ -101,4 +101,15 @@ public abstract class AbstractElement<T>
     public abstract Object getObject(Object[] _row)
         throws EFapsException;
 
+    protected Object callAuxillary(final Object _object)
+        throws EFapsException
+    {
+        final Object ret;
+        if (getNext() != null && getNext() instanceof IAuxillary) {
+            ret = getNext().getObject(new Object[] { _object });
+        } else {
+            ret = _object;
+        }
+        return ret;
+    }
 }

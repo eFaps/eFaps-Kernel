@@ -60,16 +60,4 @@ public abstract class AbstractAttributeElement<T>
         }
         return tableIdx;
     }
-
-    protected Object callAuxillary(final Object _object)
-        throws EFapsException
-    {
-        final Object ret;
-        if (getNext() != null && getNext() instanceof IAuxillary) {
-            ret = getNext().getObject(new Object[] { _object });
-        } else {
-            ret = _object;
-        }
-        return ret;
-    }
 }
