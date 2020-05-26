@@ -72,15 +72,15 @@ public final class Listener
     private void init()
         throws EFapsException
     {
-        if (!this.initialized) {
+        if (!initialized) {
             Listener.LOG.info("Scanning for Listener classes....");
-            this.classes.clear();
-            this.classes.addAll(new EsjpScanner().scan(EFapsListener.class));
+            classes.clear();
+            classes.addAll(new EsjpScanner().scan(EFapsListener.class));
 
-            if (Listener.LOG.isInfoEnabled() && !this.classes.isEmpty()) {
-                logClasses("Listener classes found:", this.classes);
+            if (Listener.LOG.isInfoEnabled() && !classes.isEmpty()) {
+                logClasses("Listener classes found:", classes);
             }
-            this.initialized = true;
+            initialized = true;
         }
     }
 
@@ -93,9 +93,10 @@ public final class Listener
     {
         final StringBuilder b = new StringBuilder();
         b.append(_text);
-        for (final Class<?> c : _classes) {
-            b.append('\n').append("  ").append(c);
-        }
+        _classes.stream()
+            .map(clazz -> clazz.getName())
+            .sorted()
+            .forEach(clazzName -> b.append('\n').append("  ").append(clazzName));
         Listener.LOG.info(b.toString());
     }
 
@@ -118,7 +119,7 @@ public final class Listener
     {
         init();
         final List<T> ret = new ArrayList<>();
-        for (final Class<?> clazz : this.classes) {
+        for (final Class<?> clazz : classes) {
             if (_class.isAssignableFrom(clazz)) {
                 try {
                     boolean hasConst = false;
@@ -130,7 +131,7 @@ public final class Listener
                     }
                     if (hasConst) {
                         @SuppressWarnings("unchecked")
-                        final T obj = (T) clazz.newInstance();
+                        final T obj = (T) clazz.getConstructor().newInstance();
                         ret.add(obj);
                         Listener.LOG.debug("Instancated class: {}", obj);
                     } else {
