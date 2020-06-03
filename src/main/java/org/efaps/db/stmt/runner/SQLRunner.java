@@ -341,12 +341,8 @@ public class SQLRunner
         final List<Type> types = _print.getTypes().stream().sorted((type1, type2) -> Long.compare(type1.getId(), type2
                         .getId())).collect(Collectors.toList());
         for (final Type type : types) {
-            final String tableName = type.getMainTable().getSqlTable();
-            final TableIdx tableIdx = sqlSelect.getIndexer().getTableIdx(tableName);
-            if (tableIdx.isCreated()) {
-                sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
-            }
             if (type.isCompanyDependent()) {
+                final TableIdx tableIdx = evalTableIdx(type.getCompanyAttribute());
                 final String columnName = type.getCompanyAttribute().getSqlColNames().get(0);
                 companyCriterias.put(tableIdx, new CompanyCriteria(columnName, type.getId()));
             }
@@ -395,7 +391,6 @@ public class SQLRunner
         }
     }
 
-
     /**
      * Adds the company criteria.
      *
@@ -409,12 +404,8 @@ public class SQLRunner
         final List<Type> types = _print.getTypes().stream().sorted((type1, type2) -> Long.compare(type1.getId(), type2
                         .getId())).collect(Collectors.toList());
         for (final Type type : types) {
-            final String tableName = type.getMainTable().getSqlTable();
-            final TableIdx tableIdx = sqlSelect.getIndexer().getTableIdx(tableName);
-            if (tableIdx.isCreated()) {
-                sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
-            }
             if (type.hasAssociation()) {
+                final TableIdx tableIdx = evalTableIdx(type.getAssociationAttribute());
                 final String columnName = type.getAssociationAttribute().getSqlColNames().get(0);
                 associationCriterias.put(tableIdx, new AssociationCriteria(columnName, type.getId()));
             }
@@ -445,6 +436,28 @@ public class SQLRunner
                                                 false, Connection.AND);
             }
         }
+    }
+
+    private TableIdx evalTableIdx(final Attribute _attribute)
+    {
+        final String table = _attribute.getTable().getSqlTable();
+        final TableIdx tableIdx = sqlSelect.getIndexer().getTableIdx(table);
+        TableIdx mainTableIdx = null;
+        if (_attribute.getTable().getMainTable() != null) {
+            final String mainTable = _attribute.getTable().getMainTable().getSqlTable();
+            mainTableIdx = sqlSelect.getIndexer().getTableIdx(mainTable);
+            if (mainTableIdx.isCreated()) {
+                sqlSelect.from(mainTableIdx.getTable(), mainTableIdx.getIdx());
+            }
+        }
+        if (tableIdx.isCreated()) {
+            if (mainTableIdx == null) {
+                sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
+            } else {
+                sqlSelect.leftJoin(tableIdx.getTable(), tableIdx.getIdx(), "ID", mainTableIdx.getIdx(), "ID");
+            }
+        }
+        return tableIdx;
     }
 
     /**
