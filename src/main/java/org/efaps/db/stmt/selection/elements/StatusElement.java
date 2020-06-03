@@ -83,7 +83,7 @@ public class StatusElement
         throws EFapsException
     {
         final Long statusId = getValue(_row[colIdx]);
-        return callAuxillary(Status.get(statusId));
+        return statusId == null ? null : callAuxillary(Status.get(statusId));
     }
 
     /**
