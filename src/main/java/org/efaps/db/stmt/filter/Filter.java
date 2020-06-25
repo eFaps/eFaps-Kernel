@@ -48,6 +48,7 @@ import org.efaps.eql2.IWhereElement;
 import org.efaps.eql2.IWhereElementTerm;
 import org.efaps.eql2.IWhereSelect;
 import org.efaps.eql2.IWhereTerm;
+import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,16 +85,20 @@ public class Filter
      * Append two SQL select.
      *
      * @param _sqlSelect the sql select
+     * @throws EFapsException
      */
     public void append2SQLSelect(final SQLSelect _sqlSelect, final Set<TypeCriterion> _typeCriteria)
+        throws EFapsException
     {
         if (iWhere != null) {
             final SQLWhere sqlWhere = _sqlSelect.getWhere();
             for (final IWhereTerm<?> term : iWhere.getTerms()) {
                 if (term instanceof IWhereElementTerm) {
                     final IWhereElement element = ((IWhereElementTerm) term).getElement();
-                    if (element.getAttribute() != null)
-                    {
+                    if (element.getNestedQuery() != null) {
+                        final NestedQuery nestedQuery = new NestedQuery(element);
+                        nestedQuery.append2SQLSelect(types, _sqlSelect);
+                    } else if (element.getAttribute() != null) {
                         final String attrName = element.getAttribute();
                         for (final Type type : types) {
                             final Attribute attr = type.getAttribute(attrName);

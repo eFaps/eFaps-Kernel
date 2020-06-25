@@ -487,7 +487,7 @@ public class SQLRunner
      * @throws CacheReloadException on error
      */
     private void addWhere4QueryPrint(final QueryPrint _print, final Set<TypeCriterion> _typeCriteria)
-        throws CacheReloadException
+        throws EFapsException
     {
         final Filter filter = _print.getFilter();
         filter.append2SQLSelect(sqlSelect, _typeCriteria);

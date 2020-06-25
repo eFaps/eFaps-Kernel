@@ -195,6 +195,13 @@ public final class EQL
                             .toArray(String[]::new));
         }
 
+        public Query nestedQuery(final CIType... _ciTypes)
+        {
+            return (Query) nestedQuery(Arrays.stream(_ciTypes)
+                            .map(ciType -> ciType.getType().getName())
+                            .toArray(String[]::new));
+        }
+
         @Override
         public Where where()
         {
