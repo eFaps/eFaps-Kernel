@@ -113,6 +113,12 @@ public class Print
         return getThis();
     }
 
+    public Print linkfrom(final CIAttribute _ciAttr)
+    {
+        linkfrom(_ciAttr.ciType.getType().getName(), _ciAttr.name);
+        return getThis();
+    }
+
     public Print orderBy(final CIAttribute _ciAttr)
     {
         super.orderBy(_ciAttr.name);
