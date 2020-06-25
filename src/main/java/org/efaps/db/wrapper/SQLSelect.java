@@ -226,7 +226,20 @@ public class SQLSelect
                               final String _joinColumnName)
     {
         fromTables.add(new FromTableLeftJoin(tablePrefix, _tableName, _tableIndex, _columnName,
-                                                  _joinTableIndex, _joinColumnName));
+                                                  _joinTableIndex, _joinColumnName, null, null));
+        return this;
+    }
+
+    public SQLSelect leftJoin(final String _tableName,
+                              final int _tableIndex,
+                              final String _columnName,
+                              final int _joinTableIndex,
+                              final String _joinColumnName,
+                              final String _typeColumnName,
+                              final Long _typeId)
+    {
+        fromTables.add(new FromTableLeftJoin(tablePrefix, _tableName, _tableIndex, _columnName,
+                                                  _joinTableIndex, _joinColumnName, _typeColumnName, _typeId));
         return this;
     }
 
@@ -655,6 +668,10 @@ public class SQLSelect
          */
         private final String[] joinColumnNames;
 
+        private String typeColumnName;
+
+        private Long typeId;
+
         /**
          * Instantiates a new from table left join.
          *
@@ -673,12 +690,16 @@ public class SQLSelect
                                     final Integer _tableIndex,
                                     final String _columnName,
                                     final int _joinTableIndex,
-                                    final String _joinColumnName)
+                                    final String _joinColumnName,
+                                    final String _typeColumnName,
+                                    final Long _typeId)
         {
             super(_tablePrefix, _tableName, _tableIndex);
             columnNames = new String[] {_columnName};
             joinTableIndex = _joinTableIndex;
             joinColumnNames = new String[] {_joinColumnName};
+            typeColumnName = _typeColumnName;
+            typeId = _typeId;
         }
 
         /**
@@ -745,6 +766,15 @@ public class SQLSelect
                     .append(columnNames[i])
                     .append(Context.getDbType().getColumnQuote());
             }
+            if (typeColumnName != null) {
+                _cmd.append(" ").append(Context.getDbType().getSQLPart(SQLPart.AND)).append(" ")
+                    .append(getTablePrefix()).append(getTableIndex()).append('.')
+                    .append(Context.getDbType().getColumnQuote())
+                    .append(typeColumnName)
+                    .append(Context.getDbType().getColumnQuote())
+                    .append(Context.getDbType().getSQLPart(SQLPart.EQUAL))
+                    .append(typeId);
+            }
         }
 
         /**
@@ -783,7 +813,7 @@ public class SQLSelect
                                      final int _joinTableIndex,
                                      final String _joinColumnName)
         {
-            super(_tablePrefix, _tableName, _tableIndex, _columnName, _joinTableIndex, _joinColumnName);
+            super(_tablePrefix, _tableName, _tableIndex, _columnName, _joinTableIndex, _joinColumnName, null, null);
         }
 
         /**

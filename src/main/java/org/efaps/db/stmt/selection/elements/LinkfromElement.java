@@ -17,12 +17,9 @@
 
 package org.efaps.db.stmt.selection.elements;
 
-import java.util.Set;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.db.stmt.filter.TypeCriterion;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.util.EFapsException;
@@ -33,7 +30,7 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public class LinkfromElement
     extends AbstractDataElement<LinkfromElement>
-    implements IJoinTableIdx, ISquash, ITypeCriterion
+    implements IJoinTableIdx, ISquash
 {
     /** The attribute. */
     private Attribute attribute;
@@ -115,7 +112,12 @@ public class LinkfromElement
                 }
                 final String linktoColName = attribute.getSqlColNames().get(0);
                 final String tableName = ((SQLTable) getTable()).getSqlTable();
-                _sqlSelect.leftJoin(tableName, joinTableidx.getIdx(), linktoColName, tableidx.getIdx(), "ID");
+                Long typeId = null;
+                if (((SQLTable) getTable()).getSqlColType() != null) {
+                    typeId = getAttribute().getParent().getId();
+                }
+                _sqlSelect.leftJoin(tableName, joinTableidx.getIdx(), linktoColName, tableidx.getIdx(), "ID",
+                                ((SQLTable) getTable()).getSqlColType(), typeId);
             }
         }
     }
@@ -155,16 +157,5 @@ public class LinkfromElement
     public String getPath()
     {
         return super.getPath() + "<-" + getAttribute().getName() + ":" + getAttribute().getParentId();
-    }
-
-    @Override
-    public void add2TypeCriteria(final SQLSelect _sqlSelect, final Set<TypeCriterion> _typeCriterias)
-        throws EFapsException
-    {
-        if (((SQLTable) getTable()).getSqlColType() != null) {
-            final TableIdx tableidx = getJoinTableIdx(_sqlSelect);
-            _typeCriterias.add(TypeCriterion.of(tableidx, ((SQLTable) getTable()).getSqlColType(),
-                            getAttribute().getParent().getId(), true));
-        }
     }
 }
