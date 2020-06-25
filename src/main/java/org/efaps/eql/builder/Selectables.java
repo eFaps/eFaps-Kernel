@@ -38,6 +38,17 @@ public class Selectables
     }
 
     /**
+     * Linkto.
+     *
+     * @param _linktoAttr the linkto attr
+     * @return the linkto
+     */
+    public static Attribute attribute(final CIAttribute _attr)
+    {
+        return new AbstractSelectables.Attribute(_attr.name);
+    }
+
+    /**
      * The Class Linkto.
      */
     public static class Linkto

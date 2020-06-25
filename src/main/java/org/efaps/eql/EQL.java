@@ -188,6 +188,13 @@ public final class EQL
             return (Query) super.query(_types);
         }
 
+        public Query query(final CIType... _ciTypes)
+        {
+            return query(Arrays.stream(_ciTypes)
+                            .map(ciType -> ciType.getType().getName())
+                            .toArray(String[]::new));
+        }
+
         @Override
         public Where where()
         {
