@@ -19,10 +19,13 @@ package org.efaps.eql.builder;
 
 import java.util.Collection;
 
+import org.efaps.admin.datamodel.Status;
 import org.efaps.ci.CIAttribute;
+import org.efaps.ci.CIStatus;
 import org.efaps.db.Instance;
 import org.efaps.eql2.IWhereElement;
 import org.efaps.eql2.bldr.AbstractWhereBuilder;
+import org.efaps.util.cache.CacheReloadException;
 
 public class Where
     extends AbstractWhereBuilder<Where>
@@ -49,6 +52,17 @@ public class Where
     public Where eq(final Instance _instance)
     {
         return eq(_instance.getId());
+    }
+
+    public Where eq(final Status _status)
+    {
+        return eq(_status.getId());
+    }
+
+    public Where eq(final CIStatus _ciStatus)
+        throws CacheReloadException
+    {
+        return eq(Status.find(_ciStatus));
     }
 
     /**
