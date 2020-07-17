@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 
 /**
@@ -186,6 +187,12 @@ public class TableIndexer
         public int hashCode()
         {
             return table.hashCode() + Long.valueOf(idx).hashCode();
+        }
+
+        @Override
+        public String toString()
+        {
+            return new ToStringBuilder(this).append(key).build();
         }
     }
 }

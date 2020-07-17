@@ -58,6 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Filter
 {
+
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(Filter.class);
 
@@ -143,8 +144,26 @@ public class Filter
     {
         if (_attr != null) {
             final SQLTable table = _attr.getTable();
-            final String tableName = table.getSqlTable();
-            final TableIdx tableidx = _sqlSelect.getIndexer().getTableIdx(tableName);
+            final TableIdx tableIdx;
+            if (table.getMainTable() != null) {
+                final var mainTableIdx = _sqlSelect.getIndexer().getTableIdx(table.getMainTable().getSqlTable());
+                if (mainTableIdx.isCreated()) {
+                    _sqlSelect.from(mainTableIdx.getTable(), mainTableIdx.getIdx());
+                }
+                tableIdx = _sqlSelect.getIndexer().getTableIdx(table.getSqlTable(), table.getMainTable().getSqlTable(),
+                                "ID");
+
+                if (tableIdx.isCreated()) {
+                    _sqlSelect.leftJoin(tableIdx.getTable(), tableIdx.getIdx(), "ID", mainTableIdx.getIdx(), "ID");
+                }
+
+            } else {
+                tableIdx = _sqlSelect.getIndexer().getTableIdx(table.getSqlTable());
+                if (tableIdx.isCreated()) {
+                    _sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
+                }
+            }
+
             final IAttributeType attrType = _attr.getAttributeType().getDbAttrType();
 
             final boolean noEscape;
@@ -158,7 +177,7 @@ public class Filter
                 noEscape = attrType instanceof LongType;
                 values = Arrays.asList(_element.getValues());
             }
-            _sqlWhere.addCriteria(tableidx.getIdx(), _attr.getSqlColNames(), _element.getComparison(),
+            _sqlWhere.addCriteria(tableIdx.getIdx(), _attr.getSqlColNames(), _element.getComparison(),
                             new LinkedHashSet<>(values), !noEscape, _term.getConnection());
         }
     }
@@ -193,41 +212,42 @@ public class Filter
             chain.addComparator((_criterion1,
                                  _criterion2) -> _criterion1.getTableIndex().compareTo(_criterion2.getTableIndex()));
             chain.addComparator((_criterion1,
-                                _criterion2) -> Long.compare(_criterion1.getTypeId(), _criterion2.getTypeId()));
+                                 _criterion2) -> Long.compare(_criterion1.getTypeId(), _criterion2.getTypeId()));
 
             final SQLWhere where = _sqlSelect.getWhere();
             _typeCriteria.stream()
-                .sorted(chain)
-                .collect(Collectors.groupingBy(TypeCriterion::getTableIndex))
-                .forEach((index, criteria) -> {
-                    final boolean nullable = criteria.stream()
-                                    .filter(TypeCriterion::isNullable)
-                                    .findAny()
-                                    .isPresent();
-                    final Set<String> values = new LinkedHashSet<>();
-                    criteria.stream()
-                        .map(citerion -> String.valueOf(citerion.getTypeId()))
-                        .forEach(typeId -> values.add(typeId));
+                            .sorted(chain)
+                            .collect(Collectors.groupingBy(TypeCriterion::getTableIndex))
+                            .forEach((index, criteria) -> {
+                                final boolean nullable = criteria.stream()
+                                                .filter(TypeCriterion::isNullable)
+                                                .findAny()
+                                                .isPresent();
+                                final Set<String> values = new LinkedHashSet<>();
+                                criteria.stream()
+                                                .map(citerion -> String.valueOf(citerion.getTypeId()))
+                                                .forEach(typeId -> values.add(typeId));
 
-                    if (nullable) {
-                        final Group group = new Group().setConnection(Connection.AND);
-                        group.add(new Criteria()
-                                        .tableIndex(index.intValue())
-                                        .colName(criteria.get(0).getSqlColType())
-                                        .comparison(Comparison.EQUAL)
-                                        .values(values)
-                                        .connection(Connection.OR));
-                        group.add(new Criteria()
-                                        .tableIndex(index.intValue())
-                                        .colName(criteria.get(0).getSqlColType())
-                                        .comparison(Comparison.EQUAL)
-                                        .connection(Connection.OR));
-                        where.section(group);
-                    } else {
-                        where.addCriteria(index.intValue(), Collections.singletonList(criteria.get(0).getSqlColType()),
-                                        Comparison.EQUAL, values, false, Connection.AND);
-                    }
-            });
+                                if (nullable) {
+                                    final Group group = new Group().setConnection(Connection.AND);
+                                    group.add(new Criteria()
+                                                    .tableIndex(index.intValue())
+                                                    .colName(criteria.get(0).getSqlColType())
+                                                    .comparison(Comparison.EQUAL)
+                                                    .values(values)
+                                                    .connection(Connection.OR));
+                                    group.add(new Criteria()
+                                                    .tableIndex(index.intValue())
+                                                    .colName(criteria.get(0).getSqlColType())
+                                                    .comparison(Comparison.EQUAL)
+                                                    .connection(Connection.OR));
+                                    where.section(group);
+                                } else {
+                                    where.addCriteria(index.intValue(),
+                                                    Collections.singletonList(criteria.get(0).getSqlColType()),
+                                                    Comparison.EQUAL, values, false, Connection.AND);
+                                }
+                            });
         }
     }
 
