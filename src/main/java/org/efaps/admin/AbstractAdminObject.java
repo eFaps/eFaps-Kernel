@@ -25,7 +25,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,9 +145,9 @@ public abstract class AbstractAdminObject
                                   final String _uuid,
                                   final String _name)
     {
-        this.id = _id;
-        this.uuid = _uuid == null || _uuid.trim().isEmpty() ? null : UUID.fromString(_uuid.trim());
-        this.name = _name == null ? null : _name.trim();
+        id = _id;
+        uuid = _uuid == null || _uuid.trim().isEmpty() ? null : UUID.fromString(_uuid.trim());
+        name = _name == null ? null : _name.trim();
     }
 
     /**
@@ -254,10 +253,10 @@ public abstract class AbstractAdminObject
                          final EventDefinition _eventdef)
         throws CacheReloadException
     {
-        List<EventDefinition> evenList = this.events.get(_eventtype);
+        List<EventDefinition> evenList = events.get(_eventtype);
         if (evenList == null) {
             evenList = new ArrayList<>();
-            this.events.put(_eventtype, evenList);
+            events.put(_eventtype, evenList);
         }
         if (!evenList.contains(_eventdef)) {
             evenList.add(_eventdef);
@@ -265,15 +264,7 @@ public abstract class AbstractAdminObject
         // if there are more than one event they must be sorted by their index
         // position
         if (evenList.size() > 1) {
-            Collections.sort(evenList, new Comparator<EventDefinition>()
-            {
-                @Override
-                public int compare(final EventDefinition _eventDef0,
-                                   final EventDefinition _eventDef1)
-                {
-                    return Long.compare(_eventDef0.getIndexPos(), _eventDef1.getIndexPos());
-                }
-            });
+            Collections.sort(evenList, (_eventDef0, _eventDef1) -> Long.compare(_eventDef0.getIndexPos(), _eventDef1.getIndexPos()));
         }
         setDirty();
     }
@@ -286,15 +277,15 @@ public abstract class AbstractAdminObject
      */
     public List<EventDefinition> getEvents(final EventType _eventType)
     {
-        if (!this.eventChecked) {
-            this.eventChecked = true;
+        if (!eventChecked) {
+            eventChecked = true;
             try {
                 EventDefinition.addEvents(this);
             } catch (final EFapsException e) {
-                AbstractAdminObject.LOG.error("Could not read events for Name:; {}', UUID: {}",  this.name, this.uuid);
+                AbstractAdminObject.LOG.error("Could not read events for Name:; {}', UUID: {}",  name, uuid);
             }
         }
-        return this.events.get(_eventType);
+        return events.get(_eventType);
     }
 
     /**
@@ -306,15 +297,15 @@ public abstract class AbstractAdminObject
      */
     public boolean hasEvents(final EventType _eventtype)
     {
-        if (!this.eventChecked) {
-            this.eventChecked = true;
+        if (!eventChecked) {
+            eventChecked = true;
             try {
                 EventDefinition.addEvents(this);
             } catch (final EFapsException e) {
-                AbstractAdminObject.LOG.error("Could not read events for Name:; {}', UUID: {}",  this.name, this.uuid);
+                AbstractAdminObject.LOG.error("Could not read events for Name:; {}', UUID: {}",  name, uuid);
             }
         }
-        return this.events.get(_eventtype) != null;
+        return events.get(_eventtype) != null;
     }
 
     /**
@@ -362,12 +353,12 @@ public abstract class AbstractAdminObject
     {
         final List<Return> ret = new ArrayList<>();
         if (hasEvents(_eventtype)) {
-            if (this instanceof AbstractUserInterfaceObject) {
+            if (this instanceof AbstractUserInterfaceObject && _param.get(ParameterValues.UIOBJECT) == null) {
                 // add ui object to parameter
                 _param.put(ParameterValues.UIOBJECT, this);
             }
             // execute all triggers
-            for (final EventDefinition evenDef : this.events.get(_eventtype)) {
+            for (final EventDefinition evenDef : events.get(_eventtype)) {
                 ret.add(evenDef.execute(_param));
             }
         }
@@ -497,7 +488,7 @@ public abstract class AbstractAdminObject
     @Override
     public long getId()
     {
-        return this.id;
+        return id;
     }
 
     /**
@@ -509,7 +500,7 @@ public abstract class AbstractAdminObject
     @Override
     public UUID getUUID()
     {
-        return this.uuid;
+        return uuid;
     }
 
     /**
@@ -522,7 +513,7 @@ public abstract class AbstractAdminObject
     @Override
     public String getName()
     {
-        return this.name;
+        return name;
     }
 
     /**
@@ -533,7 +524,7 @@ public abstract class AbstractAdminObject
      */
     protected Map<String, String> getProperties()
     {
-        return this.properties;
+        return properties;
     }
 
     /**
@@ -575,7 +566,7 @@ public abstract class AbstractAdminObject
      */
     protected Map<EventType, List<EventDefinition>> getEvents()
     {
-        return this.events;
+        return events;
     }
 
 
@@ -586,7 +577,7 @@ public abstract class AbstractAdminObject
      */
     public boolean isDirty()
     {
-        return this.dirty;
+        return dirty;
     }
 
     /**
@@ -594,7 +585,7 @@ public abstract class AbstractAdminObject
      */
     protected void setDirty()
     {
-        this.dirty = true;
+        dirty = true;
     }
 
     /**
@@ -602,7 +593,7 @@ public abstract class AbstractAdminObject
      */
     protected void setUndirty()
     {
-        this.dirty = false;
+        dirty = false;
     }
     /**
      * The method overrides the original method 'toString' and returns the name
@@ -614,6 +605,6 @@ public abstract class AbstractAdminObject
     public String toString()
     {
         return new ToStringBuilder(this).append("name", getName()).append("uuid", getUUID()).append("id", getId())
-                        .append("properties", getProperties()).append("events", this.events).toString();
+                        .append("properties", getProperties()).append("events", events).toString();
     }
 }
