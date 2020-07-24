@@ -17,6 +17,7 @@
 
 package org.efaps.db.stmt.selection;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,8 +37,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.beans.ValueList;
+import org.efaps.beans.ValueList.Token;
+import org.efaps.beans.valueparser.ParseException;
+import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.ci.CIAttribute;
 import org.efaps.db.Instance;
+import org.efaps.db.stmt.selection.EvalHelper.PhraseEntry;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.selection.elements.AttributeElement;
 import org.efaps.db.stmt.selection.elements.AttributeSetElement;
@@ -179,6 +185,38 @@ public final class Evaluator
                         .findFirst();
         if (selectOpt.isPresent()) {
             ret = get(selectOpt.get());
+        } else {
+           final Optional<PhraseEntry> phraseOpt = helper.getPhrases().stream()
+                .filter(entry -> {
+                    return _alias.equals(entry.getAlias());
+                }).findFirst();
+           if (phraseOpt.isPresent()) {
+               final PhraseEntry phraseEntry = phraseOpt.get();
+               try {
+                final ValueList list = new ValueParser(new StringReader(phraseEntry.getPhrase())).ExpressionString();
+                final StringBuilder bldr = new StringBuilder();
+                int idx = -1;
+                for (final Token token : list.getTokens()) {
+                    switch (token.getType()) {
+                        case EXPRESSION:
+                            idx++;
+                            final Object val = get(Print.getPhraseAlias(phraseEntry.getPhraseIdx()) + "_" + idx);
+                            if (val != null) {
+                                bldr.append(String.valueOf(val));
+                            }
+                            break;
+                        case TEXT:
+                            bldr.append(token.getValue());
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                ret = bldr.toString();
+            } catch (final ParseException e) {
+                LOG.error("Catched", e);
+            }
+           }
         }
         return (T) ret;
     }
@@ -503,7 +541,17 @@ public final class Evaluator
                         }
                     }
                     if (msgPhraseKey == null) {
-                        map.put(key, get(select));
+                        boolean isPartOfPhrase = false;
+                        for (final PhraseEntry entry : helper.getPhrases()) {
+                            final String alias = Print.getPhraseAlias(entry.getPhraseIdx());
+                            if (key.startsWith(alias + "_")) {
+                                isPartOfPhrase = true;
+                                break;
+                            }
+                        }
+                        if (!isPartOfPhrase) {
+                            map.put(key, get(select));
+                        }
                     } else {
                         Object[] values;
                         if (!msgphrases.containsKey(msgPhraseKey)) {
@@ -516,6 +564,9 @@ public final class Evaluator
                     }
                 }
                 idx++;
+            }
+            for (final PhraseEntry entry : helper.getPhrases()) {
+                map.put(entry.getAlias(), get(entry.getAlias()));
             }
             for (final Entry<String, Object[]> entry : msgphrases.entrySet()) {
                 final MsgPhrase msgPhrase = helper.getMsgPhrases().get(entry.getKey());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@
 
 package org.efaps.db.stmt.selection.elements;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -31,6 +34,7 @@ public class FormatElement
     extends AbstractElement<FormatElement>
     implements IAuxillary
 {
+
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(FormatElement.class);
 
@@ -52,11 +56,19 @@ public class FormatElement
                 object = object.toString();
                 LOG.warn("FormatElement was called with no given pattern on Object: {}", object);
             } else if (object instanceof LocalDate) {
-                object = ((LocalDate) object).format(DateTimeFormatter.ofPattern(pattern, Context.getThreadContext().getLocale()));
+                object = ((LocalDate) object)
+                                .format(DateTimeFormatter.ofPattern(pattern, Context.getThreadContext().getLocale()));
             } else if (object instanceof LocalTime) {
-                object = ((LocalTime) object).format(DateTimeFormatter.ofPattern(pattern, Context.getThreadContext().getLocale()));
+                object = ((LocalTime) object)
+                                .format(DateTimeFormatter.ofPattern(pattern, Context.getThreadContext().getLocale()));
             } else if (object instanceof OffsetDateTime) {
-                object = ((OffsetDateTime) object).format(DateTimeFormatter.ofPattern(pattern, Context.getThreadContext().getLocale()));
+                object = ((OffsetDateTime) object)
+                                .format(DateTimeFormatter.ofPattern(pattern, Context.getThreadContext().getLocale()));
+            } else if (object instanceof BigDecimal || object instanceof Long || object instanceof Integer) {
+                final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
+                                .getLocale());
+                formatter.applyPattern(pattern);
+                object = formatter.format(object);
             } else {
                 LOG.warn("FormatElement was called with unexpected Object: {}", object);
             }

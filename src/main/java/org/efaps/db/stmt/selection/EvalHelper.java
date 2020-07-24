@@ -16,8 +16,11 @@
  */
 package org.efaps.db.stmt.selection;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.eql.builder.Print;
@@ -26,6 +29,7 @@ public class EvalHelper
 {
 
     private final Map<String, MsgPhrase> msgPhrases = new HashMap<>();
+    private final List<PhraseEntry> phrases = new ArrayList<>();
 
     public void addMsgPhrase(final MsgPhrase _msgPhrase)
     {
@@ -45,4 +49,67 @@ public class EvalHelper
     {
         return msgPhrases;
     }
+
+    public void registerPhrase(final int _phraseIdx, final String _phrase)
+    {
+        final PhraseEntry entry = new PhraseEntry();
+        phrases.add(entry);
+        entry.setPhraseIdx(_phraseIdx);
+        entry.setPhrase(_phrase);
+    }
+
+    public void setPhraseAlias(final Integer _phraseIdx, final String _alias)
+    {
+        final Optional<PhraseEntry> entryOpt = phrases.stream()
+                        .filter(entry -> {
+                            return entry.getPhraseIdx().equals(_phraseIdx);
+                        }).findFirst();
+        if (entryOpt.isPresent()) {
+            entryOpt.get().setAlias(_alias);
+        }
+    }
+
+    public List<PhraseEntry> getPhrases()
+    {
+        return phrases;
+    }
+
+    public static class PhraseEntry
+    {
+
+        private Integer phraseIdx;
+        private String phrase;
+        private String alias;
+
+        public Integer getPhraseIdx()
+        {
+            return phraseIdx;
+        }
+
+        public void setPhraseIdx(final Integer phraseIdx)
+        {
+            this.phraseIdx = phraseIdx;
+        }
+
+        public String getPhrase()
+        {
+            return phrase;
+        }
+
+        public void setPhrase(final String phrase)
+        {
+            this.phrase = phrase;
+        }
+
+        public String getAlias()
+        {
+            return alias;
+        }
+
+        public void setAlias(final String alias)
+        {
+            this.alias = alias;
+        }
+    }
+
 }

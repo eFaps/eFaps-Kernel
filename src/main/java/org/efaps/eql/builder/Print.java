@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,22 @@
 
 package org.efaps.eql.builder;
 
+import java.io.StringReader;
 import java.util.Arrays;
 
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.common.MsgPhrase;
+import org.efaps.beans.ValueList;
+import org.efaps.beans.valueparser.ParseException;
+import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.ci.CIAttribute;
 import org.efaps.ci.CIType;
 import org.efaps.db.stmt.PrintStmt;
 import org.efaps.db.stmt.selection.EvalHelper;
 import org.efaps.db.stmt.selection.Evaluator;
 import org.efaps.eql2.IPrintStatement;
+import org.efaps.eql2.ISelect;
+import org.efaps.eql2.ISelection;
 import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
 import org.efaps.eql2.bldr.ISelectable;
 import org.efaps.util.EFapsException;
@@ -39,11 +46,13 @@ public class Print
     extends AbstractPrintEQLBuilder<Print>
 {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Converter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Print.class);
 
     private EvalHelper helper;
 
     private Long currentMsgPhraseId;
+
+    private int phraseCounter = 0;
 
     private EvalHelper getHelper()
     {
@@ -154,6 +163,23 @@ public class Print
         return this;
     }
 
+    public Print phrase(final CharSequence _phrase) {
+        try {
+            phraseCounter++;
+            final ValueList list = new ValueParser(new StringReader(_phrase.toString())).ExpressionString();
+            getHelper().registerPhrase(phraseCounter, _phrase.toString());
+            int idx = 0;
+            for (final String expr : list.getExpressions()) {
+                select(expr);
+                as(getPhraseAlias(phraseCounter) + "_" + idx);
+                idx++;
+            }
+        } catch (final ParseException e) {
+            LOG.error("Catched", e);
+        }
+        return this;
+    }
+
     @Override
     public Print as(final String _alias)
     {
@@ -161,7 +187,14 @@ public class Print
             getHelper().setMsgPhraseAlias(currentMsgPhraseId, _alias);
             currentMsgPhraseId = null;
         } else {
-            super.as(_alias);
+            final ISelection selection = ((IPrintStatement<?>) getStmt()).getSelection();
+            final ISelect select = selection.getSelects(selection.getSelectsLength() - 1);
+            if (!StringUtils.isEmpty(select.getAlias()) && select.getAlias()
+                            .startsWith(getPhraseAlias(phraseCounter) + "_")) {
+                getHelper().setPhraseAlias(phraseCounter, _alias);
+            } else {
+                super.as(_alias);
+            }
         }
         return this;
     }
@@ -192,5 +225,10 @@ public class Print
     public static String getMsgPhraseAlias(final Long _id)
     {
         return "MSGPHRASE_" + _id;
+    }
+
+    public static String getPhraseAlias(final int _idx)
+    {
+        return "PHRASE_" + _idx;
     }
 }
