@@ -20,10 +20,9 @@
  *****************************************/
 
 options {
-    JDK_VERSION = "1.7";
+    JDK_VERSION = "11";
     JAVA_UNICODE_ESCAPE = false;
     UNICODE_INPUT = true;
-    STATIC = false;
 }
 
 

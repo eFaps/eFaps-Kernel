@@ -17,7 +17,8 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -106,14 +107,9 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                 - goal 'javacc' must be called in phase 'process-resources'
             -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>javacc-maven-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <debugParser>false</debugParser>
-                    <debugLookAhead>false</debugLookAhead>
-                    <debugTokenManager>false</debugTokenManager>
-                </configuration>
+                <groupId>com.helger.maven</groupId>
+                <artifactId>ph-javacc-maven-plugin</artifactId>
+                <version>4.1.4</version>
                 <executions>
                     <execution>
                         <goals>
@@ -134,7 +130,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     </execution>
                 </executions>
             </plugin>
-             <plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
@@ -189,19 +185,19 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         </dependency>
 
         <dependency>
-             <groupId>org.efaps</groupId>
+            <groupId>org.efaps</groupId>
             <artifactId>efaps-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-             <groupId>org.efaps</groupId>
+            <groupId>org.efaps</groupId>
             <artifactId>efaps-json</artifactId>
             <version>${project.version}</version>
         </dependency>
 
-         <dependency>
-             <groupId>org.efaps</groupId>
+        <dependency>
+            <groupId>org.efaps</groupId>
             <artifactId>efaps-eql</artifactId>
             <version>${project.version}</version>
             <exclusions>
@@ -210,9 +206,9 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     <artifactId>org.eclipse.emf.mwe2.runtime</artifactId>
                 </exclusion>
             </exclusions>
-         </dependency>
+        </dependency>
         <dependency>
-             <groupId>org.efaps</groupId>
+            <groupId>org.efaps</groupId>
             <artifactId>efaps-eql2</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -588,7 +584,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <version>${hibernate.version}</version>
         </dependency>
         -->
-         <dependency>
+        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
             <version>4.3.8.Final</version>
@@ -662,7 +658,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                 </exclusion>
             </exclusions>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-jndi</artifactId>
             <version>${jetty.version}</version>
@@ -726,5 +722,5 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <version>1.0.54</version>
             <scope>test</scope>
         </dependency>
-   </dependencies>
+    </dependencies>
 </project>
