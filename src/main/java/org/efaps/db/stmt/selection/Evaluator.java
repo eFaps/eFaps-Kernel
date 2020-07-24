@@ -185,7 +185,7 @@ public final class Evaluator
                         .findFirst();
         if (selectOpt.isPresent()) {
             ret = get(selectOpt.get());
-        } else {
+        } else if (helper != null){
            final Optional<PhraseEntry> phraseOpt = helper.getPhrases().stream()
                 .filter(entry -> {
                     return _alias.equals(entry.getAlias());
