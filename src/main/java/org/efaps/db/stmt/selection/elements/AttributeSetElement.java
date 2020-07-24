@@ -67,7 +67,7 @@ public class AttributeSetElement
     public TableIdx getJoinTableIdx(final SQLSelect _sqlSelect)
         throws EFapsException
     {
-        final String tableName = ((SQLTable) getTable()).getSqlTable();
+        final String tableName = getType().getMainTable().getSqlTable();
         final String joinTableName = attributeSet.getMainTable().getSqlTable();
         return _sqlSelect.getIndexer().getTableIdx(joinTableName, tableName, attributeSet.getName());
     }
@@ -85,7 +85,7 @@ public class AttributeSetElement
                 if (getPrevious() != null && getPrevious() instanceof IJoinTableIdx) {
                     tableidx = ((IJoinTableIdx) getPrevious()).getJoinTableIdx(_sqlSelect);
                 } else {
-                    tableidx = _sqlSelect.getIndexer().getTableIdx(((SQLTable) getTable()).getSqlTable());
+                    tableidx = _sqlSelect.getIndexer().getTableIdx(getType().getMainTable().getSqlTable());
                 }
                 final String joinTableName = attributeSet.getMainTable().getSqlTable();
                 final String linktoColName = type.getAttribute("ID").getSqlColNames().get(0);

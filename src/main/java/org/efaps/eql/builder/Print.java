@@ -116,6 +116,15 @@ public class Print
         return getThis();
     }
 
+    public Print attributeSet(final CIAttribute... _ciAttrs)
+    {
+        for (final CIAttribute ciAttr : _ciAttrs) {
+            attributeSet(ciAttr.name);
+            as(getCIAlias(ciAttr));
+        }
+        return getThis();
+    }
+
     public Print linkto(final CIAttribute _ciAttr)
     {
         linkto(_ciAttr.name);
