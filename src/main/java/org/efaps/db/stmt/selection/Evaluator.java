@@ -565,8 +565,10 @@ public final class Evaluator
                 }
                 idx++;
             }
-            for (final PhraseEntry entry : helper.getPhrases()) {
-                map.put(entry.getAlias(), get(entry.getAlias()));
+            if (helper != null) {
+                for (final PhraseEntry entry : helper.getPhrases()) {
+                    map.put(entry.getAlias(), get(entry.getAlias()));
+                }
             }
             for (final Entry<String, Object[]> entry : msgphrases.entrySet()) {
                 final MsgPhrase msgPhrase = helper.getMsgPhrases().get(entry.getKey());
