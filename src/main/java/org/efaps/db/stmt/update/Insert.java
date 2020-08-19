@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.efaps.db.stmt.update;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.IStatusChangeListener;
@@ -30,6 +31,7 @@ import org.efaps.admin.program.esjp.Listener;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.eql2.IInsertStatement;
+import org.efaps.eql2.IUpdateElement;
 import org.efaps.util.EFapsException;
 import org.efaps.util.UUIDUtil;
 import org.slf4j.Logger;
@@ -45,6 +47,8 @@ public class Insert
 
     /** The type. */
     private Type type;
+
+    private Long statusId;
 
     /**
      * Instantiates a new insert.
@@ -67,6 +71,18 @@ public class Insert
             Insert.LOG.error("Insert not permitted for Person: {} on Type: {}", Context.getThreadContext().getPerson(),
                             getType());
             throw new EFapsException(getClass(), "execute.NoAccess", getType());
+        }
+
+        if (getType().isCheckStatus()) {
+            for (final IUpdateElement updateElement : ((IInsertStatement) getEqlStmt()).getUpdateElements()) {
+               if (getType().getStatusAttribute().getName().equals(updateElement.getAttribute())) {
+                   if (StringUtils.isNumeric(updateElement.getValue())) {
+                       statusId = Long.valueOf(updateElement.getValue());
+                   } else {
+                       LOG.warn("Cannot convert status value to status ID: {}", updateElement.getValue());
+                   }
+               }
+            }
         }
     }
 
@@ -109,10 +125,10 @@ public class Insert
     public void triggerListeners()
         throws EFapsException
     {
-        if (getType().isCheckStatus()) {
+        if (getType().isCheckStatus() && statusId != null) {
             for (final IStatusChangeListener listener : Listener.get()
                             .<IStatusChangeListener>invoke(IStatusChangeListener.class)) {
-                listener.onInsert(getInstance(), 0L);
+                listener.onInsert(getInstance(), statusId);
             }
         }
     }
