@@ -21,6 +21,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -43,6 +44,7 @@ import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.ci.CIAttribute;
 import org.efaps.db.Instance;
+import org.efaps.db.stmt.IFlagged;
 import org.efaps.db.stmt.selection.EvalHelper.PhraseEntry;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.selection.elements.AttributeElement;
@@ -53,6 +55,7 @@ import org.efaps.db.stmt.selection.elements.JoiningElement;
 import org.efaps.db.stmt.selection.elements.LastElement;
 import org.efaps.eql.JSONData;
 import org.efaps.eql.builder.Print;
+import org.efaps.eql2.StmtFlag;
 import org.efaps.json.data.DataList;
 import org.efaps.json.data.ObjectData;
 import org.efaps.util.EFapsException;
@@ -78,14 +81,22 @@ public final class Evaluator
 
     private final EvalHelper helper;
 
+    private EnumSet<StmtFlag> flags;
+
     /**
      * Instantiates a new selection evaluator.
      *
      * @param _selection the selection
+     * @throws EFapsException
      */
-    private Evaluator(final Selection _selection, final EvalHelper _helper)
+    private Evaluator(final ISelectionProvider _selectionProvider,
+                      final EvalHelper _helper)
+        throws EFapsException
     {
-        selection = _selection;
+        selection = _selectionProvider.getSelection();
+        if (_selectionProvider instanceof IFlagged) {
+            flags = ((IFlagged) _selectionProvider).getFlags();
+        }
         helper = _helper;
     }
 
@@ -359,11 +370,11 @@ public final class Evaluator
         throws EFapsException
     {
         initialize(false);
-        boolean stepForward = true;
+        boolean skip = true; // must step into the first one
         boolean ret = true;
-        while (stepForward && ret) {
+        while (skip && ret) {
             ret = step(selection.getAllSelects());
-            stepForward = !access.hasAccess(inst());
+            skip = !access.hasAccess(inst());
         }
         return ret;
     }
@@ -469,25 +480,29 @@ public final class Evaluator
     private void evalAccess()
         throws EFapsException
     {
-        final List<Instance> instances = new ArrayList<>();
-        while (step(selection.getInstSelects().values())) {
-            for (final Entry<String, Select> entry : selection.getInstSelects().entrySet()) {
-                final Object object = entry.getValue().getCurrent();
-                if (object != null) {
-                    if (object instanceof List) {
-                        ((List<?>) object).stream()
-                            .filter(Objects::nonNull)
-                            .forEach(e -> instances.add((Instance) e));
-                    } else {
-                        instances.add((Instance) object);
+        if (flags != null && flags.contains(StmtFlag.TRIGGEROFF)) {
+            access = Access.getNoOp();
+        } else {
+            final List<Instance> instances = new ArrayList<>();
+            while (step(selection.getInstSelects().values())) {
+                for (final Entry<String, Select> entry : selection.getInstSelects().entrySet()) {
+                    final Object object = entry.getValue().getCurrent();
+                    if (object != null) {
+                        if (object instanceof List) {
+                            ((List<?>) object).stream()
+                                .filter(Objects::nonNull)
+                                .forEach(e -> instances.add((Instance) e));
+                        } else {
+                            instances.add((Instance) object);
+                        }
                     }
                 }
             }
+            for (final Entry<String, Select> entry : selection.getInstSelects().entrySet()) {
+                entry.getValue().reset();
+            }
+            access = Access.get(AccessTypeEnums.READ.getAccessType(), instances);
         }
-        for (final Entry<String, Select> entry : selection.getInstSelects().entrySet()) {
-            entry.getValue().reset();
-        }
-        access = Access.get(AccessTypeEnums.READ.getAccessType(), instances);
     }
 
     /**
@@ -585,9 +600,11 @@ public final class Evaluator
      *
      * @param _selection the selection
      * @return the selection evaluator
+     * @throws EFapsException
      */
-    public static Evaluator get(final Selection _selection, final EvalHelper _helper)
+    public static Evaluator get(final ISelectionProvider _selectionProvider, final EvalHelper _helper)
+        throws EFapsException
     {
-        return new Evaluator(_selection, _helper);
+        return new Evaluator(_selectionProvider, _helper);
     }
 }

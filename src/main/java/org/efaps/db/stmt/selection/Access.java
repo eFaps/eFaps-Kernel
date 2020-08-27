@@ -18,6 +18,7 @@
 package org.efaps.db.stmt.selection;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The Class Access.
  */
-public final class Access
+public class Access
 {
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(Access.class);
@@ -60,9 +61,9 @@ public final class Access
     private Access(final AccessType _accessType,
                    final Collection<Instance> _instances)
     {
-        this.accessType = _accessType;
+        accessType = _accessType;
         _instances.forEach(inst -> {
-            this.instanceMap.put(inst.getType(), inst);
+            instanceMap.put(inst.getType(), inst);
         });
     }
 
@@ -74,10 +75,10 @@ public final class Access
     private void initialize()
         throws EFapsException
     {
-        if (!this.init) {
-            this.init = true;
-            for (final Entry<Type, Collection<Instance>> entry : this.instanceMap.asMap().entrySet()) {
-                this.accessMap.putAll(entry.getKey().checkAccess(entry.getValue(), this.accessType));
+        if (!init) {
+            init = true;
+            for (final Entry<Type, Collection<Instance>> entry : instanceMap.asMap().entrySet()) {
+                accessMap.putAll(entry.getKey().checkAccess(entry.getValue(), accessType));
             }
         }
     }
@@ -95,7 +96,7 @@ public final class Access
         } catch (final EFapsException e) {
             LOG.error("Problems while evaluation access.", e);
         }
-        return this.accessMap.containsKey(_instance) ? this.accessMap.get(_instance) : false;
+        return accessMap.containsKey(_instance) ? accessMap.get(_instance) : false;
     }
 
     /**
@@ -108,5 +109,17 @@ public final class Access
     public static Access get(final AccessType _accessType, final Collection<Instance> _instances)
     {
         return new Access(_accessType, _instances);
+    }
+
+    public static Access getNoOp()
+    {
+        return new Access(null, Collections.emptyList())
+        {
+            @Override
+            public boolean hasAccess(final Instance _instance)
+            {
+                return true;
+            }
+        };
     }
 }

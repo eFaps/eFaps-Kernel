@@ -29,4 +29,11 @@ public interface IStatusChangeListener
 
     void onInsert(Instance _instance, Long _statusId)
         throws EFapsException;
+
+    // executed before deleting
+    default void onDelete(final Instance _instance)
+        throws EFapsException
+    {
+        //default does nothing
+    }
 }

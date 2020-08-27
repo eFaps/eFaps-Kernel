@@ -93,7 +93,7 @@ public final class PrintStmt
         if (print == null) {
             execute();
         }
-        return Evaluator.get(print.getSelection(), helper);
+        return Evaluator.get(print, helper);
     }
 
     public String asString()

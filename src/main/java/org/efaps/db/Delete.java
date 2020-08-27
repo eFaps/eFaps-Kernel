@@ -25,11 +25,13 @@ import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.access.user.AccessCache;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.attributetype.IStatusChangeListener;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.index.Queue;
+import org.efaps.admin.program.esjp.Listener;
 import org.efaps.db.store.Resource;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLDelete;
@@ -56,7 +58,7 @@ public class Delete
      */
     public Delete(final Instance _instance)
     {
-        this.instance = _instance;
+        instance = _instance;
     }
 
     /**
@@ -66,7 +68,7 @@ public class Delete
     public Delete(final Type _type,
                   final String _id)
     {
-        this.instance = Instance.get(_type, _id);
+        instance = Instance.get(_type, _id);
     }
 
     /**
@@ -75,7 +77,7 @@ public class Delete
      */
     public Delete(final Type _type, final long _id)
     {
-        this.instance = Instance.get(_type, _id);
+        instance = Instance.get(_type, _id);
     }
 
     /**
@@ -83,7 +85,7 @@ public class Delete
      */
     public Delete(final String _oid)
     {
-        this.instance = Instance.get(_oid);
+        instance = Instance.get(_oid);
     }
 
     /**
@@ -100,10 +102,10 @@ public class Delete
         throws EFapsException
     {
         AccessCache.registerUpdate(getInstance());
-        final  boolean hasAccess = this.instance.getType().hasAccess(this.instance,
+        final  boolean hasAccess = instance.getType().hasAccess(instance,
                                                                      AccessTypeEnums.DELETE.getAccessType());
         if (!hasAccess) {
-            throw new EFapsException(getClass(), "execute.NoAccess", this.instance);
+            throw new EFapsException(getClass(), "execute.NoAccess", instance);
         }
         executeWithoutAccessCheck();
     }
@@ -165,6 +167,12 @@ public class Delete
             }
         }
         try {
+            if (getInstance().getType().isCheckStatus()) {
+                for (final IStatusChangeListener listener : Listener.get()
+                                .<IStatusChangeListener>invoke(IStatusChangeListener.class)) {
+                    listener.onDelete(getInstance());
+                }
+            }
             final List<DeleteDefintion> defs = new ArrayList<>();
             defs.addAll(GeneralInstance.getDeleteDefintion(getInstance(), con));
             final SQLTable mainTable = getInstance().getType().getMainTable();
@@ -181,7 +189,7 @@ public class Delete
             Queue.registerUpdate(getInstance());
         } catch (final SQLException e) {
             throw new EFapsException(getClass(),
-                                     "executeWithoutAccessCheck.SQLException", e, this.instance);
+                                     "executeWithoutAccessCheck.SQLException", e, instance);
         }
     }
 
@@ -193,7 +201,7 @@ public class Delete
      */
     public Instance getInstance()
     {
-        return this.instance;
+        return instance;
     }
 
     /**

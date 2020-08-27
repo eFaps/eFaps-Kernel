@@ -21,10 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.access.AccessTypeEnums;
+import org.efaps.admin.datamodel.attributetype.IStatusChangeListener;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.program.esjp.Listener;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.runner.AbstractRunnable;
@@ -50,7 +52,8 @@ public class AbstractDelete
     }
 
     /**
-     * Check access for all Instances. If one does not have access an error will be thrown.
+     * Check access for all Instances. If one does not have access an error will
+     * be thrown.
      *
      * @throws EFapsException the eFaps exception
      */
@@ -92,5 +95,18 @@ public class AbstractDelete
             }
         }
         return ret;
+    }
+
+    public void triggerListeners()
+        throws EFapsException
+    {
+        for (final Instance instance : getInstances()) {
+            if (instance.getType().isCheckStatus()) {
+                for (final IStatusChangeListener listener : Listener.get()
+                                .<IStatusChangeListener>invoke(IStatusChangeListener.class)) {
+                    listener.onDelete(instance);
+                }
+            }
+        }
     }
 }

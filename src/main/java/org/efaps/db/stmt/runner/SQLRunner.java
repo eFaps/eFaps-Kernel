@@ -564,6 +564,8 @@ public class SQLRunner
                 }
             }
             try {
+                delete.triggerListeners();
+
                 final List<DeleteDefintion> defs = new ArrayList<>();
                 defs.addAll(GeneralInstance.getDeleteDefintion(instance, con));
                 final SQLTable mainTable = instance.getType().getMainTable();

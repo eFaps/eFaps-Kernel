@@ -45,7 +45,8 @@ public abstract class AbstractFlagged
         return flags.contains(_flag);
     }
 
-    protected EnumSet<StmtFlag> getFlags()
+    @Override
+    public EnumSet<StmtFlag> getFlags()
     {
         return flags;
     }

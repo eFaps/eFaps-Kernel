@@ -17,6 +17,8 @@
 
 package org.efaps.db.stmt;
 
+import java.util.EnumSet;
+
 import org.efaps.eql2.StmtFlag;
 
 public interface IFlagged
@@ -28,4 +30,6 @@ public interface IFlagged
      * @return true, if successful
      */
     boolean has(final StmtFlag _flag);
+
+    EnumSet<StmtFlag> getFlags();
 }
