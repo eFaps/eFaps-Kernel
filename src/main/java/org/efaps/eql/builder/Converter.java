@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 
+import org.efaps.admin.datamodel.IEnum;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.ci.CIStatus;
 import org.efaps.db.Instance;
@@ -58,6 +59,8 @@ public final class Converter
             ret = ((OffsetDateTime) _value).toString();
         } else if (_value instanceof CIStatus) {
             ret = String.valueOf(Status.find((CIStatus)_value).getId());
+        } else if (_value instanceof IEnum) {
+            ret = String.valueOf(((IEnum)_value).getInt());
         } else {
             LOG.warn("No specific converter defined for: {}", _value);
             ret = String.valueOf(_value);
