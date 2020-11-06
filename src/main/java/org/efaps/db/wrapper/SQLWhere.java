@@ -204,6 +204,18 @@ public class SQLWhere
                             new SQLSelect.SQLSelectPart(SQLPart.IN).appendSQL(_cmd);
                             forceParenthesis = true;
                             break;
+                        case NULL:
+                            new SQLSelect.SQLSelectPart(SQLPart.IS).appendSQL(_cmd);
+                            new SQLSelect.SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
+                            new SQLSelect.SQLSelectPart(SQLPart.NULL).appendSQL(_cmd);
+                            break;
+                        case NOTNULL:
+                            new SQLSelect.SQLSelectPart(SQLPart.IS).appendSQL(_cmd);
+                            new SQLSelect.SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
+                            new SQLSelect.SQLSelectPart(SQLPart.NOT).appendSQL(_cmd);
+                            new SQLSelect.SQLSelectPart(SQLPart.SPACE).appendSQL(_cmd);
+                            new SQLSelect.SQLSelectPart(SQLPart.NULL).appendSQL(_cmd);
+                            break;
                         default:
                             break;
                     }
