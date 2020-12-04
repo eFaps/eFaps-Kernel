@@ -18,11 +18,13 @@
 package org.efaps.db.stmt.selection.elements;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.stmt.filter.Filter;
+import org.efaps.db.stmt.filter.TypeCriterion;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.util.EFapsException;
@@ -35,6 +37,7 @@ public class LinkfromElement
     extends AbstractDataElement<LinkfromElement>
     implements IJoinTableIdx, ISquash
 {
+
     /** The attribute. */
     private Attribute attribute;
 
@@ -128,17 +131,21 @@ public class LinkfromElement
                 }
                 final String linktoColName = attribute.getSqlColNames().get(0);
                 final String tableName = ((SQLTable) getTable()).getSqlTable();
-                Long typeId = null;
-                if (((SQLTable) getTable()).getSqlColType() != null) {
-                    typeId = getAttribute().getParent().getId();
-                }
-                _sqlSelect.leftJoin(tableName, joinTableidx.getIdx(), linktoColName, tableidx.getIdx(), "ID",
-                                ((SQLTable) getTable()).getSqlColType(), typeId);
+                _sqlSelect.leftJoin(tableName, joinTableidx.getIdx(), linktoColName, tableidx.getIdx(), "ID");
             }
-            if (filter != null) {
+            final var typeCriteria = new HashSet<TypeCriterion>();
+            if (((SQLTable) getTable()).getSqlColType() != null) {
+                typeCriteria.add(TypeCriterion.of(joinTableidx, ((SQLTable) getTable()).getSqlColType(),
+                                getAttribute().getParent().getId(), true));
+            }
+
+            if (filter != null || !typeCriteria.isEmpty()) {
+                if (filter == null) {
+                    filter = Filter.get(null);
+                }
                 final var map = new HashMap<Type, TableIdx>();
                 map.put(attribute.getParent(), joinTableidx);
-                filter.append2SQLSelect(_sqlSelect, map);
+                filter.append2SQLSelect(_sqlSelect, map, typeCriteria);
             }
         }
     }

@@ -1096,11 +1096,12 @@ public class PrintObjectStmtTest
         throws EFapsException
     {
         final String sql = String.format("select T1.%s,T0.ID,T1.ID from %s T0 left join %s T1 on T0.ID=T1.%s "
-                        + "where T1.%s = 'test' and T0.ID = 4",
+                        + "where (T1.%s = 'test' or T1.%s is null) and T0.ID = 4",
                         Mocks.RealtionStringAttribute.getSQLColumnName(),
                         Mocks.SimpleTypeSQLTable.getSqlTableName(),
                         Mocks.RelationTypeSQLTable.getSqlTableName(),
                         Mocks.RealtionFromLinkAttribute.getSQLColumnName(),
+                        Mocks.RealtionStringAttribute.getSQLColumnName(),
                         Mocks.RealtionStringAttribute.getSQLColumnName());
 
         final String strValue = RandomUtil.random(8);
@@ -1127,11 +1128,12 @@ public class PrintObjectStmtTest
         throws EFapsException
     {
         final String sql = String.format("select T1.%s,T0.ID,T1.ID from %s T0 left join %s T1 on T0.ID=T1.%s "
-                        + "where T1.%s = 'test' and T0.ID = 4",
+                        + "where (T1.%s = 'test' or T1.%s is null) and T0.ID = 4",
                         Mocks.RealtionStringAttribute.getSQLColumnName(),
                         Mocks.SimpleTypeSQLTable.getSqlTableName(),
                         Mocks.RelationTypeSQLTable.getSqlTableName(),
                         Mocks.RealtionFromLinkAttribute.getSQLColumnName(),
+                        Mocks.RealtionStringAttribute.getSQLColumnName(),
                         Mocks.RealtionStringAttribute.getSQLColumnName());
 
         final String strValue = RandomUtil.random(8);
