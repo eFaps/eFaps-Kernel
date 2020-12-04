@@ -165,6 +165,12 @@ public final class JSONData
                             tmpList.add(obj.toString());
                         }
                         ret = new StringListValue().setValue(tmpList);
+                    } else {
+                        final List<String> tmpList = new ArrayList<>();
+                        for (final Object obj : list) {
+                            tmpList.add(String.valueOf(obj));
+                        }
+                        ret = new StringListValue().setValue(tmpList);
                     }
                 } else {
                     ret = new StringListValue().setValue((List<String>) list);
@@ -204,8 +210,8 @@ public final class JSONData
         public ObjectDataComparator(final AbstractValue<?> _sortVal,
                                     final boolean _asc)
         {
-            this.sortVal = _sortVal;
-            this.asc = _asc;
+            sortVal = _sortVal;
+            asc = _asc;
         }
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -250,7 +256,7 @@ public final class JSONData
          */
         public AbstractValue<?> getSortVal()
         {
-            return this.sortVal;
+            return sortVal;
         }
 
         /**
@@ -260,7 +266,7 @@ public final class JSONData
          */
         public Boolean isAsc()
         {
-            return this.asc;
+            return asc;
         }
     }
 }
