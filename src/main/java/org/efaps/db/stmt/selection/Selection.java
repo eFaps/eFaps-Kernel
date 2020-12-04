@@ -32,6 +32,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.stmt.filter.Filter;
 import org.efaps.db.stmt.selection.elements.AbstractDataElement;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
 import org.efaps.db.stmt.selection.elements.AttributeElement;
@@ -59,6 +60,7 @@ import org.efaps.eql2.IAttributeSetSelectElement;
 import org.efaps.eql2.IBaseSelectElement;
 import org.efaps.eql2.IClassSelectElement;
 import org.efaps.eql2.IExecSelectElement;
+import org.efaps.eql2.IFilter;
 import org.efaps.eql2.IFormatSelectElement;
 import org.efaps.eql2.IJoiningSelectElement;
 import org.efaps.eql2.ILinkfromSelectElement;
@@ -135,6 +137,10 @@ public final class Selection
                                     ? Type.get(UUID.fromString(typeName)) : Type.get(typeName);
                     final Attribute attr = linkFromType.getAttribute(attrName);
                     final LinkfromElement element = new LinkfromElement().setAttribute(attr).setStartType(currentType);
+                    final IFilter filter = ((ILinkfromSelectElement) ele).getFilter();
+                    if (filter != null) {
+                        element.setFilter(Filter.get(filter));
+                    }
                     select.addElement(element);
                     addInstSelect(select, element, attr, currentType);
                     currentType = linkFromType;

@@ -17,9 +17,12 @@
 
 package org.efaps.db.stmt.selection.elements;
 
+import java.util.HashMap;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.stmt.filter.Filter;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.util.EFapsException;
@@ -37,6 +40,8 @@ public class LinkfromElement
 
     /** The type. */
     private Type startType;
+
+    private Filter filter;
 
     /**
      * Gets the attribute.
@@ -83,6 +88,17 @@ public class LinkfromElement
         return this;
     }
 
+    public Filter getFilter()
+    {
+        return filter;
+    }
+
+    public LinkfromElement setFilter(final Filter _filter)
+    {
+        filter = _filter;
+        return this;
+    }
+
     @Override
     public LinkfromElement getThis()
     {
@@ -118,6 +134,11 @@ public class LinkfromElement
                 }
                 _sqlSelect.leftJoin(tableName, joinTableidx.getIdx(), linktoColName, tableidx.getIdx(), "ID",
                                 ((SQLTable) getTable()).getSqlColType(), typeId);
+            }
+            if (filter != null) {
+                final var map = new HashMap<Type, TableIdx>();
+                map.put(attribute.getParent(), joinTableidx);
+                filter.append2SQLSelect(_sqlSelect, map);
             }
         }
     }

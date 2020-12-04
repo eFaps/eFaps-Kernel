@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
@@ -1029,5 +1030,128 @@ public class PrintObjectStmtTest
                         .evaluate();
         assertEquals(evaluator.get(1), Mocks.TypedType.getUuid());
     }
+
+    @Test
+    public void testLinkFromAttribute()
+        throws EFapsException
+    {
+        final String sql = String.format("select T1.%s,T0.ID,T1.ID from %s T0 left join %s T1 on T0.ID=T1.%s "
+                        + "where T0.ID = 4",
+                        Mocks.RealtionStringAttribute.getSQLColumnName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.RelationTypeSQLTable.getSqlTableName(),
+                        Mocks.RealtionFromLinkAttribute.getSQLColumnName());
+
+        final String strValue = RandomUtil.random(8);
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList3(Object.class, Long.class, Object.class)
+                    .append(strValue, 4L, 1L)
+                    .asResult())
+            .build();
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
+                        String.format("print obj %s.4 select linkfrom[%s#%s].attribute[%s]",
+                    Mocks.SimpleType.getId(), Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName(),
+                    Mocks.RealtionStringAttribute.getName()));
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+               .execute()
+               .evaluate();
+        assertEquals(evaluator.get(1), Collections.singletonList(strValue));
+    }
+
+    @Test
+    public void testLinkFromAttributeFirst()
+        throws EFapsException
+    {
+        final String sql = String.format("select T1.%s,T0.ID,T1.ID from %s T0 left join %s T1 on T0.ID=T1.%s "
+                        + "where T0.ID = 4",
+                        Mocks.RealtionStringAttribute.getSQLColumnName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.RelationTypeSQLTable.getSqlTableName(),
+                        Mocks.RealtionFromLinkAttribute.getSQLColumnName());
+
+        final String strValue = RandomUtil.random(8);
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList3(Object.class, Long.class, Object.class)
+                    .append(strValue, 4L, 1L)
+                    .asResult())
+            .build();
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
+                        String.format("print obj %s.4 select linkfrom[%s#%s].attribute[%s].first",
+                    Mocks.SimpleType.getId(), Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName(),
+                    Mocks.RealtionStringAttribute.getName()));
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+               .execute()
+               .evaluate();
+        assertEquals(evaluator.get(1), strValue);
+    }
+
+    @Test
+    public void testLinkFromFilterAttribute()
+        throws EFapsException
+    {
+        final String sql = String.format("select T1.%s,T0.ID,T1.ID from %s T0 left join %s T1 on T0.ID=T1.%s "
+                        + "where T1.%s = 'test' and T0.ID = 4",
+                        Mocks.RealtionStringAttribute.getSQLColumnName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.RelationTypeSQLTable.getSqlTableName(),
+                        Mocks.RealtionFromLinkAttribute.getSQLColumnName(),
+                        Mocks.RealtionStringAttribute.getSQLColumnName());
+
+        final String strValue = RandomUtil.random(8);
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList3(Object.class, Long.class, Object.class)
+                    .append(strValue, 4L, 1L)
+                    .asResult())
+            .build();
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
+                        String.format("print obj %s.4 select linkfrom[%s#%s, filter %s == 'test'].attribute[%s]",
+                    Mocks.SimpleType.getId(), Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName(),
+                    Mocks.RealtionStringAttribute.getName(), Mocks.RealtionStringAttribute.getName()));
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+               .execute()
+               .evaluate();
+        assertEquals(evaluator.get(1), Collections.singletonList(strValue));
+    }
+
+    @Test
+    public void testLinkFromFilterAttributeSelect()
+        throws EFapsException
+    {
+        final String sql = String.format("select T1.%s,T0.ID,T1.ID from %s T0 left join %s T1 on T0.ID=T1.%s "
+                        + "where T1.%s = 'test' and T0.ID = 4",
+                        Mocks.RealtionStringAttribute.getSQLColumnName(),
+                        Mocks.SimpleTypeSQLTable.getSqlTableName(),
+                        Mocks.RelationTypeSQLTable.getSqlTableName(),
+                        Mocks.RealtionFromLinkAttribute.getSQLColumnName(),
+                        Mocks.RealtionStringAttribute.getSQLColumnName());
+
+        final String strValue = RandomUtil.random(8);
+        MockResult.builder()
+            .withSql(sql)
+            .withResult(RowLists.rowList3(Object.class, Long.class, Object.class)
+                    .append(strValue, 4L, 1L)
+                    .asResult())
+            .build();
+
+        final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
+                    String.format("print obj %s.4 select linkfrom[%s#%s, filter attribute[%s] == 'test'].attribute[%s]",
+                    Mocks.SimpleType.getId(), Mocks.RelationType.getName(), Mocks.RealtionFromLinkAttribute.getName(),
+                    Mocks.RealtionStringAttribute.getName(), Mocks.RealtionStringAttribute.getName()));
+
+        final Evaluator evaluator = PrintStmt.get(stmt)
+               .execute()
+               .evaluate();
+        assertEquals(evaluator.get(1), Collections.singletonList(strValue));
+    }
+
 }
 

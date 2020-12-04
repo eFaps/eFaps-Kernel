@@ -264,7 +264,7 @@ public class PrintQueryStmtTest
                         _statusFilter,
                         Mocks.StatusGrp.getStatusId("Closed"),
                         Mocks.StatusStringAttribute.getName());
-
+System.out.println(stmtStr);
         final IPrintQueryStatement stmt = (IPrintQueryStatement) EQL2.parse(stmtStr);
 
         final Evaluator evaluator = PrintStmt.get(stmt)

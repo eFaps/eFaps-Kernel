@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -68,6 +69,8 @@ public class Filter
     /** The types. */
     private List<Type> types;
 
+    private Map<Type, TableIdx> type2tableIdx;
+
     /**
      * Analyze.
      *
@@ -82,6 +85,13 @@ public class Filter
         return this;
     }
 
+    public void append2SQLSelect(final SQLSelect _sqlSelect, final Map<Type, TableIdx> _type2tableIdx)
+        throws EFapsException
+    {
+        type2tableIdx = _type2tableIdx;
+        append2SQLSelect(_sqlSelect, Collections.emptySet());
+    }
+
     /**
      * Append two SQL select.
      *
@@ -92,7 +102,6 @@ public class Filter
         throws EFapsException
     {
         if (iWhere != null) {
-            final SQLWhere sqlWhere = _sqlSelect.getWhere();
             for (final IWhereTerm<?> term : iWhere.getTerms()) {
                 if (term instanceof IWhereElementTerm) {
                     final IWhereElement element = ((IWhereElementTerm) term).getElement();
@@ -100,36 +109,20 @@ public class Filter
                         final NestedQuery nestedQuery = new NestedQuery(element);
                         nestedQuery.append2SQLSelect(types, _sqlSelect);
                     } else if (element.getAttribute() != null) {
-                        final String attrName = element.getAttribute();
-                        for (final Type type : types) {
-                            final Attribute attr = type.getAttribute(attrName);
-                            if (attr != null) {
-                                addAttr(_sqlSelect, sqlWhere, attr, term, element);
-                                break;
-                            }
-                        }
+                        attribute(_sqlSelect, term, element, null);
                     } else if (element.getSelect() != null) {
                         final IWhereSelect select = element.getSelect();
                         for (final ISelectElement ele : select.getElements()) {
                             if (ele instanceof IBaseSelectElement) {
                                 switch (((IBaseSelectElement) ele).getElement()) {
                                     case STATUS:
-                                        for (final Type type : types) {
-                                            final Attribute attr = type.getStatusAttribute();
-                                            if (attr != null) {
-                                                addAttr(_sqlSelect, sqlWhere, attr, term, element);
-                                                break;
-                                            }
-                                        }
+                                        status(_sqlSelect, term, element);
                                         break;
                                     default:
                                         break;
                                 }
                             } else if (ele instanceof IAttributeSelectElement) {
-                                final String attrName = ((IAttributeSelectElement) ele).getName();
-                                for (final Type type : types) {
-                                    addAttr(_sqlSelect, sqlWhere, type.getAttribute(attrName), term, element);
-                                }
+                                attribute(_sqlSelect, term, element, ele);
                             }
                         }
                     }
@@ -139,7 +132,56 @@ public class Filter
         addTypeCriteria(_sqlSelect, _typeCriteria);
     }
 
-    protected void addAttr(final SQLSelect _sqlSelect, final SQLWhere _sqlWhere, final Attribute _attr,
+    protected void attribute(final SQLSelect _sqlSelect, final IWhereTerm<?> _term, final IWhereElement _element,
+                             final ISelectElement _selectElement)
+    {
+        final String attrName;
+        if (_selectElement != null && _selectElement instanceof IAttributeSelectElement) {
+            attrName = ((IAttributeSelectElement) _selectElement).getName();
+        } else {
+            attrName = _element.getAttribute();
+        }
+        if (types.isEmpty() && type2tableIdx != null) {
+            for (final var entry : type2tableIdx.entrySet()) {
+                final Attribute attr = entry.getKey().getAttribute(attrName);
+                if (attr != null) {
+                    addAttr(_sqlSelect, attr, _term, _element, entry.getValue());
+                    break;
+                }
+            }
+        } else {
+            for (final Type type : types) {
+                final Attribute attr = type.getAttribute(attrName);
+                if (attr != null) {
+                    addAttr(_sqlSelect, attr, _term, _element);
+                    break;
+                }
+            }
+        }
+    }
+
+    protected void status(final SQLSelect _sqlSelect, final IWhereTerm<?> _term, final IWhereElement _element)
+    {
+        if (types.isEmpty() && type2tableIdx != null) {
+            for (final var entry : type2tableIdx.entrySet()) {
+                final Attribute attr = entry.getKey().getStatusAttribute();
+                if (attr != null) {
+                    addAttr(_sqlSelect, attr, _term, _element, entry.getValue());
+                    break;
+                }
+            }
+        } else {
+            for (final Type type : types) {
+                final Attribute attr = type.getStatusAttribute();
+                if (attr != null) {
+                    addAttr(_sqlSelect, attr, _term, _element);
+                    break;
+                }
+            }
+        }
+    }
+
+    protected void addAttr(final SQLSelect _sqlSelect, final Attribute _attr,
                            final IWhereTerm<?> _term, final IWhereElement _element)
     {
         if (_attr != null) {
@@ -163,7 +205,14 @@ public class Filter
                     _sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
                 }
             }
+            addAttr(_sqlSelect, _attr, _term, _element, tableIdx);
+        }
+    }
 
+    protected void addAttr(final SQLSelect _sqlSelect, final Attribute _attr,
+                           final IWhereTerm<?> _term, final IWhereElement _element, final TableIdx _tableIdx)
+    {
+        if (_attr != null) {
             final IAttributeType attrType = _attr.getAttributeType().getDbAttrType();
 
             final boolean noEscape;
@@ -177,7 +226,7 @@ public class Filter
                 noEscape = attrType instanceof LongType;
                 values = Arrays.asList(_element.getValues());
             }
-            _sqlWhere.addCriteria(tableIdx.getIdx(), _attr.getSqlColNames(), _element.getComparison(),
+            _sqlSelect.getWhere().addCriteria(_tableIdx.getIdx(), _attr.getSqlColNames(), _element.getComparison(),
                             new LinkedHashSet<>(values), !noEscape, _term.getConnection());
         }
     }
