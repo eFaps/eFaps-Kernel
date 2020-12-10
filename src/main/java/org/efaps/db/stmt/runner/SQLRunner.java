@@ -300,8 +300,14 @@ public class SQLRunner
         if (sqlSelect.getColumns().size() > 0) {
             if (_print instanceof ObjectPrint) {
                 addWhere4ObjectPrint((ObjectPrint) _print);
+                if (!typeCriteria.isEmpty()) {
+                    Filter.get(null).addTypeCriteria(sqlSelect, typeCriteria);
+                }
             } else if (_print instanceof ListPrint) {
                 addWhere4ListPrint((ListPrint) _print);
+                if (!typeCriteria.isEmpty()) {
+                    Filter.get(null).addTypeCriteria(sqlSelect, typeCriteria);
+                }
             } else {
                 addBaseTypeCriteria((QueryPrint) _print, typeCriteria);
                 addWhere4QueryPrint((QueryPrint) _print, typeCriteria);

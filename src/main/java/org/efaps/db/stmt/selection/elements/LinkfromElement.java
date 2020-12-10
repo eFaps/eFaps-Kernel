@@ -18,7 +18,7 @@
 package org.efaps.db.stmt.selection.elements;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Set;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.SQLTable;
@@ -35,7 +35,7 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public class LinkfromElement
     extends AbstractDataElement<LinkfromElement>
-    implements IJoinTableIdx, ISquash
+    implements IJoinTableIdx, ISquash, ITypeCriterion
 {
 
     /** The attribute. */
@@ -133,19 +133,10 @@ public class LinkfromElement
                 final String tableName = ((SQLTable) getTable()).getSqlTable();
                 _sqlSelect.leftJoin(tableName, joinTableidx.getIdx(), linktoColName, tableidx.getIdx(), "ID");
             }
-            final var typeCriteria = new HashSet<TypeCriterion>();
-            if (((SQLTable) getTable()).getSqlColType() != null) {
-                typeCriteria.add(TypeCriterion.of(joinTableidx, ((SQLTable) getTable()).getSqlColType(),
-                                getAttribute().getParent().getId(), true));
-            }
-
-            if (filter != null || !typeCriteria.isEmpty()) {
-                if (filter == null) {
-                    filter = Filter.get(null);
-                }
+            if (filter != null) {
                 final var map = new HashMap<Type, TableIdx>();
                 map.put(attribute.getParent(), joinTableidx);
-                filter.append2SQLSelect(_sqlSelect, map, typeCriteria);
+                filter.append2SQLSelect(_sqlSelect, map);
             }
         }
     }
@@ -185,5 +176,15 @@ public class LinkfromElement
     public String getPath()
     {
         return super.getPath() + "<-" + getAttribute().getName() + ":" + getAttribute().getParentId();
+    }
+
+    @Override
+    public void add2TypeCriteria(final SQLSelect _sqlSelect, final Set<TypeCriterion> _typeCriteria)
+        throws EFapsException
+    {
+        if (((SQLTable) getTable()).getSqlColType() != null) {
+            _typeCriteria.add(TypeCriterion.of(getJoinTableIdx(_sqlSelect), ((SQLTable) getTable()).getSqlColType(),
+                            getAttribute().getParent().getId(), true));
+        }
     }
 }

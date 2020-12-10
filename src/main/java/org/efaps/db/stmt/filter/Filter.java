@@ -87,12 +87,11 @@ public class Filter
         return this;
     }
 
-    public void append2SQLSelect(final SQLSelect _sqlSelect, final Map<Type, TableIdx> _type2tableIdx,
-                                 final Set<TypeCriterion> _typeCriteria)
+    public void append2SQLSelect(final SQLSelect _sqlSelect, final Map<Type, TableIdx> _type2tableIdx)
         throws EFapsException
     {
         type2tableIdx = _type2tableIdx;
-        append2SQLSelect(_sqlSelect, _typeCriteria);
+        append2SQLSelect(_sqlSelect, Collections.emptySet());
     }
 
     /**
@@ -294,11 +293,10 @@ public class Filter
         return ret;
     }
 
-    protected void addTypeCriteria(final SQLSelect _sqlSelect,
-                                   final Set<TypeCriterion> _typeCriteria)
+    public void addTypeCriteria(final SQLSelect _sqlSelect,
+                                final Set<TypeCriterion> _typeCriteria)
     {
         if (!_typeCriteria.isEmpty()) {
-
             final ComparatorChain<TypeCriterion> chain = new ComparatorChain<>();
             chain.addComparator((_criterion1,
                                  _criterion2) -> _criterion1.getTableIndex().compareTo(_criterion2.getTableIndex()));
