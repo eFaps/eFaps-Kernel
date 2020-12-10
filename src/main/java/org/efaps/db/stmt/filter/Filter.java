@@ -147,7 +147,7 @@ public class Filter
             for (final var entry : type2tableIdx.entrySet()) {
                 final Attribute attr = entry.getKey().getAttribute(attrName);
                 if (attr != null) {
-                    addAttr(_sqlSelect, attr, _term, _element, entry.getValue(), true);
+                    addAttr(_sqlSelect, attr, _term, _element, entry.getValue(), false);
                     break;
                 }
             }

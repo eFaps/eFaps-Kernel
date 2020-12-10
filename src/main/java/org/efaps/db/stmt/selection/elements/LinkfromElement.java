@@ -134,6 +134,7 @@ public class LinkfromElement
                 }
                 final String linktoColName = attribute.getSqlColNames().get(0);
                 final String tableName = ((SQLTable) getTable()).getSqlTable();
+                final var inner = new SQLSelect();
                 SQLWhere where = null;
                 if (((SQLTable) getTable()).getSqlColType() != null) {
                     final var values = new HashSet<String>();
@@ -142,18 +143,18 @@ public class LinkfromElement
                     if (type.hasChildren()) {
                         type.getChildTypes().stream().forEach(child -> values.add(String.valueOf(child.getId())));
                     }
-                    where = new SQLWhere();
+                    where = inner.getWhere();
                     where.addCriteria(joinTableidx.getIdx(),
                                     Collections.singletonList(((SQLTable) getTable()).getSqlColType()),
                                     Comparison.EQUAL,
                                     values, false, Connection.AND);
                 }
+                if (filter != null) {
+                    final var map = new HashMap<Type, TableIdx>();
+                    map.put(attribute.getParent(), joinTableidx);
+                    filter.append2SQLSelect(inner, map);
+                }
                 _sqlSelect.leftJoin(tableName, joinTableidx.getIdx(), linktoColName, tableidx.getIdx(), "ID", where);
-            }
-            if (filter != null) {
-                final var map = new HashMap<Type, TableIdx>();
-                map.put(attribute.getParent(), joinTableidx);
-                filter.append2SQLSelect(_sqlSelect, map);
             }
         }
     }
