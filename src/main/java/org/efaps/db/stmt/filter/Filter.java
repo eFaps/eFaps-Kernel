@@ -32,8 +32,10 @@ import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.IAttributeType;
+import org.efaps.admin.datamodel.attributetype.LinkType;
 import org.efaps.admin.datamodel.attributetype.LongType;
 import org.efaps.admin.datamodel.attributetype.StatusType;
+import org.efaps.db.Instance;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLWhere;
 import org.efaps.db.wrapper.SQLWhere.Criteria;
@@ -223,6 +225,11 @@ public class Filter
                                 .map(val -> convertStatusValue(_attr, val))
                                 .collect(Collectors.toList());
                 noEscape = true;
+            } else if (attrType instanceof LinkType) {
+                noEscape = true;
+                values = _element.getValuesList().stream()
+                                .map(val -> convertLinkValue(val))
+                                .collect(Collectors.toList());
             } else {
                 noEscape = attrType instanceof LongType;
                 values = Arrays.asList(_element.getValues());
@@ -261,13 +268,28 @@ public class Filter
             try {
                 status = Status.find(_attr.getLink().getUUID(), _val);
             } catch (final CacheReloadException e) {
-                LOG.error("Cathed error:", e);
+                LOG.error("Catched error:", e);
             } finally {
                 if (status == null) {
                     LOG.warn("No Status could be found for the given key {} on {}", _val, _attr);
                 }
                 ret = status == null ? _val : String.valueOf(status.getId());
             }
+        }
+        return ret;
+    }
+
+    protected String convertLinkValue(final String _val)
+    {
+        String ret;
+        if (StringUtils.isNumeric(_val)) {
+            ret = _val;
+        } else {
+            final var instance = Instance.get(_val);
+            if (!instance.isValid()) {
+                LOG.error("Invalid value for where term on LinkType Attribute: {} ", _val);
+            }
+            ret = String.valueOf(instance.getId());
         }
         return ret;
     }
