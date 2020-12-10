@@ -124,10 +124,17 @@ public class LinktoElement
         throws EFapsException
     {
         final String linktoColName = attribute.getSqlColNames().get(0);
-        final String tableName = ((SQLTable) getTable()).getSqlTable();
         final Attribute joinAttr = attribute.getLink().getAttribute("ID");
         final String joinTableName = joinAttr.getTable().getSqlTable();
-        return _sqlSelect.getIndexer().getTableIdx(joinTableName, tableName, linktoColName);
+        TableIdx ret;
+        if (getPrevious() != null && getPrevious() instanceof IJoinTableIdx) {
+            final var previousIdx = ((IJoinTableIdx) getPrevious()).getJoinTableIdx(_sqlSelect);
+            ret = _sqlSelect.getIndexer().getTableIdx(joinTableName, previousIdx.getKey(), linktoColName);
+        } else {
+            final var tableName = ((SQLTable) getTable()).getSqlTable();
+            ret = _sqlSelect.getIndexer().getTableIdx(joinTableName, tableName, linktoColName);
+        }
+        return ret;
     }
 
     @Override
