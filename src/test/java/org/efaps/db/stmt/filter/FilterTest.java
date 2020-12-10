@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  */
 
 package org.efaps.db.stmt.filter;
+
 import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.eq;
 import static org.powermock.api.easymock.PowerMock.createMock;
@@ -31,6 +32,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 import org.testng.annotations.Test;
+
 public class FilterTest
     extends AbstractTest
 {
@@ -70,4 +72,32 @@ public class FilterTest
         final Filter filter = new Filter();
         assertEquals(filter.convertStatusValue(attr, key), key);
     }
+
+    @Test
+    public void testConvertLinkValueId()
+        throws CacheReloadException
+    {
+        final String id = String.valueOf("1");
+        final Filter filter = new Filter();
+        assertEquals(filter.convertLinkValue(id), id);
+    }
+
+    @Test
+    public void testConvertLinkValueInstance()
+        throws CacheReloadException
+    {
+        final String instance = String.valueOf(Mocks.SimpleType.getId() + "." + 1);
+        final Filter filter = new Filter();
+        assertEquals(filter.convertLinkValue(instance), "1");
+    }
+
+    @Test
+    public void testConvertLinkValueInvalidInstance()
+        throws CacheReloadException
+    {
+        final String instance = String.valueOf("notaninstance");
+        final Filter filter = new Filter();
+        assertEquals(filter.convertLinkValue(instance), "0");
+    }
+
 }
