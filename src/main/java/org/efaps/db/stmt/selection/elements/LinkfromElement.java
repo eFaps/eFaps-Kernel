@@ -17,16 +17,19 @@
 
 package org.efaps.db.stmt.selection.elements;
 
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Set;
+import java.util.HashSet;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.stmt.filter.Filter;
-import org.efaps.db.stmt.filter.TypeCriterion;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLWhere;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
+import org.efaps.eql2.Comparison;
+import org.efaps.eql2.Connection;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -35,7 +38,7 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public class LinkfromElement
     extends AbstractDataElement<LinkfromElement>
-    implements IJoinTableIdx, ISquash, ITypeCriterion
+    implements IJoinTableIdx, ISquash
 {
 
     /** The attribute. */
@@ -131,7 +134,21 @@ public class LinkfromElement
                 }
                 final String linktoColName = attribute.getSqlColNames().get(0);
                 final String tableName = ((SQLTable) getTable()).getSqlTable();
-                _sqlSelect.leftJoin(tableName, joinTableidx.getIdx(), linktoColName, tableidx.getIdx(), "ID");
+                SQLWhere where = null;
+                if (((SQLTable) getTable()).getSqlColType() != null) {
+                    final var values = new HashSet<String>();
+                    final var type = getAttribute().getParent();
+                    values.add(String.valueOf(type.getId()));
+                    if (type.hasChildren()) {
+                        type.getChildTypes().stream().forEach(child -> values.add(String.valueOf(child.getId())));
+                    }
+                    where = new SQLWhere();
+                    where.addCriteria(joinTableidx.getIdx(),
+                                    Collections.singletonList(((SQLTable) getTable()).getSqlColType()),
+                                    Comparison.EQUAL,
+                                    values, false, Connection.AND);
+                }
+                _sqlSelect.leftJoin(tableName, joinTableidx.getIdx(), linktoColName, tableidx.getIdx(), "ID", where);
             }
             if (filter != null) {
                 final var map = new HashMap<Type, TableIdx>();
@@ -176,15 +193,5 @@ public class LinkfromElement
     public String getPath()
     {
         return super.getPath() + "<-" + getAttribute().getName() + ":" + getAttribute().getParentId();
-    }
-
-    @Override
-    public void add2TypeCriteria(final SQLSelect _sqlSelect, final Set<TypeCriterion> _typeCriteria)
-        throws EFapsException
-    {
-        if (((SQLTable) getTable()).getSqlColType() != null) {
-            _typeCriteria.add(TypeCriterion.of(getJoinTableIdx(_sqlSelect), ((SQLTable) getTable()).getSqlColType(),
-                            getAttribute().getParent().getId(), true));
-        }
     }
 }

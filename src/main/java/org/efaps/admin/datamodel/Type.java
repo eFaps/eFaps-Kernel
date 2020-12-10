@@ -972,6 +972,11 @@ public class Type
         return Collections.unmodifiableSet(ret);
     }
 
+    public boolean hasChildren()
+    {
+        return !childTypes.isEmpty();
+    }
+
     /**
      * This is the getter method for instance variable {@link #attributes}.
      *
