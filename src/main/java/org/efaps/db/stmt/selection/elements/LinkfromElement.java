@@ -162,7 +162,7 @@ public class LinkfromElement
         throws CacheReloadException
     {
         final String tableName = ((SQLTable) getTable()).getSqlTable();
-        return _sqlSelect.getIndexer().getTableIdx(tableName, attribute.getName(),
+        return _sqlSelect.getIndexer().getTableIdx(tableName, attribute.getParent().getName(), attribute.getName(),
                         startType.getMainTable().getSqlTable());
     }
 
