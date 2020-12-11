@@ -150,6 +150,9 @@ public class LinkfromElement
                                     values, false, Connection.AND);
                 }
                 if (filter != null) {
+                    if (where == null) {
+                        where = inner.getWhere();
+                    }
                     final var map = new HashMap<Type, TableIdx>();
                     map.put(attribute.getParent(), joinTableidx);
                     filter.append2SQLSelect(inner, map);
