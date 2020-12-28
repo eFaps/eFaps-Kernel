@@ -797,7 +797,7 @@ public class PrintObjectStmtTest
             .build();
 
         final IPrintObjectStatement stmt = (IPrintObjectStatement) EQL2.parse(
-                        String.format("print obj %s.4 select attribute[%s].format[YYYY]",
+                        String.format("print obj %s.4 select attribute[%s].format[yyyy]",
                         Mocks.AllAttrType.getId(), Mocks.AllAttrDateAttribute.getName()));
 
         final Evaluator evaluator = PrintStmt.get(stmt)
