@@ -196,38 +196,53 @@ public final class Evaluator
                         .findFirst();
         if (selectOpt.isPresent()) {
             ret = get(selectOpt.get());
-        } else if (helper != null){
-           final Optional<PhraseEntry> phraseOpt = helper.getPhrases().stream()
-                .filter(entry -> {
-                    return _alias.equals(entry.getAlias());
-                }).findFirst();
-           if (phraseOpt.isPresent()) {
-               final PhraseEntry phraseEntry = phraseOpt.get();
-               try {
-                final ValueList list = new ValueParser(new StringReader(phraseEntry.getPhrase())).ExpressionString();
-                final StringBuilder bldr = new StringBuilder();
-                int idx = -1;
-                for (final Token token : list.getTokens()) {
-                    switch (token.getType()) {
-                        case EXPRESSION:
-                            idx++;
-                            final Object val = get(Print.getPhraseAlias(phraseEntry.getPhraseIdx()) + "_" + idx);
-                            if (val != null) {
-                                bldr.append(String.valueOf(val));
-                            }
-                            break;
-                        case TEXT:
-                            bldr.append(token.getValue());
-                            break;
-                        default:
-                            break;
+        } else if (helper != null) {
+            final Optional<PhraseEntry> phraseOpt = helper.getPhrases().stream()
+                            .filter(entry -> {
+                                return _alias.equals(entry.getAlias());
+                            }).findFirst();
+            if (phraseOpt.isPresent()) {
+                final PhraseEntry phraseEntry = phraseOpt.get();
+                try {
+                    final ValueList list = new ValueParser(new StringReader(phraseEntry.getPhrase()))
+                                    .ExpressionString();
+                    final StringBuilder bldr = new StringBuilder();
+                    int idx = -1;
+                    for (final Token token : list.getTokens()) {
+                        switch (token.getType()) {
+                            case EXPRESSION:
+                                idx++;
+                                final Object val = get(Print.getPhraseAlias(phraseEntry.getPhraseIdx()) + "_" + idx);
+                                if (val != null) {
+                                    bldr.append(String.valueOf(val));
+                                }
+                                break;
+                            case TEXT:
+                                bldr.append(token.getValue());
+                                break;
+                            default:
+                                break;
+                        }
                     }
+                    ret = bldr.toString();
+                } catch (final ParseException e) {
+                    LOG.error("Catched", e);
                 }
-                ret = bldr.toString();
-            } catch (final ParseException e) {
-                LOG.error("Catched", e);
+            } else {
+                if (helper.getMsgPhrases().containsKey(_alias)) {
+                    final var msgPhrase = helper.getMsgPhrases().get(_alias);
+                    final List<Object> values = new ArrayList<>();
+                    int idx = 0;
+                    final var iter =  msgPhrase.getArguments().iterator();
+                    while (iter.hasNext()) {
+                        final var alias = Print.getMsgPhraseAlias(msgPhrase.getId()) + "_" + idx;
+                        final var value = get(alias);
+                        values.add(value == null ? "" : value);
+                        idx++;
+                    }
+                    ret = msgPhrase.format(values.toArray());
+                }
             }
-           }
         }
         return (T) ret;
     }

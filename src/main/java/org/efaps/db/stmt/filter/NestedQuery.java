@@ -65,18 +65,20 @@ public class NestedQuery
         }
 
         boolean added = false;
-        for (final ISelect select : nestedQuery.getSelection().getSelects()) {
-            for (final ISelectElement element : select.getElements()) {
-                if (element instanceof IAttributeSelectElement) {
-                    for (final Type type : types) {
-                        final String attrName = ((IAttributeSelectElement) element).getName();
-                        final Attribute attr = type.getAttribute(attrName);
-                        if (attr != null) {
-                            final SQLTable table = attr.getTable();
-                            final String tableName = table.getSqlTable();
-                            final TableIdx tableidx = sqlSelect.getIndexer().getTableIdx(tableName);
-                            sqlSelect.column(tableidx.getIdx(), attr.getSqlColNames().get(0));
-                            added = true;
+        if (nestedQuery.getSelection() != null) {
+            for (final ISelect select : nestedQuery.getSelection().getSelects()) {
+                for (final ISelectElement element : select.getElements()) {
+                    if (element instanceof IAttributeSelectElement) {
+                        for (final Type type : types) {
+                            final String attrName = ((IAttributeSelectElement) element).getName();
+                            final Attribute attr = type.getAttribute(attrName);
+                            if (attr != null) {
+                                final SQLTable table = attr.getTable();
+                                final String tableName = table.getSqlTable();
+                                final TableIdx tableidx = sqlSelect.getIndexer().getTableIdx(tableName);
+                                sqlSelect.column(tableidx.getIdx(), attr.getSqlColNames().get(0));
+                                added = true;
+                            }
                         }
                     }
                 }
@@ -86,7 +88,7 @@ public class NestedQuery
             final SQLTable table = types.get(0).getMainTable();
             final String tableName = table.getSqlTable();
             final TableIdx tableidx = sqlSelect.getIndexer().getTableIdx(tableName);
-            sqlSelect.addColumnPart(tableidx.getIdx(), "ID");
+            sqlSelect.column(tableidx.getIdx(), "ID");
         }
 
         final Filter filter = Filter.get(nestedQuery.getWhere(), types.toArray(new Type[types.size()]));

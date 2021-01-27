@@ -26,6 +26,7 @@ import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.ci.CIAttribute;
+import org.efaps.ci.CIMsgPhrase;
 import org.efaps.ci.CIType;
 import org.efaps.db.stmt.PrintStmt;
 import org.efaps.db.stmt.selection.EvalHelper;
@@ -141,6 +142,21 @@ public class Print
     {
         super.orderBy(_ciAttr.name);
         return getThis();
+    }
+
+    public Print msgPhrase(final CIMsgPhrase... _msgPhrase)
+        throws EFapsException
+    {
+        return msgPhrase(Arrays.stream(_msgPhrase)
+                        .map(ciMsgPhrase -> {
+                            try {
+                                return MsgPhrase.get(ciMsgPhrase.uuid);
+                            } catch (final EFapsException e) {
+                                LOG.error("Catched", e);
+                            }
+                            return null;
+                        })
+                        .toArray(MsgPhrase[]::new));
     }
 
     public Print msgPhrase(final MsgPhrase... _msgPhrase)
