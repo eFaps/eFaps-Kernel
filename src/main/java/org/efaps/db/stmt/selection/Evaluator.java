@@ -232,13 +232,10 @@ public final class Evaluator
                 if (helper.getMsgPhrases().containsKey(_alias)) {
                     final var msgPhrase = helper.getMsgPhrases().get(_alias);
                     final List<Object> values = new ArrayList<>();
-                    int idx = 0;
-                    final var iter =  msgPhrase.getArguments().iterator();
-                    while (iter.hasNext()) {
-                        final var alias = Print.getMsgPhraseAlias(msgPhrase.getId()) + "_" + idx;
+                    for (int i = 0; i <  msgPhrase.getArguments().size(); i++) {
+                        final var alias = Print.getMsgPhraseAlias(msgPhrase.getId()) + "_" + i;
                         final var value = get(alias);
                         values.add(value == null ? "" : value);
-                        idx++;
                     }
                     ret = msgPhrase.format(values.toArray());
                 }
