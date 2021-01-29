@@ -19,6 +19,7 @@ package org.efaps.eql;
 
 import java.util.Arrays;
 
+import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIType;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.AbstractStmt;
@@ -149,6 +150,11 @@ public final class EQL
         public Insert insert(final CIType _ciType)
         {
             return insert(_ciType.getType().getName());
+        }
+
+        public Insert insert(final Type _type)
+        {
+            return insert(_type.getName());
         }
 
         @Override
