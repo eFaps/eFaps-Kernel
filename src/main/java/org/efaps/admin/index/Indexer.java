@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.LongPoint;
 import org.apache.lucene.document.NumericDocValuesField;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
@@ -215,7 +215,7 @@ public final class Indexer
                                     } else if (value instanceof Number) {
                                         val = ((Number) value).longValue();
                                     }
-                                    doc.add(new LongField(name, val, Store.YES));
+                                    doc.add(new NumericDocValuesField(name, val));
                                     allBldr.append(value).append(" ");
                                     break;
                                 case SEARCHLONG:
@@ -225,7 +225,7 @@ public final class Indexer
                                     } else if (value instanceof Number) {
                                         val2 = ((Number) value).longValue();
                                     }
-                                    doc.add(new LongField(name, val2, Store.NO));
+                                    doc.add(new LongPoint(name, val2));
                                     allBldr.append(value).append(" ");
                                     break;
                                 case STRING:

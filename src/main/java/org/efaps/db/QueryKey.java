@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,10 @@ import java.io.Serializable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Index;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Store;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 /**
- * TODO comment!
  *
  * @author The eFaps Team
  *
@@ -46,13 +42,12 @@ public final class QueryKey
     /**
      * The sql statement executed.
      */
-    @Field(store = Store.NO, analyze = Analyze.NO, index = Index.NO)
     private final String sql;
 
     /**
      * The name of the sql statement.
      */
-    @Field(analyze = Analyze.NO)
+    @KeywordField
     private final String key;
 
     /**
@@ -62,11 +57,11 @@ public final class QueryKey
     private QueryKey(final String _key,
                      final String _sql)
     {
-        this.key = _key;
+        key = _key;
         if (_sql.length() > 30000) {
-            this.sql = DigestUtils.md2Hex(_sql);
+            sql = DigestUtils.md2Hex(_sql);
         } else {
-            this.sql = _sql;
+            sql = _sql;
         }
     }
 
@@ -77,7 +72,7 @@ public final class QueryKey
      */
     public String getSql()
     {
-        return this.sql;
+        return sql;
     }
 
     /**
@@ -87,7 +82,7 @@ public final class QueryKey
      */
     public String getKey()
     {
-        return this.key;
+        return key;
     }
 
     /**
@@ -104,7 +99,7 @@ public final class QueryKey
     @Override
     public int hashCode()
     {
-        return this.key.hashCode();
+        return key.hashCode();
     }
 
     /**

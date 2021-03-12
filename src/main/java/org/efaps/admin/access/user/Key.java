@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Field;
 import org.infinispan.query.Transformable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +41,6 @@ public class Key
     private static final Logger LOG = LoggerFactory.getLogger(Key.class);
 
     /** The person id. */
-    @Field(analyze = Analyze.NO)
     private long personId;
 
     /** The instance type id. */

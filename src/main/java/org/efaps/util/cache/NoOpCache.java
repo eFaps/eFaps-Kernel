@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import org.infinispan.Cache;
 import org.infinispan.CacheCollection;
 import org.infinispan.CacheSet;
 import org.infinispan.configuration.cache.Configuration;
-import org.infinispan.filter.KeyFilter;
 import org.infinispan.lifecycle.ComponentStatus;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.notifications.cachelistener.filter.CacheEventConverter;
@@ -638,11 +637,6 @@ public class NoOpCache<K, V>
                                            final TimeUnit _maxIdleUnit)
     {
         return null;
-    }
-
-    @Override
-    public void addListener(final Object _listener, final KeyFilter<? super K> _filter)
-    {
     }
 
     @Override

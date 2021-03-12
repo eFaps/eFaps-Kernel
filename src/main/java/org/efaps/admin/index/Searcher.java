@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -143,7 +143,7 @@ public final class Searcher
                     }
                 }
             }
-            ret.setHitCount(topFieldDocs.totalHits);
+            ret.setHitCount(topFieldDocs.totalHits.value);
             if (ret.getHitCount() > 0) {
                 final ScoreDoc[] hits = topFieldDocs.scoreDocs;
 
@@ -155,11 +155,11 @@ public final class Searcher
                     LOG.debug("{}. {}\t {}", i + 1, oid, text);
                     final Instance instance = Instance.get(oid);
                     final List<Instance> list;
-                    if (this.typeMapping.containsKey(instance.getType())) {
-                        list = this.typeMapping.get(instance.getType());
+                    if (typeMapping.containsKey(instance.getType())) {
+                        list = typeMapping.get(instance.getType());
                     } else {
                         list = new ArrayList<Instance>();
-                        this.typeMapping.put(instance.getType(), list);
+                        typeMapping.put(instance.getType(), list);
                     }
                     list.add(instance);
                     final Element element = new Element().setOid(oid).setText(text);
@@ -171,12 +171,12 @@ public final class Searcher
                             }
                         }
                     }
-                    this.elements.put(instance, element);
+                    elements.put(instance, element);
                 }
             }
             reader.close();
             checkAccess();
-            ret.getElements().addAll(this.elements.values());
+            ret.getElements().addAll(elements.values());
         } catch (final IOException | QueryNodeException e) {
             LOG.error("Catched Exception", e);
         }
@@ -221,10 +221,10 @@ public final class Searcher
     {
         // check the access for the given instances
         final Map<Instance, Boolean> accessmap = new HashMap<Instance, Boolean>();
-        for (final Entry<Type, List<Instance>> entry : this.typeMapping.entrySet()) {
+        for (final Entry<Type, List<Instance>> entry : typeMapping.entrySet()) {
             accessmap.putAll(entry.getKey().checkAccess(entry.getValue(), AccessTypeEnums.SHOW.getAccessType()));
         }
-        this.elements.entrySet().removeIf(entry -> accessmap.size() > 0 && (!accessmap.containsKey(entry.getKey())
+        elements.entrySet().removeIf(entry -> accessmap.size() > 0 && (!accessmap.containsKey(entry.getKey())
                         || !accessmap.get(entry.getKey())));
     }
 

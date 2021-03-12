@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,6 @@ import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.InfinispanCache;
 import org.infinispan.Cache;
 import org.infinispan.query.Search;
-import org.infinispan.query.dsl.Query;
-import org.infinispan.query.dsl.QueryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,13 +111,10 @@ public final class AccessCache
     {
         AccessCache.LOG.debug("Cleaning cache for Person: {}", _personId);
         final Cache<Key, PermissionSet> cache = AccessCache.getPermissionCache();
-        final QueryFactory queryFactory = Search.getQueryFactory(cache);
-
-        final Query query = queryFactory.from(PermissionSet.class)
-                        .having("personId")
-                        .eq(_personId)
-                        .build();
-        query.<PermissionSet>list().forEach(set -> {
+        final var queryFactory = Search.getQueryFactory(cache);
+        final var query = queryFactory.<PermissionSet>create("FROM org.efaps.admin.access.user.PermissionSet p "
+                        + "WHERE p.personId = " + _personId);
+        query.execute().list().forEach(set -> {
             cache.remove(set.getKey());
         });
     }

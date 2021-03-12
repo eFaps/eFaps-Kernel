@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,10 @@ import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.engine.backend.types.Searchable;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+
 
 /**
  * The Class UserPermissions.
@@ -34,6 +37,7 @@ public class PermissionSet
 {
 
     /** The person id. */
+    @GenericField(searchable = Searchable.YES)
     private long personId;
 
     /** The instance type id. */
@@ -55,7 +59,7 @@ public class PermissionSet
      */
     public long getPersonId()
     {
-        return this.personId;
+        return personId;
     }
 
     /**
@@ -66,7 +70,7 @@ public class PermissionSet
      */
     public PermissionSet setPersonId(final long _personId)
     {
-        this.personId = _personId;
+        personId = _personId;
         return this;
     }
 
@@ -77,7 +81,7 @@ public class PermissionSet
      */
     public long getCompanyId()
     {
-        return this.companyId;
+        return companyId;
     }
 
     /**
@@ -88,7 +92,7 @@ public class PermissionSet
      */
     public PermissionSet setCompanyId(final long _companyId)
     {
-        this.companyId = _companyId;
+        companyId = _companyId;
         return this;
     }
 
@@ -99,7 +103,7 @@ public class PermissionSet
      */
     public long getTypeId()
     {
-        return this.typeId;
+        return typeId;
     }
 
     /**
@@ -109,7 +113,7 @@ public class PermissionSet
      */
     public Set<Long> getAccessTypeIds()
     {
-        return this.accessTypeIds;
+        return accessTypeIds;
     }
 
     /**
@@ -121,7 +125,7 @@ public class PermissionSet
     public PermissionSet addAccessTypeId(final long... _ids)
     {
         for (final long id : _ids) {
-            this.accessTypeIds.add(id);
+            accessTypeIds.add(id);
         }
         return this;
     }
@@ -133,7 +137,7 @@ public class PermissionSet
      */
     public Set<Long> getStatusIds()
     {
-        return this.statusIds;
+        return statusIds;
     }
 
     /**
@@ -145,7 +149,7 @@ public class PermissionSet
     public PermissionSet addStatusId(final long... _ids)
     {
         for (final long id : _ids) {
-            this.statusIds.add(id);
+            statusIds.add(id);
         }
         return this;
     }
@@ -158,7 +162,7 @@ public class PermissionSet
      */
     public PermissionSet setTypeId(final long _typeId)
     {
-        this.typeId = _typeId;
+        typeId = _typeId;
         return this;
     }
 

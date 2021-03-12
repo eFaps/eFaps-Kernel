@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ package org.efaps.db;
 
 import java.util.List;
 
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.TermQuery;
 import org.efaps.admin.AppConfigHandler;
 import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.InfinispanCache;
@@ -30,9 +28,7 @@ import org.infinispan.context.Flag;
 import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
 import org.infinispan.notifications.cachelistener.event.CacheEntryCreatedEvent;
-import org.infinispan.query.CacheQuery;
 import org.infinispan.query.Search;
-import org.infinispan.query.SearchManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,12 +109,9 @@ public final class QueryCache
             final Cache<String, QueryKey> indexCache = InfinispanCache.get().<String, QueryKey>getIgnReCache(
                             QueryCache.INDEXCACHE);
             if (!indexCache.isEmpty()) {
-                final SearchManager searchManager = Search.getSearchManager(indexCache);
-                final Term term = new Term("key", _key);
-                final org.apache.lucene.search.Query termQuery =  new TermQuery(term);
-
-                final CacheQuery<?> query = searchManager.getQuery(termQuery, QueryKey.class);
-                final List<?> result = query.list();
+                final var queryFactory = Search.getQueryFactory(indexCache);
+                final var query = queryFactory.create("FROM org.efaps.db.QueryKey q WHERE q.key = '" + _key + "'");
+                final List<?> result = query.execute().list();
                 if (result != null) {
                     for (final Object key : result) {
                         QueryCache.getSqlCache().remove(key);

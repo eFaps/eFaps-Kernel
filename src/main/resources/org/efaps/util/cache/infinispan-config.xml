@@ -15,25 +15,21 @@
  -->
 
 <infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="urn:infinispan:config:10.1 https://www.infinispan.org/schemas/infinispan-config-10.1.xsd"
-    xmlns="urn:infinispan:config:10.1">
+    xsi:schemaLocation="urn:infinispan:config:12.0 https://www.infinispan.org/schemas/infinispan-config-12.0.xsd"
+    xmlns="urn:infinispan:config:12.0">
     <cache-container default-cache="eFaps-Default" name="eFaps-Cache-Container" statistics="true">
         <local-cache-configuration name="eFaps-Default">
         </local-cache-configuration>
 
         <!-- the Access cache -->
         <local-cache name="org.efaps.admin.access.user.AccessCache.PermissionCache">
-            <memory>
-                <object size="50000" strategy="REMOVE"/>
-            </memory>
+            <memory max-count="5000"/>
             <!--10 minutes, 5 minutes (miliseconds) -->
             <expiration lifespan="600000" max-idle="300000" />
-            <indexing index="PRIMARY_OWNER">
+            <indexing storage="filesystem" path="${java.io.tmpdir}/infinispan">
                 <indexed-entities>
                     <indexed-entity>org.efaps.admin.access.user.PermissionSet</indexed-entity>
                 </indexed-entities>
-                <property name="default.indexBase">${java.io.tmpdir}/infinispan</property>
-                <property name="hibernate.search.lucene_version">LUCENE_CURRENT</property>
             </indexing>
         </local-cache>
         <local-cache name="org.efaps.admin.access.user.AccessCache.StatusCache">
@@ -101,12 +97,10 @@
         <local-cache name="org.efaps.db.QueryCache.Index">
             <!---Only experation no eviction, 10 minutes, 5 minutes (miliseconds) -->
             <expiration lifespan="600000" max-idle="300000" />
-            <indexing index="PRIMARY_OWNER">
+            <indexing storage="filesystem" path="${java.io.tmpdir}/infinispan">
                 <indexed-entities>
                     <indexed-entity>org.efaps.db.QueryKey</indexed-entity>
                 </indexed-entities>
-                <property name="default.indexBase">${java.io.tmpdir}/infinispan</property>
-                <property name="hibernate.search.lucene_version">LUCENE_CURRENT</property>
             </indexing>
         </local-cache>
 
@@ -220,17 +214,13 @@
 
         <local-cache-configuration
             name="org.efaps.ui.wicket.connectionregistry.RegistryManager.Session">
-            <memory>
-                <object size="5000" strategy="LIRS"/>
-            </memory>
-            <indexing index="PRIMARY_OWNER">
+            <memory max-count="5000"/>
+            <indexing storage="filesystem" path="${java.io.tmpdir}/infinispan">
                 <!-- the entity will be added during webapp loading
                 <indexed-entities>
                     <indexed-entity>org.efaps.ui.wicket.connectionregistry.UserSession</indexed-entity>
                 </indexed-entities>
                  -->
-                <property name="default.indexBase">${java.io.tmpdir}/infinispan</property>
-                <property name="hibernate.search.lucene_version">LUCENE_CURRENT</property>
             </indexing>
         </local-cache-configuration>
     </cache-container>
