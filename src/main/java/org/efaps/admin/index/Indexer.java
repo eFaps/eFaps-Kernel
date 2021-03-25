@@ -17,6 +17,7 @@
 package org.efaps.admin.index;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -158,9 +159,9 @@ public final class Indexer
             Context.getThreadContext().setLanguage(_context.getLanguage());
             final IndexWriterConfig config = new IndexWriterConfig(_context.getAnalyzer());
             try (
-                    IndexWriter writer = new IndexWriter(_context.getDirectory(), config);
-                    TaxonomyWriter taxonomyWriter = new DirectoryTaxonomyWriter(_context.getTaxonomyDirectory());
-                ) {
+                            IndexWriter writer = new IndexWriter(_context.getDirectory(), config);
+                            TaxonomyWriter taxonomyWriter = new DirectoryTaxonomyWriter(
+                                            _context.getTaxonomyDirectory());) {
 
                 final IndexDefinition def = IndexDefinition.get(_instances.get(0).getType().getUUID());
                 final MultiPrintQuery multi = new MultiPrintQuery(_instances);
@@ -183,7 +184,7 @@ public final class Indexer
                     } else {
                         created = multi.getAttribute(createdAttr);
                     }
-
+                    LOG.debug("Indexing: oid: {} type: {} ", oid, type);
                     final Document doc = new Document();
                     doc.add(new FacetField(Dimension.DIMTYPE.name(), type));
                     doc.add(new FacetField(Dimension.DIMCREATED.name(), String.valueOf(created.getYear()),
@@ -204,7 +205,7 @@ public final class Indexer
                             if (StringUtils.isNoneEmpty(field.getTransform())) {
                                 final Class<?> clazz = Class.forName(field.getTransform(),
                                                 false, EFapsClassLoader.getInstance());
-                                final ITransformer transformer = (ITransformer) clazz.newInstance();
+                                final ITransformer transformer = (ITransformer) clazz.getConstructor().newInstance();
                                 value = transformer.transform(value);
                             }
                             switch (field.getFieldType()) {
@@ -261,8 +262,10 @@ public final class Indexer
                 }
                 writer.close();
                 taxonomyWriter.close();
-            } catch (final IOException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                throw new EFapsException(Indexer.class, "IOException", e);
+            } catch (final IOException | ClassNotFoundException | InstantiationException | IllegalAccessException
+                            | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                            | SecurityException e) {
+                throw new EFapsException(Indexer.class, "Catched", e);
             } finally {
                 Context.getThreadContext().setCompany(currentCompany);
                 Context.getThreadContext().setLanguage(currentLanguage);
