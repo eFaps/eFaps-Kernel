@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 
-import org.apache.commons.lang.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.efaps.admin.user.Person;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.eql.builder.Selectables;
 import org.efaps.eql2.StmtFlag;
+import org.efaps.eql2.bldr.AbstractSelectables;
 import org.efaps.mock.Mocks;
 import org.efaps.mock.datamodel.CI;
 import org.efaps.mock.datamodel.Company;
@@ -370,7 +371,7 @@ public class PrintTest
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
         EQL.builder()
             .print(Instance.get(Mocks.TypedType.getId() + ".4"))
-            .select(Selectables.attribute(CI.TypedType.TestAttr.name))
+            .select(AbstractSelectables.attribute(CI.TypedType.TestAttr.name))
             .stmt()
             .execute();
         verify.verify();
@@ -445,7 +446,7 @@ public class PrintTest
         final SQLVerify verify = SQLVerify.builder().withSql(sql).build();
         EQL.builder()
             .print(Instance.get(Mocks.TypedType.getId() + ".4"))
-            .select(Selectables.instance())
+            .select(AbstractSelectables.instance())
             .stmt()
             .execute();
         verify.verify();
