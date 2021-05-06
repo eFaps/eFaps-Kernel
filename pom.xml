@@ -338,7 +338,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>net.sourceforge.dynamicreports</groupId>
             <artifactId>dynamicreports-core</artifactId>
-            <version>6.12.0</version>
+            <version>6.12.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
