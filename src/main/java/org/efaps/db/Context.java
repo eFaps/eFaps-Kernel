@@ -41,7 +41,7 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.efaps.admin.user.Company;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;

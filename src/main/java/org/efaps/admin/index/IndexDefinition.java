@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminDataModel;

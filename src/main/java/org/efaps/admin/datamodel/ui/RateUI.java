@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.DecimalType;
 import org.efaps.admin.event.EventType;
