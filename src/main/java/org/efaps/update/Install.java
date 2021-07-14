@@ -59,6 +59,7 @@ import org.xml.sax.SAXException;
  */
 public class Install
 {
+
     /**
      * Logging instance used to give logging information of this class.
      */
@@ -108,7 +109,7 @@ public class Install
      */
     public Install(final boolean _evaluateProfiles)
     {
-        this.evaluateProfiles = _evaluateProfiles;
+        evaluateProfiles = _evaluateProfiles;
     }
 
     /**
@@ -120,12 +121,12 @@ public class Install
      * each modification of one update is committed within small single
      * transactions.
      *
-     * @param _number           number to install
-     * @param _latestNumber     latest version number to install (e..g. defined
-     *                          in the version.xml file)
-     * @param _profiles         profiles to be applied
-     * @param _ignoredSteps     set of ignored life cycle steps which are not
-     *                          executed
+     * @param _number number to install
+     * @param _latestNumber latest version number to install (e..g. defined in
+     *            the version.xml file)
+     * @param _profiles profiles to be applied
+     * @param _ignoredSteps set of ignored life cycle steps which are not
+     *            executed
      * @return the multi valued map
      * @throws InstallationException on error
      * @see org.efaps.db.databases.AbstractDatabase#supportsBigTransactions()
@@ -134,15 +135,15 @@ public class Install
                                                   final Long _latestNumber,
                                                   final Set<Profile> _profiles,
                                                   final Set<UpdateLifecycle> _ignoredSteps)
-        throws InstallationException
+        throws EFapsException, InstallationException
     {
-        final boolean bigTrans = Context.getDbType().supportsBigTransactions();
+        final boolean bigTrans = isBigTrans();
         final String user;
-        try  {
+        try {
             user = Context.getThreadContext().getPerson() != null
-                   ? Context.getThreadContext().getPerson().getName()
-                   : null;
-        } catch (final EFapsException e)  {
+                            ? Context.getThreadContext().getPerson().getName()
+                            : null;
+        } catch (final EFapsException e) {
             throw new InstallationException("No context in this thread defined!", e);
         }
 
@@ -159,19 +160,20 @@ public class Install
         }
 
         // loop through all life cycle steps
-        for (final UpdateLifecycle step : getUpdateLifecycles())  {
+        for (final UpdateLifecycle step : getUpdateLifecycles()) {
             if (!_ignoredSteps.contains(step)) {
-                if (Install.LOG.isInfoEnabled())  {
+                if (Install.LOG.isInfoEnabled()) {
                     Install.LOG.info("..Running Lifecycle step " + step);
                 }
-                for (final Map.Entry<String, List<IUpdate>> entry : this.cache.entrySet()) {
+                for (final Map.Entry<String, List<IUpdate>> entry : cache.entrySet()) {
                     final List<IUpdate> updates = entry.getValue();
-                    Collections.sort(updates, (_update0, _update1)
-                        -> String.valueOf(_update0.getInstallFile().getUrl()).compareTo(
-                                    String.valueOf(_update1.getInstallFile().getUrl())));
+                    Collections.sort(updates,
+                                    (_update0,
+                                     _update1) -> String.valueOf(_update0.getInstallFile().getUrl()).compareTo(
+                                                     String.valueOf(_update1.getInstallFile().getUrl())));
                     for (final IUpdate update : updates) {
                         try {
-                            this.updateables.putAll(update.updateInDB(jexlContext, step,
+                            updateables.putAll(update.updateInDB(jexlContext, step,
                                             evaluateProfiles(update.getFileApplication(), _profiles)));
                             if (!bigTrans) {
                                 Context.commit();
@@ -183,15 +185,16 @@ public class Install
 
                     }
                 }
-            } else if (Install.LOG.isInfoEnabled())  {
+            } else if (Install.LOG.isInfoEnabled()) {
                 Install.LOG.info("..Skipped Lifecycle step " + step);
             }
         }
-        return this.updateables;
+        return updateables;
     }
 
     /**
      * Method to get all UpdateLifecycle in an ordered List.
+     *
      * @return ordered List of all UpdateLifecycle
      */
     private List<UpdateLifecycle> getUpdateLifecycles()
@@ -209,19 +212,20 @@ public class Install
      * latest version is evaluated depending from all installed version and the
      * defined application in the XML update file. The installation version is
      * the same as the latest version of the application.
+     *
      * @param _profiles set of profiles to be used
      * @throws InstallationException if update failed
      */
     public MultiValuedMap<String, String> updateLatest(final Set<Profile> _profiles)
-        throws InstallationException
+        throws EFapsException, InstallationException
     {
-        final boolean bigTrans = Context.getDbType().supportsBigTransactions();
+        final boolean bigTrans = isBigTrans();
         final String user;
-        try  {
+        try {
             user = Context.getThreadContext().getPerson() != null
-                   ? Context.getThreadContext().getPerson().getName()
-                   : null;
-        } catch (final EFapsException e)  {
+                            ? Context.getThreadContext().getPerson().getName()
+                            : null;
+        } catch (final EFapsException e) {
             throw new InstallationException("No context in this thread defined!", e);
         }
 
@@ -236,7 +240,7 @@ public class Install
             if (Install.LOG.isInfoEnabled()) {
                 Install.LOG.info("..Running Lifecycle step " + step);
             }
-            for (final Map.Entry<String, List<IUpdate>> entry : this.cache.entrySet()) {
+            for (final Map.Entry<String, List<IUpdate>> entry : cache.entrySet()) {
                 for (final IUpdate update : entry.getValue()) {
                     final Integer latestVersion;
                     if (update.getFileApplication() == null) {
@@ -255,7 +259,7 @@ public class Install
                     }
                     try {
                         // and create
-                        this.updateables.putAll(update.updateInDB(jexlContext, step,
+                        updateables.putAll(update.updateInDB(jexlContext, step,
                                         evaluateProfiles(update.getFileApplication(), _profiles)));
                         if (!bigTrans) {
                             Context.commit();
@@ -267,13 +271,14 @@ public class Install
                 }
             }
         }
-        return this.updateables;
+        return updateables;
     }
 
     /**
      * Load the already installed versions for this application from eFaps. The
      * method must be called within a Context begin and commit (it is not done
      * itself in this method!
+     *
      * @return Map containing the versions
      * @throws InstallationException on error
      */
@@ -327,24 +332,24 @@ public class Install
         throws InstallationException
     {
 
-        if (!this.initialised) {
-            this.initialised = true;
-            this.cache.clear();
+        if (!initialised) {
+            initialised = true;
+            cache.clear();
             AppDependency.initialise();
             for (final FileType fileType : FileType.values()) {
 
                 if (fileType == FileType.XML) {
-                    for (final InstallFile file : this.files) {
+                    for (final InstallFile file : files) {
                         if (file.getType() == fileType) {
                             final SaxHandler handler = new SaxHandler();
                             try {
                                 final IUpdate elem = handler.parse(file);
                                 final List<IUpdate> list;
-                                if (this.cache.containsKey(elem.getIdentifier())) {
-                                    list = this.cache.get(elem.getIdentifier());
+                                if (cache.containsKey(elem.getIdentifier())) {
+                                    list = cache.get(elem.getIdentifier());
                                 } else {
                                     list = new ArrayList<>();
-                                    this.cache.put(elem.getIdentifier(), list);
+                                    cache.put(elem.getIdentifier(), list);
                                 }
                                 list.add(handler.getUpdate());
                             } catch (final SAXException e) {
@@ -364,7 +369,7 @@ public class Install
                         } catch (final NoSuchMethodException e) {
                             throw new InstallationException("initialise()", e);
                         }
-                        for (final InstallFile file : this.files) {
+                        for (final InstallFile file : files) {
                             if (file.getType() == fileType) {
                                 Object obj = null;
                                 try {
@@ -379,11 +384,11 @@ public class Install
                                 if (obj != null && obj instanceof IUpdate) {
                                     final IUpdate iUpdate = (IUpdate) obj;
                                     final List<IUpdate> list;
-                                    if (this.cache.containsKey(iUpdate.getIdentifier())) {
-                                        list = this.cache.get(iUpdate.getIdentifier());
+                                    if (cache.containsKey(iUpdate.getIdentifier())) {
+                                        list = cache.get(iUpdate.getIdentifier());
                                     } else {
                                         list = new ArrayList<>();
-                                        this.cache.put(iUpdate.getIdentifier(), list);
+                                        cache.put(iUpdate.getIdentifier(), list);
                                     }
                                     list.add(iUpdate);
                                 }
@@ -400,7 +405,7 @@ public class Install
      */
     public void addFile(final InstallFile _installFile)
     {
-        this.files.add(_installFile);
+        files.add(_installFile);
     }
 
     /**
@@ -410,7 +415,7 @@ public class Install
      */
     public List<InstallFile> getFiles()
     {
-        return this.files;
+        return files;
     }
 
     /**
@@ -420,12 +425,12 @@ public class Install
      */
     protected boolean isEvaluateProfiles()
     {
-        return this.evaluateProfiles;
+        return evaluateProfiles;
     }
 
     /**
-     * @param _application  application used as key for SystemConfiguration
-     * @param _profile      profiles
+     * @param _application application used as key for SystemConfiguration
+     * @param _profile profiles
      * @return set of profiles
      * @throws EFapsException on error
      */
@@ -454,6 +459,14 @@ public class Install
         return ret;
     }
 
+    private boolean isBigTrans()
+        throws EFapsException
+    {
+        final boolean forceTrans = EFapsSystemConfiguration.get().getAttributeValueAsBoolean(
+                        KernelSettings.FORCETRANSACTION4UPDATE);
+        return Context.getDbType().supportsBigTransactions() && !forceTrans;
+    }
+
     /**
      * Returns a string representation with values of all instance variables.
      *
@@ -463,8 +476,8 @@ public class Install
     public String toString()
     {
         return new ToStringBuilder(this)
-            .append("urls", this.files)
-            .toString();
+                        .append("urls", files)
+                        .toString();
     }
 
     /**
@@ -472,6 +485,7 @@ public class Install
      */
     public static class InstallFile
     {
+
         /**
          * URL to the file.
          */
@@ -498,7 +512,7 @@ public class Install
          */
         public URL getUrl()
         {
-            return this.url;
+            return url;
         }
 
         /**
@@ -509,7 +523,7 @@ public class Install
          */
         public InstallFile setURL(final URL _url)
         {
-            this.url = _url;
+            url = _url;
             return this;
         }
 
@@ -520,7 +534,7 @@ public class Install
          */
         public FileType getType()
         {
-            return this.type;
+            return type;
         }
 
         /**
@@ -530,7 +544,7 @@ public class Install
          */
         public String getRevision()
         {
-            return this.revision == null ? "UNKNOWN" : this.revision;
+            return revision == null ? "UNKNOWN" : revision;
         }
 
         /**
@@ -541,7 +555,7 @@ public class Install
          */
         public InstallFile setRevision(final String _revision)
         {
-            this.revision = _revision;
+            revision = _revision;
             return this;
         }
 
@@ -553,7 +567,7 @@ public class Install
          */
         public InstallFile setType(final String _type)
         {
-            this.type = FileType.getFileTypeByType(_type);
+            type = FileType.getFileTypeByType(_type);
             return this;
         }
 
@@ -564,7 +578,7 @@ public class Install
          */
         public String getName()
         {
-            return this.name;
+            return name;
         }
 
         /**
@@ -575,7 +589,7 @@ public class Install
          */
         public InstallFile setName(final String _name)
         {
-            this.name = _name;
+            name = _name;
             return this;
         }
 
@@ -586,7 +600,7 @@ public class Install
          */
         public DateTime getDate()
         {
-            return this.date == null ? new DateTime() : this.date;
+            return date == null ? new DateTime() : date;
         }
 
         /**
@@ -597,7 +611,7 @@ public class Install
          */
         public InstallFile setDate(final DateTime _date)
         {
-            this.date = _date;
+            date = _date;
             return this;
         }
 

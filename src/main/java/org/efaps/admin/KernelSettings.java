@@ -189,6 +189,8 @@ public interface KernelSettings
      */
     String PROFILES4UPDATE = "org.efaps.kernel.update.Profiles";
 
+    String FORCETRANSACTION4UPDATE = "org.efaps.kernel.update.ForceTransaction";
+
     /**
      * Activate the general index mechanism.
      */
