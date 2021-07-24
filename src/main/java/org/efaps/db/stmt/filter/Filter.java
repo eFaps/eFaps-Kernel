@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 
 package org.efaps.db.stmt.filter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.comparators.ComparatorChain;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.Attribute;
@@ -36,6 +38,7 @@ import org.efaps.admin.datamodel.attributetype.LinkType;
 import org.efaps.admin.datamodel.attributetype.LongType;
 import org.efaps.admin.datamodel.attributetype.StatusType;
 import org.efaps.db.Instance;
+import org.efaps.db.stmt.selection.elements.LinktoElement;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLWhere;
 import org.efaps.db.wrapper.SQLWhere.Criteria;
@@ -45,6 +48,7 @@ import org.efaps.eql2.Comparison;
 import org.efaps.eql2.Connection;
 import org.efaps.eql2.IAttributeSelectElement;
 import org.efaps.eql2.IBaseSelectElement;
+import org.efaps.eql2.ILinktoSelectElement;
 import org.efaps.eql2.ISelectElement;
 import org.efaps.eql2.IWhere;
 import org.efaps.eql2.IWhereElement;
@@ -111,9 +115,10 @@ public class Filter
                         final NestedQuery nestedQuery = new NestedQuery(element);
                         nestedQuery.append2SQLSelect(types, _sqlSelect);
                     } else if (element.getAttribute() != null) {
-                        attribute(_sqlSelect, term, element, null);
+                        attribute(_sqlSelect, term, element, null, null);
                     } else if (element.getSelect() != null) {
                         final IWhereSelect select = element.getSelect();
+                        final List<ILinktoSelectElement> linktoElements = new ArrayList<>();
                         for (final ISelectElement ele : select.getElements()) {
                             if (ele instanceof IBaseSelectElement) {
                                 switch (((IBaseSelectElement) ele).getElement()) {
@@ -123,8 +128,12 @@ public class Filter
                                     default:
                                         break;
                                 }
+                                linktoElements.clear();
                             } else if (ele instanceof IAttributeSelectElement) {
-                                attribute(_sqlSelect, term, element, ele);
+                                attribute(_sqlSelect, term, element, ele, linktoElements);
+                                linktoElements.clear();
+                            } else if (ele instanceof ILinktoSelectElement) {
+                                linktoElements.add((ILinktoSelectElement) ele);
                             }
                         }
                     }
@@ -135,7 +144,8 @@ public class Filter
     }
 
     protected void attribute(final SQLSelect _sqlSelect, final IWhereTerm<?> _term, final IWhereElement _element,
-                             final ISelectElement _selectElement)
+                             final ISelectElement _selectElement, final List<ILinktoSelectElement> linktoElementStmts)
+        throws EFapsException
     {
         final String attrName;
         if (_selectElement != null && _selectElement instanceof IAttributeSelectElement) {
@@ -143,20 +153,47 @@ public class Filter
         } else {
             attrName = _element.getAttribute();
         }
-        if (types.isEmpty() && type2tableIdx != null) {
-            for (final var entry : type2tableIdx.entrySet()) {
-                final Attribute attr = entry.getKey().getAttribute(attrName);
-                if (attr != null) {
-                    addAttr(_sqlSelect, attr, _term, _element, entry.getValue(), false);
-                    break;
+        if (CollectionUtils.isNotEmpty(linktoElementStmts)) {
+            final var linktoElements = new ArrayList<LinktoElement>();
+            for (final var linktoElementStmt : linktoElementStmts) {
+                final var linktoElement = new LinktoElement();
+                if (linktoElements.isEmpty()) {
+                    for (final Type type : types) {
+                        final Attribute linktoAttr = type.getAttribute(linktoElementStmt.getName());
+                        if (linktoAttr != null) {
+                            linktoElement.setAttribute(linktoAttr);
+                        }
+                    }
+                    linktoElements.add(linktoElement);
+                } else {
+
                 }
             }
+
+            for (final var linktoElement : linktoElements) {
+                linktoElement.append2SQLSelect(_sqlSelect);
+            }
+            final var last = linktoElements.get(linktoElements.size() - 1);
+            final Type currentType = last.getAttribute().getLink();
+            final var tableIdx = last.getJoinTableIdx(_sqlSelect);
+            final Attribute attr = currentType.getAttribute(attrName);
+            addAttr(_sqlSelect, attr, _term, _element, tableIdx, false);
         } else {
-            for (final Type type : types) {
-                final Attribute attr = type.getAttribute(attrName);
-                if (attr != null) {
-                    addAttr(_sqlSelect, attr, _term, _element);
-                    break;
+            if (types.isEmpty() && type2tableIdx != null) {
+                for (final var entry : type2tableIdx.entrySet()) {
+                    final Attribute attr = entry.getKey().getAttribute(attrName);
+                    if (attr != null) {
+                        addAttr(_sqlSelect, attr, _term, _element, entry.getValue(), false);
+                        break;
+                    }
+                }
+            } else {
+                for (final Type type : types) {
+                    final Attribute attr = type.getAttribute(attrName);
+                    if (attr != null) {
+                        addAttr(_sqlSelect, attr, _term, _element);
+                        break;
+                    }
                 }
             }
         }
@@ -183,30 +220,36 @@ public class Filter
         }
     }
 
+    protected TableIdx tableIndex4Attr(final SQLSelect _sqlSelect, final Attribute _attr)
+    {
+        final SQLTable table = _attr.getTable();
+        final TableIdx tableIdx;
+        if (table.getMainTable() != null) {
+            final var mainTableIdx = _sqlSelect.getIndexer().getTableIdx(table.getMainTable().getSqlTable());
+            if (mainTableIdx.isCreated()) {
+                _sqlSelect.from(mainTableIdx.getTable(), mainTableIdx.getIdx());
+            }
+            tableIdx = _sqlSelect.getIndexer().getTableIdx(table.getSqlTable(), table.getMainTable().getSqlTable(),
+                            "ID");
+
+            if (tableIdx.isCreated()) {
+                _sqlSelect.leftJoin(tableIdx.getTable(), tableIdx.getIdx(), "ID", mainTableIdx.getIdx(), "ID");
+            }
+
+        } else {
+            tableIdx = _sqlSelect.getIndexer().getTableIdx(table.getSqlTable());
+            if (tableIdx.isCreated()) {
+                _sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
+            }
+        }
+        return tableIdx;
+    }
+
     protected void addAttr(final SQLSelect _sqlSelect, final Attribute _attr,
                            final IWhereTerm<?> _term, final IWhereElement _element)
     {
         if (_attr != null) {
-            final SQLTable table = _attr.getTable();
-            final TableIdx tableIdx;
-            if (table.getMainTable() != null) {
-                final var mainTableIdx = _sqlSelect.getIndexer().getTableIdx(table.getMainTable().getSqlTable());
-                if (mainTableIdx.isCreated()) {
-                    _sqlSelect.from(mainTableIdx.getTable(), mainTableIdx.getIdx());
-                }
-                tableIdx = _sqlSelect.getIndexer().getTableIdx(table.getSqlTable(), table.getMainTable().getSqlTable(),
-                                "ID");
-
-                if (tableIdx.isCreated()) {
-                    _sqlSelect.leftJoin(tableIdx.getTable(), tableIdx.getIdx(), "ID", mainTableIdx.getIdx(), "ID");
-                }
-
-            } else {
-                tableIdx = _sqlSelect.getIndexer().getTableIdx(table.getSqlTable());
-                if (tableIdx.isCreated()) {
-                    _sqlSelect.from(tableIdx.getTable(), tableIdx.getIdx());
-                }
-            }
+            final var tableIdx = tableIndex4Attr(_sqlSelect, _attr);
             addAttr(_sqlSelect, _attr, _term, _element, tableIdx, false);
         }
     }
