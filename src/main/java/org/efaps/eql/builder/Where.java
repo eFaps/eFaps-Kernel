@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import org.efaps.admin.datamodel.Status;
 import org.efaps.ci.CIAttribute;
 import org.efaps.ci.CIStatus;
 import org.efaps.db.Instance;
-import org.efaps.eql2.IWhereElement;
 import org.efaps.eql2.bldr.AbstractWhereBuilder;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -44,9 +43,12 @@ public class Where
 
     public Where attribute(final CIAttribute _ciAttr)
     {
-        final IWhereElement element = getCurrentElement();
-        element.setAttribute(_ciAttr.name);
-        return getThis();
+        return super.attribute(_ciAttr.name);
+    }
+
+    public Where linkto(final CIAttribute _ciAttr)
+    {
+        return super.linkto(_ciAttr.name);
     }
 
     public Where eq(final Instance _instance)
