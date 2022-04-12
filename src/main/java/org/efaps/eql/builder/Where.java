@@ -18,6 +18,7 @@
 package org.efaps.eql.builder;
 
 import java.util.Collection;
+import java.util.stream.Stream;
 
 import org.efaps.admin.datamodel.Status;
 import org.efaps.ci.CIAttribute;
@@ -25,10 +26,15 @@ import org.efaps.ci.CIStatus;
 import org.efaps.db.Instance;
 import org.efaps.eql2.bldr.AbstractWhereBuilder;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Where
     extends AbstractWhereBuilder<Where>
 {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Where.class);
+
     @Override
     protected Where getThis()
     {
@@ -65,6 +71,33 @@ public class Where
         throws CacheReloadException
     {
         return eq(Status.find(_ciStatus));
+    }
+
+    public Where in(final CIStatus... _ciStatus)
+    {
+        final var ids = Stream.of(_ciStatus).map(ciStatus -> {
+            try {
+                return Status.find(ciStatus).getId();
+            } catch (final CacheReloadException e) {
+                LOG.error("Catched", e);
+            }
+            return 0;
+        }).toArray(Long[]::new);
+        return in(ids);
+    }
+
+    public Where in(final Status... _status)
+    {
+        return in(Stream.of(_status).map(status -> {
+            return status.getId();
+        }).toArray(Long[]::new));
+    }
+
+    public Where in(final Instance... _instances)
+    {
+        return in(Stream.of(_instances).map(instance -> {
+            return instance.getId();
+        }).toArray(Long[]::new));
     }
 
     /**
