@@ -75,7 +75,7 @@ public class LoginHandler
     public LoginHandler(final String _application)
     {
         if (_application != null) {
-            this.applicationName = _application;
+            applicationName = _application;
         }
     }
 
@@ -204,7 +204,7 @@ public class LoginHandler
                     final String persName = (String) system.getPersonMethodName().invoke(persObj);
 
                     if (person == null) {
-                        person = Person.createPerson(system, persKey, persName, null);
+                        person = Person.createPerson(system, persKey, persName, null, false);
                     } else {
                         person.assignToJAASSystem(system, persKey);
                     }
@@ -364,7 +364,7 @@ public class LoginHandler
      */
     public String getApplicationName()
     {
-        return this.applicationName;
+        return applicationName;
     }
 
     /**
@@ -406,9 +406,9 @@ public class LoginHandler
                                        final String _name,
                                        final String _passwd)
         {
-            this.mode = _mode;
-            this.name = _name;
-            this.password = _passwd;
+            mode = _mode;
+            name = _name;
+            password = _passwd;
         }
 
         /**
@@ -429,14 +429,14 @@ public class LoginHandler
             for (int i = 0; i < _callbacks.length; i++) {
                 if (_callbacks[i] instanceof ActionCallback) {
                     final ActionCallback ac = (ActionCallback) _callbacks[i];
-                    ac.setMode(this.mode);
+                    ac.setMode(mode);
                 } else if (_callbacks[i] instanceof NameCallback) {
                     final NameCallback nc = (NameCallback) _callbacks[i];
-                    nc.setName(this.name);
+                    nc.setName(name);
                 } else if (_callbacks[i] instanceof PasswordCallback) {
-                    if (this.password != null) {
+                    if (password != null) {
                         final PasswordCallback pc = (PasswordCallback) _callbacks[i];
-                        pc.setPassword(this.password.toCharArray());
+                        pc.setPassword(password.toCharArray());
                     }
                 } else if (!(_callbacks[i] instanceof TextOutputCallback)) {
                     throw new UnsupportedCallbackException(_callbacks[i], "Unrecognized Callback");
