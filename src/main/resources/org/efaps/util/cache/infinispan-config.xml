@@ -32,62 +32,23 @@
                 </indexed-entities>
             </indexing>
         </local-cache>
-        <local-cache name="org.efaps.admin.access.user.AccessCache.StatusCache">
-            <indexing index="NONE" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.common.Association.UUID">
-            <indexing index="NONE" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.common.Association.ID">
-            <indexing index="NONE" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.common.Association.Name">
-            <indexing index="NONE" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.common.Association.Key">
-            <indexing index="NONE" />
-        </local-cache>
-
-        <local-cache name="org.efaps.util.cache.InfinispanCache.InternalCounter">
-            <indexing index="NONE" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.ui.Search.UUID">
-            <indexing index="NONE" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.ui.Search.ID">
-            <indexing index="NONE" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.ui.Search.Name">
-            <indexing index="NONE" />
-        </local-cache>
-
-        <local-cache name="org.efaps.admin.ui.Form.UUID">
-            <indexing index="NONE" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.ui.Form.ID">
-            <indexing index="NONE" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.ui.Form.Name">
-            <indexing index="NONE" />
-        </local-cache>
-
-        <local-cache name="org.efaps.admin.ui.Table.UUID">
-            <indexing index="NONE" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.ui.Table.ID">
-            <indexing index="NONE" />
-        </local-cache>
-        <local-cache name="org.efaps.admin.ui.Table.Name">
-            <indexing index="NONE" />
-        </local-cache>
-
-        <local-cache name="org.efaps.admin.index.Queue.Cache">
-            <indexing index="NONE" />
-        </local-cache>
-
-        <local-cache name="org.efaps.admin.index.IndexDefinition.UUID">
-            <indexing index="NONE" />
-        </local-cache>
+        <local-cache name="org.efaps.admin.access.user.AccessCache.StatusCache"/>
+        <local-cache name="org.efaps.admin.common.Association.UUID"/>
+        <local-cache name="org.efaps.admin.common.Association.ID"/>
+        <local-cache name="org.efaps.admin.common.Association.Name"/>
+        <local-cache name="org.efaps.admin.common.Association.Key"/>
+        <local-cache name="org.efaps.util.cache.InfinispanCache.InternalCounter"/>
+        <local-cache name="org.efaps.admin.ui.Search.UUID"/>
+        <local-cache name="org.efaps.admin.ui.Search.ID"/>
+        <local-cache name="org.efaps.admin.ui.Search.Name"/>
+        <local-cache name="org.efaps.admin.ui.Form.UUID"/>
+        <local-cache name="org.efaps.admin.ui.Form.ID"/>
+        <local-cache name="org.efaps.admin.ui.Form.Name"/>
+        <local-cache name="org.efaps.admin.ui.Table.UUID"/>
+        <local-cache name="org.efaps.admin.ui.Table.ID"/>
+        <local-cache name="org.efaps.admin.ui.Table.Name"/>
+        <local-cache name="org.efaps.admin.index.Queue.Cache"/>
+        <local-cache name="org.efaps.admin.index.IndexDefinition.UUID"/>
 
         <!-- the Sql Query cache -->
         <local-cache name="org.efaps.db.QueryCache.Sql">
