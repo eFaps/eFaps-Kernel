@@ -425,21 +425,27 @@ public class SQLRunner
                 final List<String> ids = new ArrayList<>();
                 if (_print.has(StmtFlag.COMPANYINDEPENDENT)) {
                     for (final Long companyId : Context.getThreadContext().getPerson().getCompanies()) {
-                        ids.add(String.valueOf(Association.evaluate(Type.get(entry.getValue().typeId), companyId)));
+                        final var association = Association.evaluate(Type.get(entry.getValue().typeId), companyId);
+                        if (association == null) {
+                            LOG.debug("No valid Association was found");
+                            ids.add("0");
+                        } else {
+                            ids.add(String.valueOf(association.getId()));
+                        }
                     }
                 } else {
                     final Association association = Association.evaluate(Type.get(entry.getValue().typeId));
                     if (association == null) {
                         LOG.debug("No valid Association was found");
                         ids.add("0");
-                    }else {
+                    } else {
                         ids.add(String.valueOf(association.getId()));
                     }
                 }
                 where.addCriteria(entry.getKey().getIdx(),
                                 Collections.singletonList(entry.getValue().sqlColAssociation),
                                 ids.size() > 1 ? Comparison.IN : Comparison.EQUAL, new LinkedHashSet<>(ids),
-                                                false, Connection.AND);
+                                false, Connection.AND);
             }
         }
     }
