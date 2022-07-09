@@ -35,11 +35,9 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
 import org.reflections.Reflections;
-import org.reflections.scanners.FieldAnnotationsScanner;
-import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.Scanner;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.scanners.Scanners;
+import org.reflections.serializers.XmlSerializer;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.vfs.Vfs;
 import org.reflections.vfs.Vfs.Dir;
@@ -53,6 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EsjpScanner
 {
+
     /**
      * Logging instance used in this class.
      */
@@ -64,6 +63,7 @@ public class EsjpScanner
     static {
         Vfs.setDefaultURLTypes(Collections.singletonList(new UrlType()
         {
+
             @Override
             public boolean matches(final URL _url)
                 throws Exception
@@ -91,12 +91,13 @@ public class EsjpScanner
                 LOG.info("Scanning esjps for annotations.");
                 final ConfigurationBuilder configuration = new ConfigurationBuilder()
                                 .setUrls(new URL("file://"))
-                                .setScanners(new SubTypesScanner(), new TypeAnnotationsScanner(),
-                                                new FieldAnnotationsScanner(), new MethodAnnotationsScanner())
+                                .setScanners(Scanners.SubTypes, Scanners.TypesAnnotated, Scanners.FieldsAnnotated,
+                                                Scanners.MethodsAnnotated)
                                 .setExpandSuperTypes(false);
-                configuration.setClassLoaders(new ClassLoader[] { EFapsClassLoader.getInstance()} );
+                configuration.setClassLoaders(new ClassLoader[] { EFapsClassLoader.getInstance() });
                 // in case of jboss the transaction filter is not executed
-                // before the method is called therefore a Context must be opened
+                // before the method is called therefore a Context must be
+                // opened
                 boolean contextStarted = false;
                 if (!Context.isThreadActive()) {
                     Context.begin(null, Context.Inheritance.Local);
@@ -110,9 +111,9 @@ public class EsjpScanner
             } else {
                 LOG.info("Loading refelections result.");
                 final ConfigurationBuilder configuration = new ConfigurationBuilder().setScanners(new Scanner[] {});
-                configuration.setClassLoaders(new ClassLoader[] { EFapsClassLoader.getInstance()} );
+                configuration.setClassLoaders(new ClassLoader[] { EFapsClassLoader.getInstance() });
                 reflections = new Reflections(configuration);
-                reflections.collect(REFLECTIONS);
+                reflections.collect(REFLECTIONS, new XmlSerializer());
             }
             for (final Class<? extends Annotation> annotation : _annotations) {
                 ret.addAll(reflections.getTypesAnnotatedWith(annotation));
@@ -130,7 +131,7 @@ public class EsjpScanner
     {
         final java.io.File tmpFolder = AppConfigHandler.get().getTempFolder();
         final java.io.File xmlFile = java.io.File.createTempFile("eFapsReflections-", ".xml", tmpFolder);
-        REFLECTIONS = _reflections.save(xmlFile.getAbsolutePath());
+        REFLECTIONS = _reflections.save(xmlFile.getAbsolutePath(), new XmlSerializer());
     }
 
     public static class EsjpDir
@@ -180,17 +181,17 @@ public class EsjpScanner
 
         public EsjpFile(final Instance _instance)
         {
-            this.instance = _instance;
+            instance = _instance;
         }
 
         private void init()
         {
-            if (this.name == null) {
+            if (name == null) {
                 try {
-                    final Checkout checkout = new Checkout(this.instance);
-                    this.in = checkout.execute();
-                    this.name = checkout.getFileName() + ".class";
-                    LOG.debug("Scanned: {}", this.name );
+                    final Checkout checkout = new Checkout(instance);
+                    in = checkout.execute();
+                    name = checkout.getFileName() + ".class";
+                    LOG.debug("Scanned: {}", name);
                 } catch (final EFapsException e) {
                     LOG.error("Catchec EFapsException", e);
                 }
@@ -201,14 +202,14 @@ public class EsjpScanner
         public String getName()
         {
             init();
-            return this.name;
+            return name;
         }
 
         @Override
         public String getRelativePath()
         {
             init();
-            return this.name;
+            return name;
         }
 
         @Override
@@ -216,7 +217,7 @@ public class EsjpScanner
             throws IOException
         {
             init();
-            return this.in;
+            return in;
         }
     }
 }
