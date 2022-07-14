@@ -62,7 +62,7 @@ public class FormatElement
                 object = ((LocalTime) object)
                                 .format(DateTimeFormatter.ofPattern(pattern, Context.getThreadContext().getLocale()));
             } else if (object instanceof OffsetDateTime) {
-                object = ((OffsetDateTime) object)
+                object = ((OffsetDateTime) object).atZoneSameInstant( Context.getThreadContext().getZoneId())
                                 .format(DateTimeFormatter.ofPattern(pattern, Context.getThreadContext().getLocale()));
             } else if (object instanceof BigDecimal || object instanceof Long || object instanceof Integer) {
                 final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
