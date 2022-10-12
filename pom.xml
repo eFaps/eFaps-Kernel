@@ -163,12 +163,12 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.4.0</version>
+            <version>42.5.0</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.29</version>
+            <version>8.0.30</version>
         </dependency>
 
         <!-- used for toString methods -->
@@ -522,7 +522,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-rmi</artifactId>
-            <version>2.21.11</version>
+            <version>2.21.12</version>
         </dependency>
         <dependency>
             <groupId>javax.jms</groupId>
@@ -584,7 +584,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
-            <version>3.29.0-GA</version>
+            <version>3.29.2-GA</version>
         </dependency>
         <dependency>
             <groupId>org.mnode.ical4j</groupId>
@@ -673,7 +673,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.eu.acolyte</groupId>
             <artifactId>jdbc-driver</artifactId>
-            <version>1.0.57</version>
+            <version>1.2.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
