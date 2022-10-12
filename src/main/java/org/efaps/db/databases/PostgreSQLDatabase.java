@@ -95,7 +95,8 @@ public class PostgreSQLDatabase
             + "a.constraint_type='FOREIGN KEY' "
             + "and a.constraint_name=b.constraint_name "
             + "and a.constraint_name=c.constraint_name "
-            + "and c.unique_constraint_name=d.constraint_name";
+            + "and c.unique_constraint_name=d.constraint_name "
+            + "and a.table_name like '%s'";
 
     /**
      * Singleton processor instance that handlers share to save memory. Notice

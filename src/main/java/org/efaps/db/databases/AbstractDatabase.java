@@ -1240,8 +1240,13 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         Statement stmt = null;
         final ResultSet rs;
         if (_sql == null) {
-            rs = _con.getMetaData().getColumns(null, null, "%", "%");
-        } else        {
+            if (_cache4Name.size() == 1) {
+                rs = _con.getMetaData().getColumns(null, null,
+                                _cache4Name.keySet().iterator().next().toLowerCase(), null);
+            } else {
+                rs = _con.getMetaData().getColumns(null, null, null, null);
+            }
+        } else {
             stmt = _con.createStatement();
             rs = stmt.executeQuery(_sql);
         }
@@ -1368,7 +1373,11 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
             rs = _con.getMetaData().getImportedKeys(null, null, "%");
         } else        {
             stmt = _con.createStatement();
-            rs = stmt.executeQuery(_sql);
+            if (_cache4Name.size() == 1) {
+                rs = stmt.executeQuery(String.format(_sql, _cache4Name.keySet().iterator().next().toLowerCase()));
+            } else {
+                rs = stmt.executeQuery(String.format(_sql, "%"));
+            }
         }
         try {
             while (rs.next()) {
