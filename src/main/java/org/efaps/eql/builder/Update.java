@@ -29,6 +29,7 @@ import org.efaps.util.EFapsException;
 public class Update
     extends AbstractUpdateEQLBuilder<Update>
 {
+
     /**
      * Sets a value for an CIAttribute.
      *
@@ -51,6 +52,12 @@ public class Update
     public UpdateStmt stmt()
     {
         return UpdateStmt.get((IUpdateStatement<?>) getStmt());
+    }
+
+    public UpdateStmt execute()
+        throws EFapsException
+    {
+        return stmt().execute();
     }
 
     @Override

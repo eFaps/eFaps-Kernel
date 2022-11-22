@@ -17,6 +17,7 @@
 package org.efaps.eql.builder;
 
 import org.efaps.ci.CIAttribute;
+import org.efaps.db.Instance;
 import org.efaps.db.stmt.InsertStmt;
 import org.efaps.eql2.IInsertStatement;
 import org.efaps.eql2.bldr.AbstractInsertEQLBuilder;
@@ -51,6 +52,12 @@ public class Insert
     public InsertStmt stmt()
     {
         return InsertStmt.get((IInsertStatement) getStmt());
+    }
+
+    public Instance execute()
+        throws EFapsException
+    {
+        return stmt().execute();
     }
 
     @Override
