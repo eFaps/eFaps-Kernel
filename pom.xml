@@ -109,7 +109,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <plugin>
                 <groupId>com.helger.maven</groupId>
                 <artifactId>ph-javacc-maven-plugin</artifactId>
-                <version>4.1.4</version>
+                <version>4.1.5</version>
                 <executions>
                     <execution>
                         <goals>
