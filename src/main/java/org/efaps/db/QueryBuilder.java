@@ -1126,7 +1126,7 @@ public class QueryBuilder
             query.setLimit(limit);
         }
         if (offset > 0) {
-            query.setOffset(5);
+            query.setOffset(offset);
         }
     }
 
