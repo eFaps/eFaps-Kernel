@@ -83,8 +83,11 @@ import org.efaps.db.wrapper.SQLWhere;
 import org.efaps.db.wrapper.TableIndexer.TableIdx;
 import org.efaps.eql2.Comparison;
 import org.efaps.eql2.Connection;
+import org.efaps.eql2.ILimit;
+import org.efaps.eql2.IOffset;
 import org.efaps.eql2.IOrder;
 import org.efaps.eql2.IOrderElement;
+import org.efaps.eql2.IPageable;
 import org.efaps.eql2.IPrintQueryStatement;
 import org.efaps.eql2.IStatement;
 import org.efaps.eql2.IUpdateElement;
@@ -263,9 +266,16 @@ public class SQLRunner
     {
         final IStatement<?> stmt = _print.getStmt();
         IOrder order = null;
+        ILimit limit = null;
+        IOffset offset = null;
         if (stmt instanceof IPrintQueryStatement) {
             order = ((IPrintQueryStatement) stmt).getOrder();
         }
+        if (stmt instanceof IPageable) {
+            limit = ((IPageable<?>) stmt).getQuery().getLimit();
+            offset = ((IPageable<?>) stmt).getQuery().getOffset();
+        }
+
         final Set<TypeCriterion> typeCriteria = new HashSet<>();
         int idx = 1;
         for (final Select select : _print.getSelection().getAllSelects()) {
@@ -277,6 +287,7 @@ public class SQLRunner
                     ((ITypeCriterion) element).add2TypeCriteria(sqlSelect, typeCriteria);
                 }
             }
+
             if (order != null) {
                 int orderIdx = 0;
                 for (final IOrderElement orderElement: order.getElementsList()) {
@@ -294,6 +305,12 @@ public class SQLRunner
                     }
                     orderIdx++;
                 }
+            }
+            if (limit != null) {
+                sqlSelect.limit(Integer.valueOf(limit.getValue()));
+            }
+            if (offset != null) {
+                sqlSelect.offset(Integer.valueOf(offset.getValue()));
             }
             idx++;
         }

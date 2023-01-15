@@ -70,6 +70,9 @@ public class SQLSelect
     /** The order. */
     private SQLOrder order;
 
+    private int limit;
+    private int offset;
+
     /**
      * Instantiates a new SQL select.
      */
@@ -356,6 +359,12 @@ public class SQLSelect
         if (order != null) {
             order.appendSQL(tablePrefix, cmd);
         }
+        if (limit > 0) {
+            cmd.append(" ").append(SQLPart.LIMIT).append(" ").append(limit);
+        }
+        if (offset > 0) {
+            cmd.append(" ").append(SQLPart.OFFSET).append(" ").append(offset);
+        }
         return cmd.toString();
     }
 
@@ -542,6 +551,16 @@ public class SQLSelect
             order = new SQLOrder(this);
         }
         return order;
+    }
+
+    public void limit(final Integer limit)
+    {
+        this.limit = limit == null ? 0 : limit;
+    }
+
+    public void offset(final Integer offset)
+    {
+        this.offset = offset == null ? 0 : offset;
     }
 
     @Override
