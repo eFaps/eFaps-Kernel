@@ -73,6 +73,7 @@ public enum SQLPart {
     NULL("null"),
     /** not. */
     NOT("not"),
+    OFFSET("offset"),
     /** on. */
     ON("on"),
     /** or. */
@@ -114,7 +115,7 @@ public enum SQLPart {
      */
     SQLPart(final String _default)
     {
-        this.defaultValue = _default;
+        defaultValue = _default;
     }
 
     /**
@@ -124,7 +125,7 @@ public enum SQLPart {
      */
     public String getDefaultValue()
     {
-        return this.defaultValue;
+        return defaultValue;
     }
 }
 

@@ -148,6 +148,7 @@ public class QueryBuilder
      */
     private int limit = -1;
 
+    private int offset = -1;
     /**
      * Should the child types be also be included in this search?
      */
@@ -943,6 +944,17 @@ public class QueryBuilder
         return this;
     }
 
+    public int getOffset()
+    {
+        return offset;
+    }
+
+    public QueryBuilder setOffset(final int offset)
+    {
+        this.offset = offset;
+        return this;
+    }
+
     /**
      * Getter method for the instance variable {@link #typeUUID}.
      *
@@ -1112,6 +1124,9 @@ public class QueryBuilder
         }
         if (limit > 0) {
             query.setLimit(limit);
+        }
+        if (offset > 0) {
+            query.setOffset(5);
         }
     }
 

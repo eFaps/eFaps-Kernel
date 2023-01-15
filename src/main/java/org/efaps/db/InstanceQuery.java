@@ -118,6 +118,7 @@ public class InstanceQuery
         select.addSection(getWhere());
         select.addSection(getOrderBy());
         select.addSection(getLimit());
+        select.addSection(getOffset());
 
         return select.getSQL();
     }

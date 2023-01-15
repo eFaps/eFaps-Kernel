@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2023 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.efaps.db.search.QAnd;
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.compare.QEqual;
 import org.efaps.db.search.section.QLimitSection;
+import org.efaps.db.search.section.QOffsetSection;
 import org.efaps.db.search.section.QOrderBySection;
 import org.efaps.db.search.section.QWhereSection;
 import org.efaps.db.search.value.QNumberValue;
@@ -43,7 +44,6 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * TODO comment!
  *
  * @author The eFaps Team
  *
@@ -77,6 +77,8 @@ public abstract class AbstractObjectQuery<T>
      * Limit for this Query.
      */
     private QLimitSection limit;
+
+    private QOffsetSection offset;
 
     /**
      * Should the child types be also be included in this search?
@@ -282,6 +284,21 @@ public abstract class AbstractObjectQuery<T>
         this.limit = _limit;
     }
 
+    public QOffsetSection getOffset()
+    {
+        return this.offset;
+    }
+
+    public void setOffset(final int Offset)
+    {
+        this.offset = new QOffsetSection(Offset);
+    }
+
+    public void setOffset(final QOffsetSection offset)
+    {
+        this.offset = offset;
+    }
+
     /**
      * Move the current instance to the next instance in the list.
      * @return true if the instance was set to the next value, else false
@@ -409,6 +426,9 @@ public abstract class AbstractObjectQuery<T>
 
         if (this.limit != null) {
             this.limit.prepare(this);
+        }
+        if (this.offset != null) {
+            this.offset.prepare(this);
         }
     }
 }
