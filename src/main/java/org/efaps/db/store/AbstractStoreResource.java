@@ -115,7 +115,7 @@ public abstract class AbstractStoreResource
     /**
      * Length of the file in byte.
      */
-    private Long fileLength = new Long(0);
+    private Long fileLength = 0L;
 
     /**
      * Store this Resource belongs to.
@@ -236,7 +236,7 @@ public abstract class AbstractStoreResource
                                 .column(AbstractStoreResource.COLNAME_FILELENGTH, 0)
                                 .execute(res);
                 this.fileName = "TMP";
-                this.fileLength = new Long(0);
+                this.fileLength = 0L;
             } catch (final SQLException e) {
                 throw new EFapsException(AbstractStoreResource.class, "insertDefaults", e);
             }

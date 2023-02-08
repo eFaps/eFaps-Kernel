@@ -73,7 +73,7 @@ public class ApplicationVersion
      * @see #getNumber
      */
     @SetProperty(pattern = "install/version", attributeName = "number")
-    private Long number = Long.valueOf(0);
+    private Long number = (long) 0;
 
     /**
      * Store the information weather a compile must be done after installing
@@ -269,7 +269,7 @@ public class ApplicationVersion
     @Override
     public int compareTo(final ApplicationVersion _compareTo)
     {
-        return new Long(this.number).compareTo(_compareTo.number);
+        return this.number.compareTo(_compareTo.number);
     }
 
     /**
@@ -405,7 +405,7 @@ public class ApplicationVersion
                                final String _fileName,
                                final String _function)
         {
-            this.code = (_code == null) || ("".equals(_code.trim())) ? null : _code.trim();
+            this.code = _code == null || "".equals(_code.trim()) ? null : _code.trim();
             this.fileName = _fileName;
             this.function = _function;
         }
