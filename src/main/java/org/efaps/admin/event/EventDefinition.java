@@ -155,7 +155,7 @@ public final class EventDefinition
             if (!EFapsClassLoader.getInstance().isOffline()) {
                 final Class<?> cls = Class.forName(this.resourceName, true, EFapsClassLoader.getInstance());
                 final Method method = cls.getMethod(this.methodName, new Class[] { Parameter.class });
-                final Object progInstance = cls.newInstance();
+                final Object progInstance = cls.getDeclaredConstructor().newInstance();
                 if (EventDefinition.LOG.isDebugEnabled()) {
                     EventDefinition.LOG.debug("found Class: {} and method {}", progInstance, method);
                 }
@@ -171,6 +171,10 @@ public final class EventDefinition
         } catch (final NoSuchMethodException e) {
             EventDefinition.LOG.error("could not find method: '{}' in class '{}'",
                             new Object[] { this.methodName, this.resourceName, e });
+        } catch (final IllegalArgumentException e) {
+            EventDefinition.LOG.error("could not access Class: '{}'", this.resourceName, e);
+        } catch (final InvocationTargetException e) {
+            EventDefinition.LOG.error("could not access Class: '{}'", this.resourceName, e);
         }
     }
 
@@ -191,7 +195,7 @@ public final class EventDefinition
             EventDefinition.LOG.debug("Invoking method '{}' for Resource '{}'", this.methodName, this.resourceName);
             final Class<?> cls = Class.forName(this.resourceName, true, EFapsClassLoader.getInstance());
             final Method method = cls.getMethod(this.methodName, new Class[] { Parameter.class });
-            ret = (Return) method.invoke(cls.newInstance(), _parameter);
+            ret = (Return) method.invoke(cls.getDeclaredConstructor().newInstance(), _parameter);
             EventDefinition.LOG.debug("Terminated invokation of method '{}' for Resource '{}'",
                             this.methodName, this.resourceName);
         } catch (final SecurityException e) {
@@ -203,7 +207,7 @@ public final class EventDefinition
         } catch (final InvocationTargetException e) {
             EventDefinition.LOG.error("could not invoke method: '{}' in class: '{}'", this.methodName,
                             this.resourceName, e);
-            throw (EFapsException) e.getCause();
+            throw new EFapsException("InvocationTargetException", e.getCause());
         } catch (final ClassNotFoundException e) {
             EventDefinition.LOG.error("class not found: '{}" + this.resourceName, e);
         } catch (final NoSuchMethodException e) {
