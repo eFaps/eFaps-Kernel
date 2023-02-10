@@ -66,6 +66,7 @@ public final class QueryCache
      */
     private static NoOpQueryCache NOOP;
 
+    private static boolean INIT;
 
     /**
      * Utility class therefore no public Constructor.
@@ -82,20 +83,17 @@ public final class QueryCache
         if (AppConfigHandler.get().isQueryCacheDeactivated()) {
             QueryCache.NOOP = new NoOpQueryCache();
         } else {
-            if (InfinispanCache.get().exists(QueryCache.INDEXCACHE)) {
-                InfinispanCache.get().<String, QueryKey>getCache(QueryCache.INDEXCACHE).clear();
-            } else {
-                final Cache<String, QueryKey> cache = InfinispanCache.get().<String, QueryKey>getCache(
-                                QueryCache.INDEXCACHE);
-                cache.addListener(new CacheLogListener(QueryCache.LOG));
-            }
-            if (InfinispanCache.get().exists(QueryCache.SQLCACHE)) {
-                InfinispanCache.get().<QueryKey, Object>getCache(QueryCache.SQLCACHE).clear();
-            } else {
-                final Cache<QueryKey, Object> cache = InfinispanCache.get().<QueryKey, Object>getCache(
-                                QueryCache.SQLCACHE);
-                cache.addListener(new CacheLogListener(QueryCache.LOG));
-                cache.addListener(new SqlCacheListener());
+            final Cache<String, QueryKey> indexCache = InfinispanCache.get().<String, QueryKey>getCache(
+                            QueryCache.INDEXCACHE);
+            indexCache.clear();
+            final Cache<QueryKey, Object> sqlCache = InfinispanCache.get()
+                            .<QueryKey, Object>getCache(QueryCache.SQLCACHE);
+            sqlCache.clear();
+            if (!INIT) {
+                INIT = true;
+                indexCache.addListener(new CacheLogListener(QueryCache.LOG));
+                sqlCache.addListener(new CacheLogListener(QueryCache.LOG));
+                sqlCache.addListener(new SqlCacheListener());
             }
         }
     }
@@ -125,7 +123,7 @@ public final class QueryCache
     /**
      * @param _cacheDef cacheDefinition
      * @param _querykey QueryKey
-     * @param _object   object to store
+     * @param _object object to store
      */
     public static void put(final ICacheDefinition _cacheDef,
                            final QueryKey _querykey,
@@ -167,6 +165,7 @@ public final class QueryCache
     @Listener
     public static class SqlCacheListener
     {
+
         /**
          * If an QueryKey is inserted to SQLCache the QueryKey will also be
          * registered in the IndexCache.
