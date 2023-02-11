@@ -17,6 +17,7 @@
 
 package org.efaps.db;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,6 +67,7 @@ import org.efaps.db.search.value.QBitValue;
 import org.efaps.db.search.value.QBooleanValue;
 import org.efaps.db.search.value.QClassValue;
 import org.efaps.db.search.value.QDateTimeValue;
+import org.efaps.db.search.value.QLocalDateValue;
 import org.efaps.db.search.value.QNullValue;
 import org.efaps.db.search.value.QNumberValue;
 import org.efaps.db.search.value.QOffsetDateTimeValue;
@@ -874,6 +876,8 @@ public class QueryBuilder
             ret = new QDateTimeValue((DateTime) _value);
         } else if (_value instanceof OffsetDateTime) {
             ret = new QOffsetDateTimeValue((OffsetDateTime) _value);
+        } else if (_value instanceof LocalDate) {
+            ret = new QLocalDateValue((LocalDate) _value);
         } else if (_value instanceof Boolean) {
             ret = new QBooleanValue((Boolean) _value);
         } else if (_value instanceof Status) {

@@ -22,6 +22,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -387,6 +388,11 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
     public String getStr4DateTime(final OffsetDateTime _value)
     {
         return _value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+    }
+
+    public String getStr4DateTime(final LocalDate _value)
+    {
+        return _value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
     /**
