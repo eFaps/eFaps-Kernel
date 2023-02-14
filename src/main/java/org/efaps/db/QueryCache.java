@@ -17,8 +17,6 @@
 
 package org.efaps.db;
 
-import java.util.List;
-
 import org.efaps.admin.AppConfigHandler;
 import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.InfinispanCache;
@@ -29,9 +27,9 @@ import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
 import org.infinispan.notifications.cachelistener.event.CacheEntryCreatedEvent;
 import org.infinispan.query.Search;
+import org.infinispan.query.dsl.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 /**
  * Caching for Queries.
  *
@@ -108,11 +106,14 @@ public final class QueryCache
                             QueryCache.INDEXCACHE);
             if (!indexCache.isEmpty()) {
                 final var queryFactory = Search.getQueryFactory(indexCache);
-                final var query = queryFactory.create("FROM org.efaps.db.QueryKey q WHERE q.key = '" + _key + "'");
-                final List<?> result = query.execute().list();
+                final Query<QueryKey> query = queryFactory.create("FROM org.efaps.db.QueryKey q WHERE q.key = :key");
+                query.setParameter("key", _key);
+                final var result = query.execute().list();
                 if (result != null) {
+                    final var sqlCache = QueryCache.getSqlCache();
                     for (final Object key : result) {
-                        QueryCache.getSqlCache().remove(key);
+                        LOG.debug("Removing key: {}", key);
+                        sqlCache.remove(key);
                         indexCache.remove(((QueryKey) key).getIndexKey());
                     }
                 }
