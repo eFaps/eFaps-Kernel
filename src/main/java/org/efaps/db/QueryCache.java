@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2021 The eFaps Team
+ * Copyright 2003 - 2023 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,11 @@ import org.efaps.util.cache.InfinispanCache;
 import org.efaps.util.cache.NoOpCache;
 import org.infinispan.Cache;
 import org.infinispan.context.Flag;
-import org.infinispan.notifications.Listener;
-import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
-import org.infinispan.notifications.cachelistener.event.CacheEntryCreatedEvent;
 import org.infinispan.query.Search;
 import org.infinispan.query.dsl.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Caching for Queries.
  *
@@ -47,12 +45,7 @@ public final class QueryCache
     /**
      * Name of the Cache for Instances.
      */
-    public static final String SQLCACHE = QueryCache.class.getName() + ".Sql";
-
-    /**
-     * Name of the Cache for AccessKey.
-     */
-    public static final String INDEXCACHE = QueryCache.class.getName() + ".Index";
+    public static final String CACHE = QueryCache.class.getName();
 
     /**
      * Logging instance used in this class.
@@ -81,17 +74,12 @@ public final class QueryCache
         if (AppConfigHandler.get().isQueryCacheDeactivated()) {
             QueryCache.NOOP = new NoOpQueryCache();
         } else {
-            final Cache<String, QueryKey> indexCache = InfinispanCache.get().<String, QueryKey>getCache(
-                            QueryCache.INDEXCACHE);
-            indexCache.clear();
             final Cache<QueryKey, Object> sqlCache = InfinispanCache.get()
-                            .<QueryKey, Object>getCache(QueryCache.SQLCACHE);
+                            .<QueryKey, Object>getCache(QueryCache.CACHE);
             sqlCache.clear();
             if (!INIT) {
                 INIT = true;
-                indexCache.addListener(new CacheLogListener(QueryCache.LOG));
                 sqlCache.addListener(new CacheLogListener(QueryCache.LOG));
-                sqlCache.addListener(new SqlCacheListener());
             }
         }
     }
@@ -102,21 +90,14 @@ public final class QueryCache
     public static void cleanByKey(final String _key)
     {
         if (!AppConfigHandler.get().isQueryCacheDeactivated()) {
-            final Cache<String, QueryKey> indexCache = InfinispanCache.get().<String, QueryKey>getIgnReCache(
-                            QueryCache.INDEXCACHE);
-            if (!indexCache.isEmpty()) {
-                final var queryFactory = Search.getQueryFactory(indexCache);
-                final Query<QueryKey> query = queryFactory.create("FROM org.efaps.db.QueryKey q WHERE q.key = :key");
+            final var cache = get();
+            if (!cache.isEmpty()) {
+                final var queryFactory = Search.getQueryFactory(cache);
+                final Query<QueryKey> query = queryFactory
+                                .create("DELETE FROM org.efaps.db.QueryValue q WHERE q.key = :key");
                 query.setParameter("key", _key);
-                final var result = query.execute().list();
-                if (result != null) {
-                    final var sqlCache = QueryCache.getSqlCache();
-                    for (final Object key : result) {
-                        LOG.debug("Removing key: {}", key);
-                        sqlCache.remove(key);
-                        indexCache.remove(((QueryKey) key).getIndexKey());
-                    }
-                }
+                final var deleted = query.executeStatement();
+                LOG.debug("Deleted {} entries for {}", deleted, _key);
             }
         }
     }
@@ -128,10 +109,10 @@ public final class QueryCache
      */
     public static void put(final ICacheDefinition _cacheDef,
                            final QueryKey _querykey,
-                           final Object _object)
+                           final QueryValue _object)
     {
         if (!AppConfigHandler.get().isQueryCacheDeactivated()) {
-            final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
+            final Cache<QueryKey, QueryValue> cache = QueryCache.get();
             if (_cacheDef.getMaxIdleTime() != 0) {
                 cache.put(_querykey, _object, _cacheDef.getLifespan(), _cacheDef.getLifespanUnit(),
                                 _cacheDef.getMaxIdleTime(), _cacheDef.getMaxIdleTimeUnit());
@@ -140,57 +121,30 @@ public final class QueryCache
             } else {
                 cache.put(_querykey, _object);
             }
+            LOG.debug("Added entry for {}", _querykey);
         }
     }
 
     /**
      * @return the QueryCache
      */
-    public static Cache<QueryKey, Object> getSqlCache()
+    public static Cache<QueryKey, QueryValue> get()
     {
-        final Cache<QueryKey, Object> ret;
+        final Cache<QueryKey, QueryValue> ret;
         if (AppConfigHandler.get().isQueryCacheDeactivated()) {
             ret = QueryCache.NOOP;
         } else {
-            ret = InfinispanCache.get().<QueryKey, Object>getCache(QueryCache.SQLCACHE).getAdvancedCache()
+            ret = InfinispanCache.get().<QueryKey, QueryValue>getCache(QueryCache.CACHE).getAdvancedCache()
                             .withFlags(Flag.IGNORE_RETURN_VALUES);
         }
         return ret;
     }
 
     /**
-     * Listener responsible to maintain the two Caches in sync. The SQLCache
-     * will receive the new QueryKey in the moment that a new QueryKey is
-     * inserted.
-     */
-    @Listener
-    public static class SqlCacheListener
-    {
-
-        /**
-         * If an QueryKey is inserted to SQLCache the QueryKey will also be
-         * registered in the IndexCache.
-         *
-         * @param _event event to be logged
-         */
-        @CacheEntryCreated
-        public void onCacheEntryCreated(final CacheEntryCreatedEvent<?, ?> _event)
-        {
-            if (!_event.isPre()) {
-                final Cache<String, QueryKey> indexCache = InfinispanCache.get()
-                                .<String, QueryKey>getIgnReCache(QueryCache.INDEXCACHE);
-
-                final QueryKey querykey = (QueryKey) _event.getKey();
-                indexCache.put(querykey.getIndexKey(), querykey);
-            }
-        }
-    }
-
-    /**
      * Implementation of a Cache that actually does not store anything.
      */
     private static class NoOpQueryCache
-        extends NoOpCache<QueryKey, Object>
+        extends NoOpCache<QueryKey, QueryValue>
     {
 
     }

@@ -46,7 +46,6 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -938,14 +937,14 @@ public abstract class AbstractPrintQuery
             if (isCacheEnabled()) {
                 final QueryKey querykey = QueryKey.get(getKey(), _complStmt);
                 AbstractPrintQuery.LOG.debug("Searching for QueryKey: {}", querykey);
-                final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
+                final var cache = QueryCache.get();
                 if (cache.containsKey(querykey)) {
-                    final Object object = cache.get(querykey);
-                    if (object instanceof List) {
-                        rows = (List<Object[]>) object;
+                    final var queryValue = cache.get(querykey);
+                    if (queryValue.getContent() instanceof List) {
+                        rows = (List<Object[]>) queryValue.getContent();
                     }
                     cached = true;
-                    AbstractPrintQuery.LOG.debug("Using cached information: {}", object);
+                    AbstractPrintQuery.LOG.debug("Using cached information");
                 }
             }
 
@@ -959,9 +958,10 @@ public abstract class AbstractPrintQuery
                 rs.close();
                 stmt.close();
                 if (isCacheEnabled()) {
-                    final QueryKey querykey = QueryKey.get(getKey(), _complStmt);
+                    final var querykey = QueryKey.get(getKey(), _complStmt);
+                    final var queryValue = QueryValue.get(getKey(), rows);
                     AbstractPrintQuery.LOG.debug("Caching with QueryKey: {}", querykey);
-                    QueryCache.put((ICacheDefinition) this, querykey, rows);
+                    QueryCache.put((ICacheDefinition) this, querykey, queryValue);
                 }
             }
 

@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
-import org.infinispan.Cache;
 
 /**
  * TODO comment!
@@ -124,11 +123,11 @@ public class CachedInstanceQuery
         prepareQuery();
         final String sql = createSQLStatement();
         final QueryKey querykey = QueryKey.get(getKey(), sql);
-        final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
+        final var cache = QueryCache.get();
         if (cache.containsKey(querykey)) {
-            final Object object = cache.get(querykey);
-            if (object instanceof List) {
-                final List<?> values = (List<?>) object;
+            final var queryValue = cache.get(querykey);
+            if (queryValue.getContent() instanceof List) {
+                final List<?> values = (List<?>) queryValue.getContent();
                 for (final Object value : values) {
                     if (value instanceof Instance) {
                         getValues().add((Instance) value);
@@ -137,7 +136,8 @@ public class CachedInstanceQuery
             }
         } else {
             executeOneCompleteStmt(sql);
-            QueryCache.put(this, querykey, getValues());
+            final var queryValue = QueryValue.get(getKey(), getValues());
+            QueryCache.put(this, querykey, queryValue);
         }
         return getValues();
     }

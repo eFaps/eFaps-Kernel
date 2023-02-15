@@ -51,12 +51,19 @@
         <local-cache name="org.efaps.admin.index.IndexDefinition.UUID"/>
 
         <!-- the Sql Query cache -->
-        <local-cache name="org.efaps.db.QueryCache.Sql">
+        <local-cache name="org.efaps.db.QueryCache">
             <!--Only experation no eviction 10 minutes, 5 minutes (miliseconds) -->
             <expiration lifespan="600000" max-idle="300000" />
+            <indexing storage="filesystem" path="${java.io.tmpdir}/infinispan" startup-mode="purge">
+                <indexed-entities>
+                    <indexed-entity>org.efaps.db.QueryValue</indexed-entity>
+                </indexed-entities>
+            </indexing>
         </local-cache>
+        <!---Only experation no eviction, 10 minutes, 5 minutes (miliseconds) -->
+        <!--
         <local-cache name="org.efaps.db.QueryCache.Index">
-            <!---Only experation no eviction, 10 minutes, 5 minutes (miliseconds) -->
+
             <expiration lifespan="600000" max-idle="300000" />
             <indexing storage="filesystem" path="${java.io.tmpdir}/infinispan" startup-mode="purge">
                 <indexed-entities>
@@ -64,7 +71,7 @@
                 </indexed-entities>
             </indexing>
         </local-cache>
-
+            -->
         <local-cache name="org.efaps.admin.dbproperty.DBProperties"/>
 
         <!-- UserInterface -->

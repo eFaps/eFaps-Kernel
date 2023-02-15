@@ -34,6 +34,7 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.QueryCache;
 import org.efaps.db.QueryKey;
+import org.efaps.db.QueryValue;
 import org.efaps.db.search.AbstractQPart;
 import org.efaps.db.search.QAnd;
 import org.efaps.db.search.section.QWhereSection;
@@ -44,7 +45,6 @@ import org.efaps.eql.InvokerUtil;
 import org.efaps.eql.stmt.parts.where.AbstractWhere;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
-import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -282,11 +282,11 @@ public class LinkFromSelect
             boolean cached = false;
             if (isCacheEnabled()) {
                 final QueryKey querykey = QueryKey.get(getKey(), _complStmt);
-                final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
+                final var cache = QueryCache.get();
                 if (cache.containsKey(querykey)) {
-                    final Object object = cache.get(querykey);
-                    if (object instanceof List) {
-                        rows = (List<Object[]>) object;
+                    final var queryValue = cache.get(querykey);
+                    if (queryValue.getContent() instanceof List) {
+                        rows = (List<Object[]>) queryValue.getContent();
                     }
                     cached = true;
                 }
@@ -301,9 +301,10 @@ public class LinkFromSelect
                 rs.close();
                 stmt.close();
                 if (isCacheEnabled()) {
-                    final QueryKey querykey = QueryKey.get(getKey(), _complStmt);
-                    final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
-                    cache.put(querykey, rows);
+                    final var querykey = QueryKey.get(getKey(), _complStmt);
+                    final var queryvalue = QueryValue.get(getKey(), rows);
+                    final var cache = QueryCache.get();
+                    cache.put(querykey, queryvalue);
                 }
             }
             for (final Object[] row : rows) {
