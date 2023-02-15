@@ -937,6 +937,7 @@ public abstract class AbstractPrintQuery
             boolean cached = false;
             if (isCacheEnabled()) {
                 final QueryKey querykey = QueryKey.get(getKey(), _complStmt);
+                AbstractPrintQuery.LOG.debug("Searching for QueryKey: {}", querykey);
                 final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
                 if (cache.containsKey(querykey)) {
                     final Object object = cache.get(querykey);
@@ -944,10 +945,12 @@ public abstract class AbstractPrintQuery
                         rows = (List<Object[]>) object;
                     }
                     cached = true;
+                    AbstractPrintQuery.LOG.debug("Using cached information: {}", object);
                 }
             }
 
             if (!cached) {
+                AbstractPrintQuery.LOG.debug("Executing against database");
                 con = Context.getThreadContext().getConnectionResource();
                 final Statement stmt = con.createStatement();
                 final ResultSet rs = stmt.executeQuery(_complStmt);
@@ -956,7 +959,9 @@ public abstract class AbstractPrintQuery
                 rs.close();
                 stmt.close();
                 if (isCacheEnabled()) {
-                    QueryCache.put((ICacheDefinition) this, QueryKey.get(getKey(), _complStmt), rows);
+                    final QueryKey querykey = QueryKey.get(getKey(), _complStmt);
+                    AbstractPrintQuery.LOG.debug("Caching with QueryKey: {}", querykey);
+                    QueryCache.put((ICacheDefinition) this, querykey, rows);
                 }
             }
 
