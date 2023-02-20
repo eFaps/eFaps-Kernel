@@ -22,6 +22,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.api.ci.DMAttributeType;
 import org.efaps.eql.stmt.ICIPrintStmt;
+import org.efaps.eql2.ICIPrintTypeStatement;
 import org.efaps.json.ci.AbstractCI;
 import org.efaps.json.ci.AttributeType;
 import org.efaps.util.UUIDUtil;
@@ -34,6 +35,7 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public final class JSONCI
 {
+
     /**
      * Singelton.
      */
@@ -61,33 +63,71 @@ public final class JSONCI
                     type = Type.get(_stmt.getCI());
                 }
                 if (type != null) {
-                    final org.efaps.json.ci.Type jsonType = new org.efaps.json.ci.Type()
-                                    .setName(type.getName())
+                    final org.efaps.json.ci.Type jsonType = new org.efaps.json.ci.Type().setName(type.getName())
                                     .setUUID(type.getUUID())
                                     .setId(type.getId());
                     for (final Attribute attr : type.getAttributes().values()) {
-                        final AttributeType attrType = new AttributeType()
-                                        .setName(attr.getAttributeType().getName());
+                        final AttributeType attrType = new AttributeType().setName(attr.getAttributeType().getName());
                         switch (DMAttributeType.fromValue(attr.getAttributeType().getName())) {
                             case LINK:
                             case LINK_WITH_RANGES:
                             case STATUS:
                                 if (attr.hasLink()) {
-                                     attrType.setInfo(attr.getLink().getName() + ", " + attr.getLink().getUUID());
+                                    attrType.setInfo(attr.getLink().getName() + ", " + attr.getLink().getUUID());
                                 }
                                 break;
                             default:
                                 break;
                         }
-                       jsonType.addAttribute(new org.efaps.json.ci.Attribute()
-                                        .setName(attr.getName())
-                                        .setType(attrType));
+                        jsonType.addAttribute(
+                                        new org.efaps.json.ci.Attribute().setName(attr.getName()).setType(attrType));
                     }
                     ret = jsonType;
                 }
                 break;
             default:
                 break;
+        }
+        return ret;
+    }
+
+    public static AbstractCI<?> getCI(final org.efaps.db.stmt.CIPrintStmt _stmt)
+        throws CacheReloadException
+    {
+        final var eqlStmt = _stmt.getStmt();
+        AbstractCI<?> ret = null;
+        if (eqlStmt instanceof ICIPrintTypeStatement) {
+
+            final var typeName = ((ICIPrintTypeStatement) eqlStmt).getTypeName();
+
+            final Type type;
+            if (UUIDUtil.isUUID(typeName)) {
+                type = Type.get(UUID.fromString(typeName));
+            } else {
+                type = Type.get(typeName);
+            }
+            if (type != null) {
+                final org.efaps.json.ci.Type jsonType = new org.efaps.json.ci.Type().setName(type.getName())
+                                .setUUID(type.getUUID())
+                                .setId(type.getId());
+                for (final Attribute attr : type.getAttributes().values()) {
+                    final AttributeType attrType = new AttributeType().setName(attr.getAttributeType().getName());
+                    switch (DMAttributeType.fromValue(attr.getAttributeType().getName())) {
+                        case LINK:
+                        case LINK_WITH_RANGES:
+                        case STATUS:
+                            if (attr.hasLink()) {
+                                attrType.setInfo(attr.getLink().getName() + ", " + attr.getLink().getUUID());
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    jsonType.addAttribute(new org.efaps.json.ci.Attribute().setName(attr.getName()).setType(attrType));
+                }
+                ret = jsonType;
+            }
+
         }
         return ret;
     }
