@@ -491,7 +491,7 @@ public abstract class AbstractPrintQuery
         throws EFapsException
     {
         final String baseSel;
-        if (_selectBldr == null) {
+        if (_selectBldr == null || _selectBldr.toString().length() == 0) {
             baseSel = "";
         } else {
             baseSel = _selectBldr.toString() + ".";
@@ -649,7 +649,7 @@ public abstract class AbstractPrintQuery
     {
         final List<Object> objects = new ArrayList<>();
         final String baseSel;
-        if (_selectBldr == null) {
+        if (_selectBldr == null || _selectBldr.toString().length() == 0) {
             baseSel = "";
         } else {
             baseSel = _selectBldr.toString() + ".";
