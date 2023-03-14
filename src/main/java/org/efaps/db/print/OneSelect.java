@@ -544,6 +544,9 @@ public class OneSelect
                 if (matcher.find()) {
                     currentSelect.addValueSelect(new EsjpValueSelect(currentSelect, matcher.group()));
                 }
+            }  else if (part.startsWith("exec")) {
+                final String execPart = this.selectStmt.substring(this.selectStmt.indexOf("exec"));
+                currentSelect.addValueSelect(new EsjpValueSelect(currentSelect, execPart));
             } else {
                 switch (part) {
                     case "oid":

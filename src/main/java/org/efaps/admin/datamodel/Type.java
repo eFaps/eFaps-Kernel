@@ -642,7 +642,7 @@ public class Type
     {
         final Set<Attribute> ret = new HashSet<>();
         for (final Attribute attr : getAttributes().values()) {
-            if (attr.getAttributeType().getClassRepr().isAssignableFrom(_class)) {
+            if (attr.getAttributeType().getClassRepr() == _class) {
                 ret.add(attr);
             }
         }
@@ -1107,10 +1107,10 @@ public class Type
                     typeMenu = ret.getId();
                     ret.setTypeMenu(true);
                 } else {
-                    typeMenu = Long.valueOf(0);
+                    typeMenu = (long) 0;
                 }
             } else {
-                typeMenu = Long.valueOf(0);
+                typeMenu = (long) 0;
             }
             setDirty();
         }
@@ -1143,10 +1143,10 @@ public class Type
                 if (ret != null) {
                     typeIcon = ret.getId();
                 } else {
-                    typeIcon = Long.valueOf(0);
+                    typeIcon = (long) 0;
                 }
             } else {
-                typeIcon = Long.valueOf(0);
+                typeIcon = (long) 0;
             }
             setDirty();
         }
@@ -1178,10 +1178,10 @@ public class Type
                 if (ret != null) {
                     typeForm = ret.getId();
                 } else {
-                    typeForm = Long.valueOf(0);
+                    typeForm = (long) 0;
                 }
             } else {
-                typeForm = Long.valueOf(0);
+                typeForm = (long) 0;
             }
             setDirty();
         }

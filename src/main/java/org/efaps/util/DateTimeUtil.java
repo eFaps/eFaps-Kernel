@@ -43,14 +43,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Date and time utility class to handle the time zone from the eFaps
- * correctly.
+ * Date and time utility class to handle the time zone from the eFaps correctly.
  *
  * @author The eFaps Team
  *
  */
 public final class DateTimeUtil
 {
+
     /**
      * Logging instance used to give logging information of this class.
      */
@@ -81,7 +81,8 @@ public final class DateTimeUtil
      * @return time stamp containing the current time of the eFaps database
      * @throws EFapsException on error
      */
-    public static Timestamp getCurrentTimeFromDB() throws EFapsException
+    public static Timestamp getCurrentTimeFromDB()
+        throws EFapsException
     {
         Timestamp now = null;
         final ConnectionResource rsrc = Context.getThreadContext().getConnectionResource();
@@ -112,14 +113,13 @@ public final class DateTimeUtil
         return ret;
     }
 
-
     /**
-     * The given DateTime will be normalized to ISO calendar with time zone
-     * from {@link EFapsSystemConfiguration#KERNEL kernel system configuration}
-     * &quot;Admin_Common_DataBaseTimeZone&quot;. In case that the
-     * system configuration is missing &quot;UTC&quot; will be used.
+     * The given DateTime will be normalized to ISO calendar with time zone from
+     * {@link EFapsSystemConfiguration#KERNEL kernel system configuration}
+     * &quot;Admin_Common_DataBaseTimeZone&quot;. In case that the system
+     * configuration is missing &quot;UTC&quot; will be used.
      *
-     * @param _date     date to normalize
+     * @param _date date to normalize
      * @return DateTime normalized for the database
      * @throws EFapsException on error
      */
@@ -128,7 +128,7 @@ public final class DateTimeUtil
     {
         // reads the Value from "Admin_Common_DataBaseTimeZone"
         final String timezoneID = EFapsSystemConfiguration.get() == null ? DateTimeZone.getDefault().getID()
-                : EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DBTIMEZONE);
+                        : EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DBTIMEZONE);
         final ISOChronology chron;
         if (timezoneID != null) {
             final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
@@ -142,11 +142,11 @@ public final class DateTimeUtil
     /**
      * The value that can be set is a Date, a DateTime or a String
      * yyyy-MM-dd'T'HH:mm:ss.SSSZZ. It will be normalized to ISO Calender with
-     * TimeZone from SystemAttribute Admin_Common_DataBaseTimeZone. In case
-     * that the SystemAttribute is missing UTC will be used.
+     * TimeZone from SystemAttribute Admin_Common_DataBaseTimeZone. In case that
+     * the SystemAttribute is missing UTC will be used.
      *
      *
-     * @param _value    value from user interface to translate
+     * @param _value value from user interface to translate
      * @return translated date time
      * @throws EFapsException on error
      */
@@ -156,7 +156,7 @@ public final class DateTimeUtil
         final DateTime ret;
         // reads the Value from "Admin_Common_DataBaseTimeZone"
         final String timezoneID = EFapsSystemConfiguration.get() == null ? DateTimeZone.getDefault().getID()
-            : EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DBTIMEZONE);
+                        : EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DBTIMEZONE);
         final ISOChronology chron;
         if (timezoneID != null) {
             final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
@@ -179,7 +179,7 @@ public final class DateTimeUtil
             ret = new DateTime(localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth(),
                             localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond(),
                             localDateTime.getSecond()).withChronology(chron);
-        } else  {
+        } else {
             ret = null;
         }
         return ret;
@@ -222,7 +222,7 @@ public final class DateTimeUtil
             final Instant instant = ((Date) _value).toInstant();
             ret = instant.atZone(DateTimeUtil.getDBZoneId()).toLocalDate();
         } else if (_value instanceof DateTime) {
-            final DateTime dateTime = (DateTime)_value;
+            final DateTime dateTime = (DateTime) _value;
             ret = LocalDate.of(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth());
         } else if (_value instanceof String) {
             final String str = (String) _value;
@@ -235,10 +235,13 @@ public final class DateTimeUtil
         } else if (_value instanceof LocalDateTime) {
             final LocalDateTime localDateTime = (LocalDateTime) _value;
             ret = LocalDate.of(localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth());
+        } else if (_value instanceof OffsetDateTime) {
+            final var dateTime = (OffsetDateTime) _value;
+            ret = LocalDate.of(dateTime.getYear(), dateTime.getMonth(), dateTime.getDayOfMonth());
         } else if (_value instanceof LocalDate) {
             ret = (LocalDate) _value;
         } else {
-            LOG.warn("Cannot convert value {} to OffsetDateTime", _value);
+            LOG.warn("Cannot convert value {} to LocalDate", _value);
             ret = null;
         }
         return ret;

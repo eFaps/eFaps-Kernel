@@ -15,8 +15,8 @@
  -->
 
 <infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="urn:infinispan:config:13.0 https://www.infinispan.org/schemas/infinispan-config-13.0.xsd"
-    xmlns="urn:infinispan:config:13.0">
+    xsi:schemaLocation="urn:infinispan:config:14.0 https://www.infinispan.org/schemas/infinispan-config-14.0.xsd"
+    xmlns="urn:infinispan:config:14.0">
     <cache-container default-cache="eFaps-Default" name="eFaps-Cache-Container" statistics="true">
         <local-cache-configuration name="eFaps-Default">
         </local-cache-configuration>
@@ -51,20 +51,27 @@
         <local-cache name="org.efaps.admin.index.IndexDefinition.UUID"/>
 
         <!-- the Sql Query cache -->
-        <local-cache name="org.efaps.db.QueryCache.Sql">
+        <local-cache name="org.efaps.db.QueryCache">
             <!--Only experation no eviction 10 minutes, 5 minutes (miliseconds) -->
             <expiration lifespan="600000" max-idle="300000" />
+            <indexing storage="filesystem" path="${java.io.tmpdir}/infinispan" startup-mode="purge">
+                <indexed-entities>
+                    <indexed-entity>org.efaps.db.QueryValue</indexed-entity>
+                </indexed-entities>
+            </indexing>
         </local-cache>
+        <!---Only experation no eviction, 10 minutes, 5 minutes (miliseconds) -->
+        <!--
         <local-cache name="org.efaps.db.QueryCache.Index">
-            <!---Only experation no eviction, 10 minutes, 5 minutes (miliseconds) -->
+
             <expiration lifespan="600000" max-idle="300000" />
-            <indexing storage="filesystem" path="${java.io.tmpdir}/infinispan">
+            <indexing storage="filesystem" path="${java.io.tmpdir}/infinispan" startup-mode="purge">
                 <indexed-entities>
                     <indexed-entity>org.efaps.db.QueryKey</indexed-entity>
                 </indexed-entities>
             </indexing>
         </local-cache>
-
+            -->
         <local-cache name="org.efaps.admin.dbproperty.DBProperties"/>
 
         <!-- UserInterface -->

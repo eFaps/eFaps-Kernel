@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.efaps</groupId>
         <artifactId>efaps-parent</artifactId>
-        <version>11.0.0-SNAPSHOT</version>
+        <version>17.0.0-SNAPSHOT</version>
     </parent>
 
     <packaging>jar</packaging>
@@ -109,7 +109,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <plugin>
                 <groupId>com.helger.maven</groupId>
                 <artifactId>ph-javacc-maven-plugin</artifactId>
-                <version>4.1.4</version>
+                <version>4.1.5</version>
                 <executions>
                     <execution>
                         <goals>
@@ -532,7 +532,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.infinispan</groupId>
             <artifactId>infinispan-query</artifactId>
-            <version>13.0.10.Final</version>
+            <version>14.0.6.Final</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hibernate-jpa-2.0-api</artifactId>

@@ -23,6 +23,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIType;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.AbstractStmt;
+import org.efaps.db.stmt.CIPrintStmt;
 import org.efaps.db.stmt.DeleteStmt;
 import org.efaps.db.stmt.InsertStmt;
 import org.efaps.db.stmt.PrintStmt;
@@ -35,6 +36,7 @@ import org.efaps.eql.builder.Selectables;
 import org.efaps.eql.builder.Update;
 import org.efaps.eql.builder.Where;
 import org.efaps.eql2.EQL2;
+import org.efaps.eql2.ICIPrintStatement;
 import org.efaps.eql2.IDeleteStatement;
 import org.efaps.eql2.IInsertStatement;
 import org.efaps.eql2.IPrintStatement;
@@ -116,6 +118,8 @@ public final class EQL
             ret = InsertStmt.get((IInsertStatement) stmt);
         } else if (stmt instanceof IUpdateStatement) {
             ret = UpdateStmt.get((IUpdateStatement<?>) stmt);
+        } else if (stmt instanceof ICIPrintStatement) {
+            ret = CIPrintStmt.get((ICIPrintStatement<?>) stmt);
         }
         return ret;
     }

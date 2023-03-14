@@ -17,6 +17,7 @@
 
 package org.efaps.db.print.value;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,6 @@ import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * TODO comment!
  *
@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 public class EsjpValueSelect
     extends InstanceValueSelect
 {
+
     /**
      * Logging instance used in this class.
      */
@@ -69,7 +70,13 @@ public class EsjpValueSelect
     {
         super(_oneSelect);
         LOG.debug("instanciated EsjpValueSelect with: '{}'", _esjp);
-        final String[] paraAr = _esjp.split("(?<!\\\\),");
+        final String[] paraAr;
+        if (_esjp.startsWith("exec")) {
+            final var stmt = _esjp.replaceFirst("(execute)|(exec)", "").trim();
+            paraAr = stmt.split("(, )|( )");
+        } else {
+            paraAr = _esjp.split("(?<!\\\\),");
+        }
         if (paraAr == null || paraAr.length == 0) {
             LOG.error("Invalid esjp Value select: '{]'", _esjp);
         } else {
@@ -100,7 +107,7 @@ public class EsjpValueSelect
         if (this.esjp == null) {
             try {
                 final Class<?> clazz = Class.forName(this.className, false, EFapsClassLoader.getInstance());
-                this.esjp = (IEsjpSelect) clazz.newInstance();
+                this.esjp = (IEsjpSelect) clazz.getDeclaredConstructor().newInstance();
                 final List<Instance> instances = new ArrayList<>();
                 for (final Object obj : getOneSelect().getObjectList()) {
                     instances.add((Instance) super.getValue(obj));
@@ -110,13 +117,14 @@ public class EsjpValueSelect
                 } else {
                     this.esjp.initialize(instances, this.parameters.toArray(new String[this.parameters.size()]));
                 }
-            } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException
+                            | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                            | SecurityException e) {
                 LOG.error("Catched error", e);
             }
         }
         return this.esjp.getValue(inst);
     }
-
 
     /**
      * {@inheritDoc}

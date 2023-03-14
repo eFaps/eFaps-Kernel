@@ -220,7 +220,7 @@ public class SQLUpdate
                             colIter.remove();
                         }
                     } else if (newValue instanceof Integer) {
-                        if (dbValue.equals(new Long((Integer) newValue))) {
+                        if (dbValue.equals(Long.valueOf((Integer) newValue))) {
                             colIter.remove();
                         }
                     }

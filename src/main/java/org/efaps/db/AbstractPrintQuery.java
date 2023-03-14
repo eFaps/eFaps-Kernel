@@ -46,7 +46,6 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -492,7 +491,7 @@ public abstract class AbstractPrintQuery
         throws EFapsException
     {
         final String baseSel;
-        if (_selectBldr == null) {
+        if (_selectBldr == null || _selectBldr.toString().length() == 0) {
             baseSel = "";
         } else {
             baseSel = _selectBldr.toString() + ".";
@@ -650,7 +649,7 @@ public abstract class AbstractPrintQuery
     {
         final List<Object> objects = new ArrayList<>();
         final String baseSel;
-        if (_selectBldr == null) {
+        if (_selectBldr == null || _selectBldr.toString().length() == 0) {
             baseSel = "";
         } else {
             baseSel = _selectBldr.toString() + ".";
@@ -937,17 +936,20 @@ public abstract class AbstractPrintQuery
             boolean cached = false;
             if (isCacheEnabled()) {
                 final QueryKey querykey = QueryKey.get(getKey(), _complStmt);
-                final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
+                AbstractPrintQuery.LOG.debug("Searching for QueryKey: {}", querykey);
+                final var cache = QueryCache.get();
                 if (cache.containsKey(querykey)) {
-                    final Object object = cache.get(querykey);
-                    if (object instanceof List) {
-                        rows = (List<Object[]>) object;
+                    final var queryValue = cache.get(querykey);
+                    if (queryValue.getContent() instanceof List) {
+                        rows = (List<Object[]>) queryValue.getContent();
                     }
                     cached = true;
+                    AbstractPrintQuery.LOG.debug("Using cached information");
                 }
             }
 
             if (!cached) {
+                AbstractPrintQuery.LOG.debug("Executing against database");
                 con = Context.getThreadContext().getConnectionResource();
                 final Statement stmt = con.createStatement();
                 final ResultSet rs = stmt.executeQuery(_complStmt);
@@ -956,7 +958,10 @@ public abstract class AbstractPrintQuery
                 rs.close();
                 stmt.close();
                 if (isCacheEnabled()) {
-                    QueryCache.put((ICacheDefinition) this, QueryKey.get(getKey(), _complStmt), rows);
+                    final var querykey = QueryKey.get(getKey(), _complStmt);
+                    final var queryValue = QueryValue.get(getKey(), rows);
+                    AbstractPrintQuery.LOG.debug("Caching with QueryKey: {}", querykey);
+                    QueryCache.put((ICacheDefinition) this, querykey, queryValue);
                 }
             }
 

@@ -16,11 +16,15 @@
  */
 package org.efaps.db.stmt.update;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.access.AccessTypeEnums;
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.IStatusChangeListener;
 import org.efaps.admin.event.EventDefinition;
@@ -43,6 +47,7 @@ import org.slf4j.LoggerFactory;
 public class Insert
     extends AbstractObjectUpdate
 {
+
     private static final Logger LOG = LoggerFactory.getLogger(Insert.class);
 
     /** The type. */
@@ -75,13 +80,13 @@ public class Insert
 
         if (getType().isCheckStatus()) {
             for (final IUpdateElement updateElement : ((IInsertStatement) getEqlStmt()).getUpdateElements()) {
-               if (getType().getStatusAttribute().getName().equals(updateElement.getAttribute())) {
-                   if (StringUtils.isNumeric(updateElement.getValue())) {
-                       statusId = Long.valueOf(updateElement.getValue());
-                   } else {
-                       LOG.warn("Cannot convert status value to status ID: {}", updateElement.getValue());
-                   }
-               }
+                if (getType().getStatusAttribute().getName().equals(updateElement.getAttribute())) {
+                    if (StringUtils.isNumeric(updateElement.getValue())) {
+                        statusId = Long.valueOf(updateElement.getValue());
+                    } else {
+                        LOG.warn("Cannot convert status value to status ID: {}", updateElement.getValue());
+                    }
+                }
             }
         }
     }
@@ -103,7 +108,7 @@ public class Insert
      */
     public void evaluateInstance(final Long _created)
     {
-       instance = Instance.get(getType(), _created);
+        instance = Instance.get(getType(), _created);
     }
 
     public boolean executeEvents(final EventType _eventType)
@@ -115,6 +120,7 @@ public class Insert
             ret = true;
             final Parameter parameter = new Parameter();
             parameter.put(ParameterValues.INSTANCE, instance);
+            parameter.put(ParameterValues.NEW_VALUES, getNewValuesMap());
             for (final EventDefinition evenDef : triggers) {
                 evenDef.execute(parameter);
             }
@@ -131,5 +137,20 @@ public class Insert
                 listener.onInsert(getInstance(), statusId);
             }
         }
+    }
+
+    protected final Map<Attribute, Object[]> getNewValuesMap()
+    {
+        final Map<Attribute, Object[]> ret = new HashMap<>();
+        for (final IUpdateElement updateElement : ((IInsertStatement) getEqlStmt()).getUpdateElements()) {
+            final var attr = getType().getAttribute(updateElement.getAttribute());
+            if (attr != null) {
+                final AttributeType attrType = attr.getAttributeType();
+                if (!(attrType.isAlwaysUpdate() || attrType.isCreateUpdate())) {
+                    ret.put(attr, new Object[] { updateElement.getValue() });
+                }
+            }
+        }
+        return ret;
     }
 }

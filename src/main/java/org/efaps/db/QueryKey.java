@@ -22,15 +22,9 @@ import java.io.Serializable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+import org.infinispan.query.Transformable;
 
-/**
- *
- * @author The eFaps Team
- *
- */
-@Indexed
+@Transformable(transformer = QueryKeyTransformer.class)
 public final class QueryKey
     implements Serializable
 {
@@ -47,7 +41,6 @@ public final class QueryKey
     /**
      * The name of the sql statement.
      */
-    @KeywordField
     private final String key;
 
     /**
@@ -84,15 +77,6 @@ public final class QueryKey
     {
         return key;
     }
-
-    /**
-     * @return string used as unique value for indexing
-     */
-    protected String getIndexKey()
-    {
-        return getKey() + getSql();
-    }
-
     /**
      * @return id represented by this instance
      */

@@ -51,6 +51,7 @@ import org.efaps.db.ICacheDefinition;
 import org.efaps.db.Instance;
 import org.efaps.db.QueryCache;
 import org.efaps.db.QueryKey;
+import org.efaps.db.QueryValue;
 import org.efaps.db.stmt.delete.AbstractDelete;
 import org.efaps.db.stmt.filter.Filter;
 import org.efaps.db.stmt.filter.TypeCriterion;
@@ -95,7 +96,6 @@ import org.efaps.eql2.IUpdateElementsStmt;
 import org.efaps.eql2.StmtFlag;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
-import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -686,11 +686,11 @@ public class SQLRunner
         boolean cached = false;
         if (runnable.has(StmtFlag.REQCACHED)) {
             final QueryKey querykey = QueryKey.get(Context.getThreadContext().getRequestId(), _complStmt);
-            final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
+            final var cache = QueryCache.get();
             if (cache.containsKey(querykey)) {
-                final Object object = cache.get(querykey);
-                if (object instanceof List) {
-                    rows = (List<Object[]>) object;
+                final var queryValue = cache.get(querykey);
+                if (queryValue.getContent() instanceof List) {
+                    rows = (List<Object[]>) queryValue.getContent();
                 }
                 cached = true;
             }
@@ -724,7 +724,8 @@ public class SQLRunner
                         return TimeUnit.MINUTES;
                     }
                 };
-                QueryCache.put(cacheDefinition, QueryKey.get(Context.getThreadContext().getRequestId(), _complStmt), rows);
+                QueryCache.put(cacheDefinition, QueryKey.get(Context.getThreadContext().getRequestId(), _complStmt),
+                               QueryValue.get(Context.getThreadContext().getRequestId(), rows));
             }
         }
         for (final Object[] row : rows) {

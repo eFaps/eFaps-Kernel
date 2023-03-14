@@ -78,7 +78,7 @@ public abstract class AbstractSourceUpdate
      */
     protected Long getVersion()
     {
-        return new Long(1);
+        return 1L;
     }
 
     /**
