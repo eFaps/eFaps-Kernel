@@ -78,6 +78,7 @@ public class NestedQuery
                                 final TableIdx tableidx = sqlSelect.getIndexer().getTableIdx(tableName);
                                 sqlSelect.column(tableidx.getIdx(), attr.getSqlColNames().get(0));
                                 added = true;
+                                break;
                             }
                         }
                     }
