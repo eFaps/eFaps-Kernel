@@ -49,6 +49,7 @@ public enum SQLPart {
     GREATER(">"),
     /** FALSE. */
     FALSE("FALSE"),
+    ILIKE("ilike"),
     /** in. */
     IN("in"),
     /** Renders as default: "inner". */

@@ -177,6 +177,9 @@ public class SQLWhere
                         case LIKE:
                             new SQLSelect.SQLSelectPart(SQLPart.LIKE).appendSQL(_cmd);
                             break;
+                        case ILIKE:
+                            new SQLSelect.SQLSelectPart(SQLPart.ILIKE).appendSQL(_cmd);
+                            break;
                         case LESS:
                             new SQLSelect.SQLSelectPart(SQLPart.LESS).appendSQL(_cmd);
                             break;
