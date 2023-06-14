@@ -170,7 +170,7 @@ public class Print
         throws EFapsException
     {
         final String baseSel;
-        if (_baseSelect == null) {
+        if (_baseSelect == null || _baseSelect.isEmpty()) {
             baseSel = "";
         } else {
             baseSel = _baseSelect.toString() + ".";
