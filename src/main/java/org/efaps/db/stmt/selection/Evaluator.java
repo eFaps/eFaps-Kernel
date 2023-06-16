@@ -333,7 +333,11 @@ public final class Evaluator
         Object ret = null;
         final List<Boolean> accessList = access(_select);
         final Object obj = _select.getCurrent();
-        if (obj instanceof List) {
+        if (_select.isMultiValue()) {
+            if (accessList.size() == 1 && accessList.get(0)) {
+                ret = obj;
+            }
+        } else if (obj instanceof List) {
             final Iterator<Boolean> iter = accessList.iterator();
             ret = ((List<?>) obj).stream()
                 .map(ele -> iter.hasNext() && iter.next() ? ele : null)

@@ -26,8 +26,10 @@ import java.util.TreeMap;
 import org.apache.commons.collections4.multimap.AbstractListValuedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.efaps.admin.datamodel.attributetype.BitEnumType;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.elements.AbstractElement;
+import org.efaps.db.stmt.selection.elements.AttributeElement;
 import org.efaps.db.stmt.selection.elements.ISquash;
 import org.efaps.util.EFapsException;
 
@@ -60,6 +62,10 @@ public final class Select
     /** The squash. */
     private Squashing squash;
 
+    /**  there is only one value in the db but can be converted to many in the result, e,g. BitEnum **/
+    private boolean multiValue = false;
+
+
     /**
      * Instantiates a new select.
      *
@@ -84,6 +90,10 @@ public final class Select
             _element.setPrevious(prev);
         }
         elements.add(_element);
+        if (_element instanceof AttributeElement) {
+            multiValue = ((AttributeElement) _element).getAttribute().getAttributeType()
+                            .getDbAttrType() instanceof BitEnumType;
+        }
         return this;
     }
 
@@ -95,6 +105,11 @@ public final class Select
     protected boolean isSquash()
     {
         return !noSquashRequired;
+    }
+
+    protected boolean isMultiValue()
+    {
+        return multiValue;
     }
 
     protected Squashing getSquash()
