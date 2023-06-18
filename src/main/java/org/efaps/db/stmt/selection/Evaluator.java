@@ -234,7 +234,12 @@ public final class Evaluator
                     final List<Object> values = new ArrayList<>();
                     for (int i = 0; i <  msgPhrase.getArguments().size(); i++) {
                         final var alias = Print.getMsgPhraseAlias(msgPhrase.getId()) + "_" + i;
-                        final var value = get(alias);
+                        var value = get(alias);
+                        // for a MsgPharse having a value list is not very logical, s
+                        // o as long there is one value convert it
+                        if (value instanceof List && ((List<?>) value).size() == 1) {
+                            value =  ((List<?>) value).get(0);
+                        }
                         values.add(value == null ? "" : value);
                     }
                     ret = msgPhrase.format(values.toArray());
