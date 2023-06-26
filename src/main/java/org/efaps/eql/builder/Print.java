@@ -20,6 +20,7 @@ package org.efaps.eql.builder;
 import java.io.StringReader;
 import java.util.Arrays;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.beans.ValueList;
@@ -33,6 +34,7 @@ import org.efaps.db.stmt.selection.EvalHelper;
 import org.efaps.db.stmt.selection.Evaluator;
 import org.efaps.eql2.IPrintStatement;
 import org.efaps.eql2.ISelect;
+import org.efaps.eql2.ISelectElement;
 import org.efaps.eql2.ISelection;
 import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
 import org.efaps.eql2.bldr.ISelectable;
@@ -193,9 +195,20 @@ public class Print
             phraseCounter++;
             final ValueList list = new ValueParser(new StringReader(_phrase.toString())).ExpressionString();
             getHelper().registerPhrase(phraseCounter, _phrase.toString());
+            String baseSelect = "";
+            // check if this is used in a subselect e.g. a linkto
+            final var selection = ((IPrintStatement<?>) getStmt()).getSelection();
+            final ISelect select = selection.getSelects(selection.getSelectsLength() - 1);
+            if (ArrayUtils.isNotEmpty(select.getElements())) {
+                final ISelectElement lastElement = select.getElements(select.getElementsLength() - 1);
+                if (connectable(lastElement)) {
+                    baseSelect = select.eqlStmt() + ".";
+                    selection.getSelectsList().remove(selection.getSelectsLength() - 1);
+                }
+            }
             int idx = 0;
             for (final String expr : list.getExpressions()) {
-                select(expr);
+                select(baseSelect + expr);
                 as(getPhraseAlias(phraseCounter) + "_" + idx);
                 idx++;
             }
