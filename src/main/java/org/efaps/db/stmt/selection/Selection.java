@@ -117,9 +117,18 @@ public final class Selection
             for (final ISelectElement ele : sel.getElements()) {
                 if (ele instanceof IAttributeSelectElement) {
                     final String attrName = ((IAttributeSelectElement) ele).getName();
-                    final Attribute attr = currentType.getAttribute(attrName);
+                    Attribute attr = currentType.getAttribute(attrName);
                     if (attr == null) {
-                        LOG.error("Could not find Attribute '{}' on Type '{}'", attrName, currentType.getName());
+                        LOG.debug("Could not find Attribute '{}' on Type '{}'", attrName, currentType.getName());
+                        if (currentType.isAbstract()) {
+                            for (final var childType: currentType.getChildTypes()) {
+                                attr = childType.getAttribute(attrName);
+                                if (attr != null) {
+                                    LOG.debug("Using attribute on child type: {}", childType);
+                                    break;
+                                }
+                            }
+                        }
                     }
                     final AttributeElement element = new AttributeElement().setAttribute(attr);
                     select.addElement(element);

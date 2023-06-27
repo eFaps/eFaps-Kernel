@@ -40,6 +40,7 @@ import org.efaps.admin.datamodel.attributetype.StatusType;
 import org.efaps.db.Instance;
 import org.efaps.db.stmt.selection.elements.LinktoElement;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.FromTableLeftJoin;
 import org.efaps.db.wrapper.SQLWhere;
 import org.efaps.db.wrapper.SQLWhere.Criteria;
 import org.efaps.db.wrapper.SQLWhere.Group;
@@ -178,22 +179,20 @@ public class Filter
             final var tableIdx = last.getJoinTableIdx(_sqlSelect);
             final Attribute attr = currentType.getAttribute(attrName);
             addAttr(_sqlSelect, attr, _term, _element, tableIdx, false);
-        } else {
-            if (types.isEmpty() && type2tableIdx != null) {
-                for (final var entry : type2tableIdx.entrySet()) {
-                    final Attribute attr = entry.getKey().getAttribute(attrName);
-                    if (attr != null) {
-                        addAttr(_sqlSelect, attr, _term, _element, entry.getValue(), false);
-                        break;
-                    }
+        } else if (types.isEmpty() && type2tableIdx != null) {
+            for (final var entry : type2tableIdx.entrySet()) {
+                final Attribute attr = entry.getKey().getAttribute(attrName);
+                if (attr != null) {
+                    addAttr(_sqlSelect, attr, _term, _element, entry.getValue(), false);
+                    break;
                 }
-            } else {
-                for (final Type type : types) {
-                    final Attribute attr = type.getAttribute(attrName);
-                    if (attr != null) {
-                        addAttr(_sqlSelect, attr, _term, _element);
-                        break;
-                    }
+            }
+        } else {
+            for (final Type type : types) {
+                final Attribute attr = type.getAttribute(attrName);
+                if (attr != null) {
+                    addAttr(_sqlSelect, attr, _term, _element);
+                    break;
                 }
             }
         }
@@ -270,7 +269,7 @@ public class Filter
             } else if (attrType instanceof LinkType) {
                 noEscape = true;
                 values = _element.getValuesList().stream()
-                                .map(val -> convertLinkValue(val))
+                                .map(this::convertLinkValue)
                                 .collect(Collectors.toList());
             } else {
                 noEscape = attrType instanceof LongType;
@@ -375,9 +374,17 @@ public class Filter
                                                     .connection(Connection.OR));
                                     where.section(group);
                                 } else {
-                                    where.addCriteria(index.intValue(),
-                                                    Collections.singletonList(criteria.get(0).getSqlColType()),
-                                                    Comparison.EQUAL, values, false, Connection.AND);
+                                    final var fromTable = _sqlSelect.getFromTables().stream()
+                                                    .filter(ft -> (criteria.get(0).getTableIdx().getIdx() == ft
+                                                                    .getTableIndex()))
+                                                    .findFirst();
+                                    if (fromTable.isPresent() && fromTable.get() instanceof FromTableLeftJoin) {
+                                        ((FromTableLeftJoin) fromTable.get()).addTypeCriterias(criteria.get(0));
+                                    } else {
+                                        where.addCriteria(index.intValue(),
+                                                        Collections.singletonList(criteria.get(0).getSqlColType()),
+                                                        Comparison.EQUAL, values, false, Connection.AND);
+                                    }
                                 }
                             });
         }

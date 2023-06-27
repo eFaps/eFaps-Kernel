@@ -18,11 +18,14 @@
 package org.efaps.db.wrapper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.efaps.db.Context;
 import org.efaps.db.search.section.AbstractQSection;
+import org.efaps.db.stmt.filter.TypeCriterion;
 import org.efaps.util.EFapsException;
 
 /**
@@ -572,7 +575,7 @@ public class SQLSelect
     /**
      *
      */
-    protected static class FromTable
+    public static class FromTable
         extends SQLSelectPart
     {
 
@@ -670,7 +673,7 @@ public class SQLSelect
     /**
      *
      */
-    protected static class FromTableLeftJoin
+    public static class FromTableLeftJoin
         extends SQLSelect.FromTable
     {
 
@@ -690,6 +693,8 @@ public class SQLSelect
         private final String[] joinColumnNames;
 
         private final SQLWhere where;
+
+        private TypeCriterion[] typeCriterias;
 
         /**
          * Instantiates a new from table left join.
@@ -784,6 +789,25 @@ public class SQLSelect
                                 .append(columnNames[i])
                                 .append(Context.getDbType().getColumnQuote());
             }
+            if (typeCriterias != null) {
+                _cmd.append(" ").append(Context.getDbType().getSQLPart(SQLPart.AND)).append(" ")
+                                .append(getTablePrefix()).append(getTableIndex()).append('.')
+                                .append(Context.getDbType().getColumnQuote())
+                                .append(typeCriterias[0].getSqlColType())
+                                .append(Context.getDbType().getColumnQuote());
+                if (typeCriterias.length == 1) {
+                    _cmd.append(Context.getDbType().getSQLPart(SQLPart.EQUAL))
+                                    .append(typeCriterias[0].getTypeId());
+                } else {
+                    final var typeIds = Arrays.asList(typeCriterias).stream()
+                                    .map(crit -> String.valueOf(crit.getTypeId()))
+                                    .collect(Collectors.joining(","));
+                    _cmd.append(Context.getDbType().getSQLPart(SQLPart.IN))
+                                    .append(Context.getDbType().getSQLPart(SQLPart.PARENTHESIS_OPEN))
+                                    .append(typeIds)
+                                    .append(Context.getDbType().getSQLPart(SQLPart.PARENTHESIS_CLOSE));
+                }
+            }
 
             if (where != null) {
                 _cmd.append(" ");
@@ -798,6 +822,11 @@ public class SQLSelect
         protected SQLPart getJoin()
         {
             return SQLPart.LEFT;
+        }
+
+        public void addTypeCriterias(final TypeCriterion... typeCriterias)
+        {
+            this.typeCriterias = typeCriterias;
         }
     }
 
