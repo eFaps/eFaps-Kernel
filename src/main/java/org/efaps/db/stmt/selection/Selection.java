@@ -257,7 +257,7 @@ public final class Selection
                     } else if (selectTmp instanceof AttributeSetElement) {
                         instSelect.addElement(new AttributeSetElement()
                                         .setAttributeSet(((AttributeSetElement) selectTmp).getAttributeSet())
-                                        .setType(((ClassElement) selectTmp).getType()));
+                                        .setType(((AttributeSetElement) selectTmp).getType()));
                     }
                 }
             }
