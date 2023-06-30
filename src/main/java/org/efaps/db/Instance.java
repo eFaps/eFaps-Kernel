@@ -23,6 +23,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.util.EFapsException;
+import org.efaps.util.OIDUtil;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,7 +124,7 @@ public final class Instance
         if (_obj instanceof Instance) {
             final Instance other = (Instance) _obj;
             if (other.uuid != null && this.uuid != null) {
-                ret = (other.getId() == getId()) && (other.uuid.equals(this.uuid));
+                ret = other.getId() == getId() && other.uuid.equals(this.uuid);
             } else {
                 ret = super.equals(_obj);
             }
@@ -366,7 +367,7 @@ public final class Instance
                                final long _id)
     {
         String keyTmp = null;
-        if ((_type != null) && (_id != 0)) {
+        if (_type != null && _id != 0) {
             keyTmp = _type.getId() + "." + _id;
         }
         return Instance.get(_type, _id, keyTmp);
@@ -454,7 +455,7 @@ public final class Instance
                                final String _key)
     {
         Type typeTmp = null;
-        if ((_type != null) && (_type.length() > 0)) {
+        if (_type != null && _type.length() > 0) {
             try {
                 typeTmp = Type.get(_type);
             } catch (final CacheReloadException e) {
@@ -473,21 +474,16 @@ public final class Instance
     {
         Type typeTmp = null;
         final long idTmp;
-        if (_oid != null) {
+        if (OIDUtil.isOID(_oid)) {
             final int index = _oid.indexOf(".");
-            if (index >= 0) {
-                try {
-                    typeTmp = Type.get(Long.parseLong(_oid.substring(0, index)));
-                } catch (final NumberFormatException e) {
-                    Instance.LOG.error("Instance get error with OID: '{}'", _oid);
-                } catch (final CacheReloadException e) {
-                    Instance.LOG.error("Instance get error with OID: '{}'", _oid);
-                }
-                idTmp = Long.parseLong(_oid.substring(index + 1));
-            } else {
-                typeTmp = null;
-                idTmp = 0;
+            try {
+                typeTmp = Type.get(Long.parseLong(_oid.substring(0, index)));
+            } catch (final NumberFormatException e) {
+                Instance.LOG.error("Instance get error with OID: '{}'", _oid);
+            } catch (final CacheReloadException e) {
+                Instance.LOG.error("Instance get error with OID: '{}'", _oid);
             }
+            idTmp = Long.parseLong(_oid.substring(index + 1));
         } else {
             typeTmp = null;
             idTmp = 0;
