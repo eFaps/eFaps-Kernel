@@ -198,9 +198,7 @@ public final class Evaluator
             ret = get(selectOpt.get());
         } else if (helper != null) {
             final Optional<PhraseEntry> phraseOpt = helper.getPhrases().stream()
-                            .filter(entry -> {
-                                return _alias.equals(entry.getAlias());
-                            }).findFirst();
+                            .filter(entry -> _alias.equals(entry.getAlias())).findFirst();
             if (phraseOpt.isPresent()) {
                 final PhraseEntry phraseEntry = phraseOpt.get();
                 try {
@@ -228,22 +226,20 @@ public final class Evaluator
                 } catch (final ParseException e) {
                     LOG.error("Catched", e);
                 }
-            } else {
-                if (helper.getMsgPhrases().containsKey(_alias)) {
-                    final var msgPhrase = helper.getMsgPhrases().get(_alias);
-                    final List<Object> values = new ArrayList<>();
-                    for (int i = 0; i <  msgPhrase.getArguments().size(); i++) {
-                        final var alias = Print.getMsgPhraseAlias(msgPhrase.getId()) + "_" + i;
-                        var value = get(alias);
-                        // for a MsgPharse having a value list is not very logical, s
-                        // o as long there is one value convert it
-                        if (value instanceof List && ((List<?>) value).size() == 1) {
-                            value =  ((List<?>) value).get(0);
-                        }
-                        values.add(value == null ? "" : value);
+            } else if (helper.getMsgPhrases().containsKey(_alias)) {
+                final var msgPhrase = helper.getMsgPhrases().get(_alias);
+                final List<Object> values = new ArrayList<>();
+                for (int i = 0; i <  msgPhrase.getArguments().size(); i++) {
+                    final var alias = Print.getMsgPhraseAlias(msgPhrase.getId()) + "_" + i;
+                    var value = get(alias);
+                    // for a MsgPharse having a value list is not very logical, s
+                    // o as long there is one value convert it
+                    if (value instanceof List && ((List<?>) value).size() == 1) {
+                        value =  ((List<?>) value).get(0);
                     }
-                    ret = msgPhrase.format(values.toArray());
+                    values.add(value == null ? "" : value);
                 }
+                ret = msgPhrase.format(values.toArray());
             }
         }
         return (T) ret;
@@ -379,6 +375,11 @@ public final class Evaluator
     public Instance inst()
     {
         return (Instance) selection.getInstSelects().get(Selection.BASEPATH).getCurrent();
+    }
+
+    public Instance inst(final String path)
+    {
+        return (Instance) selection.getInstSelects().get(path).getCurrent();
     }
 
     /**
