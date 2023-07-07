@@ -46,11 +46,13 @@ public class TypeElement
         throws EFapsException
     {
         final Instance instance = (Instance) super.getObject(_row);
-        final Object ret;
-        if (getNext() != null && getNext() instanceof IAuxillary) {
-            ret = getNext().getObject(new Object[] { instance.getType() });
-        } else {
-            ret = instance.getType();
+        Object ret = null;
+        if (instance != null) {
+            if (getNext() != null && getNext() instanceof IAuxillary) {
+                ret = getNext().getObject(new Object[] { instance.getType() });
+            } else {
+                ret = instance.getType();
+            }
         }
         return ret;
     }

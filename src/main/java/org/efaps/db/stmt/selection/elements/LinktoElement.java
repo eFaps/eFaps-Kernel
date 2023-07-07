@@ -141,7 +141,7 @@ public class LinktoElement
     public Object getObject(final Object[] _row)
         throws EFapsException
     {
-        return getNext().getObject(_row);
+        return getNext() == null ? null : getNext().getObject(_row);
     }
 
     @Override
