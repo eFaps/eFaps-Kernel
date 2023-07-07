@@ -42,6 +42,7 @@ import org.efaps.db.stmt.selection.elements.ExecElement;
 import org.efaps.db.stmt.selection.elements.FirstElement;
 import org.efaps.db.stmt.selection.elements.FormatElement;
 import org.efaps.db.stmt.selection.elements.IDElement;
+import org.efaps.db.stmt.selection.elements.InstIDElement;
 import org.efaps.db.stmt.selection.elements.InstanceElement;
 import org.efaps.db.stmt.selection.elements.JoiningElement;
 import org.efaps.db.stmt.selection.elements.KeyElement;
@@ -193,9 +194,6 @@ public final class Selection
                         case NAME:
                             select.addElement(new NameElement());
                             break;
-                        case ID:
-                            select.addElement(new IDElement());
-                            break;
                         case UUID:
                             select.addElement(new UUIDElement());
                             break;
@@ -207,6 +205,9 @@ public final class Selection
                             break;
                         case UOM:
                             select.addElement(new UoMElement());
+                            break;
+                        case ID:
+                            analyzeIDElement(select, type);
                             break;
                         default:
                             break;
@@ -225,6 +226,24 @@ public final class Selection
             }
         }
         return this;
+    }
+
+    private void analyzeIDElement(final Select select,
+                                  final Type currentType)
+    {
+        if (select.getElements().size() == 0) {
+            select.addElement(new InstIDElement(currentType));
+        } else {
+            final var previous = select.getElements().get(select.getElements().size() - 1);
+            if (previous instanceof ILinktoSelectElement
+                            || previous instanceof ILinkfromSelectElement
+                            || previous instanceof IClassSelectElement
+                            || previous instanceof IAttributeSetSelectElement) {
+                select.addElement(new InstIDElement(currentType));
+            } else {
+                select.addElement(new IDElement());
+            }
+        }
     }
 
     /**
