@@ -308,18 +308,6 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <artifactId>joda-time</artifactId>
             <version>${joda-time.version}</version>
         </dependency>
-        <dependency>
-            <groupId>de.jollyday</groupId>
-            <artifactId>jollyday</artifactId>
-            <version>0.5.10</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <!-- the yuicompressor is used to compress javascript and css files -->
         <dependency>
             <groupId>com.yahoo.platform.yui</groupId>
@@ -596,7 +584,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>2.3.2</version>
+            <version>4.0.3</version>
             <scope>runtime</scope>
         </dependency>
 
