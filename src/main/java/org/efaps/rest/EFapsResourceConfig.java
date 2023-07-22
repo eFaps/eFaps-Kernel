@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2023 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,9 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.ws.rs.Path;
+import javax.ws.rs.ext.Provider;
+
 import org.efaps.admin.program.esjp.EsjpScanner;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
@@ -29,9 +32,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spi.Container;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.ext.Provider;
 
 /**
  *
@@ -127,7 +127,7 @@ public class EFapsResourceConfig
         final StringBuilder b = new StringBuilder();
         b.append(_text);
         _classes.stream()
-            .map(Class::getName)
+            .map(clazz -> clazz.getName())
             .sorted()
             .forEach(clazzName -> b.append('\n').append("  ").append(clazzName));
         EFapsResourceConfig.LOG.info(b.toString());
