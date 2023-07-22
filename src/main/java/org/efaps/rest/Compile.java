@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2023 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -10,7 +10,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * See the License for the specific2023 language governing permissions and
  * limitations under the License.
  *
  */
@@ -22,11 +22,6 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
-
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
@@ -37,6 +32,11 @@ import org.efaps.update.schema.program.staticsource.JavaScriptCompiler;
 import org.efaps.update.schema.program.staticsource.WikiCompiler;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
+
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Rest API to compile the different program froms eFaps.
@@ -96,7 +96,7 @@ public class Compile
     public static List<String> getClassPathElements()
         throws EFapsException
     {
-        final List<String> ret = new ArrayList<String>();
+        final List<String> ret = new ArrayList<>();
         final SystemConfiguration config = EFapsSystemConfiguration.get();
         final String paths = config.getAttributeValue(KernelSettings.CLASSPATHS);
 
@@ -104,22 +104,17 @@ public class Compile
             final File folder = new File(paths);
             File[] files = null;
             if (folder.isDirectory()) {
-                files = folder.listFiles(new FilenameFilter() {
-
-                    @Override
-                    public boolean accept(final File _dir,
-                                          final String _name)
-                    {
-                        final boolean ret;
-                        if (new File(_dir, _name).isDirectory()) {
-                            ret = false;
-                        } else {
-                            final String name = _name.toLowerCase();
-                            ret = name.endsWith(".jar");
-                        }
-                        return ret;
-                    }
-                });
+                files = folder.listFiles((FilenameFilter) (_dir,
+                                  _name) -> {
+                                    final boolean ret1;
+                                    if (new File(_dir, _name).isDirectory()) {
+                                        ret1 = false;
+                                    } else {
+                                        final String name = _name.toLowerCase();
+                                        ret1 = name.endsWith(".jar");
+                                    }
+                                    return ret1;
+                                });
                 for (final File file : files) {
                     ret.add(file.getAbsolutePath());
                 }

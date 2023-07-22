@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2023 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
-
 import org.efaps.admin.AppConfigHandler;
 import org.efaps.update.FileType;
 import org.efaps.update.Install;
@@ -45,6 +39,12 @@ import org.glassfish.jersey.media.multipart.BodyPartEntity;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.joda.time.DateTime;
+
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * Rest API to update files in eFaps.
@@ -89,12 +89,10 @@ public class Update
 
                 final List<InstallFile> installFiles = new ArrayList<>();
 
-                final Iterator<FormDataBodyPart> filePartsIter = _multiPart.getFields("eFaps_File").iterator();
                 final Iterator<FormDataBodyPart> revPartsIter = _multiPart.getFields("eFaps_Revision").iterator();
                 final Iterator<FormDataBodyPart> datePartsIter = _multiPart.getFields("eFaps_Date").iterator();
 
-                while (filePartsIter.hasNext()) {
-                    final FormDataBodyPart filePart = filePartsIter.next();
+                for (final FormDataBodyPart filePart : _multiPart.getFields("eFaps_File")) {
                     final FormDataBodyPart revPart = revPartsIter.next();
                     final FormDataBodyPart datePart = datePartsIter.next();
 
@@ -130,16 +128,7 @@ public class Update
                         installFiles.add(installFile);
                     }
                 }
-                Collections.sort(installFiles, new Comparator<InstallFile>()
-                {
-
-                    @Override
-                    public int compare(final InstallFile _installFile0,
-                                       final InstallFile _installFile1)
-                    {
-                        return _installFile0.getName().compareTo(_installFile1.getName());
-                    }
-                });
+                Collections.sort(installFiles, Comparator.comparing(InstallFile::getName));
 
                 if (!installFiles.isEmpty()) {
                     final Install install = new Install(true);
