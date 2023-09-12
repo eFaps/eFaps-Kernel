@@ -258,6 +258,8 @@ public abstract class AbstractCommand
      */
     private Form targetForm = null;
 
+    private UUID targetModule = null;
+
     /**
      * The instance method stores the complete menu. Default value is a null and
      * no menu is shown.
@@ -526,6 +528,12 @@ public abstract class AbstractCommand
     public Form getTargetForm()
     {
         return targetForm;
+    }
+
+    public Module getTargetModule()
+        throws CacheReloadException
+    {
+        return targetModule == null ? null : Module.get(targetModule);
     }
 
     /**
@@ -910,6 +918,11 @@ public abstract class AbstractCommand
             icon = _toName;
         } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetForm.uuid)) {
             targetForm = Form.get(_toId);
+        } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetModule.uuid)) {
+            final var module = Module.get(_toId);
+            if (module != null) {
+                targetModule = module.getUUID();
+            }
         } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetMenu.uuid)) {
             targetMenu = Menu.get(_toId);
         } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetSearch.uuid)) {

@@ -265,6 +265,18 @@ public class CIAdminUserInterface
         }
     }
 
+    public static final _LinkTargetModule LinkTargetModule = new _LinkTargetModule("76c0ae4d-c191-4666-83c0-77fafe90c982");
+
+    public static class _LinkTargetModule
+        extends _Link
+    {
+
+        protected _LinkTargetModule(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
     public static final _LinkTargetHelp LinkTargetHelp = new _LinkTargetHelp("28d94899-9998-449d-9bd1-dc4255388cc8");
 
     public static class _LinkTargetHelp
@@ -339,6 +351,19 @@ public class CIAdminUserInterface
             super(_uuid);
         }
     }
+
+    public static final _Module Module = new _Module("7710c7e4-5e35-4615-8255-2f4c3201c501");
+
+    public static class _Module
+        extends _Collection
+    {
+
+        protected _Module(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
 
     public static final _LinkIsTypeIconFor LinkIsTypeIconFor = new _LinkIsTypeIconFor("74b91e57-e5a3-43df-b0e4-43815ad79fec");
 
