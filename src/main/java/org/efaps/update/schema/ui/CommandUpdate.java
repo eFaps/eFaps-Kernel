@@ -41,7 +41,7 @@ public class CommandUpdate
     /**
      * Set of all links used by commands.
      */
-    protected static final Set<Link> ALLLINKS = new HashSet<Link>();
+    protected static final Set<Link> ALLLINKS = new HashSet<>();
 
     /** Link from UI object to role. */
     private static final Link LINK2ACCESSROLE = new Link("Admin_UI_Access", "UILink",
@@ -73,6 +73,10 @@ public class CommandUpdate
     private static final Link LINK2TARGETFORM = new UniqueLink("Admin_UI_LinkTargetForm", "From", "Admin_UI_Form",
                     "To");
 
+    /** Link from command to form as target. */
+    private static final Link LINK2TARGETMODULE = new UniqueLink("Admin_UI_LinkTargetModule", "From", "Admin_UI_Module",
+                    "To");
+
     /** Link from command to menu as target. */
     private static final Link LINK2TARGETMENU = new UniqueLink("Admin_UI_LinkTargetMenu", "From", "Admin_UI_Menu",
                     "To");
@@ -100,6 +104,7 @@ public class CommandUpdate
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETTABLE);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETFORM);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETMENU);
+        CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETMODULE);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETSEARCH);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETHELP);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2PARENT);
@@ -212,6 +217,9 @@ public class CommandUpdate
                     } else if ("menu".equals(subValue)) {
                         // assigns a menu as target for this command definition.
                         addLink(CommandUpdate.LINK2TARGETMENU, new LinkInstance(_text));
+                    } else if ("module".equals(subValue)) {
+                        // assigns a module as target for this command definition.
+                        addLink(CommandUpdate.LINK2TARGETMODULE, new LinkInstance(_text));
                     } else if ("search".equals(subValue)) {
                         // assigns a search menu as target for this command definition.
                         addLink(CommandUpdate.LINK2TARGETSEARCH, new LinkInstance(_text));

@@ -38,6 +38,9 @@
         <local-cache name="org.efaps.admin.common.Association.Name"/>
         <local-cache name="org.efaps.admin.common.Association.Key"/>
         <local-cache name="org.efaps.util.cache.InfinispanCache.InternalCounter"/>
+        <local-cache name="org.efaps.admin.ui.Module.UUID"/>
+        <local-cache name="org.efaps.admin.ui.Module.ID"/>
+        <local-cache name="org.efaps.admin.ui.Module.Name"/>
         <local-cache name="org.efaps.admin.ui.Search.UUID"/>
         <local-cache name="org.efaps.admin.ui.Search.ID"/>
         <local-cache name="org.efaps.admin.ui.Search.Name"/>

@@ -46,6 +46,7 @@ import org.efaps.update.schema.ui.CommandUpdate;
 import org.efaps.update.schema.ui.FormUpdate;
 import org.efaps.update.schema.ui.ImageUpdate;
 import org.efaps.update.schema.ui.MenuUpdate;
+import org.efaps.update.schema.ui.ModuleUpdate;
 import org.efaps.update.schema.ui.SearchUpdate;
 import org.efaps.update.schema.ui.TableUpdate;
 import org.efaps.update.schema.user.CompanyUpdate;
@@ -71,12 +72,12 @@ public class SaxHandler
     /**
      * Tags used in this Handler.
      */
-    private final Stack<String> tag = new Stack<String>();
+    private final Stack<String> tag = new Stack<>();
 
     /**
      * Map of attributes for this Handler.
      */
-    private final Map<String, String> attributes = new HashMap<String, String>();
+    private final Map<String, String> attributes = new HashMap<>();
 
     /**
      * Has this handler been called.
@@ -278,6 +279,9 @@ public class SaxHandler
                     break;
                 case "ui-menu":
                     this.update = new MenuUpdate(this.installFile);
+                    break;
+                case "ui-module":
+                    this.update = new ModuleUpdate(this.installFile);
                     break;
                 case "ui-search":
                     this.update = new SearchUpdate(this.installFile);
