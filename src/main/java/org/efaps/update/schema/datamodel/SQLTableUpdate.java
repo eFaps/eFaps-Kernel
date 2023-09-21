@@ -323,6 +323,20 @@ public class SQLTableUpdate
         }
     }
 
+    private static final class Index
+    {
+
+        private final String name;
+        private final String columns;
+
+        private Index(final String name,
+                      final String columns)
+        {
+            this.name = name;
+            this.columns = columns;
+        }
+    }
+
     /**
      * Definition for SQLTable.
      */
@@ -367,6 +381,8 @@ public class SQLTableUpdate
          */
         private final List<SQLTableUpdate.CheckKey> checkKeys = new ArrayList<>();
 
+        private final List<SQLTableUpdate.Index> indexes = new ArrayList<>();
+
         /**
          * Is this table a view.
          */
@@ -403,6 +419,8 @@ public class SQLTableUpdate
                                             length,
                                             scale,
                                             "true".equals(_attributes.get("not-null"))));
+                    } else if ("index".equals(subValue))  {
+                        this.indexes.add(new Index(_attributes.get("name"), _attributes.get("columns")));
                     } else if ("foreign".equals(subValue))  {
                         this.foreignKeys.add(new ForeignKey(_attributes.get("name"),
                                                             _attributes.get("key"),
@@ -763,6 +781,11 @@ public class SQLTableUpdate
                 for (final CheckKey checkKey : this.checkKeys) {
                     Context.getDbType().addCheckKey(con, tableName,
                             checkKey.name, checkKey.condition);
+                }
+
+                // add indexes
+                for (final var index: indexes) {
+                    Context.getDbType().upsertIndex(con, tableName, index.name, index.columns);
                 }
                 con.commit();
             } catch (final EFapsException e) {
