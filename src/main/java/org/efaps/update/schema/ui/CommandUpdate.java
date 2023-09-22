@@ -200,6 +200,10 @@ public class CommandUpdate
                         addEvent(new Event(name, EventType.UI_TABLE_EVALUATE,
                                         _attributes.get("program"), _attributes.get("method"),
                                         _attributes.get("index")));
+                    } else if ("strctbrws".equals(subValue)) {
+                        addEvent(new Event(name, EventType.UI_STRCTBRWS_EVALUATE,
+                                            _attributes.get("program"), _attributes.get("method"),
+                                            _attributes.get("index")));
                     } else if ("execute".equals(subValue)) {
                         addEvent(new Event(name, EventType.UI_COMMAND_EXECUTE,
                                         _attributes.get("program"), _attributes.get("method"),
@@ -243,7 +247,8 @@ public class CommandUpdate
                 } else if (_tags.size() == 3) {
                     final String subValue = _tags.get(1);
                     if (("evaluate".equals(subValue) || "execute".equals(subValue) || "trigger".equals(subValue)
-                                    || "validate".equals(subValue)) && "property".equals(_tags.get(2))) {
+                                    || "validate".equals(subValue) || "strctbrws".equals(subValue))
+                                    && "property".equals(_tags.get(2))) {
                         getEvents().get(getEvents().size() - 1).addProperty(_attributes.get("name"), _text);
                     } else {
                         super.readXML(_tags, _attributes, _text);

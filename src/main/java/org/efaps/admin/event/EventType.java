@@ -131,6 +131,7 @@ public enum EventType
     UI_INSTANCEMANAGER    ("Admin_UI_InstanceManagerEvent"),
     /** EventType for evaluating the values for a table. */
     UI_TABLE_EVALUATE     ("Admin_UI_TableEvaluateEvent"),
+    UI_STRCTBRWS_EVALUATE ("Admin_UI_StrctBrwsEvaluateEvent"),
     /**
      * EventType used to validate the values for an attribute.
      */
