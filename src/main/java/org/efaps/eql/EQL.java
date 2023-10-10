@@ -141,7 +141,7 @@ public final class EQL
         public Delete delete(final Instance... _instances)
         {
             return delete(Arrays.stream(_instances)
-                            .map(instance -> instance.getOid())
+                            .map(Instance::getOid)
                             .toArray(String[]::new));
         }
 
@@ -170,7 +170,7 @@ public final class EQL
         public Update update(final Instance... _instances)
         {
             return update(Arrays.stream(_instances)
-                            .map(instance -> instance.getOid())
+                            .map(Instance::getOid)
                             .toArray(String[]::new));
         }
 
@@ -188,7 +188,7 @@ public final class EQL
         public Print print(final Instance... _instances)
         {
             return print(Arrays.stream(_instances)
-                            .map(instance -> instance.getOid())
+                            .map(Instance::getOid)
                             .toArray(String[]::new));
         }
 
@@ -209,6 +209,13 @@ public final class EQL
         {
             return (Query) nestedQuery(Arrays.stream(_ciTypes)
                             .map(ciType -> ciType.getType().getName())
+                            .toArray(String[]::new));
+        }
+
+        public Query nestedQuery(final Type... types)
+        {
+            return (Query) nestedQuery(Arrays.stream(types)
+                            .map(Type::getName)
                             .toArray(String[]::new));
         }
 
