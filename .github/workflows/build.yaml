@@ -2,8 +2,6 @@ name: Build
 
 on:
   push:
-    branches: [ master, java-17 ]
-  pull_request:
     branches: [ master ]
 
 jobs:
