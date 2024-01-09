@@ -163,7 +163,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.6.0</version>
+            <version>42.7.1</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -181,7 +181,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>commons-dbutils</groupId>
             <artifactId>commons-dbutils</artifactId>
-            <version>1.7</version>
+            <version>1.8.1</version>
         </dependency>
 
         <dependency>
@@ -425,19 +425,19 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
-            <version>1.10.12</version>
+            <version>1.10.14</version>
         </dependency>
 
         <!--  ivy dependency management -->
         <dependency>
             <groupId>org.apache.ivy</groupId>
             <artifactId>ivy</artifactId>
-            <version>2.5.1</version>
+            <version>2.5.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-email</artifactId>
-            <version>1.5</version>
+            <version>1.6.0</version>
         </dependency>
 
         <!-- dependencies for REST-->
@@ -510,7 +510,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-rmi</artifactId>
-            <version>2.21.12</version>
+            <version>2.21.22</version>
         </dependency>
         <dependency>
             <groupId>javax.jms</groupId>
@@ -536,7 +536,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
-            <version>3.5.0.Final</version>
+            <version>3.5.3.Final</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.logmanager</groupId>
@@ -572,7 +572,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
-            <version>3.29.2-GA</version>
+            <version>3.30.2-GA</version>
         </dependency>
         <dependency>
             <groupId>org.mnode.ical4j</groupId>
@@ -584,7 +584,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>4.0.3</version>
+            <version>4.0.4</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -672,7 +672,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.eu.acolyte</groupId>
             <artifactId>jdbc-driver</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.9</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
