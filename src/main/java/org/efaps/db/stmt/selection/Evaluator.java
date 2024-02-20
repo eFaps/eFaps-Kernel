@@ -445,11 +445,19 @@ public final class Evaluator
                             ret = ((List<?>) obj).stream()
                                             .map(ele -> access.hasAccess((Instance) ele))
                                             .collect(Collectors.toList());
+                        } else
+                        // if the access is not empty... we are in a a child linkfrom. only if the previous
+                        // one did give access , access is still evaluated
+                        if (ret.size() == 1) {
+                            final var acc = ret.get(0);
+                            ret = ((List<?>) obj).stream()
+                                            .map(ele -> acc && access.hasAccess((Instance) ele))
+                                            .collect(Collectors.toList());
                         } else {
                             final Iterator<Boolean> iter = ret.iterator();
                             ret = ((List<?>) obj).stream()
-                                            .map(ele -> iter.next() && access.hasAccess((Instance) ele))
-                                            .collect(Collectors.toList());
+                                        .map(ele -> iter.next() && access.hasAccess((Instance) ele))
+                                        .collect(Collectors.toList());
                         }
                         accessTemp = ret.contains(true);
                     }
