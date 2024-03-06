@@ -28,6 +28,7 @@ import org.efaps.db.stmt.DeleteStmt;
 import org.efaps.db.stmt.InsertStmt;
 import org.efaps.db.stmt.PrintStmt;
 import org.efaps.db.stmt.UpdateStmt;
+import org.efaps.eql.builder.Count;
 import org.efaps.eql.builder.Delete;
 import org.efaps.eql.builder.Insert;
 import org.efaps.eql.builder.Print;
@@ -42,6 +43,7 @@ import org.efaps.eql2.IInsertStatement;
 import org.efaps.eql2.IPrintStatement;
 import org.efaps.eql2.IStatement;
 import org.efaps.eql2.IUpdateStatement;
+import org.efaps.eql2.bldr.AbstractCountEQLBuilder;
 import org.efaps.eql2.bldr.AbstractDeleteEQLBuilder;
 import org.efaps.eql2.bldr.AbstractInsertEQLBuilder;
 import org.efaps.eql2.bldr.AbstractPrintEQLBuilder;
@@ -62,6 +64,12 @@ public final class EQL
     protected AbstractPrintEQLBuilder<?> getPrint()
     {
         return new Print();
+    }
+
+    @Override
+    protected AbstractCountEQLBuilder<?> getCount()
+    {
+        return new Count();
     }
 
     @Override

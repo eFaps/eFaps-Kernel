@@ -147,7 +147,7 @@ public final class Evaluator
      * @return the int
      * @throws EFapsException the eFaps exception
      */
-    public int count()
+    public long count()
         throws EFapsException
     {
         initialize(false);
