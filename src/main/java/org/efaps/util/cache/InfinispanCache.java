@@ -197,6 +197,10 @@ public final class InfinispanCache
         return ret;
     }
 
+    public static void clear() {
+
+    }
+
     /**
      * @return the InfinispanCache
      */

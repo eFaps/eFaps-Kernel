@@ -1059,4 +1059,19 @@ public abstract class AbstractCommand
         }
         return ret;
     }
+
+    public boolean hasTargetTable()
+    {
+        return getTargetTable() != null;
+    }
+
+    public boolean hasTargetForm()
+    {
+        return getTargetForm() != null;
+    }
+
+    public boolean hasTargetSearch()
+    {
+        return getTargetSearch() != null;
+    }
 }
