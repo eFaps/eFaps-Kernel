@@ -698,6 +698,10 @@ public final class SystemConfiguration
         SystemConfiguration.ENCRYPTOR.setConfig(SystemConfiguration.getPBEConfig());
     }
 
+    public static void clearCache() {
+
+    }
+
     /**
      * @param _sysConfig SystemConfiguration to be cached
      */
