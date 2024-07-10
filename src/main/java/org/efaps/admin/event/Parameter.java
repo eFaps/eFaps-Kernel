@@ -53,14 +53,17 @@ public class Parameter
         /**
          * BPM TaskInformation.
          */
+        @Deprecated
         BPM_TASK,
         /**
          * BPM Values Map.
          */
+        @Deprecated
         BPM_VALUES,
         /**
          * BPM Decision boolean.
          */
+        @Deprecated
         BPM_DECISION,
         /**
          * Call instance, means
@@ -124,13 +127,14 @@ public class Parameter
         /**
          * Holds the UserInterfaceObject on which the event is called.
          */
-        UIOBJECT;
+        UIOBJECT,
+        PAYLOAD;
     }
 
     /**
      * Map used as the store for this Parameter.
      */
-    private final Map<Parameter.ParameterValues, Object> map = new HashMap<Parameter.ParameterValues, Object>();
+    private final Map<Parameter.ParameterValues, Object> map = new HashMap<>();
 
     /**
      * Put an object into the underlying map.
