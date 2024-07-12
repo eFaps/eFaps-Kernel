@@ -239,4 +239,8 @@ public class Checkout
     {
         return this.fileLength;
     }
+
+    public boolean exists() {
+        return false;
+    }
 }
