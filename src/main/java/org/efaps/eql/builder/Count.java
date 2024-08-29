@@ -15,10 +15,16 @@
  */
 package org.efaps.eql.builder;
 
+import org.efaps.db.stmt.CountStmt;
+import org.efaps.db.stmt.selection.EvalHelper;
+import org.efaps.eql2.ICountQueryStatement;
 import org.efaps.eql2.bldr.AbstractCountEQLBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Count extends AbstractCountEQLBuilder<Count>
 {
+    private static final Logger LOG = LoggerFactory.getLogger(Count.class);
 
     @Override
     protected Count getThis()
@@ -30,5 +36,11 @@ public class Count extends AbstractCountEQLBuilder<Count>
     public Where where()
     {
         return (Where) super.where();
+    }
+
+    public CountStmt stmt()
+    {
+        LOG.debug("Stmt: {}", getStmt().eqlStmt());
+        return CountStmt.get((ICountQueryStatement) getStmt(), new EvalHelper());
     }
 }

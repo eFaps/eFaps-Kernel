@@ -58,6 +58,7 @@ import org.efaps.eql2.bldr.AbstractWhereBuilder;
 public final class EQL
     extends EQL2
 {
+
     @Override
     protected AbstractPrintEQLBuilder<?> getPrint()
     {
@@ -130,17 +131,23 @@ public final class EQL
         return ret;
     }
 
-    public static EQLBuilder builder() {
+    public static EQLBuilder builder()
+    {
         return new EQLBuilder(EQL2.eql());
     }
 
-    public static class EQLBuilder extends EQL2Builder<EQLBuilder> {
-        public EQLBuilder(final EQL2 _eql2) {
+    public static class EQLBuilder
+        extends EQL2Builder<EQLBuilder>
+    {
+
+        public EQLBuilder(final EQL2 _eql2)
+        {
             super(_eql2);
         }
 
         @Override
-        public Delete delete(final String... _oids) {
+        public Delete delete(final String... _oids)
+        {
             return (Delete) super.delete(_oids);
         }
 
@@ -222,6 +229,19 @@ public final class EQL
         {
             return (Query) nestedQuery(Arrays.stream(types)
                             .map(Type::getName)
+                            .toArray(String[]::new));
+        }
+
+        @Override
+        public Count count(final String... _types)
+        {
+            return (Count) super.count(_types);
+        }
+
+        public Count count(final CIType... _ciTypes)
+        {
+            return count(Arrays.stream(_ciTypes)
+                            .map(ciType -> ciType.getType().getName())
                             .toArray(String[]::new));
         }
 
