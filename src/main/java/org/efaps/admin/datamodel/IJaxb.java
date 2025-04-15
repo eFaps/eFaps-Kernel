@@ -15,7 +15,7 @@
  */
 package org.efaps.admin.datamodel;
 
-import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.admin.datamodel.ui.IUIValue;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.util.EFapsException;
 
@@ -38,7 +38,7 @@ public interface IJaxb
      * @return String for use in the UserInterface
      * @throws EFapsException on error
      */
-    String getUISnipplet(TargetMode _mode,
-                         UIValue _value)
+    String getUISnipplet(TargetMode mode,
+                         IUIValue value)
         throws EFapsException;
 }
