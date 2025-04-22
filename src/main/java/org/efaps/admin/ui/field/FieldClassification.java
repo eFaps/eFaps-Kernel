@@ -15,6 +15,7 @@
  */
 package org.efaps.admin.ui.field;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.access.AccessType;
@@ -76,13 +77,13 @@ public class FieldClassification
         final String[] names = getClassificationName().split(";");
         for (final String className : names) {
             if (Classification.get(className) != null && Classification.get(className)
-                                            .isAssigendTo(Context.getThreadContext().getCompany())
+                            .isAssigendTo(Context.getThreadContext().getCompany())
                             && !AppAccessHandler.excludeMode()) {
                 final Classification clazz = Classification.get(className);
                 // check if any of the type ahs access
                 ret = checkAccessOnChild(clazz, _instance, _targetMode == TargetMode.CREATE
                                 || _targetMode == TargetMode.EDIT ? AccessTypeEnums.CREATE.getAccessType()
-                                : AccessTypeEnums.SHOW.getAccessType());
+                                                : AccessTypeEnums.SHOW.getAccessType());
                 if (ret) {
                     break;
                 }
@@ -106,10 +107,16 @@ public class FieldClassification
         return ret;
     }
 
+    public List<Classification> evalRootClassifications()
+        throws EFapsException
+    {
+        return new ArrayList<>();
+    }
+
     /**
      * @param _parent parent to iterate down
      * @param _instance instance to check
-     * @param _accessType   accesstype
+     * @param _accessType accesstype
      * @return true of access is granted
      * @throws EFapsException on error
      */
@@ -135,7 +142,7 @@ public class FieldClassification
 
     /**
      * @param _instance Instance of the classifcation
-     * @param _clazz    classification to be searched
+     * @param _clazz classification to be searched
      * @return Instance of the classification
      */
     private Instance getInstance4Classification(final Instance _instance,
