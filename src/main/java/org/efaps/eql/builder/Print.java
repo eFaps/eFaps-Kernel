@@ -144,6 +144,13 @@ public class Print
         return getThis();
     }
 
+    public Print orderBy(final CIAttribute _ciAttr,
+                         final boolean desc)
+    {
+        super.orderBy(getCIAlias(_ciAttr), desc);
+        return getThis();
+    }
+
     public Print msgPhrase(final CIMsgPhrase... _msgPhrase)
         throws EFapsException
     {
