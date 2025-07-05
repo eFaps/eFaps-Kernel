@@ -25,6 +25,7 @@ import org.efaps.admin.ui.AbstractCollection;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.AbstractUserInterfaceObject;
 import org.efaps.admin.ui.Form;
+import org.efaps.admin.ui.Module;
 import org.efaps.admin.ui.Table;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.db.MultiPrintQuery;
@@ -709,6 +710,17 @@ public class Field
     public String getClassificationName()
     {
         return this.classificationName;
+    }
+
+
+    public boolean hasModule()
+    {
+        return false;
+    }
+
+    public Module getModule()
+    {
+        return null;
     }
 
     /**
