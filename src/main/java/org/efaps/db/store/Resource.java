@@ -17,6 +17,7 @@ package org.efaps.db.store;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.OffsetDateTime;
 
 import javax.transaction.xa.XAResource;
 
@@ -31,23 +32,23 @@ import org.efaps.util.EFapsException;
 public interface Resource
     extends XAResource
 {
+
     /**
      * Store resource could implement the possibility to compress and uncompress
      * data while writing to and reading from files.
      */
     enum Compress
     {
-        /** File should not be compressed.*/
+        /** File should not be compressed. */
         NONE,
-        /** File should be compressed using zip.*/
+        /** File should be compressed using zip. */
         ZIP,
-        /** File should  be compressed using gzip.*/
+        /** File should be compressed using gzip. */
         GZIP
-    };
+    }
 
     /**
-     * The store resource could handle three different
-     * events:
+     * The store resource could handle three different events:
      * <ul>
      * <li>delete</li>
      * <li>write</li>
@@ -64,9 +65,9 @@ public interface Resource
         WRITE,
         /** read. */
         READ,
-        /** not known yet.    **/
+        /** not known yet. **/
         UNKNOWN;
-    };
+    }
 
     /**
      * Method to open the Resource.
@@ -74,7 +75,8 @@ public interface Resource
      * @param _event Event the store is opened for
      * @throws EFapsException on error
      */
-    void open(StoreEvent _event) throws EFapsException;
+    void open(StoreEvent _event)
+        throws EFapsException;
 
     /**
      * The input stream with the attached content of the object returned.
@@ -82,14 +84,15 @@ public interface Resource
      * @return input stream with the content of the file
      * @throws EFapsException if an error occurs
      */
-    InputStream read() throws EFapsException;
+    InputStream read()
+        throws EFapsException;
 
     /**
      * Writes the file with the given input stream.
      *
-     * @param _in       input stream
-     * @param _size     size of the data to write (or negative if the size is
-     *                  not known)
+     * @param _in input stream
+     * @param _size size of the data to write (or negative if the size is not
+     *            known)
      * @param _fileName name of the file
      * @return length of the file which is stored
      * @throws EFapsException if an error occurs
@@ -104,8 +107,12 @@ public interface Resource
      *
      * @throws EFapsException if an error occurs
      */
-    void delete() throws EFapsException;
+    void delete()
+        throws EFapsException;
 
+    default void clean() throws EFapsException {
+
+    }
     /**
      * @return if the Resource was opened.
      */
@@ -116,32 +123,43 @@ public interface Resource
      * {@link #read()} the input stream is used and copied into the output
      * stream.
      *
-     * @param _out    output stream where the file content must be written
+     * @param _out output stream where the file content must be written
      * @throws EFapsException if an error occurs
      */
-    void read(OutputStream _out) throws EFapsException;
+    void read(OutputStream _out)
+        throws EFapsException;
 
     /**
      * Get the name of the file.
+     *
      * @return filename
      * @throws EFapsException on error
      */
-    String getFileName() throws EFapsException;
+    String getFileName()
+        throws EFapsException;
 
     /**
      * Get the Length of the file in byte.
+     *
      * @return filelength
      * @throws EFapsException on error
      */
-    Long getFileLength() throws EFapsException;
+    Long getFileLength()
+        throws EFapsException;
+
+    default OffsetDateTime getModified()
+        throws EFapsException
+    {
+        return null;
+    }
 
     /**
      * Method called to initialize this StoreResource.
+     *
      * @see org.efaps.db.store.Resource#initialize(org.efaps.db.Instance,
-     *  java.util.Map, org.efaps.db.store.Resource.Compress)
-     * @param _instance     Instance of the object this StoreResource is wanted
-     *                      for
-     * @param _store        Store this StoreResource belongs to
+     *      java.util.Map, org.efaps.db.store.Resource.Compress)
+     * @param _instance Instance of the object this StoreResource is wanted for
+     * @param _store Store this StoreResource belongs to
      * @throws EFapsException on error
      */
     void initialize(Instance _instance,
@@ -156,5 +174,5 @@ public interface Resource
      * @throws EFapsException on error
      */
     boolean exists()
-        throws EFapsException;;
+        throws EFapsException;
 }
