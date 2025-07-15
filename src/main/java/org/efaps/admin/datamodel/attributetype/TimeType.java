@@ -49,7 +49,7 @@ public class TimeType
     {
         final List<Object> ret = new ArrayList<>();
         for (final Object object : _objectList) {
-            ret.add(DateTimeUtil.toTime(object));
+            ret.add(DateTimeUtil.toContextTime(object));
         }
         return _objectList.size() > 0 ? ret.size() > 1 ? ret : ret.get(0) : null;
     }
