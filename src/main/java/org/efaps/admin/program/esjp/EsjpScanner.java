@@ -124,6 +124,10 @@ public class EsjpScanner
         return ret;
     }
 
+    public final Set<Class<?>> scan4SubTypes(final Class<?>... parentTypes) {
+        return null;
+    }
+
     private void save(final Reflections _reflections)
         throws IOException
     {
