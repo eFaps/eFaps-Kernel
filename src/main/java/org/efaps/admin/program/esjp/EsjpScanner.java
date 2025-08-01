@@ -124,7 +124,9 @@ public class EsjpScanner
         return ret;
     }
 
-    public final Set<Class<?>> scan4SubTypes(final Class<?>... parentTypes) {
+    public final Set<Class<?>> scan4SubTypes(final Class<?>... parentTypes)
+        throws EFapsException
+    {
         return null;
     }
 
