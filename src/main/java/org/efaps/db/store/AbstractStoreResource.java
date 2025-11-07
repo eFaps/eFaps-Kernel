@@ -22,6 +22,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
@@ -33,8 +35,11 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.transaction.AbstractResource;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLDelete;
+import org.efaps.db.wrapper.SQLDelete.DeleteDefintion;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +52,7 @@ public abstract class AbstractStoreResource
     extends AbstractResource
     implements Resource
 {
+
     /**
      * Name of the main store table.
      */
@@ -63,6 +69,11 @@ public abstract class AbstractStoreResource
     public static final String COLNAME_FILELENGTH = "FILELENGTH";
 
     /**
+     * Name of the column for the file length.
+     */
+    public static final String COLNAME_MODIFIED = "MODIFIED";
+
+    /**
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(AbstractStoreResource.class);
@@ -71,12 +82,13 @@ public abstract class AbstractStoreResource
      * Basic SQL Select for getting the Resource.
      */
     private static final SQLSelect SQL_SELECT = new SQLSelect()
-                                                    .column(0, "ID")
-                                                    .column(1, AbstractStoreResource.COLNAME_FILENAME)
-                                                    .column(1, AbstractStoreResource.COLNAME_FILELENGTH)
-                                                    .column(1, "ID")
-                                                    .from(GeneralInstance.TABLENAME, 0)
-                                                    .leftJoin(AbstractStoreResource.TABLENAME_STORE, 1, "ID", 0, "ID");
+                    .column(0, "ID")
+                    .column(1, AbstractStoreResource.COLNAME_FILENAME)
+                    .column(1, AbstractStoreResource.COLNAME_FILELENGTH)
+                    .column(1, AbstractStoreResource.COLNAME_MODIFIED)
+                    .column(1, "ID")
+                    .from(GeneralInstance.TABLENAME, 0)
+                    .leftJoin(AbstractStoreResource.TABLENAME_STORE, 1, "ID", 0, "ID");
 
     /**
      * @see #StoreEvent
@@ -115,6 +127,7 @@ public abstract class AbstractStoreResource
      */
     private Long fileLength = 0L;
 
+    private OffsetDateTime modified;
     /**
      * Store this Resource belongs to.
      */
@@ -156,14 +169,15 @@ public abstract class AbstractStoreResource
     {
         this.storeEvent = _event;
         super.open();
-        if (getStoreEvent().equals(StoreEvent.READ) || getStoreEvent().equals(StoreEvent.WRITE)) {
+        if (getStoreEvent().equals(StoreEvent.WRITE)) {
             insertDefaults();
         }
     }
 
     /**
-     * The output stream is written with the content of the file. From method {@link #read()} the input stream is used
-     * and copied into the output stream.
+     * The output stream is written with the content of the file. From method
+     * {@link #read()} the input stream is used and copied into the output
+     * stream.
      *
      * @param _out output stream where the file content must be written
      * @throws EFapsException if an error occurs
@@ -173,9 +187,9 @@ public abstract class AbstractStoreResource
     public void read(final OutputStream _out)
         throws EFapsException
     {
-        StoreResourceInputStream in = null;
+        InputStream in = null;
         try {
-            in = (StoreResourceInputStream) read();
+            in = read();
             if (in != null) {
                 int length = 1;
                 while (length > 0) {
@@ -188,9 +202,9 @@ public abstract class AbstractStoreResource
         } catch (final IOException e) {
             throw new EFapsException(AbstractStoreResource.class, "read.IOException", e);
         } finally {
-            if (in != null) {
+            if (in != null && in instanceof final StoreResourceInputStream srin) {
                 try {
-                    in.closeWithoutCommit();
+                    srin.closeWithoutCommit();
                 } catch (final IOException e) {
                     AbstractStoreResource.LOG.warn("Catched IOException in class: " + this.getClass());
                 }
@@ -218,8 +232,29 @@ public abstract class AbstractStoreResource
         return this.fileLength;
     }
 
+    @Override
+    public OffsetDateTime getModified()
+    {
+        return modified;
+    }
+
+    @Override
+    public void clean()
+        throws EFapsException
+    {
+        final ConnectionResource res = Context.getThreadContext().getConnectionResource();
+        try {
+            final var del = new DeleteDefintion(AbstractStoreResource.TABLENAME_STORE, "ID", getGeneralID());
+            final SQLDelete delete = Context.getDbType().newDelete(del);
+            delete.execute(res);
+        } catch (final SQLException e) {
+            throw new EFapsException("clean", e);
+        }
+    }
+
     /**
      * Insert default values in the table. (if necessary).
+     *
      * @throws EFapsException on error
      */
     protected void insertDefaults()
@@ -232,6 +267,7 @@ public abstract class AbstractStoreResource
                                 .column("ID", getGeneralID())
                                 .column(AbstractStoreResource.COLNAME_FILENAME, "TMP")
                                 .column(AbstractStoreResource.COLNAME_FILELENGTH, 0)
+                                .column(AbstractStoreResource.COLNAME_MODIFIED, getTimestamp())
                                 .execute(res);
                 this.fileName = "TMP";
                 this.fileLength = 0L;
@@ -241,11 +277,11 @@ public abstract class AbstractStoreResource
         }
     }
 
-
     /**
      * Set the info for the file in this store reosurce.
-     * @param _filename     name of the file
-     * @param _fileLength   length of the file
+     *
+     * @param _filename name of the file
+     * @param _fileLength length of the file
      * @throws EFapsException on error
      */
     protected void setFileInfo(final String _filename,
@@ -258,24 +294,29 @@ public abstract class AbstractStoreResource
                 res = Context.getThreadContext().getConnectionResource();
                 final AbstractDatabase<?> db = Context.getDbType();
                 final StringBuilder cmd = new StringBuilder().append(db.getSQLPart(SQLPart.UPDATE)).append(" ")
-                        .append(db.getTableQuote()).append(AbstractStoreResource.TABLENAME_STORE)
-                        .append(db.getTableQuote())
-                        .append(" ").append(db.getSQLPart(SQLPart.SET)).append(" ")
-                        .append(db.getColumnQuote())
-                        .append(AbstractStoreResource.COLNAME_FILENAME)
-                        .append(db.getColumnQuote()).append(db.getSQLPart(SQLPart.EQUAL)).append("? ")
-                        .append(db.getSQLPart(SQLPart.COMMA))
-                        .append(db.getColumnQuote())
-                        .append(AbstractStoreResource.COLNAME_FILELENGTH)
-                        .append(db.getColumnQuote()).append(db.getSQLPart(SQLPart.EQUAL)).append("? ")
-                        .append(db.getSQLPart(SQLPart.WHERE)).append(" ")
-                        .append(db.getColumnQuote()).append("ID").append(db.getColumnQuote())
-                        .append(db.getSQLPart(SQLPart.EQUAL)).append(getGeneralID());
+                                .append(db.getTableQuote()).append(AbstractStoreResource.TABLENAME_STORE)
+                                .append(db.getTableQuote())
+                                .append(" ").append(db.getSQLPart(SQLPart.SET)).append(" ")
+                                .append(db.getColumnQuote())
+                                .append(AbstractStoreResource.COLNAME_FILENAME)
+                                .append(db.getColumnQuote()).append(db.getSQLPart(SQLPart.EQUAL)).append("? ")
+                                .append(db.getSQLPart(SQLPart.COMMA))
+                                .append(db.getColumnQuote())
+                                .append(AbstractStoreResource.COLNAME_FILELENGTH)
+                                .append(db.getColumnQuote()).append(db.getSQLPart(SQLPart.EQUAL)).append("? ")
+                                .append(db.getSQLPart(SQLPart.COMMA))
+                                .append(db.getColumnQuote())
+                                .append(AbstractStoreResource.COLNAME_MODIFIED)
+                                .append(db.getColumnQuote()).append(db.getSQLPart(SQLPart.EQUAL)).append("? ")
+                                .append(db.getSQLPart(SQLPart.WHERE)).append(" ")
+                                .append(db.getColumnQuote()).append("ID").append(db.getColumnQuote())
+                                .append(db.getSQLPart(SQLPart.EQUAL)).append(getGeneralID());
 
                 final PreparedStatement stmt = res.prepareStatement(cmd.toString());
                 try {
                     stmt.setString(1, _filename);
                     stmt.setLong(2, _fileLength);
+                    stmt.setTimestamp(3, getTimestamp());
                     stmt.execute();
                 } finally {
                     stmt.close();
@@ -288,8 +329,15 @@ public abstract class AbstractStoreResource
         }
     }
 
+    protected Timestamp getTimestamp()
+        throws EFapsException
+    {
+        return Timestamp.from(DateTimeUtil.toDBDateTime(OffsetDateTime.now()).toInstant());
+    }
+
     /**
      * Add to the select for the existence check.
+     *
      * @param _select select to add to
      * @return number of added columns
      */
@@ -297,6 +345,7 @@ public abstract class AbstractStoreResource
 
     /**
      * Get the generalID etc. from the eFasp DataBase.
+     *
      * @param _complStmt Statement to be executed
      * @throws EFapsException on error
      */
@@ -318,8 +367,12 @@ public abstract class AbstractStoreResource
                     this.fileName = this.fileName.trim();
                 }
                 this.fileLength = rs.getLong(3);
+                modified = DateTimeUtil.toContextDateTime(rs.getTimestamp(4));
+                final var columnCount = rs.getMetaData().getColumnCount();
                 for (int i = 0; i < this.exist.length; i++) {
-                    this.exist[i] = rs.getLong(4 + i) > 0;
+                    if (5 + i <= columnCount) {
+                        this.exist[i] = rs.getLong(5 + i) > 0;
+                    }
                 }
                 getAdditionalInfo(rs);
             }
@@ -331,8 +384,10 @@ public abstract class AbstractStoreResource
     }
 
     /**
-     * Can be used by implementation to get additionla information form the database.
-     * @param _rs   ResultSet
+     * Can be used by implementation to get additionla information form the
+     * database.
+     *
+     * @param _rs ResultSet
      * @throws SQLException on error
      */
     protected void getAdditionalInfo(final ResultSet _rs)
@@ -341,7 +396,8 @@ public abstract class AbstractStoreResource
     }
 
     /**
-     * Frees this resource. Only a dummy implementation because nothing must be freed for this store.
+     * Frees this resource. Only a dummy implementation because nothing must be
+     * freed for this store.
      */
     @Override
     protected void freeResource()
@@ -435,11 +491,13 @@ public abstract class AbstractStoreResource
     }
 
     /**
-     * Wraps the standard {@link InputStream} to get an input stream for the needs of eFaps.
+     * Wraps the standard {@link InputStream} to get an input stream for the
+     * needs of eFaps.
      */
     protected class StoreResourceInputStream
         extends InputStream
     {
+
         /**
          * InputStream.
          */
@@ -452,7 +510,7 @@ public abstract class AbstractStoreResource
 
         /**
          * @param _resource StoreResource this InputStream belong to
-         * @param _in       inputstream
+         * @param _in inputstream
          * @throws IOException on error
          */
         protected StoreResourceInputStream(final AbstractStoreResource _resource,
@@ -483,7 +541,8 @@ public abstract class AbstractStoreResource
         }
 
         /**
-         * Only a dummy method if something must happened after the commit of the store.
+         * Only a dummy method if something must happened after the commit of
+         * the store.
          *
          * @throws IOException on error
          */
@@ -493,7 +552,8 @@ public abstract class AbstractStoreResource
         }
 
         /**
-         * The input stream and others are closes without commit of the store resource.
+         * The input stream and others are closes without commit of the store
+         * resource.
          *
          * @throws IOException on error
          */
@@ -505,7 +565,8 @@ public abstract class AbstractStoreResource
         }
 
         /**
-         * Calls method {@link #beforeClose()}, then commits the store and at least calls method {@link #afterClose()}.
+         * Calls method {@link #beforeClose()}, then commits the store and at
+         * least calls method {@link #afterClose()}.
          *
          * @see #beforeClose()
          * @see #afterClose()
@@ -566,9 +627,9 @@ public abstract class AbstractStoreResource
 
         /**
          * @param _b byte to read
-         * @return     the total number of bytes read into the buffer, or
-         *             <code>-1</code> if there is no more data because the end of
-         *             the stream has been reached.
+         * @return the total number of bytes read into the buffer, or
+         *         <code>-1</code> if there is no more data because the end of
+         *         the stream has been reached.
          * @throws IOException on error
          * @see InputStream#read(byte[])
          */
@@ -583,9 +644,9 @@ public abstract class AbstractStoreResource
          * @param _b byte
          * @param _off offset
          * @param _len length
-         * @return     the total number of bytes read into the buffer, or
-         *             <code>-1</code> if there is no more data because the end of
-         *             the stream has been reached.
+         * @return the total number of bytes read into the buffer, or
+         *         <code>-1</code> if there is no more data because the end of
+         *         the stream has been reached.
          * @throws IOException on error
          * @see InputStream#read(byte[], int, int)
          */

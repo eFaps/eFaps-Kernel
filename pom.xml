@@ -272,6 +272,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.37.3</version>
+        </dependency>
 
         <!-- to define a higher version (needed from another tool) -->
         <dependency>
