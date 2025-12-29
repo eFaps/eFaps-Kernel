@@ -785,7 +785,7 @@ public final class Context
      */
     public DateTimeZone getTimezone()
     {
-        return timezone;
+        return timezone == null ? DateTimeZone.UTC : timezone;
     }
 
     public ZoneId getZoneId() {
