@@ -17,6 +17,7 @@ package org.efaps.beans;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.efaps.admin.datamodel.Attribute;
@@ -59,19 +60,19 @@ public class ValueList
     /**
      * Holds the Expressions used in this ValueList.
      */
-    private final Set<String> expressions = new HashSet<String>();
+    private final Set<String> expressions = new HashSet<>();
 
     /**
      * Holds the tokens of this ValueList.
      */
-    private final ArrayList<Token> tokens = new ArrayList<Token>();
+    private final List<Token> tokens = new ArrayList<>();
 
     /**
      * Getter method for instance variable {@link #tokens}.
      *
      * @return value of instance variable {@link #tokens}
      */
-    public ArrayList<Token> getTokens()
+    public List<Token> getTokens()
     {
         return this.tokens;
     }
