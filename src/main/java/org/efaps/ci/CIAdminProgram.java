@@ -126,10 +126,22 @@ public class CIAdminProgram
             super(_uuid);
         }
     }
+    public static final _JasperReportAbstract JasperReportAbstract = new _JasperReportAbstract("b6433cf8-406a-4fa4-8973-f2c1fa411115");
+
+    public static class _JasperReportAbstract
+        extends _Abstract
+    {
+
+        protected _JasperReportAbstract(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
     public static final _JasperReport JasperReport = new _JasperReport("425eda62-5591-4799-828d-ced6687a138b");
 
     public static class _JasperReport
-        extends _Abstract
+        extends _JasperReportAbstract
     {
 
         protected _JasperReport(final String _uuid)
@@ -137,6 +149,19 @@ public class CIAdminProgram
             super(_uuid);
         }
     }
+
+    public static final _JasperReport7 JasperReport7 = new _JasperReport7("5feac455-2132-4384-bbf4-6b04693a3be6");
+
+    public static class _JasperReport7
+        extends _JasperReportAbstract
+    {
+
+        protected _JasperReport7(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
 
     public static final _CSS2CSS CSS2CSS = new _CSS2CSS("9d69ef63-b248-4f50-9130-5f33d64d81f0");
 
