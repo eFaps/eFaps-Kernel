@@ -17,13 +17,17 @@ package org.efaps.eql.builder;
 
 import org.efaps.db.stmt.CountStmt;
 import org.efaps.db.stmt.selection.EvalHelper;
+import org.efaps.db.stmt.selection.Evaluator;
 import org.efaps.eql2.ICountQueryStatement;
 import org.efaps.eql2.bldr.AbstractCountEQLBuilder;
+import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Count extends AbstractCountEQLBuilder<Count>
+public class Count
+    extends AbstractCountEQLBuilder<Count>
 {
+
     private static final Logger LOG = LoggerFactory.getLogger(Count.class);
 
     @Override
@@ -43,4 +47,17 @@ public class Count extends AbstractCountEQLBuilder<Count>
         LOG.debug("Stmt: {}", getStmt().eqlStmt());
         return CountStmt.get((ICountQueryStatement) getStmt(), new EvalHelper());
     }
+
+    public CountStmt execute()
+        throws EFapsException
+    {
+        return stmt().execute();
+    }
+
+    public Evaluator evaluate()
+        throws EFapsException
+    {
+        return stmt().evaluate();
+    }
+
 }
