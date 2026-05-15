@@ -213,4 +213,9 @@ public final class Quartz
             }
         }
     }
+
+    public static void reset()
+    {
+        LOG.warn("Not implemented");
+    }
 }
