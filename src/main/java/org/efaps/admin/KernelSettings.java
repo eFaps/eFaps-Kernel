@@ -218,5 +218,10 @@ public interface KernelSettings
      */
     String INDEXDEFAULTOP = "org.efaps.kernel.index.DefaultOperator4Search";
 
+    // core only !!!
+    String CLASSPATH = "org.efaps.kernel.rest.Classpath";
+
+    String S3STORECACHELIFESPAN = "org.efaps.kernel.store.s3.LifeSpanInMinutes";
+
 }
 
