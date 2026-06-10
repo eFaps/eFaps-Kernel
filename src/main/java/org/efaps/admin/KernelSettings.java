@@ -223,6 +223,8 @@ public interface KernelSettings
 
     String S3STORECACHELIFESPAN = "org.efaps.kernel.store.s3.LifeSpanInMinutes";
 
+    String STORERESOURCELIFESPAN = "org.efaps.kernel.store.resource.LifeSpanInMinutes";
+
     String GENINSTCACHELIFESPAN = "org.efaps.kernel.db.generalInstance.LifeSpanInMinutes";
 }
 
