@@ -368,7 +368,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-bridge</artifactId>
-            <version>1.9.1</version>
+            <version>1.17</version>
         </dependency>
         <!--  replacing the lucene from Jasperreport with the one used by infinispan-->
         <dependency>
