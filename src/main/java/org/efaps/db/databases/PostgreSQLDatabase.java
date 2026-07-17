@@ -54,19 +54,20 @@ public class PostgreSQLDatabase
      *
      * @see #initTableInfoUniqueKeys(Connection, String, Map)
      */
-    private static final String SQL_UNIQUE_KEYS = "select "
-            + "a.constraint_name as INDEX_NAME, "
-            + "a.table_name as TABLE_NAME, "
-            + "b.column_name as COLUMN_NAME, "
-            + "b.ordinal_position as ORDINAL_POSITION "
-        + "from "
-            + "information_schema.table_constraints a,"
-            + "information_schema.key_column_usage b "
-        + "where "
-            + "a.constraint_type='UNIQUE' "
-            + "and a.table_schema=b.table_schema "
-            + "and a.table_name=b.table_name "
-            + "and a.constraint_name=b.constraint_name";
+    private static final String SQL_UNIQUE_KEYS = """
+        select \
+        a.constraint_name as INDEX_NAME, \
+        a.table_name as TABLE_NAME, \
+        b.column_name as COLUMN_NAME, \
+        b.ordinal_position as ORDINAL_POSITION \
+        from \
+        information_schema.table_constraints a,\
+        information_schema.key_column_usage b \
+        where \
+        a.constraint_type='UNIQUE' \
+        and a.table_schema=b.table_schema \
+        and a.table_name=b.table_name \
+        and a.constraint_name=b.constraint_name""";
 
     /**
      * Select statement for all foreign keys for current logged in PostgreSQL
@@ -125,12 +126,10 @@ public class PostgreSQLDatabase
 
             for (int i = 0; i < cols; i++) {
                 switch (metaData.getColumnType(i + 1)) {
-                    case java.sql.Types.TIMESTAMP:
-                        result[i] = _rs.getTimestamp(i + 1);
-                        break;
-                    default:
-                        result[i] = _rs.getObject(i + 1);
+                    case java.sql.Types.TIMESTAMP -> result[i] = _rs.getTimestamp(i + 1);
+                    default -> result[i] = _rs.getObject(i + 1);
                 }
+                ;
             }
             return result;
         }
@@ -146,7 +145,7 @@ public class PostgreSQLDatabase
         addMapping(ColumnType.REAL,         "real",      "null", "float4");
         addMapping(ColumnType.STRING_SHORT, "char",      "null", "bpchar");
         addMapping(ColumnType.STRING_LONG,  "varchar",   "null", "varchar");
-        addMapping(ColumnType.DATETIME,     "timestamp", "null", "timestamp", "timestamp without time zone");
+        addMapping(ColumnType.DATETIME,     "timestamp", "null", "timestamp", "timestamp without time zone", "time");
         addMapping(ColumnType.BLOB,         "bytea",     "null", "bytea");
         addMapping(ColumnType.CLOB,         "text",      "null", "text");
         addMapping(ColumnType.BOOLEAN,      "boolean",   "null", "bool");
