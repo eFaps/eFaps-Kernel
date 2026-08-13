@@ -38,6 +38,7 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import javax.transaction.TransactionSynchronizationRegistry;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.efaps.admin.user.Company;
@@ -726,6 +727,11 @@ public final class Context
     public Transaction getTransaction()
     {
         return transaction;
+    }
+
+    public TransactionSynchronizationRegistry getSynchronizationRegistry()
+    {
+        return null;
     }
 
     /**
