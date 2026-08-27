@@ -25,7 +25,6 @@ package org.efaps.admin.event;
  * @author The eFaps Team
  *
  */
-@SuppressWarnings("checkstyle:methodparampad")
 public enum EventType
 {
     /** EventType for checking the access to a type. */
@@ -128,7 +127,7 @@ public enum EventType
      */
     UI_INSTANCEMANAGER    ("Admin_UI_InstanceManagerEvent"),
     /** EventType for evaluating the values for a table. */
-    UI_TABLE_EVALUATE     ("Admin_UI_TableEvaluateEvent"),
+    UI_CONTENT_EVALUATE     ("Admin_UI_ContentEvaluateEvent"),
     UI_STRCTBRWS_EVALUATE ("Admin_UI_StrctBrwsEvaluateEvent"),
     /**
      * EventType used to validate the values for an attribute.

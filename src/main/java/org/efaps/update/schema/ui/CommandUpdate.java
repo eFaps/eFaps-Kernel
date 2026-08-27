@@ -195,7 +195,7 @@ public class CommandUpdate
                                                     + (_attributes.get("index") == null
                                                     ? "" : "." + _attributes.get("index"));
                     if ("evaluate".equals(subValue)) {
-                        addEvent(new Event(name, EventType.UI_TABLE_EVALUATE,
+                        addEvent(new Event(name, EventType.UI_CONTENT_EVALUATE,
                                         _attributes.get("program"), _attributes.get("method"),
                                         _attributes.get("index")));
                     } else if ("strctbrws".equals(subValue)) {
