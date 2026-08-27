@@ -37,6 +37,6 @@ jobs:
       - name: Run coverage
         run: mvn clover:setup test clover:aggregate clover:clover -s mySettings.xml -B
       - name: CodeCov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
 
 
